@@ -59,18 +59,33 @@ describe('Translations', () => {
     });
 
     describe('Error message translations', () => {
-        const errorKeys = [
-            'emailPasswordRequired',
-            'invalidCredentials',
-            'allFieldsRequired',
-            'passwordMismatch',
-            'signupFailed',
-            'emailAlreadyExists',
-            'weakPassword',
-            'invalidEmail'
+        const betterAuthErrorKeys = [
+            'Session required',
+            'Invalid credentials',
+            'Failed to create user',
+            'Email already in use',
+            'Weak password',
+            'Account banned',
+            'Too many attempts',
+            'Internal server error'
         ];
 
-        errorKeys.forEach(key => {
+        const customErrorKeys = [
+            'emailPasswordRequired',
+            'allFieldsRequired',
+            'passwordMismatch'
+        ];
+
+        betterAuthErrorKeys.forEach(key => {
+            it(`should have errors["${key}"] in both languages`, () => {
+                expect(en.errors[key as keyof typeof en.errors]).toBeDefined();
+                expect(fr.errors[key as keyof typeof fr.errors]).toBeDefined();
+                expect(en.errors[key as keyof typeof en.errors]).not.toBe('');
+                expect(fr.errors[key as keyof typeof fr.errors]).not.toBe('');
+            });
+        });
+
+        customErrorKeys.forEach(key => {
             it(`should have errors.${key} in both languages`, () => {
                 expect(en.errors[key as keyof typeof en.errors]).toBeDefined();
                 expect(fr.errors[key as keyof typeof fr.errors]).toBeDefined();
@@ -81,6 +96,26 @@ describe('Translations', () => {
 
         it('should have same number of error messages in both languages', () => {
             expect(Object.keys(en.errors).length).toBe(Object.keys(fr.errors).length);
+        });
+
+        it('should have all better-auth error messages', () => {
+            const requiredErrors = [
+                'Session required',
+                'Unauthorized',
+                'Invalid credentials',
+                'Account not found',
+                'Session expired',
+                'Failed to create user',
+                'Email already in use',
+                'Invalid email',
+                'Weak password',
+                'Account banned'
+            ];
+
+            requiredErrors.forEach(errorKey => {
+                expect(en.errors[errorKey as keyof typeof en.errors]).toBeDefined();
+                expect(fr.errors[errorKey as keyof typeof fr.errors]).toBeDefined();
+            });
         });
     });
 
@@ -93,7 +128,7 @@ describe('Translations', () => {
             expect(en.Authentication.Login.LoginButton).not.toBe(fr.Authentication.Login.LoginButton);
             
             // Errors should be different
-            expect(en.errors.invalidCredentials).not.toBe(fr.errors.invalidCredentials);
+            expect(en.errors['Invalid credentials']).not.toBe(fr.errors['Invalid credentials']);
         });
 
         it('should not have placeholder text in translations', () => {
@@ -179,12 +214,13 @@ describe('Translations', () => {
             'Authentication.ConfirmPasswordPlaceholder',
             'Authentication.Register.RegisterButton',
             'Authentication.LoginViewButton',
-            'Authentication.RegisterViewButton',
-            'errors.emailPasswordRequired',
-            'errors.invalidCredentials',
-            'errors.allFieldsRequired',
-            'errors.passwordMismatch',
-            'errors.signupFailed'
+            'Authentication.RegisterViewButton'
+        ];
+
+        const usedErrorKeys = [
+            'emailPasswordRequired',
+            'allFieldsRequired',
+            'passwordMismatch'
         ];
 
         usedKeys.forEach(keyPath => {
@@ -198,6 +234,18 @@ describe('Translations', () => {
                 const value = keyPath.split('.').reduce((obj, key) => obj[key], fr as any);
                 expect(value).toBeDefined();
                 expect(value).not.toBe('');
+            });
+        });
+
+        usedErrorKeys.forEach(errorKey => {
+            it(`should have errors.${errorKey} available in EN`, () => {
+                expect(en.errors[errorKey as keyof typeof en.errors]).toBeDefined();
+                expect(en.errors[errorKey as keyof typeof en.errors]).not.toBe('');
+            });
+
+            it(`should have errors.${errorKey} available in FR`, () => {
+                expect(fr.errors[errorKey as keyof typeof fr.errors]).toBeDefined();
+                expect(fr.errors[errorKey as keyof typeof fr.errors]).not.toBe('');
             });
         });
     });

@@ -13,10 +13,15 @@ export const auth = betterAuth({
         provider: "pg",
         schema: {
             user: schema.users,
+            session: schema.session,
+            account: schema.account,
+            verification: schema.verification,
         },
     }),
     plugins: [
         nextCookies(),  // ⚠ Permet de sauvegarder les cookies better-auth dans l'appli next
-        admin()  // Plugin admin pour gérer les roles et les bannissements des utilisateurs
+        admin({
+            defaultRole: "customer", // Set default role for new users
+        })  // Plugin admin pour gérer les roles et les bannissements des utilisateurs
     ],
 });

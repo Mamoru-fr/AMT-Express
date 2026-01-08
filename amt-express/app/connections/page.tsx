@@ -34,11 +34,17 @@ export default function ConnectionsPage() {
 
         if (error && error !== 'true') {
             const decodedError = decodeURIComponent(error);
-            // Try to translate the error key, if not found use the raw message
-            const translatedError = decodedError.startsWith('errors.') 
-                ? t(decodedError) 
-                : decodedError;
-            setErrorMessage(translatedError);
+            // Try to translate the error
+            // First check if it's a custom error key (errors.xxx)
+            if (decodedError.startsWith('errors.')) {
+                const translatedError = t(decodedError);
+                setErrorMessage(translatedError);
+            } else {
+                // It's a better-auth error message, try to translate it from errors section
+                const errorKey = `errors.${decodedError}`;
+                const translatedError = t(errorKey, { defaultValue: decodedError });
+                setErrorMessage(translatedError);
+            }
         } else {
             setErrorMessage(null);
         }
