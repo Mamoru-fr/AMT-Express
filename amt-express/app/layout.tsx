@@ -3,6 +3,8 @@ import "./globals.css";
 import {auth} from "@/lib/auth/auth";
 import {headers} from "next/headers";
 import {SessionProvider} from "@/context/SessionContext";
+import {I18nProvider} from "@/context/I18nProvider";
+import {LanguageDropdown} from "@/components/LanguageComponents/LanguageDropdown";
 
 export const metadata: Metadata = {
   title: "AMT Express",
@@ -21,9 +23,12 @@ export default async function RootLayout({
       <body
         className={`antialiased`}
       >
-        <SessionProvider session={session}>
-        {children}
-        </SessionProvider>
+        <I18nProvider>
+          <SessionProvider session={session}>
+            {children}
+            <LanguageDropdown />
+          </SessionProvider>
+        </I18nProvider>
       </body>
     </html>
   );

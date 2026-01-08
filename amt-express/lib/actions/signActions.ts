@@ -9,7 +9,7 @@ export const signin = async (formData: FormData) => {
     const password = formData.get("password") as string;
     
     if (!email || !password) {
-        redirect("/connections?view=signin&error=" + encodeURIComponent("Email et mot de passe requis"));
+        redirect("/connections?view=signin&error=" + encodeURIComponent("errors.emailPasswordRequired"));
     }
     
     const response = await auth.api.signInEmail({
@@ -22,7 +22,7 @@ export const signin = async (formData: FormData) => {
     if (!response.ok) {
         const errorData = await response.json();
         console.error("Sign in failed:", errorData);
-        const errorMessage = errorData.message || errorData.error || "Email ou mot de passe incorrect";
+        const errorMessage = errorData.message || errorData.error || "errors.invalidCredentials";
         redirect(`/connections?view=signin&error=${encodeURIComponent(errorMessage)}`);
     }
     redirect("/"); // on redirige vers la home page une fois connecté
@@ -35,11 +35,11 @@ export const signup = async (formData: FormData) => {
     const confirmPassword = formData.get("confirmPassword") as string;
     
     if (!name || !email || !password || !confirmPassword) {
-        redirect("/connections?view=signup&error=" + encodeURIComponent("Tous les champs sont requis"));
+        redirect("/connections?view=signup&error=" + encodeURIComponent("errors.allFieldsRequired"));
     }
 
     if (password !== confirmPassword) {
-        redirect("/connections?view=signup&error=" + encodeURIComponent("Les mots de passe ne correspondent pas"));
+        redirect("/connections?view=signup&error=" + encodeURIComponent("errors.passwordMismatch"));
     }
     
     const response = await auth.api.signUpEmail({
@@ -53,7 +53,7 @@ export const signup = async (formData: FormData) => {
     if (!response.ok) {
         const errorData = await response.json();
         console.error("Sign up failed:", errorData);
-        const errorMessage = errorData.message || errorData.error || "Une erreur est survenue lors de l'inscription";
+        const errorMessage = errorData.message || errorData.error || "errors.signupFailed";
         redirect(`/connections?view=signup&error=${encodeURIComponent(errorMessage)}`);
     }
     redirect("/"); // on redirige vers la home page une fois connecté

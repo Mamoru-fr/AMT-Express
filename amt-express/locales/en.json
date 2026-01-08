@@ -1,3 +1,28 @@
 {
-    
+    "Authentication": {
+        "Title": "Welcome to AMT Express",
+        "NamePlaceholder": "Enter your full name",
+        "NameWarning": "Your name will be visible to drivers",
+        "EmailPlaceholder": "Enter your email",
+        "PasswordPlaceholder": "Enter your password",
+        "ConfirmPasswordPlaceholder": "Confirm your password",
+        "LoginViewButton": "Login",
+        "RegisterViewButton": "Register",
+        "Login": {
+            "LoginButton": "Log In"
+        },
+        "Register": {
+            "RegisterButton": "Sign Up"
+        }
+    },
+    "errors": {
+        "emailPasswordRequired": "Email and password are required",
+        "invalidCredentials": "Invalid email or password",
+        "allFieldsRequired": "All fields are required",
+        "passwordMismatch": "Passwords do not match",
+        "signupFailed": "An error occurred during registration",
+        "emailAlreadyExists": "This email is already registered",
+        "weakPassword": "Password is too weak",
+        "invalidEmail": "Invalid email address"
+    }
 }

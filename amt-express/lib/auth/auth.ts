@@ -11,7 +11,9 @@ export const auth = betterAuth({
     },
     database: drizzleAdapter(db, {
         provider: "pg",
-        schema, // Ajoute ton schéma de DB
+        schema: {
+            user: schema.users,
+        },
     }),
     plugins: [
         nextCookies(),  // ⚠ Permet de sauvegarder les cookies better-auth dans l'appli next

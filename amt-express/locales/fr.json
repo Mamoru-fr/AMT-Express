@@ -1,3 +1,28 @@
 {
-    
+    "Authentication": {
+        "Title": "Bienvenue chez AMT Express",
+        "NamePlaceholder": "Entrez votre nom complet",
+        "NameWarning": "Votre nom sera visible par les conducteurs",
+        "EmailPlaceholder": "Entrez votre email",
+        "PasswordPlaceholder": "Entrez votre mot de passe",
+        "ConfirmPasswordPlaceholder": "Confirmez votre mot de passe",
+        "LoginViewButton": "Connexion",
+        "RegisterViewButton": "Inscription",
+        "Login": {
+            "LoginButton": "Se connecter"
+        },
+        "Register": {
+            "RegisterButton": "S'inscrire"
+        }
+    },
+    "errors": {
+        "emailPasswordRequired": "Email et mot de passe requis",
+        "invalidCredentials": "Email ou mot de passe incorrect",
+        "allFieldsRequired": "Tous les champs sont requis",
+        "passwordMismatch": "Les mots de passe ne correspondent pas",
+        "signupFailed": "Une erreur est survenue lors de l'inscription",
+        "emailAlreadyExists": "Cet email est déjà enregistré",
+        "weakPassword": "Le mot de passe est trop faible",
+        "invalidEmail": "Adresse email invalide"
+    }
 }
