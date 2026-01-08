@@ -21,12 +21,12 @@ export interface User {
   image?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  role?: UserRole | null;
-  banned: boolean;
+  role?: string | null; // better-auth returns string, we validate it's a UserRole at runtime
+  banned?: boolean | null;
   banReason?: string | null;
   banExpires?: Date | null;
   // Driver-specific fields
-  vehicleType?: VehicleType | null;
+  vehicleType?: string | null; // better-auth returns string
   vehiclePlate?: string | null;
   vehicleModel?: string | null;
   vehicleColor?: string | null;

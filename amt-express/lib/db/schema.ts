@@ -1,7 +1,7 @@
 import {pgTable, serial, varchar, timestamp, integer, decimal, boolean, text, pgEnum, index, jsonb} from "drizzle-orm/pg-core";
 import {relations, sql} from "drizzle-orm";
-import {Option, OPTIONS} from "@/content/types/ride";
-import {VEHICLE_TYPE} from "@/content/types/user";
+import {Option, OPTIONS} from "@/content/database_types/ride";
+import {VEHICLE_TYPE} from "@/content/database_types/user";
 
 // Enums
 export const userRoleEnum = pgEnum('user_role', ['admin', 'driver', 'customer']);

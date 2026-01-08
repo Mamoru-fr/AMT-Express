@@ -1,20 +1,23 @@
-import { User } from './user';
+import {User} from './user';
 
 // Authentication Types
 
-export interface Session {
+// Matches better-auth's actual session structure
+export interface SessionData {
   id: string;
-  expiresAt: Date;
-  token: string;
   createdAt: Date;
   updatedAt: Date;
+  userId: string;
+  expiresAt: Date;
+  token: string;
   ipAddress?: string | null;
   userAgent?: string | null;
-  userId: string;
   impersonatedBy?: string | null;
 }
 
-export interface SessionWithUser extends Session {
+// This matches what better-auth returns: { session: {...}, user: {...} }
+export interface SessionWithUser {
+  session: SessionData;
   user: User;
 }
 
@@ -70,7 +73,7 @@ export interface VerifyEmailInput {
 
 export interface AuthResponse {
   user: User;
-  session: Session;
+  session: SessionWithUser;
   token: string;
 }
 
