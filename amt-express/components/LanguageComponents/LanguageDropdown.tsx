@@ -47,18 +47,18 @@ export function LanguageDropdown({className}: Props) {
                 "w-25 md:w-30 lg:w-32.5",
                 "h-12.5",
                 "z-1000",
-                windowWidth <= 500 ? "bottom-30" : windowWidth <= 940 ? "bottom-35" : "bottom-12.5 md:bottom-10",
                 className
             )}
+            style={{bottom: 10}}
         >
             <select
                 className={cn(
                     "w-full h-full max-h-12.5",
                     "px-3 py-2.5 md:px-4 md:py-3",
                     "text-xs md:text-sm lg:text-base font-semibold",
+                    "border-2 border-gray-300",
+                    "rounded-xl md:rounded-4xl",
                     "bg-white/95 backdrop-blur-[10px]",
-                    "border-2 border-white/90",
-                    "rounded-lg md:rounded-xl",
                     "outline-none cursor-pointer",
                     "shadow-[0_6px_20px_rgba(0,0,0,0.25)]",
                     "transition-all duration-300",

@@ -4,7 +4,7 @@ import {auth} from "@/lib/auth/auth";
 import {headers} from "next/headers";
 import {SessionProvider} from "@/context/SessionContext";
 import {I18nProvider} from "@/context/I18nProvider";
-import {LanguageDropdown} from "@/components/LanguageComponents/LanguageDropdown";
+import {LanguageDropdown} from "@/components/languageComponents/LanguageDropdown";
 
 export const metadata: Metadata = {
   title: "AMT Express",

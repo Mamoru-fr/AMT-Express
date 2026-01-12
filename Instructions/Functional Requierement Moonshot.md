@@ -46,10 +46,18 @@
     - [Additional Features](#additional-features-1)
     - [Security](#security)
   - [B. Non-Functional Requirements](#b-non-functional-requirements)
-  - [C. Database Structure (PostgreSQL/Neon)](#c-database-structure-postgresqlneon)
+  - [C. Personas](#c-personas)
+      - [**1. Chef d’Entreprise (Gestion du Planning)**](#1-chef-dentreprise-gestion-du-planning)
+      - [**2. Secrétaire Générale et Administrative**](#2-secrétaire-générale-et-administrative)
+      - [**3. Chauffeur (Peu Motivé mais Opportuniste)**](#3-chauffeur-peu-motivé-mais-opportuniste)
+      - [**4. Client Classique (Taxi Île-de-France)**](#4-client-classique-taxi-île-de-france)
+      - [**5. Client Entreprise (Planification de Trajets)**](#5-client-entreprise-planification-de-trajets)
+        - [A. Synthèse des Attentes et Points de Friction](#a-synthèse-des-attentes-et-points-de-friction)
+        - [B. Prochaines Étapes](#b-prochaines-étapes)
+  - [D. Database Structure (PostgreSQL/Neon)](#d-database-structure-postgresqlneon)
     - [Conceptual Schema](#conceptual-schema)
     - [Explanations](#explanations)
-  - [D. SQL Query Examples](#d-sql-query-examples)
+  - [E. SQL Query Examples](#e-sql-query-examples)
     - [1. List unassigned rides](#1-list-unassigned-rides)
     - [2. Generate an invoice](#2-generate-an-invoice)
     - [3. Update assignment request status](#3-update-assignment-request-status)
@@ -199,7 +207,185 @@ This application allows you to:
 
 ---
 
-## C. Database Structure (PostgreSQL/Neon)
+## C. Personas
+
+#### **1. Chef d’Entreprise (Gestion du Planning)**
+**Nom** : Marc Lefèvre
+**Âge** : 55 ans
+**Rôle** : Gérant d’une petite flotte de taxis en Île-de-France
+**Outils utilisés** : Carnet papier, Excel basique, téléphone fixe, SMS.
+
+**Objectifs principaux** :
+- Organiser les plannings des chauffeurs et véhicules **sans erreurs**.
+- Trouver des chauffeurs disponibles pour couvrir les demandes, surtout aux heures de pointe.
+- Réduire le temps passé à gérer les plannings manuellement.
+
+**Besoins** :
+- Un outil **simple et visuel** pour :
+  - Voir en un coup d’œil les disponibilités des chauffeurs et véhicules.
+  - Assigner des courses rapidement, même en dernière minute.
+  - Recevoir des alertes en cas de désistement ou de retard.
+- Une fonctionnalité pour **motiver les chauffeurs** (ex : bonus pour les courses acceptées en urgence).
+
+**Frustrations** :
+- Passer **3-4 heures par jour** à gérer les plannings sur papier et à appeler les chauffeurs un par un.
+- Les chauffeurs qui ne répondent pas ou oublient de confirmer leur disponibilité.
+- Les courses non attribuées faute de chauffeurs, ce qui fait perdre des clients.
+
+**Scénario typique** :
+*« Il est 16h, j’ai 5 courses à assigner pour ce soir, mais 3 chauffeurs n’ont pas encore confirmé. Je dois les appeler un par un, et si personne ne répond, je dois annuler la course et risquer de perdre le client. »*
+
+**Citation** :
+*« Si je pouvais voir en temps réel qui est disponible et leur envoyer une course en un clic, ça me ferait gagner un temps fou. »*
+
+---
+
+#### **2. Secrétaire Générale et Administrative**
+**Nom** : Nathalie Dubois
+**Âge** : 47 ans
+**Rôle** : Secrétaire administrative dans une PME
+**Outils utilisés** : Excel, Word, emails, factures papier, classeurs.
+
+**Objectifs principaux** :
+- Gérer les factures fournisseurs et clients **sans retard**.
+- Créer et envoyer les factures rapidement, sans erreur.
+- Suivre les paiements et relancer les clients en retard.
+
+**Besoins** :
+- Un système **automatisé** pour :
+  - Générer et envoyer les factures en 1 clic (intégration avec les données des courses).
+  - Suivre les paiements et envoyer des relances automatiques.
+  - Centraliser les documents (factures, contrats, bons de commande) pour éviter de les perdre.
+- Une interface **claire et intuitive** pour éviter les erreurs de saisie.
+
+**Frustrations** :
+- Les factures qui s’accumulent et les retards de paiement qui pénalisent la trésorerie.
+- Le temps perdu à chercher des documents égarés ou à recopier des données.
+- Les chauffeurs qui oublient de lui transmettre les justificatifs de course.
+
+**Scénario typique** :
+*« Je passe mon après-midi à recopier les courses du jour dans Excel pour créer les factures. Si un chauffeur oublie de me donner son ticket, je dois tout recommencer. »*
+
+**Citation** :
+*« J’en ai marre de perdre du temps à faire du copier-coller entre les carnets des chauffeurs et Excel. »*
+
+---
+
+#### **3. Chauffeur (Peu Motivé mais Opportuniste)**
+**Nom** : Djamel Kebabti
+**Âge** : 39 ans
+**Rôle** : Chauffeur de taxi indépendant
+**Outils utilisés** : WhatsApp, GPS basique, application de courses concurrentes.
+
+**Objectifs principaux** :
+- **Maximiser ses revenus** avec un minimum d’effort.
+- Choisir les courses **les plus rentables** (longues distances, tarifs élevés).
+- Éviter les clients problématiques ou les trajets compliqués.
+
+**Besoins** :
+- Une appli qui lui permet de :
+  - Voir les courses disponibles **avec le prix et la distance** avant d’accepter.
+  - Refuser discrètement les courses peu intéressantes.
+  - Recevoir des notifications pour les courses bien payées.
+- Un système de **notation des clients** (pour éviter les mauvais payeurs ou les trajets trop longs pour rien).
+
+**Frustrations** :
+- Devoir appeler la centrale pour connaître les détails de la course.
+- Les courses mal payées ou les clients qui changent de destination en route.
+- Le manque de transparence sur les tarifs et les bonus.
+
+**Scénario typique** :
+*« Je suis garé près de la gare, je vois une notification pour une course à 50€ vers l’aéroport. Je l’accepte direct. Mais si c’est juste un trajet à 10€ en banlieue, je laisse tomber. »*
+
+**Citation** :
+*« Je ne bouge que si la course vaut le coup. Sinon, je reste au chaud dans ma voiture. »*
+
+---
+
+#### **4. Client Classique (Taxi Île-de-France)**
+**Nom** : Jean-Michel Durand
+**Âge** : 62 ans
+**Rôle** : Retraité, utilisateur régulier de taxis
+**Outils utilisés** : Téléphone, applications basiques (Uber occasionnellement).
+
+**Objectifs principaux** :
+- Trouver un taxi **rapidement et sans complication**.
+- Avoir un chauffeur **ponctuel et professionnel**.
+- Payer en espèces ou par carte sans problème.
+
+**Besoins** :
+- Une solution **simple et fiable** pour :
+  - Commander un taxi par téléphone ou via une appli basique.
+  - Connaître le prix à l’avance (sans surprise).
+  - Avoir un chauffeur qui connaît bien la région.
+
+**Frustrations** :
+- Les temps d’attente trop longs aux heures de pointe.
+- Les chauffeurs qui ne connaissent pas les raccourcis ou les bouchons.
+- Les applications trop complexes ou qui plantent.
+
+**Scénario typique** :
+*« Je sors de chez le médecin, il pleut, et je dois rentrer vite. J’appelle le numéro habituel, mais on me dit qu’il n’y a pas de taxi disponible avant 30 minutes. »*
+
+**Citation** :
+*« Je veux un taxi comme avant : j’appelle, il arrive, je paie, c’est tout. »*
+
+---
+
+#### **5. Client Entreprise (Planification de Trajets)**
+**Nom** : Claire Laurent
+**Âge** : 41 ans
+**Rôle** : Assistante de direction dans une grande entreprise
+**Outils utilisés** : Outlook, Excel, ERP interne.
+
+**Objectifs principaux** :
+- Planifier les trajets pour **10 collaborateurs** chaque semaine.
+- Suivre l’avancée des trajets en temps réel.
+- Avoir un **contact direct avec les chauffeurs** en cas de problème.
+
+**Besoins** :
+- Une plateforme pour :
+  - Réserver des trajets récurrents (ex : tous les lundis à 8h pour le PDG).
+  - Recevoir des **notifications en temps réel** (retards, annulations).
+  - Contacter le chauffeur directement si besoin (ex : changement d’adresse).
+- Un **reporting clair** pour justifier les dépenses auprès de la comptabilité.
+
+**Frustrations** :
+- Les chauffeurs qui n’arrivent pas à l’heure et font attendre les collaborateurs.
+- Le manque de visibilité sur l’état des trajets (ex : « Où est le taxi de M. Dupont ? »).
+- Les factures qui arrivent en retard ou avec des erreurs.
+
+**Scénario typique** :
+*« Le PDG doit être à l’aéroport à 14h, mais son taxi a 20 minutes de retard. Je n’ai aucun moyen de joindre le chauffeur pour savoir ce qui se passe. »*
+
+**Citation** :
+*« Je dois pouvoir suivre chaque trajet comme un colis Amazon. »*
+
+---
+
+##### A. Synthèse des Attentes et Points de Friction
+
+| Rôle                     | Attentes Clés                                                                 | Points de Friction à Résoudre                          |
+|--------------------------|------------------------------------------------------------------------------|-------------------------------------------------------|
+| **Chef d’Entreprise**    | Planning visuel, assignation rapide, alertes en temps réel.                 | Gestion manuelle, chauffeurs indisponibles.           |
+| **Secrétaire**           | Facturation automatisée, centralisation des documents, suivi des paiements. | Factures en retard, documents égarés.                 |
+| **Chauffeur**            | Courses rentables, transparence sur les tarifs, notation des clients.      | Courses mal payées, manque d’infos avant d’accepter.  |
+| **Client Classique**     | Simplicité, ponctualité, prix clair.                                        | Temps d’attente, applications complexes.             |
+| **Client Entreprise**    | Planification récurrente, suivi en temps réel, contact direct.             | Retards, manque de visibilité, factures erronées.     |
+
+---
+
+##### B. Prochaines Étapes
+- **Validation** : *« Ces personas te semblent-ils réalistes et complets, Alexis ? »*
+- **Priorisation** : *« On pourrait commencer par développer les features pour le chef d’entreprise et la secrétaire, non ? Ce sont eux qui ont les frustrations les plus critiques. »*
+- **Exigences fonctionnelles** : *« Je peux te proposer une liste détaillée des fonctionnalités à développer pour chaque persona, si tu veux. »*
+
+---
+**Question** : *« Est-ce que tu veux qu’on affine un persona en particulier, ou qu’on passe directement à la définition des exigences fonctionnelles pour le MVP ? »*
+
+---
+
+## D. Database Structure (PostgreSQL/Neon)
 
 ### Conceptual Schema
 
@@ -298,7 +484,7 @@ CREATE TABLE activity_logs (
 - **invoices**: Invoices generated from rides.
 - **notifications**: Alerts sent to users.
 
-## D. SQL Query Examples
+## E. SQL Query Examples
 
 ### 1. List unassigned rides
 
