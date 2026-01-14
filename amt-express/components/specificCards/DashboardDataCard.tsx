@@ -1,11 +1,17 @@
+/**
+ * Dashboard KPI Card Component
+ * Displays a single key performance indicator with an icon
+ * Used for metrics like total rides, active users, pending invoices, etc.
+ */
+
 import {Card, CardContent} from "../classicCard/Card";
 import {LucideIcon} from "lucide-react";
 
 type Props = {
-    title: string;
-    data: string | number;
-    icon: LucideIcon;
-    iconColor?: string;
+    title: string;          // Label displayed above the metric (e.g., "Total Rides")
+    data: string | number;  // The metric value to display
+    icon: LucideIcon;       // Lucide icon component to display
+    iconColor?: string;     // Tailwind background color class (e.g., "bg-blue-500")
 };
 
 export function DashboardDataCard({title, data, icon: Icon, iconColor}: Props) {

@@ -1,5 +1,11 @@
 'use client'
 
+/**
+ * Recent Rides Table Component
+ * Displays the 10 most recent rides with key details
+ * Responsive design with different layouts for mobile and desktop
+ */
+
 type Ride = {
     id: number;
     departure: string;
@@ -12,9 +18,11 @@ type Ride = {
 };
 
 type Props = {
-    rides: Ride[];
+    rides: Ride[];  // Array of recent rides to display
 };
 
+// Tailwind classes for status badge styling
+// Different color schemes for each ride status
 const statusStyles = {
     completed: 'bg-green-100 text-green-800',
     assigned: 'bg-blue-100 text-blue-800',
@@ -29,11 +37,13 @@ export function RecentRidesTable({rides}: Props) {
                 <h3 className="text-lg font-semibold mb-4">Recent Rides</h3>
             </div>
             <div className="px-6 pb-6 space-y-3 max-h-81 overflow-y-auto">
+                {/* Show empty state if no rides available */}
                 {rides.length === 0 ? (
                     <div className="px-6 py-8 text-center text-gray-500">
                         No rides found
                     </div>
                 ) : (
+                    /* Render each ride as a card-style row */
                     rides.map((ride) => (
                         <div key={ride.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-3">
                             <div className="flex-1 space-y-2">

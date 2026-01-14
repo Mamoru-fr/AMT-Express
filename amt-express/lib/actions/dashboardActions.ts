@@ -1,49 +1,74 @@
+// Server action for fetching admin dashboard data
+// This file contains the main function that aggregates all dashboard metrics
+
 import db from '@/lib/db/drizzle';
 import {rides, users, invoices, rideCustomers} from '@/lib/db/schema';
 import {eq, sql, and, gte} from 'drizzle-orm';
 
+// Type definition for the complete dashboard data structure
+// Includes KPIs, charts data, and recent activity
 export type AdminDashboardData = {
+    // Key Performance Indicators displayed at the top of the dashboard
     kpis: {
-        totalRides: number;
-        activeUsers: number;
-        pendingInvoices: number;
-        monthlyRevenue: string;
+        totalRides: number;           // Total number of rides in the system
+        activeUsers: number;          // Users who had rides in last 30 days
+        pendingInvoices: number;      // Count of unpaid invoices
+        monthlyRevenue: string;       // Total revenue for current month (completed rides only)
     };
+    // Data for bar chart showing ride count per month (last 12 months)
     monthlyRides: Array<{month: string; rides: number}>;
+    // Data for line chart showing revenue per month (last 12 months, completed rides only)
     monthlyRevenue: Array<{month: string; revenue: number}>;
+    // Data for pie chart showing distribution of rides by status
     statusDistribution: Array<{name: string; value: number}>;
+    // List of the 10 most recent rides with full details
     recentRides: Array<{
         id: number;
         departure: string;
         destination: string;
-        customerName: string | null;
-        driverName: string | null;
+        customerName: string | null;  // Null if ride has no customer assigned
+        driverName: string | null;    // Null if ride has no driver assigned
         price: string;
         status: 'pending' | 'assigned' | 'completed' | 'cancelled';
         departureTime: Date;
     }>;
 };
 
+/**
+ * Fetches and aggregates all data needed for the admin dashboard
+ * This function performs multiple database queries to gather:
+ * - KPIs (total rides, active users, pending invoices, monthly revenue)
+ * - Monthly rides chart data (last 12 months)
+ * - Monthly revenue chart data (last 12 months)
+ * - Status distribution for pie chart
+ * - 10 most recent rides with customer and driver info
+ * 
+ * @returns AdminDashboardData object with all dashboard metrics
+ */
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     try {
-        // Calculate date 12 months ago
+        // Calculate date 12 months ago (for chart data range)
+        // Set to first day of that month at midnight
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
         twelveMonthsAgo.setDate(1);
         twelveMonthsAgo.setHours(0, 0, 0, 0);
 
-        // Current month start
+        // Current month start (for monthly revenue KPI calculation)
         const currentMonthStart = new Date();
         currentMonthStart.setDate(1);
         currentMonthStart.setHours(0, 0, 0, 0);
 
-        // KPIs - Total rides
+        // === KPI CALCULATIONS ===
+        
+        // KPI 1: Count all rides in the system
         const totalRidesResult = await db
             .select({count: sql<number>`count(*)`})
             .from(rides);
         const totalRides = Number(totalRidesResult[0]?.count || 0);
 
-        // KPIs - Active users (users with rides in last 30 days)
+        // KPI 2: Count distinct customers who had rides in the last 30 days
+        // This helps track customer engagement and activity
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
@@ -54,14 +79,15 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .where(gte(rides.createdAt, thirtyDaysAgo));
         const activeUsers = activeUsersResult.length;
 
-        // KPIs - Pending invoices
+        // KPI 3: Count invoices that haven't been paid yet
         const pendingInvoicesResult = await db
             .select({count: sql<number>`count(*)`})
             .from(invoices)
             .where(eq(invoices.status, 'unpaid'));
         const pendingInvoices = Number(pendingInvoicesResult[0]?.count || 0);
 
-        // KPIs - Monthly revenue (current month)
+        // KPI 4: Sum of revenue from completed rides in the current month
+        // Only completed rides count toward revenue
         const monthlyRevenueResult = await db
             .select({total: sql<string>`COALESCE(SUM(${rides.price}), 0)`})
             .from(rides)
@@ -73,7 +99,10 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             );
         const monthlyRevenue = monthlyRevenueResult[0]?.total || '0';
 
-        // Monthly rides chart (last 12 months)
+        // === CHART DATA QUERIES ===
+        
+        // Monthly rides bar chart: Count rides per month for the last 12 months
+        // Groups by month and formats as "Mon YYYY" (e.g., "Jan 2026")
         const monthlyRidesData = await db
             .select({
                 month: sql<string>`TO_CHAR(${rides.departureTime}, 'Mon YYYY')`,
@@ -84,7 +113,8 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .groupBy(sql`TO_CHAR(${rides.departureTime}, 'YYYY-MM'), TO_CHAR(${rides.departureTime}, 'Mon YYYY')`)
             .orderBy(sql`TO_CHAR(${rides.departureTime}, 'YYYY-MM')`);
 
-        // Monthly revenue chart (last 12 months)
+        // Monthly revenue line chart: Sum revenue per month (completed rides only)
+        // Only completed rides contribute to actual revenue
         const monthlyRevenueData = await db
             .select({
                 month: sql<string>`TO_CHAR(${rides.departureTime}, 'Mon YYYY')`,
@@ -100,7 +130,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .groupBy(sql`TO_CHAR(${rides.departureTime}, 'YYYY-MM'), TO_CHAR(${rides.departureTime}, 'Mon YYYY')`)
             .orderBy(sql`TO_CHAR(${rides.departureTime}, 'YYYY-MM')`);
 
-        // Status distribution
+        // Status distribution pie chart: Count rides grouped by their status
         const statusData = await db
             .select({
                 status: rides.status,
@@ -109,19 +139,22 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .from(rides)
             .groupBy(rides.status);
 
+        // Map database status values to user-friendly display names
         const statusMap: Record<string, string> = {
             completed: 'Completed',
-            assigned: 'In Progress',
+            assigned: 'In Progress',  // "assigned" status shown as "In Progress" to users
             pending: 'Pending',
             cancelled: 'Cancelled'
         };
 
+        // Transform status data for the pie chart component
         const statusDistribution = statusData.map((item: {status: string; count: number}) => ({
             name: statusMap[item.status] || item.status,
             value: Number(item.count)
         }));
 
-        // Recent rides (last 10)
+        // === RECENT RIDES TABLE ===
+        // Fetch the 10 most recently created rides with driver info
         const recentRidesData = await db
             .select({
                 id: rides.id,
@@ -140,11 +173,14 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .limit(10);
 
         // Get customer names for recent rides
+        // Extract unique customer IDs from the rides (filter out null values)
         const customerIds = [...new Set(recentRidesData.map((r: any) => r.customerId).filter(Boolean))];
+        // Batch fetch all customer data in one query for efficiency
         const customersData = customerIds.length > 0
             ? await db.select({id: users.id, name: users.name}).from(users).where(sql`${users.id} IN ${customerIds}`)
             : [];
         
+        // Create a lookup map for quick customer name access by ID
         const customerMap = new Map(customersData.map((c: any) => [c.id, c.name]));
 
         const recentRides = recentRidesData.map((ride: any) => ({
@@ -178,7 +214,8 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         };
     } catch (error) {
         console.error('Error fetching admin dashboard data:', error);
-        // Return empty data structure on error
+        // Return empty data structure on error to prevent dashboard from breaking
+        // This allows the UI to render even if there's a database issue
         return {
             kpis: {
                 totalRides: 0,

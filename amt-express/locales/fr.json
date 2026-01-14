@@ -69,5 +69,28 @@
         "Method not allowed": "Méthode de requête non autorisée",
         "Invalid request body": "Données de requête invalides",
         "Internal server error": "Une erreur inattendue s'est produite. Réessayez plus tard"
+    },
+    "ridesManagement": {
+        "title": "Gestion des Courses",
+        "subtitle": "Vue de type Excel pour gérer toutes les courses de la plateforme",
+        "searchPlaceholder": "Rechercher par ID, départ, destination...",
+        "allStatuses": "Tous les Statuts",
+        "pending": "En Attente",
+        "assigned": "Assignée",
+        "completed": "Terminée",
+        "cancelled": "Annulée",
+        "addRide": "Ajouter une Course",
+        "exportCSV": "Exporter CSV",
+        "showing": "Affichage de",
+        "of": "sur",
+        "rides": "courses",
+        "dateHour": "Date et Heure",
+        "clients": "Clients",
+        "departure": "Départ",
+        "arrival": "Arrivée",
+        "driver": "Chauffeur",
+        "price": "Prix (€)",
+        "status": "Statut",
+        "actions": "Actions"
     }
 }

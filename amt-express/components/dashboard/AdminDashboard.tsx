@@ -52,6 +52,20 @@ export function AdminDashboard({data}: Props) {
                     />
                 </div>
 
+                {/* Add Ride Button */}
+                <div className="flex justify-end">
+                    <button
+                        className="flex flex-1 justify-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2"
+                        onClick={() => {
+                            // Logic to open Add Ride modal goes here
+                            alert("Open Add Ride Modal");
+                        }}
+                    >
+                        <span className="text-xl">+</span>
+                        Add New Ride
+                    </button>
+                </div>
+
                 {/* Charts Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <MonthlyRidesChart data={monthlyRides} />
