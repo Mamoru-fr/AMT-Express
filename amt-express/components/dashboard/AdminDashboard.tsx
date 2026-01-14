@@ -1,12 +1,20 @@
 'use client'
 
+import {useState, useEffect} from "react";
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";
 import {MonthlyRidesChart} from "@/components/dashboard/MonthlyRidesChart";
 import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
+import {AddRideModal} from "@/components/admin/rideManagement/AddRideModal";
 import {Car, Users, FileText, Euro} from "lucide-react";
 import {AdminDashboardData} from "@/lib/actions/dashboardActions";
+import {
+    createRide,
+    fetchAvailableDrivers,
+    fetchAllCustomers
+} from "@/lib/actions/ridesManagementActions";
+import {RideStatus} from "@/content/database_types/ride";
 
 type Props = {
     data: AdminDashboardData;
@@ -14,6 +22,47 @@ type Props = {
 
 export function AdminDashboard({data}: Props) {
     const {kpis, monthlyRides, monthlyRevenue, statusDistribution, recentRides} = data;
+    
+    // Modal state - controls visibility of Add Ride modal
+    const [addModal, setAddModal] = useState(false);
+    
+    // Dropdown data - lists of drivers and customers for ride creation
+    const [availableDrivers, setAvailableDrivers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+    const [availableCustomers, setAvailableCustomers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+
+    /**
+     * Effect: Load available drivers and customers on component mount
+     * These lists populate the dropdowns in the Add Ride modal
+     */
+    useEffect(() => {
+        fetchAvailableDrivers().then(setAvailableDrivers);
+        fetchAllCustomers().then(setAvailableCustomers);
+    }, []);
+
+    /**
+     * Creates a new ride with provided data from AddRideModal
+     * Handles multiple customers, optional driver assignment, and pricing
+     * Refreshes the page to show updated data after successful creation
+     */
+    const handleCreateRide = async (data: {
+        departureTime: Date;
+        customerIds: string[];
+        departure: string;
+        destination: string;
+        driverId?: string;
+        price?: string;
+        status?: RideStatus;
+    }) => {
+        try {
+            await createRide(data);
+            setAddModal(false);
+            // Refresh the page to show updated dashboard data
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to create ride:', error);
+            alert('Failed to create ride');
+        }
+    };
 
     return (
         <div className="w-full py-8 px-4 md:px-8">
@@ -56,10 +105,7 @@ export function AdminDashboard({data}: Props) {
                 <div className="flex justify-end">
                     <button
                         className="flex flex-1 justify-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2"
-                        onClick={() => {
-                            // Logic to open Add Ride modal goes here
-                            alert("Open Add Ride Modal");
-                        }}
+                        onClick={() => setAddModal(true)}
                     >
                         <span className="text-xl">+</span>
                         Add New Ride
@@ -80,6 +126,16 @@ export function AdminDashboard({data}: Props) {
                     </div>
                 </div>
             </div>
+
+            {/* Add Ride Modal */}
+            {addModal && (
+                <AddRideModal
+                    drivers={availableDrivers}
+                    customers={availableCustomers}
+                    onClose={() => setAddModal(false)}
+                    onCreate={handleCreateRide}
+                />
+            )}
         </div>
     );
 }

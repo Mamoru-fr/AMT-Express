@@ -92,5 +92,27 @@
         "price": "Prix (€)",
         "status": "Statut",
         "actions": "Actions"
+    },
+    "driverDashboard": {
+        "title": "Tableau de Bord Chauffeur",
+        "subtitle": "Gérez vos courses et votre disponibilité",
+        "available": "Disponible",
+        "offline": "Hors ligne",
+        "totalRides": "Total des Courses",
+        "completedRides": "Terminées",
+        "earnings": "Gains",
+        "rating": "Note",
+        "assignedRides": "Vos Courses Assignées",
+        "noAssignedRides": "Aucune course assignée pour le moment",
+        "suggestedRides": "Courses Disponibles",
+        "noSuggestedRides": "Aucune course disponible pour le moment",
+        "requestRide": "Demander cette Course",
+        "requestRideTitle": "Demander l'Assignation de la Course",
+        "requestMessage": "Ajoutez un message optionnel pour l'administrateur :",
+        "messagePlaceholder": "Je suis disponible et prêt pour cette course...",
+        "confirmRequest": "Envoyer la Demande"
+    },
+    "common": {
+        "cancel": "Annuler"
     }
 }

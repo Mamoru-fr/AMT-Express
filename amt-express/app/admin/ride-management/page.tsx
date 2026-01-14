@@ -1,4 +1,4 @@
-import {RidesManagementBoard} from "@/components/admin/RidesManagementBoard";
+import {RidesManagementBoard} from "@/components/admin/rideManagement/RidesManagementBoard";
 
 export const metadata = {
     title: "Ride Management | AMT Express",

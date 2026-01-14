@@ -2,7 +2,8 @@ import {auth} from "@/lib/auth/auth";
 import {headers} from "next/headers";
 import {AdminDashboard} from "@/components/dashboard/AdminDashboard";
 import {getAdminDashboardData} from "@/lib/actions/dashboardActions";
-import {redirect} from "next/navigation";
+import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
+import {fetchDriverDashboard} from "@/lib/actions/driverDashboardActions";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -21,14 +22,12 @@ export default async function Home() {
     );
   }
 
-  // Driver Dashboard (placeholder for now)
+  // Driver Dashboard
   if (userRole === 'driver') {
+    const driverData = await fetchDriverDashboard();
     return (
-      <div className="flex min-h-screen items-center justify-center font-sans z-10">
-        <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-32 px-16">
-          <h1 className="text-3xl font-bold text-gray-900">Driver Dashboard</h1>
-          <p className="text-gray-600 mt-4">Coming soon...</p>
-        </main>
+      <div className="min-h-screen w-full overflow-y-auto md:fixed md:inset-0 z-10">
+        <DriverDashboard data={driverData}/>
       </div>
     );
   }

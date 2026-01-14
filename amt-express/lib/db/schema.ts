@@ -33,6 +33,7 @@ export const users = pgTable("users", {
     vehiclePlate: text("vehicle_plate"),
     vehicleModel: text("vehicle_model"),
     vehicleColor: text("vehicle_color"),
+    available: boolean("available").default(true), // column to indicate driver availability
 });
 
 // Table pour les entreprises/productions (ex: studios, sociétés de production)

@@ -92,5 +92,27 @@
         "price": "Price (€)",
         "status": "Status",
         "actions": "Actions"
+    },
+    "driverDashboard": {
+        "title": "Driver Dashboard",
+        "subtitle": "Manage your rides and availability",
+        "available": "Available",
+        "offline": "Offline",
+        "totalRides": "Total Rides",
+        "completedRides": "Completed",
+        "earnings": "Earnings",
+        "rating": "Rating",
+        "assignedRides": "Your Assigned Rides",
+        "noAssignedRides": "No assigned rides at the moment",
+        "suggestedRides": "Available Rides",
+        "noSuggestedRides": "No rides available at the moment",
+        "requestRide": "Request This Ride",
+        "requestRideTitle": "Request Ride Assignment",
+        "requestMessage": "Add an optional message for the admin:",
+        "messagePlaceholder": "I am available and ready for this ride...",
+        "confirmRequest": "Send Request"
+    },
+    "common": {
+        "cancel": "Cancel"
     }
 }
