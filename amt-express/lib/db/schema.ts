@@ -28,6 +28,10 @@ export const users = pgTable("users", {
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),
+    // location fields
+    latitude: decimal("latitude", {precision: 10, scale: 7}),
+    longitude: decimal("longitude", {precision: 10, scale: 7}),
+    lastLocationUpdate: timestamp("last_location_update"),
     // Driver-specific fields
     vehicleType: vehicleTypeEnum("vehicle_type"),
     vehiclePlate: text("vehicle_plate"),
