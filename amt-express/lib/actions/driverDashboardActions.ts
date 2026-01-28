@@ -1,10 +1,14 @@
 'use server'
 
 import db from "@/lib/db/drizzle";
-import {rides, users, rideCustomers} from "@/lib/db/schema";
-import {eq, and, gte, desc, sql, or} from "drizzle-orm";
+import {rides, users, rideCustomers, assignmentRequests, ratings} from "@/lib/db/schema";
+import {eq, and, gte, desc, sql, or, lt, count} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {auth} from "@/lib/auth/auth";
+import {ActionResponse, ErrorCodes} from "@/lib/types/action-response";
+import {RequestRideAssignmentSchema, ToggleAvailabilitySchema, RideHistorySchema} from "@/lib/validations/dashboard";
+import {z} from "zod";
+import {getSessionWithRole} from "../auth/session";
 
 export type DriverStats = {
     totalRides: number;
@@ -34,37 +38,53 @@ export type DriverDashboardData = {
 /**
  * Fetch driver dashboard data including stats, suggested rides, and assigned rides
  */
-export async function fetchDriverDashboard(): Promise<DriverDashboardData> {
-    const session = await auth.api.getSession({
-        headers: await import("next/headers").then(m => m.headers())
-    });
+export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashboardData>> {
+    const {session, isDriver} = await getSessionWithRole();
 
-    if (!session || session.user.role !== 'driver') {
-        throw new Error('Unauthorized: Driver access only');
+    if (!isDriver) {
+        return {
+            success: false,
+            error: 'Unauthorized: Driver access only',
+            code: ErrorCodes.UNAUTHORIZED
+        };
     }
 
-    const driverId = session.user.id;
+    if (!session) { return { success: false, error: 'No active session found', code: ErrorCodes.UNAUTHORIZED };}
 
-    // Fetch driver stats
-    const stats = await getDriverStats(driverId);
+    try {
+        const driverId = session.user.id;
 
-    // Fetch suggested rides (unassigned, upcoming rides)
-    const suggestedRides = await getSuggestedRides(driverId);
+        // Fetch driver stats
+        const stats = await getDriverStats(driverId);
 
-    // Fetch assigned rides
-    const assignedRides = await getAssignedRides(driverId);
+        // Fetch suggested rides (unassigned, upcoming rides)
+        const suggestedRides = await getSuggestedRides(driverId);
 
-    // Get driver availability status
-    const driver = await db.query.users.findFirst({
-        where: eq(users.id, driverId)
-    });
+        // Fetch assigned rides
+        const assignedRides = await getAssignedRides(driverId);
 
-    return {
-        stats,
-        suggestedRides,
-        assignedRides,
-        isAvailable: driver?.available || false
-    };
+        // Get driver availability status
+        const driver = await db.query.users.findFirst({
+            where: eq(users.id, driverId)
+        });
+
+        return {
+            success: true,
+            data: {
+                stats,
+                suggestedRides,
+                assignedRides,
+                isAvailable: driver?.available || false
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching driver dashboard:', error);
+        return {
+            success: false,
+            error: 'Failed to fetch dashboard data',
+            code: ErrorCodes.DATABASE_ERROR
+        };
+    }
 }
 
 /**
@@ -82,14 +102,20 @@ async function getDriverStats(driverId: string): Promise<DriverStats> {
         return sum + parseFloat(ride.price || '0');
     }, 0);
 
-    // TODO: Calculate average rating when rating system is implemented
-    const averageRating = 4.5;
+    // Calculate average rating from database
+    const ratingResult = await db
+        .select({averageRating: sql<number>`COALESCE(AVG(${ratings.rating}), 0)`})
+        .from(ratings)
+        .innerJoin(rides, eq(rides.id, ratings.rideId))
+        .where(eq(rides.driverId, driverId));
+    
+    const averageRating = Number(ratingResult[0]?.averageRating || 0);
 
     return {
         totalRides: allRides.length,
         completedRides: completedRides.length,
         earnings: totalEarnings.toFixed(2),
-        averageRating,
+        averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
         pendingRides: pendingRides.length
     };
 }
@@ -169,61 +195,158 @@ async function getAssignedRides(driverId: string): Promise<RideWithRelations[]> 
 /**
  * Toggle driver availability status
  */
-export async function toggleDriverAvailability(available: boolean): Promise<void> {
-    const session = await auth.api.getSession({
-        headers: await import("next/headers").then(m => m.headers())
-    });
+export async function toggleDriverAvailability(available: boolean): Promise<ActionResponse<void>> {
+    try {
+        const session = await auth.api.getSession({
+            headers: await import("next/headers").then(m => m.headers())
+        });
 
-    if (!session || session.user.role !== 'driver') {
-        throw new Error('Unauthorized: Driver access only');
+        if (!session || session.user.role !== 'driver') {
+            return {
+                success: false,
+                error: 'Unauthorized: Driver access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = ToggleAvailabilitySchema.parse({available});
+
+        await db.update(users)
+            .set({ available: validatedData.available })
+            .where(eq(users.id, session.user.id));
+
+        return {success: true, data: undefined};
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
+        console.error('Error toggling availability:', error);
+        return {
+            success: false,
+            error: 'Failed to update availability',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
-
-    await db.update(users)
-        .set({ available })
-        .where(eq(users.id, session.user.id));
 }
 
 /**
  * Request assignment to a ride
+ * Enforces maximum of 5 simultaneous pending requests per driver
  */
-export async function requestRideAssignment(rideId: number, message?: string): Promise<void> {
-    const session = await auth.api.getSession({
-        headers: await import("next/headers").then(m => m.headers())
-    });
+export async function requestRideAssignment(rideId: number, message?: string): Promise<ActionResponse<void>> {
+    try {
+        const session = await auth.api.getSession({
+            headers: await import("next/headers").then(m => m.headers())
+        });
 
-    if (!session || session.user.role !== 'driver') {
-        throw new Error('Unauthorized: Driver access only');
-    }
+        if (!session || session.user.role !== 'driver') {
+            return {
+                success: false,
+                error: 'Unauthorized: Driver access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
-    const driverId = session.user.id;
+        // Validate input
+        const validatedData = RequestRideAssignmentSchema.parse({rideId, message});
+        const driverId = session.user.id;
 
-    // Check if ride exists and is available
-    const ride = await db.query.rides.findFirst({
-        where: eq(rides.id, rideId)
-    });
+        // Check if driver has reached max pending requests (5)
+        const pendingRequestsCount = await db
+            .select({count: count()})
+            .from(assignmentRequests)
+            .where(
+                and(
+                    eq(assignmentRequests.driverId, driverId),
+                    eq(assignmentRequests.status, 'pending')
+                )
+            );
 
-    if (!ride) {
-        throw new Error('Ride not found');
-    }
+        if (Number(pendingRequestsCount[0]?.count || 0) >= 5) {
+            return {
+                success: false,
+                error: 'Maximum of 5 simultaneous requests allowed',
+                code: ErrorCodes.MAX_REQUESTS_EXCEEDED
+            };
+        }
 
-    if (ride.driverId) {
-        throw new Error('Ride already assigned');
-    }
+        // Check if ride exists and is available
+        const ride = await db.query.rides.findFirst({
+            where: eq(rides.id, validatedData.rideId)
+        });
 
-    if (ride.status !== 'pending') {
-        throw new Error('Ride is not available for assignment');
-    }
+        if (!ride) {
+            return {
+                success: false,
+                error: 'Ride not found',
+                code: ErrorCodes.RIDE_NOT_FOUND
+            };
+        }
 
-    // TODO: Create a ride assignment request in a new table
-    // For now, we'll just assign directly
-    await db.update(rides)
-        .set({
+        if (ride.driverId) {
+            return {
+                success: false,
+                error: 'Ride already assigned',
+                code: ErrorCodes.RIDE_ALREADY_ASSIGNED
+            };
+        }
+
+        if (ride.status !== 'pending') {
+            return {
+                success: false,
+                error: 'Ride is not available for assignment',
+                code: ErrorCodes.RIDE_NOT_AVAILABLE
+            };
+        }
+
+        // Check if driver already has a pending request for this ride
+        const existingRequest = await db.query.assignmentRequests.findFirst({
+            where: (assignmentRequests, {and, eq}) => and(
+                eq(assignmentRequests.rideId, validatedData.rideId),
+                eq(assignmentRequests.driverId, driverId)
+            )
+        });
+
+        if (existingRequest) {
+            return {
+                success: false,
+                error: 'Request already submitted for this ride',
+                code: ErrorCodes.ASSIGNMENT_ERROR
+            };
+        }
+
+        // Create assignment request
+        await db.insert(assignmentRequests).values({
+            rideId: validatedData.rideId,
             driverId,
-            status: 'assigned' as RideStatus
-        })
-        .where(eq(rides.id, rideId));
+            status: 'pending'
+        });
 
-    // TODO: Send notification to admin about the request
+        // TODO: Send notification to admin about the request
+
+        return {success: true, data: undefined};
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
+        console.error('Error requesting ride assignment:', error);
+        return {
+            success: false,
+            error: 'Failed to request assignment',
+            code: ErrorCodes.DATABASE_ERROR
+        };
+    }
 }
 
 /**
@@ -232,50 +355,76 @@ export async function requestRideAssignment(rideId: number, message?: string): P
 export async function getDriverRideHistory(
     page: number = 1,
     limit: number = 20
-): Promise<{ rides: RideWithRelations[]; total: number; page: number; totalPages: number }> {
-    const session = await auth.api.getSession({
-        headers: await import("next/headers").then(m => m.headers())
-    });
+): Promise<ActionResponse<{ rides: RideWithRelations[]; total: number; page: number; totalPages: number }>> {
+    try {
+        const session = await auth.api.getSession({
+            headers: await import("next/headers").then(m => m.headers())
+        });
 
-    if (!session || session.user.role !== 'driver') {
-        throw new Error('Unauthorized: Driver access only');
-    }
+        if (!session || session.user.role !== 'driver') {
+            return {
+                success: false,
+                error: 'Unauthorized: Driver access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
-    const driverId = session.user.id;
-    const offset = (page - 1) * limit;
+        // Validate input
+        const validatedData = RideHistorySchema.parse({page, limit});
+        const driverId = session.user.id;
+        const offset = (validatedData.page - 1) * validatedData.limit;
 
-    const allRides = await db.query.rides.findMany({
-        where: eq(rides.driverId, driverId),
-        orderBy: [desc(rides.departureTime)],
-        limit,
-        offset,
-        with: {
-            driver: true,
-            rideCustomers: {
-                with: {
-                    customer: true
+        const allRides = await db.query.rides.findMany({
+            where: eq(rides.driverId, driverId),
+            orderBy: [desc(rides.departureTime)],
+            limit: validatedData.limit,
+            offset,
+            with: {
+                driver: true,
+                rideCustomers: {
+                    with: {
+                        customer: true
+                    }
                 }
             }
+        });
+
+        const totalRides = await db.select({ count: sql<number>`count(*)` })
+            .from(rides)
+            .where(eq(rides.driverId, driverId));
+
+        const total = Number(totalRides[0]?.count || 0);
+
+        return {
+            success: true,
+            data: {
+                rides: allRides.map((ride: any) => ({
+                    ...ride,
+                    customers: ride.rideCustomers.map((rc: any) => ({
+                        id: rc.customer.id,
+                        name: rc.customer.name || rc.customer.email,
+                        email: rc.customer.email
+                    }))
+                })) as RideWithRelations[],
+                total,
+                page: validatedData.page,
+                totalPages: Math.ceil(total / validatedData.limit)
+            }
+        };
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
         }
-    });
-
-    const totalRides = await db.select({ count: sql<number>`count(*)` })
-        .from(rides)
-        .where(eq(rides.driverId, driverId));
-
-    const total = Number(totalRides[0]?.count || 0);
-
-    return {
-        rides: allRides.map((ride: any) => ({
-            ...ride,
-            customers: ride.rideCustomers.map((rc: any) => ({
-                id: rc.customer.id,
-                name: rc.customer.name || rc.customer.email,
-                email: rc.customer.email
-            }))
-        })) as RideWithRelations[],
-        total,
-        page,
-        totalPages: Math.ceil(total / limit)
-    };
+        console.error('Error fetching ride history:', error);
+        return {
+            success: false,
+            error: 'Failed to fetch ride history',
+            code: ErrorCodes.DATABASE_ERROR
+        };
+    }
 }

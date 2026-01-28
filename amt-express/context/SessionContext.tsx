@@ -10,9 +10,9 @@ export type SessionType = {
 
 const SessionContext = createContext<SessionType | undefined>(undefined);
 
-export const SessionProvider = ({children, session}: { 
-    children: React.ReactNode, 
-    session: SessionWithUser | null 
+export const SessionProvider = ({children, session}: {
+    children: React.ReactNode,
+    session: SessionWithUser | null
 }) => {
     // Optionally log validation warnings in development
     if (process.env.NODE_ENV === 'development' && session?.user?.role) {
@@ -41,7 +41,7 @@ export const useSessionWithRole = () => {
     const {session} = useSession();
     const validatedRole = getValidatedRole(session);
     const isAuthenticated = !!session && !!session.user.banned === false;
-    
+
     return {
         session,
         user: session?.user ?? null,

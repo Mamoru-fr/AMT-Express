@@ -13,6 +13,17 @@ import db from "@/lib/db/drizzle";
 import {rides, users, rideCustomers} from "@/lib/db/schema";
 import {eq, sql, desc, asc, and, or, ilike} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
+import {auth} from "@/lib/auth/auth";
+import {ActionResponse, ErrorCodes} from "@/lib/types/action-response";
+import {
+    CreateRideSchema,
+    UpdateRideDetailsSchema,
+    AssignDriverSchema,
+    RideIdSchema,
+    RideFiltersSchema
+} from "@/lib/validations/ride";
+import {z} from "zod";
+import {getSessionWithRole} from "../auth/session";
 
 // Filter options for querying rides
 export interface RideFilters {
@@ -39,8 +50,21 @@ export interface RidesManagementData {
  * @param filters - Optional filters for search, status, sorting, and pagination
  * @returns Paginated ride data with total count and page information
  */
-export async function fetchRidesForManagement(filters: RideFilters = {}): Promise<RidesManagementData> {
+export async function fetchRidesForManagement(filters: RideFilters = {}): Promise<ActionResponse<RidesManagementData>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedFilters = RideFiltersSchema.parse(filters);
         // Extract filter parameters with defaults
         const {
             search = '',
@@ -49,7 +73,7 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
             sortOrder = 'desc',
             page = 1,
             limit = 50
-        } = filters;
+        } = validatedFilters;
 
         // === BUILD WHERE CONDITIONS ===
         const conditions = [];
@@ -67,8 +91,8 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
             conditions.push(
                 or(
                     sql`CAST(${rides.id} AS TEXT) ILIKE ${`%${searchLower}%`}`,
-                    ilike(rides.departure, `%${search}%`),
-                    ilike(rides.destination, `%${search}%`)
+                    ilike(rides.departure, `%${searchLower}%`),
+                    ilike(rides.destination, `%${searchLower}%`)
                 )
             );
         }
@@ -165,14 +189,29 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
         }
 
         return {
-            rides: ridesWithCustomers,
-            total,
-            page,
-            totalPages
+            success: true,
+            data: {
+                rides: ridesWithCustomers,
+                total,
+                page,
+                totalPages
+            }
         };
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error fetching rides:', error);
-        throw new Error('Failed to fetch rides');
+        return {
+            success: false,
+            error: 'Failed to fetch rides',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -193,8 +232,21 @@ export async function updateRideDetails(
         status?: RideStatus;
         customerNotes?: string;
     }
-): Promise<void> {
+): Promise<ActionResponse<void>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = UpdateRideDetailsSchema.parse({rideId, ...data});
         // Build update object only with provided fields (partial update)
         const updateData: any = {};
 
@@ -209,9 +261,23 @@ export async function updateRideDetails(
             .update(rides)
             .set(updateData)
             .where(eq(rides.id, rideId));
+
+        return {success: true, data: undefined};
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error updating ride:', error);
-        throw new Error('Failed to update ride');
+        return {
+            success: false,
+            error: 'Failed to update ride',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -222,18 +288,67 @@ export async function updateRideDetails(
  * @param rideId - ID of the ride
  * @param driverId - ID of the driver to assign
  */
-export async function assignDriverToRide(rideId: number, driverId: string): Promise<void> {
+export async function assignDriverToRide(rideId: number, driverId: string): Promise<ActionResponse<void>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = AssignDriverSchema.parse({rideId, driverId});
+
+        // Check if ride exists and is available
+        const ride = await db.query.rides.findFirst({
+            where: (rides, {eq}) => eq(rides.id, validatedData.rideId),
+        });
+
+        if (!ride) {
+            return {
+                success: false,
+                error: 'Ride not found',
+                code: ErrorCodes.RIDE_NOT_FOUND
+            };
+        }
+
+        if (ride.status !== 'pending') {
+            return {
+                success: false,
+                error: 'Ride is not available for assignment',
+                code: ErrorCodes.RIDE_NOT_AVAILABLE
+            };
+        }
+
         await db
             .update(rides)
             .set({
-                driverId,
+                driverId: validatedData.driverId,
                 status: 'assigned'  // Automatically update status when driver is assigned
             })
-            .where(eq(rides.id, rideId));
+            .where(eq(rides.id, validatedData.rideId));
+
+        return {success: true, data: undefined};
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error assigning driver:', error);
-        throw new Error('Failed to assign driver');
+        return {
+            success: false,
+            error: 'Failed to assign driver',
+            code: ErrorCodes.ASSIGNMENT_ERROR
+        };
     }
 }
 
@@ -243,17 +358,45 @@ export async function assignDriverToRide(rideId: number, driverId: string): Prom
  * 
  * @param rideId - ID of the ride to cancel
  */
-export async function cancelRide(rideId: number): Promise<void> {
+export async function cancelRide(rideId: number): Promise<ActionResponse<void>> {
     try {
+        // Validate session
+        const {session} = await getSessionWithRole();
+
+        if (!session) {
+            return {
+                success: false,
+                error: 'Unauthorized',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = RideIdSchema.parse({rideId});
+
         await db
             .update(rides)
             .set({
                 status: 'cancelled'
             })
-            .where(eq(rides.id, rideId));
+            .where(eq(rides.id, validatedData.rideId));
+
+        return {success: true, data: undefined};
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error cancelling ride:', error);
-        throw new Error('Failed to cancel ride');
+        return {
+            success: false,
+            error: 'Failed to cancel ride',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -263,20 +406,49 @@ export async function cancelRide(rideId: number): Promise<void> {
  * 
  * @param rideId - ID of the ride to delete
  */
-export async function deleteRide(rideId: number): Promise<void> {
+export async function deleteRide(rideId: number): Promise<ActionResponse<void>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = RideIdSchema.parse({rideId});
+
         // Delete associated ride-customer relationships first (foreign key constraint)
         await db
             .delete(rideCustomers)
-            .where(eq(rideCustomers.rideId, rideId));
+            .where(eq(rideCustomers.rideId, validatedData.rideId));
 
         // Then delete the ride itself
         await db
             .delete(rides)
-            .where(eq(rides.id, rideId));
+            .where(eq(rides.id, validatedData.rideId));
+
+        return {success: true, data: undefined};
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error deleting ride:', error);
-        throw new Error('Failed to delete ride');
+        return {
+            success: false,
+            error: 'Failed to delete ride',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -286,8 +458,19 @@ export async function deleteRide(rideId: number): Promise<void> {
  * 
  * @returns Array of driver objects with id, name, and email
  */
-export async function fetchAvailableDrivers(): Promise<Array<{id: string, name: string, email: string}>> {
+export async function fetchAvailableDrivers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
         const drivers = await db
             .select({
                 id: users.id,
@@ -297,10 +480,14 @@ export async function fetchAvailableDrivers(): Promise<Array<{id: string, name: 
             .from(users)
             .where(eq(users.role, 'driver'));
 
-        return drivers;
+        return {success: true, data: drivers};
     } catch (error) {
         console.error('Error fetching drivers:', error);
-        throw new Error('Failed to fetch drivers');
+        return {
+            success: false,
+            error: 'Failed to fetch drivers',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -311,15 +498,32 @@ export async function fetchAvailableDrivers(): Promise<Array<{id: string, name: 
  * @param filters - Same filters as fetchRidesForManagement (search, status, etc.)
  * @returns CSV string with ride data
  */
-export async function exportRidesToCSV(filters: RideFilters = {}): Promise<string> {
+export async function exportRidesToCSV(filters: RideFilters = {}): Promise<ActionResponse<string>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
         // Fetch all matching rides (up to 10,000 for export)
         // Uses same filters as the main table view
-        const {rides: ridesData} = await fetchRidesForManagement({
+        const result = await fetchRidesForManagement({
             ...filters,
             limit: 10000, // Max export limit to prevent memory issues
             page: 1
         });
+
+        if (!result.success) {
+            return result;
+        }
+
+        const {rides: ridesData} = result.data;
 
         // === BUILD CSV CONTENT ===
         const headers = [
@@ -351,10 +555,14 @@ export async function exportRidesToCSV(filters: RideFilters = {}): Promise<strin
             ...rows.map(row => row.map(cell => `"${cell}"`).join(','))  // Wrap each cell in quotes
         ].join('\n');
 
-        return csvContent;
+        return {success: true, data: csvContent};
     } catch (error) {
         console.error('Error exporting CSV:', error);
-        throw new Error('Failed to export CSV');
+        return {
+            success: false,
+            error: 'Failed to export CSV',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -373,9 +581,22 @@ export async function createRide(data: {
     driverId?: string;
     price?: string;
     status?: RideStatus;
-}): Promise<number> {
+}): Promise<ActionResponse<number>> {
     try {
-        const {departureTime, customerIds, departure, destination, driverId, price, status} = data;
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        // Validate input
+        const validatedData = CreateRideSchema.parse(data);
+        const {departureTime, customerIds, departure, destination, driverId, price, status} = validatedData;
 
         // === CREATE RIDE ===
         const [newRide] = await db
@@ -402,10 +623,22 @@ export async function createRide(data: {
             );
         }
 
-        return newRide.id;  // Return new ride ID for confirmation/redirect
+        return {success: true, data: newRide.id};  // Return new ride ID for confirmation/redirect
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: 'Validation failed',
+                code: ErrorCodes.VALIDATION_ERROR,
+                details: error.flatten()
+            };
+        }
         console.error('Error creating ride:', error);
-        throw new Error('Failed to create ride');
+        return {
+            success: false,
+            error: 'Failed to create ride',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }
 
@@ -415,8 +648,19 @@ export async function createRide(data: {
  * 
  * @returns Array of customer objects with id, name, and email
  */
-export async function fetchAllCustomers(): Promise<Array<{id: string, name: string, email: string}>> {
+export async function fetchAllCustomers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
     try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
         const customers = await db
             .select({
                 id: users.id,
@@ -426,9 +670,13 @@ export async function fetchAllCustomers(): Promise<Array<{id: string, name: stri
             .from(users)
             .where(eq(users.role, 'customer'));
 
-        return customers;
+        return {success: true, data: customers};
     } catch (error) {
         console.error('Error fetching customers:', error);
-        throw new Error('Failed to fetch customers');
+        return {
+            success: false,
+            error: 'Failed to fetch customers',
+            code: ErrorCodes.DATABASE_ERROR
+        };
     }
 }

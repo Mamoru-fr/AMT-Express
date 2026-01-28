@@ -7,11 +7,11 @@ import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
 
 export default function DriverDashboardPage() {
-    const {session} = useSessionWithRole();
+    const {session, isDriver} = useSessionWithRole();
     const [data, setData] = useState<DriverDashboardData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    if (!session || session.user.role !== 'driver') {
+    if (!session || !isDriver) {
         redirect('/');
     }
 
@@ -19,7 +19,16 @@ export default function DriverDashboardPage() {
         setLoading(true);
         try {
             const dashboardData = await fetchDriverDashboard();
-            setData(dashboardData);
+
+            if (!dashboardData.success) {
+                return (
+                    <div className="min-h-screen w-full flex items-center justify-center">
+                        <div className="text-red-600">Error loading dashboard: {dashboardData.error}</div>
+                    </div>
+                );
+            }
+
+            setData(dashboardData.data);
         } catch (error) {
             console.error('Failed to load driver dashboard:', error);
         } finally {
@@ -39,5 +48,5 @@ export default function DriverDashboardPage() {
         );
     }
 
-    return <DriverDashboard data={data} onRefresh={loadData}/>;
+    return <DriverDashboard data={data} onRefresh={loadData} />;
 }

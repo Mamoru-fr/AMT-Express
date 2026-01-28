@@ -4,6 +4,8 @@
 import db from '@/lib/db/drizzle';
 import {rides, users, invoices, rideCustomers} from '@/lib/db/schema';
 import {eq, sql, and, gte} from 'drizzle-orm';
+import {auth} from '@/lib/auth/auth';
+import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 
 // Type definition for the complete dashboard data structure
 // Includes KPIs, charts data, and recent activity
@@ -45,8 +47,20 @@ export type AdminDashboardData = {
  * 
  * @returns AdminDashboardData object with all dashboard metrics
  */
-export async function getAdminDashboardData(): Promise<AdminDashboardData> {
+export async function getAdminDashboardData(): Promise<ActionResponse<AdminDashboardData>> {
     try {
+        // Validate session
+        const session = await auth.api.getSession({
+            headers: await import("next/headers").then(m => m.headers())
+        });
+
+        if (!session || session.user.role !== 'admin') {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
         // Calculate date 12 months ago (for chart data range)
         // Set to first day of that month at midnight
         const twelveMonthsAgo = new Date();
@@ -76,7 +90,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             .selectDistinct({userId: rideCustomers.customerId})
             .from(rideCustomers)
             .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
-            .where(gte(rides.createdAt, thirtyDaysAgo));
+            .where(gte(rides.departureTime, thirtyDaysAgo));
         const activeUsers = activeUsersResult.length;
 
         // KPI 3: Count invoices that haven't been paid yet
@@ -195,38 +209,32 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         }));
 
         return {
-            kpis: {
-                totalRides,
-                activeUsers,
-                pendingInvoices,
-                monthlyRevenue
-            },
-            monthlyRides: monthlyRidesData.map((d: any) => ({
-                month: d.month,
-                rides: Number(d.rides)
-            })),
-            monthlyRevenue: monthlyRevenueData.map((d: any) => ({
-                month: d.month,
-                revenue: Number(d.revenue)
-            })),
-            statusDistribution,
-            recentRides
+            success: true,
+            data: {
+                kpis: {
+                    totalRides,
+                    activeUsers,
+                    pendingInvoices,
+                    monthlyRevenue
+                },
+                monthlyRides: monthlyRidesData.map((d: any) => ({
+                    month: d.month,
+                    rides: Number(d.rides)
+                })),
+                monthlyRevenue: monthlyRevenueData.map((d: any) => ({
+                    month: d.month,
+                    revenue: Number(d.revenue)
+                })),
+                statusDistribution,
+                recentRides
+            }
         };
     } catch (error) {
         console.error('Error fetching admin dashboard data:', error);
-        // Return empty data structure on error to prevent dashboard from breaking
-        // This allows the UI to render even if there's a database issue
         return {
-            kpis: {
-                totalRides: 0,
-                activeUsers: 0,
-                pendingInvoices: 0,
-                monthlyRevenue: '0'
-            },
-            monthlyRides: [],
-            monthlyRevenue: [],
-            statusDistribution: [],
-            recentRides: []
+            success: false,
+            error: 'Failed to fetch dashboard data',
+            code: ErrorCodes.DATABASE_ERROR
         };
     }
 }

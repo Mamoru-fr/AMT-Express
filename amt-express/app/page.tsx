@@ -1,33 +1,48 @@
-import {auth} from "@/lib/auth/auth";
-import {headers} from "next/headers";
 import {AdminDashboard} from "@/components/dashboard/AdminDashboard";
-import {getAdminDashboardData} from "@/lib/actions/dashboardActions";
+import {getAdminDashboardData} from "@/lib/actions/adminDashboardActions";
 import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
 import {fetchDriverDashboard} from "@/lib/actions/driverDashboardActions";
+import {getSessionWithRole} from "@/lib/auth/session";
+import {redirect} from "next/navigation";
 
 export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
+  const {isAdmin, isDriver, isAuthenticated} = await getSessionWithRole();
 
-  const userRole = session && session.user.role;
+  // If the user is not authenticated, redirect to login page
+  if (!isAuthenticated) {
+    redirect('/connections');
+  }
 
   // Admin Dashboard
-  if (userRole === 'admin') {
-    const dashboardData = await getAdminDashboardData();
+  if (isAdmin) {
+    const response = await getAdminDashboardData();
+    if (!response.success) {
+      return (
+        <div className="min-h-screen w-full flex items-center justify-center">
+          <div className="text-red-600">Error loading dashboard: {response.error}</div>
+        </div>
+      );
+    }
     return (
-      <div className="min-h-screen w-full overflow-y-auto md:fixed md:inset-0 z-10">
-        <AdminDashboard data={dashboardData}/>
+      <div className="min-h-screen w-full overflow-y-auto z-10">
+        <AdminDashboard data={response.data}/>
       </div>
     );
   }
 
   // Driver Dashboard
-  if (userRole === 'driver') {
+  if (isDriver) {
     const driverData = await fetchDriverDashboard();
+    if (!driverData.success) {
+      return (
+        <div className="min-h-screen w-full flex items-center justify-center">
+          <div className="text-red-600">Error loading dashboard: {driverData.error}</div>
+        </div>
+      );
+    }
     return (
-      <div className="min-h-screen w-full overflow-y-auto md:fixed md:inset-0 z-10">
-        <DriverDashboard data={driverData}/>
+      <div className="min-h-screen w-full overflow-y-auto z-10">
+        <DriverDashboard data={driverData.data}/>
       </div>
     );
   }
