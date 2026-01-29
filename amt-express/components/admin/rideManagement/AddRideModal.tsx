@@ -249,8 +249,8 @@ export function AddRideModal({drivers, customers, onClose, onCreate}: AddRideMod
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className={`bg-white rounded-lg shadow-xl w-full p-6 my-8 ${viewMode === 'table' ? 'max-w-7xl' : 'max-w-2xl'}`}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+            <div className={`bg-white rounded-lg shadow-xl w-full p-3 sm:p-4 md:p-6 my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto ${viewMode === 'table' ? 'max-w-full sm:max-w-7xl' : 'max-w-full sm:max-w-2xl'}`}>
                 {/* Header with View Toggle */}
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold text-gray-900">Add New Ride</h3>

@@ -19,8 +19,8 @@ type Props = {
 
 export function MonthlyRevenueChart({data}: Props) {
     return (
-        <div className="bg-white rounded-lg shadow-md border-2 border-blue-200 p-6">
-            <h3 className="text-lg font-semibold mb-4">Monthly Revenue</h3>
+        <div className="bg-white rounded-lg shadow-md border-2 border-blue-200 p-3 sm:p-4 md:p-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Monthly Revenue</h3>
             {/* 
                 ResponsiveContainer: Makes the chart responsive to its parent container
                 - width="100%": Chart fills the full width of parent

@@ -48,11 +48,11 @@ import {DeleteConfirmModal} from "./DeleteConfirmModal";
 export function RidesManagementBoard() {
     const {t} = useTranslation();
     const {session} = useSessionWithRole();
-    
+
     // Main data state - stores fetched rides and pagination info
     const [data, setData] = useState<RidesManagementData | null>(null);
     const [loading, setLoading] = useState(true);
-    
+
     // Filter state - controls search, sorting, pagination, and status filtering
     const [filters, setFilters] = useState<RideFilters>({
         search: '',
@@ -70,22 +70,22 @@ export function RidesManagementBoard() {
 
     // Modal visibility states - control which modal is currently open
     const [addModal, setAddModal] = useState(false);
-    const [editModal, setEditModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+    const [editModal, setEditModal] = useState<{open: boolean; ride: RideWithRelations | null}>({
         open: false,
         ride: null // Stores the ride being edited
     });
-    const [assignModal, setAssignModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+    const [assignModal, setAssignModal] = useState<{open: boolean; ride: RideWithRelations | null}>({
         open: false,
         ride: null // Stores the ride receiving driver assignment
     });
-    const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: number | null }>({
+    const [deleteModal, setDeleteModal] = useState<{open: boolean; rideId: number | null}>({
         open: false,
         rideId: null // Stores the ID of ride to be deleted
     });
-    
+
     // Dropdown data - lists of drivers and customers for form selections
-    const [availableDrivers, setAvailableDrivers] = useState<Array<{ id: string; name: string; email: string }>>([]);
-    const [availableCustomers, setAvailableCustomers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+    const [availableDrivers, setAvailableDrivers] = useState<Array<{id: string; name: string; email: string}>>([]);
+    const [availableCustomers, setAvailableCustomers] = useState<Array<{id: string; name: string; email: string}>>([]);
 
     /**
      * Effect: Reload rides whenever filter criteria changes
@@ -99,9 +99,28 @@ export function RidesManagementBoard() {
      * Effect: Load available drivers and customers on component mount
      * These lists populate the dropdowns in Add/Edit/Assign modals
      */
+    const fetchAvailableDriversAndCustomers = async () => {
+        try {
+            const driversResponse = await fetchAvailableDrivers();
+            if (driversResponse.success) {
+                setAvailableDrivers(driversResponse.data);
+            } else {
+                console.error('Failed to fetch drivers:', driversResponse.error);
+            }
+
+            const customersResponse = await fetchAllCustomers();
+            if (customersResponse.success) {
+                setAvailableCustomers(customersResponse.data);
+            } else {
+                console.error('Failed to fetch customers:', customersResponse.error);
+            }
+        } catch (error) {
+            console.error('Error fetching drivers or customers:', error);
+        }
+    };
+
     useEffect(() => {
-        fetchAvailableDrivers().then(setAvailableDrivers);
-        fetchAllCustomers().then(setAvailableCustomers);
+        fetchAvailableDriversAndCustomers();
     }, []);
 
     /**
@@ -112,7 +131,11 @@ export function RidesManagementBoard() {
         setLoading(true);
         try {
             const result = await fetchRidesForManagement(filters);
-            setData(result);
+            if (!result.success) {
+                console.error('Failed to fetch rides:', result.error);
+            } else {
+                setData(result.data);
+            }
         } catch (error) {
             console.error('Failed to load rides:', error);
         } finally {
@@ -165,13 +188,17 @@ export function RidesManagementBoard() {
     const handleExportCSV = async () => {
         try {
             const csv = await exportRidesToCSV(filters);
-            const blob = new Blob([csv], {type: 'text/csv'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `rides-export-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url); // Clean up memory
+            if (!csv.success) {
+                console.error('Failed to export CSV:', csv.error);
+            } else {
+                const blob = new Blob([csv.data], {type: 'text/csv'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `rides-export-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url); // Clean up memory
+            }
         } catch (error) {
             console.error('Failed to export CSV:', error);
             alert('Failed to export CSV');
@@ -288,79 +315,83 @@ export function RidesManagementBoard() {
     // Show loading state while initial data is being fetched
     if (loading && !data) {
         return (
-            <div className="w-full py-8 px-4 md:px-8">
+            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center text-white">Loading rides...</div>
+                    <div className="text-center text-white text-sm sm:text-base">Loading rides...</div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full py-8 px-4 md:px-8">
-            <div className="max-w-350 mx-auto space-y-6">
+        <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 overflow-y-auto">
+            <div className="max-w-350 mx-auto space-y-3 sm:space-y-4 md:space-y-6">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+                <div className="mb-4 sm:mb-6 md:mb-8">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
                         {t('ridesManagement.title', 'Ride Management')}
                     </h1>
-                    <p className="text-white/90 mt-2 drop-shadow-md">
+                    <p className="text-white/90 mt-1 sm:mt-2 drop-shadow-md text-sm sm:text-base">
                         {t('ridesManagement.subtitle', 'Excel-like view to manage all platform rides')}
                     </p>
                 </div>
 
                 {/* Filters and Actions Bar */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 space-y-4">
-                    <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 space-y-3 sm:space-y-4">
+                    <div className="flex flex-col gap-2 sm:gap-3">
                         {/* Search */}
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"/>
+                        <div className="relative w-full">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                             <input
                                 type="text"
                                 placeholder={t('ridesManagement.searchPlaceholder', 'Search by ID, departure, destination...')}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                                 value={filters.search}
                                 onChange={(e) => handleSearch(e.target.value)}
                             />
                         </div>
 
-                        {/* Status Filter */}
-                        <div className="flex items-center gap-2">
-                            <Filter className="text-gray-600 w-5 h-5"/>
-                            <select
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={filters.status}
-                                onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
+                        {/* Status Filter and Action Buttons */}
+                        <div className="flex flex-wrap gap-2">
+                            <div className="flex items-center gap-2 flex-1 min-w-45">
+                                <Filter className="text-gray-600 w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                                <select
+                                    className="flex-1 px-2 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm"
+                                    value={filters.status}
+                                    onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
+                                >
+                                    <option value="all">{t('ridesManagement.allStatuses', 'All Statuses')}</option>
+                                    <option value="pending">{t('ridesManagement.pending', 'Pending')}</option>
+                                    <option value="assigned">{t('ridesManagement.assigned', 'Assigned')}</option>
+                                    <option value="completed">{t('ridesManagement.completed', 'Completed')}</option>
+                                    <option value="cancelled">{t('ridesManagement.cancelled', 'Cancelled')}</option>
+                                </select>
+                            </div>
+
+                            {/* Add Ride Button */}
+                            <button
+                                onClick={() => setAddModal(true)}
+                                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-none min-w-45"
                             >
-                                <option value="all">{t('ridesManagement.allStatuses', 'All Statuses')}</option>
-                                <option value="pending">{t('ridesManagement.pending', 'Pending')}</option>
-                                <option value="assigned">{t('ridesManagement.assigned', 'Assigned')}</option>
-                                <option value="completed">{t('ridesManagement.completed', 'Completed')}</option>
-                                <option value="cancelled">{t('ridesManagement.cancelled', 'Cancelled')}</option>
-                            </select>
+                                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden xs:inline">{t('ridesManagement.addRide', 'Add Ride')}</span>
+                                <span className="xs:hidden">Add</span>
+                            </button>
+
+                            {/* Export Button */}
+                            <button
+                                onClick={handleExportCSV}
+                                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-none min-w-25"
+                            >
+                                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="hidden xs:inline">{t('ridesManagement.exportCSV', 'Export CSV')}</span>
+                                <span className="xs:hidden">Export</span>
+                            </button>
                         </div>
-
-                        {/* Add Ride Button */}
-                        <button
-                            onClick={() => setAddModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            <Plus className="w-5 h-5"/>
-                            {t('ridesManagement.addRide', 'Add Ride')}
-                        </button>
-
-                        {/* Export Button */}
-                        <button
-                            onClick={handleExportCSV}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                            <Download className="w-5 h-5"/>
-                            {t('ridesManagement.exportCSV', 'Export CSV')}
-                        </button>
                     </div>
 
                     {/* Results count */}
-                    <div className="text-sm text-gray-600">
+                    <div className="text-xs sm:text-sm text-gray-600">
                         {t('ridesManagement.showing', 'Showing')} {data?.rides.length || 0} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
                     </div>
                 </div>
@@ -370,91 +401,91 @@ export function RidesManagementBoard() {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-100 border-b border-gray-200">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('departureTime')}>
-                                    {t('ridesManagement.dateHour', 'Date & Hour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('clients')}>
-                                    {t('ridesManagement.clients', 'Clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('departure')}>
-                                    {t('ridesManagement.departure', 'Departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('destination')}>
-                                    {t('ridesManagement.arrival', 'Arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('driver')}>
-                                    {t('ridesManagement.driver', 'Driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('price')}>
-                                    {t('ridesManagement.price', 'Price (€)')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSort('status')}>
-                                    {t('ridesManagement.status', 'Status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    {t('ridesManagement.actions', 'Actions')}
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('departureTime')}>
+                                        {t('ridesManagement.dateHour', 'Date & Hour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('clients')}>
+                                        {t('ridesManagement.clients', 'Clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('departure')}>
+                                        {t('ridesManagement.departure', 'Departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('destination')}>
+                                        {t('ridesManagement.arrival', 'Arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('driver')}>
+                                        {t('ridesManagement.driver', 'Driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('price')}>
+                                        {t('ridesManagement.price', 'Price (€)')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSort('status')}>
+                                        {t('ridesManagement.status', 'Status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                        {t('ridesManagement.actions', 'Actions')}
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {data?.rides.map((ride) => (
-                                <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-4 py-3 text-sm text-gray-700">
-                                        {new Date(ride.departureTime).toLocaleString('fr-FR')}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">
-                                        {ride.customers.map(c => c.name).join(', ') || 'N/A'}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">{ride.departure}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">{ride.destination}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">
-                                        {ride.driver?.name || (
-                                            <span className="text-gray-400 italic">Unassigned</span>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-900">€{ride.price}</td>
-                                    <td className="px-4 py-3 text-sm">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ride.status)}`}>
-                                            {ride.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => setEditModal({open: true, ride})}
-                                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Edit className="w-4 h-4"/>
-                                            </button>
-                                            {!ride.driver && ride.status !== 'cancelled' && (
-                                                <button
-                                                    onClick={() => setAssignModal({open: true, ride})}
-                                                    className="p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors"
-                                                    title="Assign Driver"
-                                                >
-                                                    <UserPlus className="w-4 h-4"/>
-                                                </button>
+                                {data?.rides.map((ride) => (
+                                    <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                            {new Date(ride.departureTime).toLocaleString('fr-FR')}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                            {ride.customers.map(c => c.name).join(', ') || 'N/A'}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-700">{ride.departure}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-700">{ride.destination}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                            {ride.driver?.name || (
+                                                <span className="text-gray-400 italic">Unassigned</span>
                                             )}
-                                            <button
-                                                onClick={() => setDeleteModal({open: true, rideId: ride.id})}
-                                                className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4"/>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm font-medium text-gray-900">€{ride.price}</td>
+                                        <td className="px-4 py-3 text-sm">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ride.status)}`}>
+                                                {ride.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setEditModal({open: true, ride})}
+                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                                    title="Edit"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                {!ride.driver && ride.status !== 'cancelled' && (
+                                                    <button
+                                                        onClick={() => setAssignModal({open: true, ride})}
+                                                        className="p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors"
+                                                        title="Assign Driver"
+                                                    >
+                                                        <UserPlus className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={() => setDeleteModal({open: true, rideId: ride.id})}
+                                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -471,14 +502,14 @@ export function RidesManagementBoard() {
                                     disabled={data.page === 1}
                                     className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <ChevronLeft className="w-4 h-4"/>
+                                    <ChevronLeft className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => handlePageChange(data.page + 1)}
                                     disabled={data.page === data.totalPages}
                                     className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <ChevronRight className="w-4 h-4"/>
+                                    <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>

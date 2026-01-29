@@ -51,12 +51,12 @@ export default function ConnectionsPage() {
     }, [searchParams, t]);
 
     return (
-        <div className="flex flex-col relative w-screen h-screen justify-between py-4">
-            <div className="flex justify-center w-full mb-6">
-                <h1 className="text-2xl md:text-3xl font-bold text-white pt-15">{t('Authentication.Title')}</h1>
+        <div className="flex flex-col relative w-screen h-screen min-h-dvh justify-between py-3 sm:py-4">
+            <div className="flex justify-center w-full mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white pt-10 sm:pt-15 px-4">{t('Authentication.Title')}</h1>
             </div>
-            <div className="flex items-end justify-center flex-1 p-4 pb-25">
-                <div className="mb-5 rounded-3xl bg-white/98 backdrop-blur-[10px] shadow-[0_30px_80px_rgba(0,0,0,0.4)] flex flex-col absolute overflow-hidden p-4 md:p-8 lg:p-10 w-[90vw] max-w-150 min-w-70 max-h-[70vh] gap-3 md:gap-4 lg:gap-5">
+            <div className="flex items-end justify-center flex-1 p-3 sm:p-4 pb-20 sm:pb-25">
+                <div className="mb-4 sm:mb-5 rounded-2xl sm:rounded-3xl bg-white/98 backdrop-blur-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] sm:shadow-[0_30px_80px_rgba(0,0,0,0.4)] flex flex-col absolute overflow-hidden p-4 sm:p-6 md:p-8 lg:p-10 w-[95vw] sm:w-[90vw] max-w-150 min-w-0 sm:min-w-70 max-h-[80vh] sm:max-h-[70vh] gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
                     
                     {/* Error Message */}
                     {errorMessage && (

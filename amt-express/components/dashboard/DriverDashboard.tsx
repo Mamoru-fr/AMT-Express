@@ -68,32 +68,32 @@ export function DriverDashboard({data, onRefresh}: Props) {
     };
 
     return (
-            <div className="w-full py-8 px-4 md:px-8">
-                <div className="max-w-7xl mx-auto space-y-6">
+            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 overflow-y-auto">
+                <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
                     {/* Header */}
-                    <div className="mb-8 flex justify-between items-center">
+                    <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
                                 {t('driverDashboard.title', 'Driver Dashboard')}
                             </h1>
-                            <p className="text-white/90 mt-2 drop-shadow-md">
+                            <p className="text-white/90 mt-1 sm:mt-2 drop-shadow-md text-sm sm:text-base">
                                 {t('driverDashboard.subtitle', 'Manage your rides and availability')}
                             </p>
                         </div>
 
                         {/* Availability Toggle */}
-                        <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
-                            <span className="text-sm font-medium text-gray-700">
+                        <div className="flex items-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4">
+                            <span className="text-xs sm:text-sm font-medium text-gray-700">
                                 {isAvailable ? t('driverDashboard.available', 'Available') : t('driverDashboard.offline', 'Offline')}
                             </span>
                             <button
                                 onClick={handleAvailabilityToggle}
                                 disabled={loading}
-                                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${isAvailable ? 'bg-green-500' : 'bg-gray-300'
+                                className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full transition-colors ${isAvailable ? 'bg-green-500' : 'bg-gray-300'
                                     } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <span
-                                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${isAvailable ? 'translate-x-4' : '-translate-x-4'
+                                    className={`inline-block h-5 w-5 sm:h-6 sm:w-6 transform rounded-full bg-white transition-transform ${isAvailable ? 'translate-x-3 sm:translate-x-4' : '-translate-x-3 sm:-translate-x-4'
                                         }`}
                                 />
                             </button>
@@ -101,7 +101,7 @@ export function DriverDashboard({data, onRefresh}: Props) {
                     </div>
 
                     {/* KPIs Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                         <DashboardDataCard
                             title={t('driverDashboard.totalRides', 'Total Rides')}
                             data={data.stats.totalRides}
@@ -129,9 +129,9 @@ export function DriverDashboard({data, onRefresh}: Props) {
                     </div>
 
                     {/* Assigned Rides */}
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <Calendar className="w-6 h-6 text-blue-600" />
+                    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 md:p-6">
+                        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                            <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                             {t('driverDashboard.assignedRides', 'Your Assigned Rides')}
                         </h2>
 

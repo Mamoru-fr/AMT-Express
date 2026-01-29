@@ -10,7 +10,7 @@ export default function RideManagementPage() {
 
 
     return (
-        <div className="min-h-screen w-full overflow-y-auto md:fixed md:inset-0 z-10">
+        <div className="min-h-screen min-h-dvh w-full overflow-y-auto z-10">
             <RidesManagementBoard />
         </div>
     );

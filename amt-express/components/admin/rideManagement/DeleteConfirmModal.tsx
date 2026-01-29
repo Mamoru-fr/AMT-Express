@@ -21,12 +21,12 @@ type DeleteConfirmModalProps = {
  */
 export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmModalProps) {
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">Confirm Deletion</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Confirm Deletion</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-6 h-6"/>
+                        <X className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </button>
                 </div>
 

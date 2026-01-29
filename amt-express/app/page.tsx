@@ -24,7 +24,7 @@ export default async function Home() {
       );
     }
     return (
-      <div className="min-h-screen w-full overflow-y-auto z-10">
+      <div className="w-full h-screen p-4 flex flex-1 z-10">
         <AdminDashboard data={response.data}/>
       </div>
     );
@@ -41,7 +41,7 @@ export default async function Home() {
       );
     }
     return (
-      <div className="min-h-screen w-full overflow-y-auto z-10">
+      <div className="w-full h-screen flex flex-1">
         <DriverDashboard data={driverData.data}/>
       </div>
     );
@@ -49,10 +49,10 @@ export default async function Home() {
 
   // Customer Dashboard (placeholder for now)
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans z-10">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-32 px-16">
-        <h1 className="text-3xl font-bold text-gray-900">Customer Dashboard</h1>
-        <p className="text-gray-600 mt-4">Coming soon...</p>
+    <div className="flex w-full h-screen items-center justify-center font-sans z-10 p-4">
+      <main className="flex w-full max-w-3xl flex-col items-center justify-center py-16 sm:py-24 md:py-32 px-6 sm:px-12 md:px-16 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">Customer Dashboard</h1>
+        <p className="text-gray-600 mt-3 sm:mt-4 text-sm sm:text-base">Coming soon...</p>
       </main>
     </div>
   );
