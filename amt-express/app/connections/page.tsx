@@ -29,6 +29,7 @@ export default function ConnectionsPage() {
         const viewParam = searchParams.get('view') as "signin" | "signup" | null;
 
         if (viewParam) {
+            /* IF any view params has been set, update the view state */
             setView(viewParam);
         }
 

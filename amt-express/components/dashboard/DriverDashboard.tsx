@@ -1,22 +1,8 @@
 'use client'
 
 import {useState} from "react";
-import {
-    DriverDashboardData,
-    toggleDriverAvailability,
-    requestRideAssignment
-} from "@/lib/actions/driverDashboardActions";
-import {
-    Car,
-    DollarSign,
-    Star,
-    Calendar,
-    MapPin,
-    Clock,
-    Users,
-    CheckCircle,
-    X
-} from "lucide-react";
+import {DriverDashboardData, toggleDriverAvailability, requestRideAssignment} from "@/lib/actions/driverDashboardActions";
+import {Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X} from "lucide-react";
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";
 import {useTranslation} from "react-i18next";
 import {getStatusColor} from "@/content/Colors";

@@ -1,5 +1,12 @@
 'use client'
 
+/**
+ * SessionContext provides a React context for managing user session information across the application.
+ * It includes the session data, user information, and role-based access control.
+ * 
+ * Session is the data from better-auth that I use to manage user authentication and authorization. It includes user information and their role (admin, driver, customer).
+ */
+
 import {createContext, useContext} from "react";
 import {SessionWithUser} from "@/content/database_types/auth";
 import {getValidatedRole, isValidUserRole} from "@/utils/isValidUserRole";

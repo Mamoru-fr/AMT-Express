@@ -8,6 +8,13 @@ type Props = {
     children: ReactNode;
 };
 
+/**
+ * Provides internationalization context to the application.
+ * 
+ * @param children - The child components that will have access to the i18n context.
+ * @returns The provider component that wraps the application with i18n context.
+ */
+
 export function I18nProvider({ children }: Props) {
     useEffect(() => {
         // Initialize i18next when component mounts

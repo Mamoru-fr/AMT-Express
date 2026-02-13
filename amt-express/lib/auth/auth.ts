@@ -7,7 +7,7 @@ import {admin} from "better-auth/plugins";
 
 export const auth = betterAuth({
     emailAndPassword: {
-        enabled: true, // On active les comptes par email et mot de passe
+        enabled: true, // Activate email and password authentication
     },
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -19,9 +19,9 @@ export const auth = betterAuth({
         },
     }),
     plugins: [
-        nextCookies(),  // ⚠ Permet de sauvegarder les cookies better-auth dans l'appli next
+        nextCookies(),  // ⚠ Allows saving better-auth cookies in the next.js app
         admin({
             defaultRole: "customer", // Set default role for new users
-        })  // Plugin admin pour gérer les roles et les bannissements des utilisateurs
+        })  // Admin plugin to manage user roles and bans
     ],
 });

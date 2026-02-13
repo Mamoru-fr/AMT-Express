@@ -41,7 +41,7 @@ export function Input({ placeholder, className, type, value, onChange, name, req
             <EyeButton
                 isPassword={isPassword}
                 showPassword={showPassword}
-                ShowPassword={setShowPassword}
+                setShowPassword={setShowPassword}
             />
         </div>
     );

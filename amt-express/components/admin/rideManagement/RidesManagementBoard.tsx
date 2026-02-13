@@ -1,31 +1,9 @@
 'use client'
 
 import {useState, useEffect} from "react";
-import {
-    fetchRidesForManagement,
-    updateRideDetails,
-    assignDriverToRide,
-    cancelRide,
-    deleteRide,
-    fetchAvailableDrivers,
-    exportRidesToCSV,
-    createRide,
-    fetchAllCustomers,
-    RideFilters,
-    RidesManagementData
-} from "@/lib/actions/ridesManagementActions";
+import {fetchRidesForManagement, updateRideDetails, assignDriverToRide, cancelRide, deleteRide, fetchAvailableDrivers, exportRidesToCSV, createRide, fetchAllCustomers, RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
-import {
-    Search,
-    Filter,
-    Download,
-    Edit,
-    Trash2,
-    UserPlus,
-    ChevronLeft,
-    ChevronRight,
-    Plus
-} from "lucide-react";
+import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
