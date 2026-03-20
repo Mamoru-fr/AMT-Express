@@ -10,7 +10,7 @@
  */
 
 import db from "@/lib/db/drizzle";
-import {rides, users, rideCustomers} from "@/lib/db/schema";
+import {rides, users, rideCustomers, productions, projects} from "@/lib/db/schema";
 import {eq, sql, desc, asc, and, or, ilike} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {auth} from "@/lib/auth/auth";
@@ -676,6 +676,83 @@ export async function fetchAllCustomers(): Promise<ActionResponse<Array<{id: str
         return {
             success: false,
             error: 'Failed to fetch customers',
+            code: ErrorCodes.DATABASE_ERROR
+        };
+    }
+}
+
+/**
+ * Fetches all productions
+ * Used to populate production selection when creating/editing rides
+ * 
+ * @returns Array of production objects with id and name
+ */
+export async function fetchAllProductions(): Promise<ActionResponse<Array<{id: string, name: string}>>> {
+    try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        const allProductions = await db
+            .select({
+                id: productions.id,
+                name: productions.name
+            })
+            .from(productions)
+            .orderBy(asc(productions.name));
+
+        return {success: true, data: allProductions};
+    } catch (error) {
+        console.error('Error fetching productions:', error);
+        return {
+            success: false,
+            error: 'Failed to fetch productions',
+            code: ErrorCodes.DATABASE_ERROR
+        };
+    }
+}
+
+/**
+ * Fetches all projects
+ * Used to populate project selection when creating/editing rides
+ * 
+ * @returns Array of project objects with id, name, and productionId
+ */
+export async function fetchAllProjects(): Promise<ActionResponse<Array<{id: string, name: string, productionId: string}>>> {
+    try {
+        // Validate session
+        const {session, isAdmin} = await getSessionWithRole();
+
+        if (!session || !isAdmin) {
+            return {
+                success: false,
+                error: 'Unauthorized: Admin access only',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
+        const allProjects = await db
+            .select({
+                id: projects.id,
+                name: projects.name,
+                productionId: projects.productionId
+            })
+            .from(projects)
+            .orderBy(asc(projects.name));
+
+        return {success: true, data: allProjects};
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        return {
+            success: false,
+            error: 'Failed to fetch projects',
             code: ErrorCodes.DATABASE_ERROR
         };
     }

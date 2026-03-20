@@ -221,10 +221,8 @@ export function AdminDashboard({data}: Props) {
             {/* Add Ride Modal - Conditionally rendered when addModal state is true */}
             {addModal && (
                 <AddRideModal
-                    drivers={availableDrivers}
-                    customers={availableCustomers}
-                    onClose={() => setAddModal(false)}
-                    onCreate={handleCreateRide}
+                    onClose={() => {setAddModal(false); window.location.reload();}}
+                    isOpen={addModal}
                 />
             )}
         </div>

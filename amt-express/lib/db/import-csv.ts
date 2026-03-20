@@ -8,7 +8,7 @@
  */
 
 import db from './drizzle';
-import { rides, users, productions, projects } from './schema';
+import { rides, users, productions } from './schema';
 import { readFileSync } from 'fs';
 import { eq } from 'drizzle-orm';
 import 'dotenv/config';
