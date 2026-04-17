@@ -1,6 +1,7 @@
 {
     "Authentication": {
-        "Title": "Welcome to AMT Express",
+        "Title": "AMT Express",
+        "Subtitle": "Your excellence driver",
         "NamePlaceholder": "Enter your full name",
         "NameWarning": "Your name will be visible to drivers",
         "EmailPlaceholder": "Enter your email",
@@ -9,10 +10,10 @@
         "LoginViewButton": "Login",
         "RegisterViewButton": "Register",
         "Login": {
-            "LoginButton": "Log In"
+            "LoginButton": "Log In →"
         },
         "Register": {
-            "RegisterButton": "Sign Up"
+            "RegisterButton": "Sign Up →"
         }
     },
     "errors": {

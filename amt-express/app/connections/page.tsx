@@ -1,16 +1,16 @@
 'use client'
 
-import {useSearchParams} from "next/navigation";
-import {useState, useEffect} from "react"
-import {useTranslation} from "react-i18next";
-import {Input} from "@/components/classicComponents/Input";
-import {Button} from "@/components/classicComponents/Button";
-import {signin, signup} from "@/lib/actions/signActions";
-import {AlertTriangle} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next";
+import { Input } from "@/components/classicComponents/Input";
+import { Button } from "@/components/classicComponents/Button";
+import { signin, signup } from "@/lib/actions/signActions";
+import { AlertTriangle, Car } from "lucide-react";
 
 export default function ConnectionsPage() {
     // Hook for translation
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     // Variables for view management, error management and parameters
     const searchParams = useSearchParams();
@@ -19,6 +19,8 @@ export default function ConnectionsPage() {
     const [view, setView] = useState<"signin" | "signup">(viewParam || "signin");
     // errorMessage holds any error message to display
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    // loading state for form submission
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         /*
@@ -51,19 +53,33 @@ export default function ConnectionsPage() {
         }
     }, [searchParams, t]);
 
+    const handleForgotPassword = () => {
+        // TODO: Implement forgot password redirect
+        alert(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));
+    };
+
     return (
-        <div className="flex flex-col relative w-screen h-screen min-h-dvh justify-between py-3 sm:py-4">
-            <div className="flex justify-center w-full mb-4 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white pt-10 sm:pt-15 px-4">{t('Authentication.Title')}</h1>
+        <div className="connections-container">
+            {/* Header Section */}
+            <div className="connections-header">
+                <div className="connections-logo-icon">
+                    <Car style={{width: '50%'}}/>
+                </div>
+                <div className="connections-title-section">
+                    <h1 className="connections-title">{t('Authentication.Title')}</h1>
+                    <p className="connections-subtitle">{t('Authentication.Subtitle')}</p>
+                </div>
             </div>
-            <div className="flex items-end justify-center flex-1 p-3 sm:p-4 pb-20 sm:pb-25">
-                <div className="mb-4 sm:mb-5 rounded-2xl sm:rounded-3xl bg-white/98 backdrop-blur-[10px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] sm:shadow-[0_30px_80px_rgba(0,0,0,0.4)] flex flex-col absolute overflow-hidden p-4 sm:p-6 md:p-8 lg:p-10 w-[95vw] sm:w-[90vw] max-w-150 min-w-0 sm:min-w-70 max-h-[80vh] sm:max-h-[70vh] gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
+
+            {/* Main Content */}
+            <div className="connections-content-wrapper">
+                <div className="connections-card">
                     
                     {/* Error Message */}
                     {errorMessage && (
-                        <div className="flex items-start gap-2 bg-red-50 border-l-4 border-red-400 rounded-md p-2 md:p-3">
-                            <AlertTriangle className="shrink-0 mt-0.5 text-red-600 w-4 h-4 md:w-5 md:h-5" />
-                            <p className="text-red-800 leading-relaxed text-xs md:text-sm">
+                        <div className="connections-error-message">
+                            <AlertTriangle className="connections-error-icon" />
+                            <p className="connections-error-text">
                                 {errorMessage}
                             </p>
                         </div>
@@ -72,48 +88,102 @@ export default function ConnectionsPage() {
                     {/* Sign In Form */}
                     <form 
                         action={signin}
-                        className={`flex flex-col gap-2 md:gap-3 lg:gap-4 ${view === 'signin' ? '' : 'hidden'}`}
+                        className={`connections-form ${view === 'signin' ? '' : 'hidden'}`}
                     >
-                        <Input placeholder={t('Authentication.EmailPlaceholder')} type='email' name='email' required />
-                        <Input placeholder={t('Authentication.PasswordPlaceholder')} type='password' name='password' required />
-                        <Button content={t('Authentication.Login.LoginButton')} variant='primary' />
+                        <Input 
+                            placeholder={t('Authentication.EmailPlaceholder')} 
+                            type='email' 
+                            name='email' 
+                            required 
+                        />
+                        <Input 
+                            placeholder={t('Authentication.PasswordPlaceholder')} 
+                            type='password' 
+                            name='password' 
+                            required 
+                        />
+                        <div className="connections-forgot-password-container">
+                            <button 
+                                type="button"
+                                className="connections-forgot-password-link"
+                                onClick={handleForgotPassword}
+                            >
+                                {t('Authentication.ForgotPassword', { defaultValue: 'Mot de passe oublié ?' })}
+                            </button>
+                        </div>
+                        <Button 
+                            content={t('Authentication.Login.LoginButton')} 
+                            variant='primary'
+                            type='submit'
+                            disabled={isLoading}
+                        />
                     </form>
 
                     {/* Sign Up Form */}
                     <form 
                         action={signup}
-                        className={`flex flex-col gap-2 md:gap-3 lg:gap-4 ${view === 'signup' ? '' : 'hidden'}`}
+                        className={`connections-form ${view === 'signup' ? '' : 'hidden'}`}
                     >
-                        <Input placeholder={t('Authentication.NamePlaceholder')} type='text' name='name' required />
+                        <Input 
+                            placeholder={t('Authentication.NamePlaceholder')} 
+                            type='text' 
+                            name='name' 
+                            required 
+                        />
                         
-                        <div className="flex items-start gap-2 bg-amber-50 border-l-4 border-amber-400 rounded-md p-2 md:p-3">
-                            <AlertTriangle className="shrink-0 mt-0.5 text-amber-600 w-4 h-4 md:w-5 md:h-5" />
-                            <p className="text-amber-800 leading-relaxed text-xs md:text-sm">
+                        <div className="connections-warning-message">
+                            <AlertTriangle className="connections-warning-icon" />
+                            <p className="connections-warning-text">
                                 {t('Authentication.NameWarning')}
                             </p>
                         </div>
                         
-                        <Input placeholder={t('Authentication.EmailPlaceholder')} type='email' name='email' required />
-                        <Input placeholder={t('Authentication.PasswordPlaceholder')} type='password' name='password' required />
-                        <Input placeholder={t('Authentication.ConfirmPasswordPlaceholder')} type='password' name='confirmPassword' required />
-                        <Button content={t('Authentication.Register.RegisterButton')} variant='primary' />
+                        <Input 
+                            placeholder={t('Authentication.EmailPlaceholder')} 
+                            type='email' 
+                            name='email' 
+                            required 
+                        />
+                        <Input 
+                            placeholder={t('Authentication.PasswordPlaceholder')} 
+                            type='password' 
+                            name='password' 
+                            required 
+                        />
+                        <Input 
+                            placeholder={t('Authentication.ConfirmPasswordPlaceholder')} 
+                            type='password' 
+                            name='confirmPassword' 
+                            required 
+                        />
+                        <Button 
+                            content={t('Authentication.Register.RegisterButton')} 
+                            variant='primary'
+                            type='submit'
+                            disabled={isLoading}
+                        />
                     </form>
-
-                    {/* View Toggle Buttons */}
-                    <div className="flex flex-row gap-2 md:gap-3 w-full mt-2 md:mt-4">
-                        <Button 
-                            content={t('Authentication.LoginViewButton')} 
-                            variant={view === 'signin' ? 'primary' : 'secondary'}
-                            onClick={() => setView('signin')}
-                        />
-                        <Button 
-                            content={t('Authentication.RegisterViewButton')} 
-                            variant={view === 'signup' ? 'primary' : 'secondary'}
-                            onClick={() => setView('signup')}
-                        />
-                    </div>
                 </div>
             </div>
+                    {/* Toggle Between Sign In and Sign Up */}
+                    <div className="connections-toggle-container">
+                        <p className="connections-toggle-text">
+                            {view === 'signin' 
+                                ? t('Authentication.NoAccount', { defaultValue: 'Pas encore de compte ?' })
+                                : t('Authentication.HasAccount', { defaultValue: 'Vous avez déjà un compte ?' })
+                            }
+                        </p>
+                        <button 
+                            type="button"
+                            className="connections-toggle-link"
+                            onClick={() => setView(view === 'signin' ? 'signup' : 'signin')}
+                        >
+                            {view === 'signin' 
+                                ? t('Authentication.CreateAccount', { defaultValue: 'Créer un compte' })
+                                : t('Authentication.LoginViewButton', { defaultValue: 'Se connecter' })
+                            }
+                        </button>
+                    </div>
         </div>
     );
 }

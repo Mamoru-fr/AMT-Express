@@ -1,0 +1,533 @@
+/* Connections Page Styles */
+
+/* Main Container */
+.connections-container {
+  position: relative;
+  width: 100vw;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--theme-bg);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .connections-container {
+    padding: 1rem;
+  }
+}
+
+/* Header Section */
+.connections-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: 2.5rem;
+  padding-bottom: 1rem;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .connections-header {
+    padding-top: 3rem;
+    padding-bottom: 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+/* Logo Icon */
+.connections-logo-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border: 2px solid var(--color-gradient-end);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+@media (min-width: 640px) {
+  .connections-logo-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 14px;
+  }
+}
+
+.connections-logo-icon svg {
+  width: 100%;
+  height: 100%;
+  color: var(--color-client-gradient-end);
+}
+
+/* Title and Subtitle */
+.connections-title-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.connections-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--theme-text);
+  text-align: center;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .connections-title {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-title {
+    font-size: 2.5rem;
+  }
+}
+
+.connections-subtitle {
+  font-size: 0.875rem;
+  color: var(--theme-text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .connections-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Main Content Section */
+.connections-content-wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 1;
+  padding: 0.75rem;
+  /* padding-bottom: 5rem; */
+}
+
+@media (min-width: 640px) {
+  .connections-content-wrapper {
+    padding: 1rem;
+    /* padding-bottom: 6.25rem; */
+  }
+}
+
+/* Card Container */
+.connections-card {
+  position: relative;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--color-client-gradient-end);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px var(--color-client-shadow);
+  padding: 1rem;
+  width: 95vw;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .connections-card {
+    border-radius: 1.75rem;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    width: 90vw;
+    max-height: 70vh;
+    gap: 1.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-card {
+    border-radius: 2rem;
+    padding: 2rem;
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .connections-card {
+    padding: 2.5rem;
+    gap: 2.5rem;
+  }
+}
+
+/* Scrollbar Styling */
+.connections-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.connections-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.connections-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 200, 55, 0.3);
+  border-radius: 4px;
+}
+
+.connections-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 200, 55, 0.5);
+}
+
+/* Error Message */
+.connections-error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: rgb(254, 242, 242);
+  border-left: 4px solid rgb(248, 113, 113);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .connections-error-message {
+    background-color: rgba(127, 29, 29, 0.2);
+    border-left-color: rgb(239, 68, 68);
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-error-message {
+    padding: 0.75rem;
+  }
+}
+
+.connections-error-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: rgb(220, 38, 38);
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (min-width: 768px) {
+  .connections-error-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.connections-error-text {
+  color: rgb(153, 27, 27);
+  line-height: 1.5;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .connections-error-text {
+    color: rgb(254, 226, 226);
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-error-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* Form Styles */
+.connections-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .connections-form {
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .connections-form {
+    gap: 1.5rem;
+  }
+}
+
+.connections-form.hidden {
+  display: none;
+}
+
+/* Input Group */
+.connections-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.connections-input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-text);
+  margin: 0;
+}
+
+.connections-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  transition: all var(--transition-base);
+  box-sizing: border-box;
+}
+
+.connections-input::placeholder {
+  color: var(--theme-text-secondary);
+}
+
+.connections-input:focus {
+  outline: none;
+  border-color: var(--color-client-gradient-end);
+  box-shadow: 0 0 0 3px rgba(255, 128, 8, 0.1);
+}
+
+@media (min-width: 768px) {
+  .connections-input {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+/* Forgot Password Link */
+.connections-forgot-password-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.connections-forgot-password-link {
+  font-size: 0.875rem;
+  color: var(--color-client-gradient-end);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-base);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.connections-forgot-password-link:hover {
+  color: var(--color-client-gradient-start);
+  text-decoration: underline;
+}
+
+.connections-forgot-password-link:focus {
+  outline: 2px solid var(--color-client-gradient-end);
+  outline-offset: 2px;
+}
+
+/* Button Styles */
+.connections-button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .connections-button {
+    padding: 1rem 1.75rem;
+    font-size: 1.0625rem;
+    border-radius: var(--radius-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .connections-button {
+    padding: 1.125rem 2rem;
+    font-size: 1.125rem;
+  }
+}
+
+/* Primary Button */
+.connections-button-primary {
+  background: linear-gradient(135deg, var(--color-admin-gradient-start), var(--color-admin-gradient-mid), var(--color-admin-gradient-end));
+  color: var(--color-admin-text);
+  box-shadow: 0 6px 20px var(--color-admin-shadow);
+}
+
+.connections-button-primary:hover {
+  box-shadow: 0 8px 24px var(--color-admin-shadow);
+  transform: translateY(-2px);
+}
+
+.connections-button-primary:active {
+  transform: translateY(0);
+}
+
+.connections-button-primary:focus {
+  outline: 2px solid var(--color-admin-gradient-mid);
+  outline-offset: 2px;
+}
+
+.connections-button-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Button Row */
+.connections-button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .connections-button-row {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+}
+
+/* Toggle Container */
+.connections-toggle-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  /* margin-top: 1rem; */
+  /* padding-top: 1rem; */
+  /* border-top: 1px solid var(--theme-border); */
+}
+
+@media (min-width: 640px) {
+  .connections-toggle-container {
+    padding: 1rem;
+    padding-bottom: 9.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-toggle-container {
+    gap: 1rem;
+    /* margin-top: 1.5rem; */
+    /* padding-top: 1.5rem; */
+  }
+}
+
+.connections-toggle-text {
+  font-size: 0.875rem;
+  color: var(--theme-text-secondary);
+  margin: 0;
+}
+
+.connections-toggle-link {
+  color: var(--color-client-gradient-end);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color var(--transition-base);
+}
+
+.connections-toggle-link:hover {
+  color: var(--color-client-gradient-start);
+  text-decoration: underline;
+}
+
+.connections-toggle-link:focus {
+  outline: 2px solid var(--color-client-gradient-end);
+  outline-offset: 2px;
+}
+
+/* Warning Message */
+.connections-warning-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: rgb(254, 252, 232);
+  border-left: 4px solid rgb(202, 138, 4);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .connections-warning-message {
+    background-color: rgba(120, 53, 15, 0.2);
+    border-left-color: rgb(251, 146, 60);
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-warning-message {
+    padding: 0.75rem;
+  }
+}
+
+.connections-warning-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: rgb(180, 83, 9);
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .connections-warning-icon {
+    color: rgb(251, 146, 60);
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-warning-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.connections-warning-text {
+  color: rgb(120, 53, 15);
+  line-height: 1.5;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .connections-warning-text {
+    color: rgb(253, 230, 138);
+  }
+}
+
+@media (min-width: 768px) {
+  .connections-warning-text {
+    font-size: 0.875rem;
+  }
+}

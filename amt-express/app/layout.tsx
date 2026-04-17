@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@/css/main.css";
 import {auth} from "@/lib/auth/auth";
 import {headers} from "next/headers";
 import {SessionProvider} from "@/context/SessionContext";
 import {I18nProvider} from "@/context/I18nProvider";
-import {LanguageDropdown} from "@/components/languageComponents/LanguageDropdown";
+import {LanguageDropdown} from "@/components/LanguageComponents/LanguageDropdown";
 
 export const metadata: Metadata = {
   title: "AMT Express",

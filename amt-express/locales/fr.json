@@ -1,6 +1,7 @@
 {
     "Authentication": {
-        "Title": "Bienvenue chez AMT Express",
+        "Title": "AMT Express",
+        "Subtitle": "Votre chauffeur d'excellence",
         "NamePlaceholder": "Entrez votre nom complet",
         "NameWarning": "Votre nom sera visible par les conducteurs",
         "EmailPlaceholder": "Entrez votre email",
@@ -9,10 +10,10 @@
         "LoginViewButton": "Connexion",
         "RegisterViewButton": "Inscription",
         "Login": {
-            "LoginButton": "Se connecter"
+            "LoginButton": "Se connecter →"
         },
         "Register": {
-            "RegisterButton": "S'inscrire"
+            "RegisterButton": "S'inscrire →"
         }
     },
     "errors": {
