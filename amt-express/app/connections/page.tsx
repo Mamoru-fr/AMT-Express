@@ -169,8 +169,8 @@ export default function ConnectionsPage() {
                     <div className="connections-toggle-container">
                         <p className="connections-toggle-text">
                             {view === 'signin' 
-                                ? t('Authentication.NoAccount', { defaultValue: 'Pas encore de compte ?' })
-                                : t('Authentication.HasAccount', { defaultValue: 'Vous avez déjà un compte ?' })
+                                ? t('Authentication.NoAccount')
+                                : t('Authentication.HasAccount')
                             }
                         </p>
                         <button 
@@ -179,8 +179,8 @@ export default function ConnectionsPage() {
                             onClick={() => setView(view === 'signin' ? 'signup' : 'signin')}
                         >
                             {view === 'signin' 
-                                ? t('Authentication.CreateAccount', { defaultValue: 'Créer un compte' })
-                                : t('Authentication.LoginViewButton', { defaultValue: 'Se connecter' })
+                                ? t('Authentication.CreateAccount')
+                                : t('Authentication.LoginViewButton')
                             }
                         </button>
                     </div>

@@ -7,8 +7,10 @@
         "EmailPlaceholder": "Enter your email",
         "PasswordPlaceholder": "Enter your password",
         "ConfirmPasswordPlaceholder": "Confirm your password",
-        "LoginViewButton": "Login",
-        "RegisterViewButton": "Register",
+        "CreateAccount": "Create Account",
+        "LoginViewButton": "Register",
+        "NoAccount": "Don't have an account?",
+        "HasAccount": "Already have an account?",
         "Login": {
             "LoginButton": "Log In →"
         },
