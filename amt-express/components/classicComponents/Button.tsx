@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import './button.css';
+import '@/css/components/classicComponents/button.css';
 
 type Props = {
     content: string;

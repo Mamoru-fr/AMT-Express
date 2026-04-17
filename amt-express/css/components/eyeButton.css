@@ -1,0 +1,33 @@
+/* Eye Button Component Styles */
+
+.eyeButton {
+  /* Base styles */
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.3s ease;
+  font-family: inherit;
+}
+
+.eyeButton:hover {
+  color: #374151;
+}
+
+.eyeButton:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.eyeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
