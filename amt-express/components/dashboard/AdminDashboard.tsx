@@ -5,7 +5,7 @@
 import {useState, useEffect} from "react";
 
 // Icons imports from lucide-react
-import {Car, Users, FileText, Euro} from "lucide-react";
+import {Car, Users, FileText, Euro, LayoutDashboard} from "lucide-react";
 
 // Actions imports from the rides management library and admin dashboard library
 import {createRide, fetchAvailableDrivers, fetchAllCustomers} from "@/lib/actions/ridesManagementActions";
@@ -18,6 +18,7 @@ import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
 import {AddRideModal} from "@/components/admin/rideManagement/AddRideModal";
+import styles from "./AdminDashboard.module.css";
 
 // Type imports for ride status enumeration
 import {RideStatus} from "@/content/database_types/ride";
@@ -144,64 +145,68 @@ export function AdminDashboard({data}: Props) {
     };
 
     return (
-        <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8">
-            <div className="max-w-7xl mx-auto my-auto space-y-6 sm:space-y-8 md:space-y-10">
+        <div className={styles.adminDashboard}>
+            <div className={styles.adminInner}>
                 {/* ========== Dashboard Header ========== */}
-                <div className="mb-4 sm:mb-6 md:mb-8">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">Admin Dashboard</h1>
-                    <p className="text-white/90 mt-1 sm:mt-2 drop-shadow-md text-sm sm:text-base">Complete overview of platform activity</p>
+                <div className={styles.headerBlock}>
+                    <div className={styles.titleRow}>
+                        <div className={styles.titleIcon}>
+                            <LayoutDashboard />
+                        </div>
+                        <h1 className={styles.title}>Admin Dashboard</h1>
+                    </div>
+                    <p className={styles.subtitle}>Complete overview of platform activity</p>
                 </div>
 
                 {/* ========== Key Performance Indicators (KPIs) ========== */}
                 {/* Responsive grid: 2 columns on mobile, 4 columns on large screens */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+                <div className={styles.kpiGrid}>
                     {/* Total number of rides across all statuses */}
                     <DashboardDataCard
                         title="Total Rides"
                         data={kpis.totalRides}
                         icon={Car}
-                        iconColor="bg-blue-500"
+                        iconColor="blue"
                     />
                     {/* Count of currently active users (drivers + customers) */}
                     <DashboardDataCard
                         title="Active Users"
                         data={kpis.activeUsers}
                         icon={Users}
-                        iconColor="bg-green-500"
+                        iconColor="green"
                     />
                     {/* Number of invoices awaiting payment */}
                     <DashboardDataCard
                         title="Pending Invoices"
                         data={kpis.pendingInvoices}
                         icon={FileText}
-                        iconColor="bg-yellow-500"
+                        iconColor="yellow"
                     />
                     {/* Total revenue generated in the current month */}
                     <DashboardDataCard
                         title="Monthly Revenue"
                         data={`€${Number(kpis.monthlyRevenue).toFixed(2)}`}
                         icon={Euro}
-                        iconColor="bg-purple-500"
+                        iconColor="purple"
                     />
                 </div>
 
                 {/* ========== Quick Actions ========== */}
                 {/* Primary action: Create new ride */}
-                <div className="flex justify-end">
+                <div className={styles.actionsRow}>
                     {/* Button text adapts to screen size: "Add Ride" on mobile, "Add New Ride" on larger screens */}
                     <button
-                        className="flex w-full justify-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-2.5 md:py-3 px-4 sm:px-5 md:px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2 text-sm sm:text-base"
+                        className={styles.primaryAction}
                         onClick={() => setAddModal(true)}
                     >
-                        <span className="text-lg sm:text-xl">+</span>
-                        <span className="hidden xs:inline">Add New Ride</span>
-                        <span className="xs:hidden">Add Ride</span>
+                        <span className={styles.primaryActionIcon}>+</span>
+                        <span>Add New Ride</span>
                     </button>
                 </div>
 
                 {/* ========== Analytics Charts ========== */}
                 {/* Displays monthly trends for rides and revenue */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                <div className={styles.chartGrid}>
                     <MonthlyRidesChart data={monthlyRides} />
                     <MonthlyRevenueChart data={monthlyRevenue} />
                 </div>
@@ -209,9 +214,9 @@ export function AdminDashboard({data}: Props) {
                 {/* ========== Status Overview & Recent Activity ========== */}
                 {/* Left: Pie chart showing ride status distribution */}
                 {/* Right: Table of most recent rides with quick actions (2/3 width on large screens) */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                <div className={styles.bottomGrid}>
                     <StatusPieChart data={statusDistribution} />
-                    <div className="lg:col-span-2">
+                    <div className={styles.recentRidesCol}>
                         <RecentRidesTable rides={recentRides} />
                     </div>
                 </div>

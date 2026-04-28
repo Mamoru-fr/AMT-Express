@@ -193,8 +193,6 @@
   .connections-card {
     padding: 2.5rem;
     gap: 2.5rem;
-    min-height: 650px;
-    aspect-ratio: 3 / 2;
   }
 
   @media (max-height: 800px) {

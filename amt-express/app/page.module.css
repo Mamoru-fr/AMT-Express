@@ -1,0 +1,260 @@
+.homeContainer {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--theme-bg);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+  .homeContainer {
+    padding: 1rem;
+  }
+}
+
+.homeHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: 2.5rem;
+  padding-bottom: 1rem;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .homeHeader {
+    padding-top: 3rem;
+    padding-bottom: 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+.homeLogoIcon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border: 2px solid var(--color-gradient-end);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+@media (min-width: 640px) {
+  .homeLogoIcon {
+    width: 70px;
+    height: 70px;
+    border-radius: 14px;
+  }
+}
+
+.homeLogoIconSvg {
+  width: 100%;
+  height: 100%;
+  color: var(--color-client-gradient-end);
+}
+
+.homeErrorIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-client-gradient-end);
+}
+
+.homeTitleSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.homeTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--theme-text);
+  text-align: center;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .homeTitle {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .homeTitle {
+    font-size: 2.5rem;
+  }
+}
+
+.homeSubtitle {
+  font-size: 0.875rem;
+  color: var(--theme-text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .homeSubtitle {
+    font-size: 1rem;
+  }
+}
+
+.homeContentWrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex: 1;
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .homeContentWrapper {
+    padding: 1rem;
+  }
+}
+
+.homeCard {
+  position: relative;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--color-client-gradient-end);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px var(--color-client-shadow);
+  padding: 1rem;
+  width: min(95vw, 1100px);
+  min-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .homeCard {
+    border-radius: 1.75rem;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    width: min(90vw, 1100px);
+    gap: 1.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .homeCard {
+    border-radius: 2rem;
+    padding: 2rem;
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .homeCard {
+    padding: 2.5rem;
+    gap: 2.5rem;
+    min-height: 24rem;
+  }
+}
+
+.homeCard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.homeCard::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.homeCard::-webkit-scrollbar-thumb {
+  background: rgba(255, 200, 55, 0.3);
+  border-radius: 4px;
+}
+
+.homeCard::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 200, 55, 0.5);
+}
+
+.homeErrorMessage {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background-color: rgb(254, 242, 242);
+  border-left: 4px solid rgb(248, 113, 113);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .homeErrorMessage {
+    background-color: rgba(127, 29, 29, 0.2);
+    border-left-color: rgb(239, 68, 68);
+  }
+}
+
+.homeErrorText {
+  color: rgb(153, 27, 27);
+  line-height: 1.5;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .homeErrorText {
+    color: rgb(254, 226, 226);
+  }
+}
+
+.homePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+  min-height: 16rem;
+}
+
+.homePlaceholderTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--theme-text);
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .homePlaceholderTitle {
+    font-size: 1.875rem;
+  }
+}
+
+.homePlaceholderText {
+  font-size: 0.875rem;
+  color: var(--theme-text-secondary);
+  margin: 0;
+  max-width: 28rem;
+}
+
+.homeDashboardWrapper {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  font-family: Inter, Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+@media (min-width: 640px) {
+  .homeDashboardWrapper {
+    padding: 1rem;
+  }
+}

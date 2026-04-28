@@ -1,0 +1,132 @@
+.card {
+  flex: 1;
+  width: 100%;
+  background: var(--app-surface-bg);
+  border: 1px solid var(--app-surface-border);
+  border-radius: var(--app-surface-radius);
+  box-shadow: var(--app-surface-shadow);
+}
+
+.content {
+  padding: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .content {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 1.25rem;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--app-muted-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 0.875rem;
+  }
+}
+
+.data {
+  margin: 0.375rem 0 0;
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+  font-weight: 700;
+  color: var(--app-title-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+  .data {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .data {
+    font-size: 1.5rem;
+  }
+}
+
+.iconBox {
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .iconBox {
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .iconBox {
+    padding: 0.75rem;
+  }
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-white);
+}
+
+@media (min-width: 640px) {
+  .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.iconBlue {
+  background: #3b82f6;
+}
+
+.iconGreen {
+  background: #10b981;
+}
+
+.iconYellow {
+  background: #f59e0b;
+}
+
+.iconPurple {
+  background: #8b5cf6;
+}
