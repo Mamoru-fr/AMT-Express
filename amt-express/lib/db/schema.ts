@@ -10,7 +10,7 @@ export const invoiceStatusEnum = pgEnum('invoice_status', ['unpaid', 'paid', 'ca
 
 // ========== TABLES ==========
 
-// --- Users (tous les utilisateurs, y compris les clients)
+// --- Users
 export const users = pgTable("users", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
@@ -31,7 +31,7 @@ export const users = pgTable("users", {
     index("users_role_idx").on(table.role),
 ]);
 
-// --- Drivers (1:1 avec users, uniquement pour les chauffeurs)
+// --- Drivers
 export const drivers = pgTable("drivers", {
     id: serial("id").primaryKey(),
     userId: text("user_id").notNull().unique().references(() => users.id, { onDelete: "set null" }),
@@ -61,12 +61,12 @@ export const productions = pgTable("productions", {
     index("productions_name_idx").on(table.name),
 ]);
 
-// --- Projects (chaque production a un projet générique par défaut)
+// --- Projects
 export const projects = pgTable("projects", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     productionId: text("production_id").references(() => productions.id, { onDelete: "set null" }),
-    isGeneric: boolean("is_generic").default(false).notNull(), // Pour identifier les projets génériques
+    isGeneric: boolean("is_generic").default(false).notNull(),
     startDate: timestamp("start_date").notNull(),
     endDate: timestamp("end_date").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -76,7 +76,7 @@ export const projects = pgTable("projects", {
     index("projects_isGeneric_idx").on(table.isGeneric),
 ]);
 
-// --- Rides (lié à un projet, pas directement à une production)
+// --- Rides
 export const rides = pgTable("rides", {
     id: serial("id").primaryKey(),
     departure: varchar("departure", { length: 255 }).notNull(),
@@ -126,7 +126,7 @@ export const rideOptions = pgTable("ride_options", {
     index("rideOptions_name_idx").on(table.name),
 ]);
 
-// --- Ride Selected Options (lien entre rides et rideOptions)
+// --- Ride Selected Options
 export const rideSelectedOptions = pgTable("ride_selected_options", {
     id: serial("id").primaryKey(),
     rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
@@ -138,7 +138,7 @@ export const rideSelectedOptions = pgTable("ride_selected_options", {
     index("rideSelectedOptions_optionId_idx").on(table.optionId),
 ]);
 
-// --- Ride Customers + Ratings (fusionnés)
+// --- Ride Customers
 export const rideCustomers = pgTable("ride_customers", {
     id: serial("id").primaryKey(),
     rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
@@ -156,6 +156,7 @@ export const rideCustomers = pgTable("ride_customers", {
 export const assignmentRequests = pgTable("assignment_requests", {
     id: serial("id").primaryKey(),
     rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
+    shiftId: integer("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
     driverId: integer("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
     status: requestStatusEnum("status").default('pending').notNull(),
     requestedAt: timestamp("requested_at").defaultNow().notNull(),
@@ -168,7 +169,6 @@ export const assignmentRequests = pgTable("assignment_requests", {
 // --- Invoices
 export const invoices = pgTable("invoices", {
     id: serial("id").primaryKey(),
-    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
     waitingFee: decimal("waiting_fee", { precision: 10, scale: 2 }).default("0").notNull(),
     subTotal: decimal("sub_total", { precision: 10, scale: 2 }).notNull(),
     tax: decimal("tax", { precision: 10, scale: 2 }).default("0").notNull(),
@@ -184,8 +184,27 @@ export const invoices = pgTable("invoices", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
-    index("invoices_rideId_idx").on(table.rideId),
     index("invoices_status_idx").on(table.status),
+]);
+
+// --- Invoice Items
+export const invoiceItems = pgTable("invoice_items", {
+    id: serial("id").primaryKey(),
+    invoiceId: integer("invoice_id").references(() => invoices.id, { onDelete: "cascade" }).notNull(),
+    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }),
+    shiftId: integer("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
+    description: text("description"),
+    quantity: integer("quantity").default(1).notNull(),
+    unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
+    taxRate: decimal("tax_rate", { precision: 5, scale: 2 }).default("0.00").notNull(),
+    taxAmount: decimal("tax_amount", { precision: 10, scale: 2 }).default("0.00").notNull(),
+    totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
+}, (table) => [
+    index("invoice_items_invoiceId_idx").on(table.invoiceId),
+    index("invoice_items_rideId_idx").on(table.rideId),
+    index("invoice_items_shiftId_idx").on(table.shiftId),
 ]);
 
 // --- Notifications
@@ -291,6 +310,7 @@ export const driversRelations = relations(drivers, ({ one, many }) => ({
     rides: many(rides),
     shiftPlanning: many(shiftPlanning),
     assignmentRequests: many(assignmentRequests),
+    invoiceItems: many(invoiceItems),
 }));
 
 export const productionsRelations = relations(productions, ({ many }) => ({
@@ -318,7 +338,7 @@ export const ridesRelations = relations(rides, ({ one, many }) => ({
     rideCustomers: many(rideCustomers),
     rideSelectedOptions: many(rideSelectedOptions),
     assignmentRequests: many(assignmentRequests),
-    invoices: many(invoices),
+    invoiceItems: many(invoiceItems),
 }));
 
 export const rideCustomersRelations = relations(rideCustomers, ({ one }) => ({
@@ -347,7 +367,7 @@ export const rideSelectedOptionsRelations = relations(rideSelectedOptions, ({ on
     }),
 }));
 
-export const shiftPlanningRelations = relations(shiftPlanning, ({ one }) => ({
+export const shiftPlanningRelations = relations(shiftPlanning, ({ one, many }) => ({
     driver: one(drivers, {
         fields: [shiftPlanning.driverId],
         references: [drivers.id],
@@ -356,6 +376,7 @@ export const shiftPlanningRelations = relations(shiftPlanning, ({ one }) => ({
         fields: [shiftPlanning.projectId],
         references: [projects.id],
     }),
+    invoiceItems: many(invoiceItems),
 }));
 
 export const assignmentRequestsRelations = relations(assignmentRequests, ({ one }) => ({
@@ -363,16 +384,32 @@ export const assignmentRequestsRelations = relations(assignmentRequests, ({ one 
         fields: [assignmentRequests.rideId],
         references: [rides.id],
     }),
+    shift: one(shiftPlanning, {
+        fields: [assignmentRequests.shiftId],
+        references: [shiftPlanning.id],
+    }),
     driver: one(drivers, {
         fields: [assignmentRequests.driverId],
         references: [drivers.id],
     }),
 }));
 
-export const invoicesRelations = relations(invoices, ({ one }) => ({
+export const invoicesRelations = relations(invoices, ({ many }) => ({
+    invoiceItems: many(invoiceItems),
+}));
+
+export const invoiceItemsRelations = relations(invoiceItems, ({ one }) => ({
+    invoice: one(invoices, {
+        fields: [invoiceItems.invoiceId],
+        references: [invoices.id],
+    }),
     ride: one(rides, {
-        fields: [invoices.rideId],
+        fields: [invoiceItems.rideId],
         references: [rides.id],
+    }),
+    shift: one(shiftPlanning, {
+        fields: [invoiceItems.shiftId],
+        references: [shiftPlanning.id],
     }),
 }));
 

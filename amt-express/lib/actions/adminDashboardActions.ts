@@ -7,6 +7,12 @@ import {eq, sql, and, gte} from 'drizzle-orm';
 import {auth} from '@/lib/auth/auth';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 
+// Types for query results
+type MonthlyRidesRow = { month: string; rides: number };
+type MonthlyRevenueRow = { month: string; revenue: number };
+type RecentRideRow = { id: number; departure: string; destination: string; customerId?: string | null; driverName: string | null; price: string; status: 'pending' | 'assigned' | 'completed' | 'cancelled'; departureTime: Date };
+type CustomerData = { id: string; name: string | null };
+
 // Type definition for the complete dashboard data structure
 // Includes KPIs, charts data, and recent activity
 export type AdminDashboardData = {
@@ -188,16 +194,16 @@ export async function getAdminDashboardData(): Promise<ActionResponse<AdminDashb
 
         // Get customer names for recent rides
         // Extract unique customer IDs from the rides (filter out null values)
-        const customerIds = [...new Set(recentRidesData.map((r: any) => r.customerId).filter(Boolean))];
+        const customerIds = [...new Set(recentRidesData.map((r: RecentRideRow) => r.customerId).filter(Boolean))];
         // Batch fetch all customer data in one query for efficiency
         const customersData = customerIds.length > 0
             ? await db.select({id: users.id, name: users.name}).from(users).where(sql`${users.id} IN ${customerIds}`)
             : [];
         
         // Create a lookup map for quick customer name access by ID
-        const customerMap = new Map(customersData.map((c: any) => [c.id, c.name]));
+        const customerMap = new Map(customersData.map((c: CustomerData) => [c.id, c.name]));
 
-        const recentRides = recentRidesData.map((ride: any) => ({
+        const recentRides = recentRidesData.map((ride: RecentRideRow) => ({
             id: ride.id,
             departure: ride.departure,
             destination: ride.destination,
@@ -217,11 +223,11 @@ export async function getAdminDashboardData(): Promise<ActionResponse<AdminDashb
                     pendingInvoices,
                     monthlyRevenue
                 },
-                monthlyRides: monthlyRidesData.map((d: any) => ({
+                monthlyRides: monthlyRidesData.map((d: MonthlyRidesRow) => ({
                     month: d.month,
                     rides: Number(d.rides)
                 })),
-                monthlyRevenue: monthlyRevenueData.map((d: any) => ({
+                monthlyRevenue: monthlyRevenueData.map((d: MonthlyRevenueRow) => ({
                     month: d.month,
                     revenue: Number(d.revenue)
                 })),

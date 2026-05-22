@@ -10,10 +10,9 @@
  */
 
 import db from "@/lib/db/drizzle";
-import {rides, users, rideCustomers, productions, projects} from "@/lib/db/schema";
+import {rides, users, drivers, rideCustomers, productions, projects} from "@/lib/db/schema";
 import {eq, sql, desc, asc, and, or, ilike} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
-import {auth} from "@/lib/auth/auth";
 import {ActionResponse, ErrorCodes} from "@/lib/types/action-response";
 import {
     CreateRideSchema,
@@ -124,7 +123,7 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
         }[sortBy] || rides.departureTime) : rides.departureTime;
 
         // === FETCH RIDES WITH DRIVER INFO ===
-        // Left join with users table to get driver information
+        // Left join with drivers and users tables to get driver information
         // Apply all filters, sorting, and pagination
         const ridesData = await db
             .select({
@@ -132,7 +131,8 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
                 driver: users,
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .where(conditions.length > 0 ? and(...conditions) : undefined)
             .orderBy(sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn))
             .limit(limit)
@@ -141,7 +141,7 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
         // === FETCH CUSTOMER DATA FOR EACH RIDE ===
         // For each ride, query the many-to-many rideCustomers table
         // to get all associated customers (a ride can have multiple customers)
-        let ridesWithCustomers: RideWithRelations[] = await Promise.all(
+        const ridesWithCustomers: RideWithRelations[] = await Promise.all(
             ridesData.map(async (row) => {
                 const customers = await db
                     .select({customer: users})
@@ -159,7 +159,7 @@ export async function fetchRidesForManagement(filters: RideFilters = {}): Promis
                     price: row.ride.price.toString(),  // Convert to string for display
                     distanceKm: row.ride.distanceKm?.toString() || null,
                     waitingTime: row.ride.waitingTime ?? 0,
-                    options: row.ride.options ?? [],
+                    options: [],
                 };
             })
         );
@@ -246,9 +246,9 @@ export async function updateRideDetails(
         }
 
         // Validate input
-        const validatedData = UpdateRideDetailsSchema.parse({rideId, ...data});
+        UpdateRideDetailsSchema.parse({rideId, ...data});
         // Build update object only with provided fields (partial update)
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
 
         if (data.departure) updateData.departure = data.departure;
         if (data.destination) updateData.destination = data.destination;
@@ -324,11 +324,24 @@ export async function assignDriverToRide(rideId: number, driverId: string): Prom
                 code: ErrorCodes.RIDE_NOT_AVAILABLE
             };
         }
+        
+        // Convert userId to drivers.id
+        const driver = await db.query.drivers.findFirst({
+            where: eq(drivers.userId, validatedData.driverId)
+        });
+        
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
         await db
             .update(rides)
             .set({
-                driverId: validatedData.driverId,
+                driverId: driver.id,
                 status: 'assigned'  // Automatically update status when driver is assigned
             })
             .where(eq(rides.id, validatedData.rideId));
@@ -596,9 +609,18 @@ export async function createRide(data: {
 
         // Validate input
         const validatedData = CreateRideSchema.parse(data);
-        const {departureTime, customerIds, departure, destination, driverId, price, status} = validatedData;
+        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, status} = validatedData;
 
         // === CREATE RIDE ===
+        // If driverId provided, convert from userId to drivers.id
+        let driverId: number | null = null;
+        if (driverUserId) {
+            const driver = await db.query.drivers.findFirst({
+                where: eq(drivers.userId, driverUserId)
+            });
+            driverId = driver?.id ?? null;
+        }
+
         const [newRide] = await db
             .insert(rides)
             .values({
@@ -607,7 +629,7 @@ export async function createRide(data: {
                 departureTime,
                 price: price || '0',
                 status: status || 'pending',
-                driverId: driverId || null,
+                driverId: driverId,
             })
             .returning({id: rides.id});
 
@@ -725,7 +747,7 @@ export async function fetchAllProductions(): Promise<ActionResponse<Array<{id: s
  * 
  * @returns Array of project objects with id, name, and productionId
  */
-export async function fetchAllProjects(): Promise<ActionResponse<Array<{id: string, name: string, productionId: string}>>> {
+export async function fetchAllProjects(): Promise<ActionResponse<Array<{id: string, name: string, productionId: string | null}>>> {
     try {
         // Validate session
         const {session, isAdmin} = await getSessionWithRole();

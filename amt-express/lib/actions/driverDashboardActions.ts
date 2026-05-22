@@ -1,14 +1,29 @@
 'use server'
 
 import db from "@/lib/db/drizzle";
-import {rides, users, rideCustomers, assignmentRequests, ratings} from "@/lib/db/schema";
-import {eq, and, gte, desc, sql, or, lt, count} from "drizzle-orm";
+import {rides, users, drivers, rideCustomers, assignmentRequests} from "@/lib/db/schema";
+import {eq, and, gte, desc, sql, or, count} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {auth} from "@/lib/auth/auth";
 import {ActionResponse, ErrorCodes} from "@/lib/types/action-response";
 import {RequestRideAssignmentSchema, ToggleAvailabilitySchema, RideHistorySchema} from "@/lib/validations/dashboard";
 import {z} from "zod";
 import {getSessionWithRole} from "../auth/session";
+
+// Type for a ride record returned from database
+type Ride = typeof rides.$inferSelect;
+type RideWithCustomers = Ride & {
+    rideCustomers: Array<typeof rideCustomers.$inferSelect & {customer: typeof users.$inferSelect}>;
+};
+
+/**
+ * Get the driver record for a user
+ */
+async function getDriverForUser(userId: string) {
+    return db.query.drivers.findFirst({
+        where: eq(drivers.userId, userId)
+    });
+}
 
 export type DriverStats = {
     totalRides: number;
@@ -52,21 +67,29 @@ export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashb
     if (!session) { return { success: false, error: 'No active session found', code: ErrorCodes.UNAUTHORIZED };}
 
     try {
-        const driverId = session.user.id;
+        const userId = session.user.id;
+        
+        // Get the driver record for this user
+        const driver = await db.query.drivers.findFirst({
+            where: eq(drivers.userId, userId)
+        });
+        
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
         // Fetch driver stats
-        const stats = await getDriverStats(driverId);
+        const stats = await getDriverStats(driver.id);
 
         // Fetch suggested rides (unassigned, upcoming rides)
-        const suggestedRides = await getSuggestedRides(driverId);
+        const suggestedRides = await getSuggestedRides();
 
         // Fetch assigned rides
-        const assignedRides = await getAssignedRides(driverId);
-
-        // Get driver availability status
-        const driver = await db.query.users.findFirst({
-            where: eq(users.id, driverId)
-        });
+        const assignedRides = await getAssignedRides(driver.id);
 
         return {
             success: true,
@@ -74,7 +97,7 @@ export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashb
                 stats,
                 suggestedRides,
                 assignedRides,
-                isAvailable: driver?.available || false
+                isAvailable: driver.available || false
             }
         };
     } catch (error) {
@@ -90,23 +113,23 @@ export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashb
 /**
  * Get driver statistics
  */
-async function getDriverStats(driverId: string): Promise<DriverStats> {
+async function getDriverStats(driverId: number): Promise<DriverStats> {
     const allRides = await db.query.rides.findMany({
         where: eq(rides.driverId, driverId)
     });
 
-    const completedRides = allRides.filter((r: any) => r.status === 'completed');
-    const pendingRides = allRides.filter((r: any) => r.status === 'pending' || r.status === 'assigned');
+    const completedRides = allRides.filter((r: Ride) => r.status === 'completed');
+    const pendingRides = allRides.filter((r: Ride) => r.status === 'pending' || r.status === 'assigned');
     
-    const totalEarnings = completedRides.reduce((sum: number, ride: any) => {
+    const totalEarnings = completedRides.reduce((sum: number, ride: Ride) => {
         return sum + parseFloat(ride.price || '0');
     }, 0);
 
     // Calculate average rating from database
     const ratingResult = await db
-        .select({averageRating: sql<number>`COALESCE(AVG(${ratings.rating}), 0)`})
-        .from(ratings)
-        .innerJoin(rides, eq(rides.id, ratings.rideId))
+        .select({averageRating: sql<number>`COALESCE(AVG(${rideCustomers.rating}), 0)`})
+        .from(rideCustomers)
+        .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
         .where(eq(rides.driverId, driverId));
     
     const averageRating = Number(ratingResult[0]?.averageRating || 0);
@@ -123,7 +146,7 @@ async function getDriverStats(driverId: string): Promise<DriverStats> {
 /**
  * Get suggested rides for driver (unassigned, upcoming rides)
  */
-async function getSuggestedRides(driverId: string): Promise<SuggestedRide[]> {
+async function getSuggestedRides(): Promise<SuggestedRide[]> {
     const now = new Date();
     
     const unassignedRides = await db.query.rides.findMany({
@@ -142,14 +165,14 @@ async function getSuggestedRides(driverId: string): Promise<SuggestedRide[]> {
         }
     });
 
-    return unassignedRides.map((ride: any) => ({
+    return unassignedRides.map((ride: RideWithCustomers) => ({
         id: ride.id,
         departureTime: ride.departureTime,
         departure: ride.departure,
         destination: ride.destination,
         price: ride.price || '0.00',
         distance: ride.distanceKm ? `${ride.distanceKm} km` : undefined,
-        customers: ride.rideCustomers.map((rc: any) => ({
+        customers: ride.rideCustomers.map((rc: RideWithCustomers['rideCustomers'][0]) => ({
             id: rc.customer.id,
             name: rc.customer.name || rc.customer.email
         }))
@@ -159,7 +182,7 @@ async function getSuggestedRides(driverId: string): Promise<SuggestedRide[]> {
 /**
  * Get rides assigned to driver
  */
-async function getAssignedRides(driverId: string): Promise<RideWithRelations[]> {
+async function getAssignedRides(driverId: number): Promise<RideWithRelations[]> {
     const now = new Date();
     
     const assignedRides = await db.query.rides.findMany({
@@ -182,14 +205,14 @@ async function getAssignedRides(driverId: string): Promise<RideWithRelations[]> 
         }
     });
 
-    return assignedRides.map((ride: any) => ({
+    return assignedRides.map((ride: RideWithCustomers) => ({
         ...ride,
-        customers: ride.rideCustomers.map((rc: any) => ({
+        customers: ride.rideCustomers.map((rc: RideWithCustomers['rideCustomers'][0]) => ({
             id: rc.customer.id,
             name: rc.customer.name || rc.customer.email,
             email: rc.customer.email
         }))
-    })) as RideWithRelations[];
+    })) as unknown as RideWithRelations[];
 }
 
 /**
@@ -210,11 +233,21 @@ export async function toggleDriverAvailability(available: boolean): Promise<Acti
         }
 
         // Validate input
-        const validatedData = ToggleAvailabilitySchema.parse({available});
+        ToggleAvailabilitySchema.parse({available});
+        
+        // Get driver record
+        const driver = await getDriverForUser(session.user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
-        await db.update(users)
-            .set({ available: validatedData.available })
-            .where(eq(users.id, session.user.id));
+        await db.update(drivers)
+            .set({ available })
+            .where(eq(drivers.id, driver.id));
 
         return {success: true, data: undefined};
     } catch (error) {
@@ -255,7 +288,16 @@ export async function requestRideAssignment(rideId: number, message?: string): P
 
         // Validate input
         const validatedData = RequestRideAssignmentSchema.parse({rideId, message});
-        const driverId = session.user.id;
+        
+        // Get driver record
+        const driver = await getDriverForUser(session.user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
         // Check if driver has reached max pending requests (5)
         const pendingRequestsCount = await db
@@ -263,7 +305,7 @@ export async function requestRideAssignment(rideId: number, message?: string): P
             .from(assignmentRequests)
             .where(
                 and(
-                    eq(assignmentRequests.driverId, driverId),
+                    eq(assignmentRequests.driverId, driver.id),
                     eq(assignmentRequests.status, 'pending')
                 )
             );
@@ -309,7 +351,7 @@ export async function requestRideAssignment(rideId: number, message?: string): P
         const existingRequest = await db.query.assignmentRequests.findFirst({
             where: (assignmentRequests, {and, eq}) => and(
                 eq(assignmentRequests.rideId, validatedData.rideId),
-                eq(assignmentRequests.driverId, driverId)
+                eq(assignmentRequests.driverId, driver.id)
             )
         });
 
@@ -324,7 +366,7 @@ export async function requestRideAssignment(rideId: number, message?: string): P
         // Create assignment request
         await db.insert(assignmentRequests).values({
             rideId: validatedData.rideId,
-            driverId,
+            driverId: driver.id,
             status: 'pending'
         });
 
@@ -371,11 +413,21 @@ export async function getDriverRideHistory(
 
         // Validate input
         const validatedData = RideHistorySchema.parse({page, limit});
-        const driverId = session.user.id;
+        
+        // Get driver record
+        const driver = await getDriverForUser(session.user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+        
         const offset = (validatedData.page - 1) * validatedData.limit;
 
         const allRides = await db.query.rides.findMany({
-            where: eq(rides.driverId, driverId),
+            where: eq(rides.driverId, driver.id),
             orderBy: [desc(rides.departureTime)],
             limit: validatedData.limit,
             offset,
@@ -391,21 +443,21 @@ export async function getDriverRideHistory(
 
         const totalRides = await db.select({ count: sql<number>`count(*)` })
             .from(rides)
-            .where(eq(rides.driverId, driverId));
+            .where(eq(rides.driverId, driver.id));
 
         const total = Number(totalRides[0]?.count || 0);
 
         return {
             success: true,
             data: {
-                rides: allRides.map((ride: any) => ({
+                rides: allRides.map((ride: RideWithCustomers) => ({
                     ...ride,
-                    customers: ride.rideCustomers.map((rc: any) => ({
+                    customers: ride.rideCustomers.map((rc: RideWithCustomers['rideCustomers'][0]) => ({
                         id: rc.customer.id,
                         name: rc.customer.name || rc.customer.email,
                         email: rc.customer.email
                     }))
-                })) as RideWithRelations[],
+                })) as unknown as RideWithRelations[],
                 total,
                 page: validatedData.page,
                 totalPages: Math.ceil(total / validatedData.limit)
