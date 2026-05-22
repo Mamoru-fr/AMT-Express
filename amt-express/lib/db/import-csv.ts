@@ -128,9 +128,9 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
         }
         parts.push(current.trim()); // Add last field
         
-        // Expected 17 columns
+        // Expected 16 columns (forfait column was removed in newer CSV format)
         if (parts.length < 16) {
-            console.warn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/17)`);
+            console.warn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/16)`);
             continue;
         }
         
@@ -150,8 +150,8 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
             tarifAgenda: parts[12] || '',
             tarifClient: parts[13] || '',
             factChauffeur: parts[14] || '',
-            forfait: parts[15] || '',
-            attentionMention: parts[16] || '',
+            forfait: '',  // No longer in CSV, set to empty
+            attentionMention: parts[15] || '',
         });
     }
     
