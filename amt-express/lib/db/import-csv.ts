@@ -342,6 +342,15 @@ async function importCSV(csvPath: string) {
                 // Get or create driver
                 const driverId = await getOrCreateDriver(row.idChauffeur, row.chauffeur);
                 
+                // Get driver record to get drivers.id (integer)
+                let driverIdInteger: number | null = null;
+                if (driverId) {
+                    const driverRecord = await db.query.drivers.findFirst({
+                        where: (drivers, {eq}) => eq(drivers.userId, driverId)
+                    });
+                    driverIdInteger = driverRecord?.id ?? null;
+                }
+                
                 // Get or create production
                 const productionId = await getOrCreateProduction(row.facturation);
                 
@@ -363,8 +372,8 @@ async function importCSV(csvPath: string) {
                     departureTime: departureTime,
                     price: finalPrice.toString(),
                     status: 'completed',
-                    driverId: driverId,
-                    production: productionId,
+                    driverId: driverIdInteger,
+                    projectId: productionId ?? undefined,
                     customerNotes: notes.join(' | ') || null,
                 });
                 

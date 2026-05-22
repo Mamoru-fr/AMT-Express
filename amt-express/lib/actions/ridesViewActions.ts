@@ -6,8 +6,8 @@
  */
 
 import db from "@/lib/db/drizzle";
-import {rides, users, rideCustomers} from "@/lib/db/schema";
-import {eq, and, or, desc, inArray, isNull, count} from "drizzle-orm";
+import {rides, users, drivers, rideCustomers} from "@/lib/db/schema";
+import {eq, and, desc, inArray, isNull, count} from "drizzle-orm";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {auth} from "@/lib/auth/auth";
 import {ActionResponse, ErrorCodes} from "@/lib/types/action-response";
@@ -31,6 +31,13 @@ async function getSessionWithRole() {
     };
 }
 
+// Helper to get driver record from userId
+async function getDriverForUser(userId: string) {
+    return db.query.drivers.findFirst({
+        where: eq(drivers.userId, userId)
+    });
+}
+
 export async function fetchDriverRidesCount(): Promise<ActionResponse<{completed: number, pending: number}>> {
     try {
         const {session, user, isDriver} = await getSessionWithRole();
@@ -42,13 +49,23 @@ export async function fetchDriverRidesCount(): Promise<ActionResponse<{completed
                 code: ErrorCodes.UNAUTHORIZED
             };
         }
+        
+        // Get driver record
+        const driver = await getDriverForUser(user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
 
         const countResultCompleted = await db
             .select({count: count()})
             .from(rides)
             .where(
                 and(
-                    eq(rides.driverId, user.id),
+                    eq(rides.driverId, driver.id),
                     eq(rides.status, 'completed')
                 )
             );
@@ -90,16 +107,27 @@ export async function fetchDriverCompletedRides(): Promise<ActionResponse<RideWi
             };
         }
 
+        // Get driver record
+        const driver = await getDriverForUser(user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
         const driverRides = await db
             .select({
                 ride: rides,
                 driver: users,
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .where(
                 and(
-                    eq(rides.driverId, user.id),
+                    eq(rides.driverId, driver.id),
                     eq(rides.status, 'completed')
                 )
             )
@@ -119,7 +147,7 @@ export async function fetchDriverCompletedRides(): Promise<ActionResponse<RideWi
                 return {
                     ...ride,
                     waitingTime: ride.waitingTime || 0,
-                    options: ride.options || [],
+                    options: [],
                     driver: driver || undefined,
                     customers: customersData.map(c => c.customer),
                     selectedOptions: [],
@@ -154,16 +182,27 @@ export async function fetchDriverAssignedRides(): Promise<ActionResponse<RideWit
             };
         }
 
+        // Get driver record
+        const driver = await getDriverForUser(user.id);
+        if (!driver) {
+            return {
+                success: false,
+                error: 'Driver profile not found',
+                code: ErrorCodes.UNAUTHORIZED
+            };
+        }
+
         const driverRides = await db
             .select({
                 ride: rides,
                 driver: users,
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .where(
                 and(
-                    eq(rides.driverId, user.id),
+                    eq(rides.driverId, driver.id),
                     inArray(rides.status, ['assigned'])
                 )
             )
@@ -183,7 +222,7 @@ export async function fetchDriverAssignedRides(): Promise<ActionResponse<RideWit
                 return {
                     ...ride,
                     waitingTime: ride.waitingTime || 0,
-                    options: ride.options || [],
+                    options: [],
                     driver: driver || undefined,
                     customers: customersData.map(c => c.customer),
                     selectedOptions: [],
@@ -245,7 +284,7 @@ export async function fetchPendingRides(): Promise<ActionResponse<RideWithRelati
                 return {
                     ...ride,
                     waitingTime: ride.waitingTime || 0,
-                    options: ride.options || [],
+                    options: [],
                     driver: undefined,
                     customers: customersData.map(c => c.customer),
                     selectedOptions: [],
@@ -297,7 +336,8 @@ export async function fetchCustomerCompletedRides(): Promise<ActionResponse<Ride
                 driver: users,
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .where(
                 and(
                     inArray(rides.id, rideIds),
@@ -320,7 +360,7 @@ export async function fetchCustomerCompletedRides(): Promise<ActionResponse<Ride
                 return {
                     ...ride,
                     waitingTime: ride.waitingTime || 0,
-                    options: ride.options || [],
+                    options: [],
                     driver: driver || undefined,
                     customers: customersData.map(c => c.customer),
                     selectedOptions: [],
@@ -372,7 +412,8 @@ export async function fetchCustomerRequestedRides(): Promise<ActionResponse<Ride
                 driver: users,
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .where(
                 and(
                     inArray(rides.id, rideIds),
@@ -395,7 +436,7 @@ export async function fetchCustomerRequestedRides(): Promise<ActionResponse<Ride
                 return {
                     ...ride,
                     waitingTime: ride.waitingTime || 0,
-                    options: ride.options || [],
+                    options: [],
                     driver: driver || undefined,
                     customers: customersData.map(c => c.customer),
                     selectedOptions: [],

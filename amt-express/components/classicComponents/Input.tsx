@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { EyeButton } from "../EyeButton";
 import { cn } from "@/utils/cn";
+import '@/css/components/classicComponents/input.css';
 
 type Props = {
     placeholder: string;
@@ -18,17 +19,10 @@ export function Input({ placeholder, className, type, value, onChange, name, req
     const inputType = isPassword && showPassword ? 'text' : type;
 
     return (
-        <div className="relative w-full">
+        <div className="inputContainer">
             <input
                 className={cn(
-                    "w-full px-4 py-3.5 md:px-5 md:py-4 lg:px-6 lg:py-4.5",
-                    "text-base md:text-lg border-2 border-gray-200",
-                    "rounded-lg md:rounded-xl",
-                    "outline-none transition-all duration-300",
-                    "bg-white font-sans text-gray-800",
-                    "focus:border-blue-500 focus:ring-2 focus:ring-blue-200",
-                    "placeholder:text-gray-400",
-                    isPassword && "pr-12",
+                    "input",
                     className
                 )}
                 placeholder={placeholder}

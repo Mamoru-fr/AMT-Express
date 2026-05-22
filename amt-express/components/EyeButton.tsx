@@ -6,6 +6,7 @@
 
 
 import { Eye, EyeOff } from "lucide-react";
+import '@/css/components/eyeButton.css';
 
 type Props = {
     isPassword: boolean;
@@ -24,7 +25,7 @@ export function EyeButton({isPassword, showPassword, setShowPassword}: Props) {
             onMouseLeave={() => setShowPassword(false)}
             onTouchStart={() => setShowPassword(true)}
             onTouchEnd={() => setShowPassword(false)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center p-1 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer bg-transparent border-none"
+            className="eyeButton"
         >
             {showPassword ? (
                 <Eye className="w-5 h-5" />

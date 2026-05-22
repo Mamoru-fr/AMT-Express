@@ -17,7 +17,7 @@ export interface Ride {
   status: RideStatus;
   photoUrl?: string | null;
   createdAt: Date;
-  driverId?: string | null;
+  driverId?: number | null;
   customerNotes?: string | null;
   production?: string | null;
   project?: string | null;

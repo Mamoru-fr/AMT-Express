@@ -7,6 +7,7 @@
  */
 
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import styles from "./MonthlyRidesChart.module.css";
 
 type MonthlyData = {
     month: string;
@@ -19,8 +20,8 @@ type Props = {
 
 export function MonthlyRidesChart({data}: Props) {
     return (
-        <div className="bg-white rounded-lg shadow-md border-2 border-blue-200 p-3 sm:p-4 md:p-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Monthly Rides</h3>
+        <section className={styles.card}>
+            <h3 className={styles.title}>Monthly Rides</h3>
             {/* 
                 ResponsiveContainer: Wrapper that makes the chart adapt to container size
                 - Listens to window resize events and updates chart dimensions
@@ -80,6 +81,6 @@ export function MonthlyRidesChart({data}: Props) {
                     <Bar dataKey="rides" fill="#3b82f6" name="Rides" />
                 </BarChart>
             </ResponsiveContainer>
-        </div>
+        </section>
     );
 }

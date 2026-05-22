@@ -7,6 +7,7 @@
  */
 
 import {PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip} from 'recharts';
+import styles from "./StatusPieChart.module.css";
 
 type StatusData = {
     name: string;
@@ -28,8 +29,8 @@ const COLORS = {
 
 export function StatusPieChart({data}: Props) {
     return (
-        <div className="bg-white rounded-lg shadow-md border-2 border-blue-200 p-3 sm:p-4 md:p-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Rides by Status</h3>
+        <section className={styles.card}>
+            <h3 className={styles.title}>Rides by Status</h3>
             {/* ResponsiveContainer: Makes pie chart resize with its parent container */}
             <ResponsiveContainer width="100%" height={300}>
                 {/* 
@@ -103,6 +104,6 @@ export function StatusPieChart({data}: Props) {
                     <Legend />
                 </PieChart>
             </ResponsiveContainer>
-        </div>
+        </section>
     );
 }

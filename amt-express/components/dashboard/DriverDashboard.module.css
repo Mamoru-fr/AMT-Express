@@ -1,0 +1,510 @@
+.driverDashboard {
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+}
+
+.driverInner {
+  width: 95vw;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.headerBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.15rem;
+  font-weight: 700;
+  color: var(--app-title-color);
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--app-muted-color);
+  font-size: 0.875rem;
+}
+
+.availabilityCard {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 0.85rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+}
+
+.availabilityLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--app-text-color);
+}
+
+.toggleTrack {
+  position: relative;
+  display: inline-flex;
+  width: 3.25rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  border: none;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.toggleTrackEnabled {
+  background: #22c55e;
+}
+
+.toggleTrackDisabled {
+  background: #cbd5e1;
+}
+
+.toggleTrackLoading {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggleKnob {
+  display: inline-block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 9999px;
+  background: var(--color-white);
+  transition: transform 0.2s ease;
+}
+
+.toggleKnobEnabled {
+  transform: translateX(0.9rem);
+}
+
+.toggleKnobDisabled {
+  transform: translateX(-0.9rem);
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.panel {
+  background: var(--app-surface-bg);
+  border: 1px solid var(--app-surface-border);
+  border-radius: var(--app-surface-radius);
+  box-shadow: var(--app-surface-shadow);
+  padding: 0.85rem;
+}
+
+.panelTitle {
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--app-text-color);
+}
+
+.panelIcon,
+.panelIconSuccess {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.panelIcon {
+  color: #2563eb;
+}
+
+.panelIconSuccess {
+  color: #16a34a;
+}
+
+.emptyText {
+  margin: 0;
+  padding: 1.75rem 0;
+  text-align: center;
+  color: var(--app-muted-color);
+}
+
+.rideList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.rideCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: var(--theme-bg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rideCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.rideCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.rideId {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.statusBadge {
+  margin-left: 0.6rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.statusPending {
+  background: var(--app-status-pending-bg);
+  color: var(--app-status-pending-text);
+}
+
+.statusAssigned {
+  background: var(--app-status-assigned-bg);
+  color: var(--app-status-assigned-text);
+}
+
+.statusCompleted {
+  background: var(--app-status-completed-bg);
+  color: var(--app-status-completed-text);
+}
+
+.statusCancelled {
+  background: var(--app-status-cancelled-bg);
+  color: var(--app-status-cancelled-text);
+}
+
+.ridePrice {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rideGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.metaIcon {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  color: #94a3b8;
+}
+
+.metaHeading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.metaValue {
+  font-size: 0.84rem;
+  color: #475569;
+}
+
+.routeBlock {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.routeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+}
+
+.routeIconFrom,
+.routeIconTo,
+.suggestedMetaIcon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+.routeIconFrom {
+  color: #16a34a;
+}
+
+.routeIconTo {
+  color: #dc2626;
+}
+
+.routeLabel {
+  font-weight: 700;
+  color: #334155;
+}
+
+.routeText {
+  color: #475569;
+}
+
+.suggestedGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+.suggestedCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: var(--theme-bg);
+}
+
+.suggestedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.65rem;
+}
+
+.suggestedRideId {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.suggestedPrice {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.suggestedBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.suggestedMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.suggestedMetaText {
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.suggestedRouteText {
+  font-size: 0.82rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestedCustomerText {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.requestButton {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--app-primary);
+  color: var(--app-primary-text);
+  font-weight: 700;
+  padding: 0.65rem 0.85rem;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.requestButton:hover {
+  transform: translateY(-1px);
+}
+
+.requestButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 32rem;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.35);
+  padding: 1.1rem;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalCloseButton {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+}
+
+.modalCloseIcon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.modalDescription {
+  margin: 0 0 0.75rem;
+  color: #334155;
+}
+
+.modalTextarea {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5e1;
+  padding: 0.65rem 0.8rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.modalTextarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.modalCancelButton {
+  border-radius: 0.65rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  padding: 0.55rem 0.85rem;
+  font-weight: 600;
+}
+
+.modalConfirmButton {
+  border-radius: var(--radius-lg);
+  border: none;
+  background: var(--app-primary);
+  color: var(--app-primary-text);
+  padding: 0.55rem 0.85rem;
+  font-weight: 700;
+}
+
+.modalConfirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (min-width: 640px) {
+  .driverInner {
+    width: 90vw;
+    gap: 1.25rem;
+  }
+
+  .headerBlock {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .title {
+    font-size: 2.15rem;
+    line-height: 2.4rem;
+  }
+
+  .kpiGrid {
+    gap: 0.75rem;
+  }
+
+  .panel {
+    padding: 1rem;
+  }
+
+  .rideGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .suggestedGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .kpiGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .kpiGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .suggestedGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}

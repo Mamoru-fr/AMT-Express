@@ -1,28 +1,50 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --app-page-bg: #f8f9fa;
+    --app-surface-bg: #ffffff;
+    --app-surface-border: #e5e7eb;
+    --app-surface-radius: 12px;
+    --app-surface-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    --app-title-color: #1e3a8a;
+    --app-text-color: #1f2937;
+    --app-muted-color: #6b7280;
+
+    --app-primary: #1e3a8a;
+    --app-primary-hover: #1d4ed8;
+    --app-primary-text: #ffffff;
+
+    --app-status-pending-bg: rgba(245, 158, 11, 0.14);
+    --app-status-pending-text: #b45309;
+    --app-status-assigned-bg: rgba(59, 130, 246, 0.14);
+    --app-status-assigned-text: #1d4ed8;
+    --app-status-completed-bg: rgba(16, 185, 129, 0.14);
+    --app-status-completed-text: #047857;
+    --app-status-cancelled-bg: rgba(239, 68, 68, 0.14);
+    --app-status-cancelled-text: #b91c1c;
+  }
+
   * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
   html,
   body {
     height: 100%;
     width: 100%;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
   body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-width: 320px;
     position: relative;
     overflow-x: hidden;
-    background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background: var(--theme-bg);
+    color: var(--theme-text);
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
@@ -37,50 +59,91 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(30, 60, 114, 0.85) 0%, rgba(42, 82, 152, 0.85) 50%, rgba(126, 139, 163, 0.75) 100%);
+    background: transparent;
     z-index: -1;
     pointer-events: none;
   }
 
-  h1 {
-    font-size: clamp(1.5rem, 5vw, 3.2rem);
-    line-height: 1.1;
-    color: #ffffff;
-    text-align: center;
-    margin-bottom: 20px;
+  #__next {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    color: var(--theme-text);
+  }
+
+  p {
+    margin: 0;
+    color: var(--theme-text-secondary);
+    line-height: 1.5;
   }
 
   button {
-    border-radius: 8px;
     border: none;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
+    background: none;
+    font: inherit;
+    color: inherit;
     cursor: pointer;
-    transition: all 0.3s ease;
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
   }
 
-  button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
-  button:active {
-    transform: translateY(0);
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='tel'],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-md);
+    background-color: var(--theme-bg);
+    transition: all var(--transition-base);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--theme-text-secondary);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-client-gradient-end);
+    box-shadow: 0 0 0 3px rgba(255, 128, 8, 0.1);
   }
 }
 
 /* Mobile-first responsive utilities */
 @media (max-width: 480px) {
   body {
-    align-items: flex-start;
-    padding-top: 20px;
+    padding: 0.75rem;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   body {
-    padding: 20px;
+    padding: 1rem;
   }
 }

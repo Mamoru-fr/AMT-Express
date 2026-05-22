@@ -26,7 +26,7 @@ type ProductionOption = {
 type ProjectOption = {
     id: string;
     name: string;
-    productionId: string;
+    productionId: string | null;
 };
 
 export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
