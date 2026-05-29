@@ -17,6 +17,7 @@ import {MonthlyRidesChart} from "@/components/dashboard/MonthlyRidesChart";
 import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
+import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 import styles from "./AdminDashboard.module.css";
 
 // Type imports for ride status enumeration
@@ -51,8 +52,9 @@ export function AdminDashboard({data}: Props) {
 
     // ========== Component State ==========
     return (
-        <div className={styles.adminDashboard}>
-            <div className={styles.adminInner}>
+        <AdminNavigationShell>
+            <div className={styles.adminDashboard}>
+                <div className={styles.adminInner}>
                 {/* ========== Dashboard Header ========== */}
                 <div className={styles.headerBlock}>
                     <div className={styles.titleRow}>
@@ -127,6 +129,7 @@ export function AdminDashboard({data}: Props) {
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </AdminNavigationShell>
     );
 }

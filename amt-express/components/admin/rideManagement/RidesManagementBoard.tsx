@@ -11,6 +11,7 @@ import {redirect} from "next/navigation";
 import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
+import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 
 /**
  * RidesManagementBoard Component
@@ -295,23 +296,24 @@ export function RidesManagementBoard() {
     // Show loading state while initial data is being fetched
     if (loading && !data) {
         return (
-            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center text-white text-sm sm:text-base">Loading rides...</div>
+            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6">
+                <div className="w-full max-w-7xl mx-auto">
+                    <div className="text-center text-(--app-text-color) text-sm sm:text-base">Loading rides...</div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 overflow-y-auto">
-            <div className="max-w-350 mx-auto space-y-3 sm:space-y-4 md:space-y-6">
+        <AdminNavigationShell>
+            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 overflow-y-auto">
+            <div className="w-full max-w-7xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
                 {/* Header */}
                 <div className="mb-4 sm:mb-6 md:mb-8">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-(--app-title-color)">
                         {t('ridesManagement.title', 'Ride Management')}
                     </h1>
-                    <p className="text-white/90 mt-1 sm:mt-2 drop-shadow-md text-sm sm:text-base">
+                    <p className="text-(--app-muted-color) mt-1 sm:mt-2 text-sm sm:text-base">
                         {t('ridesManagement.subtitle', 'Excel-like view to manage all platform rides')}
                     </p>
                 </div>
@@ -521,6 +523,7 @@ export function RidesManagementBoard() {
                     />
                 )}
             </div>
-        </div>
+            </div>
+        </AdminNavigationShell>
     );
 }

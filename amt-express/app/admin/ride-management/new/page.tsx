@@ -8,6 +8,7 @@ import {useTranslation} from 'react-i18next';
 import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from '@/lib/actions/ridesManagementActions';
 import {RideStatus} from '@/content/database_types/ride';
 import {SearchableSelect} from '@/components/classicComponents/SearchableSelect';
+import {AdminNavigationShell} from '@/components/admin/navigation/AdminNavigationShell';
 import styles from '@/components/admin/rideManagement/AddRideModal.module.css';
 
 type DropdownOption = {
@@ -162,8 +163,9 @@ export default function NewRidePage() {
     };
 
     return (
-        <div className={styles.pageShell}>
-            <div className={styles.pageContainer}>
+        <AdminNavigationShell>
+            <div className={styles.pageShell}>
+                <div className={styles.pageContainer}>
                 <div className={styles.pageHeader}>
                     <div className={styles.pageHeaderText}>
                         <div className={styles.pageEyebrow}>Ride management</div>
@@ -437,6 +439,7 @@ export default function NewRidePage() {
                     </button>
                 </div>
             </div>
-        </div>
+            </div>
+        </AdminNavigationShell>
     );
 }
