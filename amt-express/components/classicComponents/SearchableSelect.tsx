@@ -2,7 +2,6 @@
 
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {ChevronDown, X} from 'lucide-react';
-import {cn} from '@/utils/cn';
 import styles from './SearchableSelect.module.css';
 
 export type SearchableSelectOption = {
@@ -11,11 +10,8 @@ export type SearchableSelectOption = {
     description?: string;
 };
 
-type Props = {
-    value: string;
+type CommonProps = {
     options: SearchableSelectOption[];
-    onChange: (option: SearchableSelectOption) => void;
-    onClear?: () => void;
     placeholder: string;
     searchPlaceholder?: string;
     emptyText?: string;
@@ -25,11 +21,24 @@ type Props = {
     maxResults?: number;
 };
 
+type SingleProps = CommonProps & {
+    multiple?: false;
+    value: string;
+    onChange: (option: SearchableSelectOption) => void;
+    onClear?: () => void;
+};
+
+type MultiProps = CommonProps & {
+    multiple: true;
+    values: string[];
+    onChange: (options: SearchableSelectOption[]) => void;
+    onClear?: () => void;
+};
+
+type Props = SingleProps | MultiProps;
+
 export function SearchableSelect({
-    value,
     options,
-    onChange,
-    onClear,
     placeholder,
     searchPlaceholder = 'Type to search...',
     emptyText = 'No matching result',
@@ -37,19 +46,33 @@ export function SearchableSelect({
     disabled = false,
     className,
     maxResults = 8,
+    ...rest
 }: Props) {
+    const isMultiple = rest.multiple === true;
     const selectedOption = useMemo(
-        () => options.find(option => option.id === value) || null,
-        [options, value]
+        () => !isMultiple ? options.find(option => option.id === rest.value) || null : null,
+        [isMultiple, options, rest]
     );
 
-    const [query, setQuery] = useState(selectedOption?.label ?? '');
+    const selectedOptions = useMemo(
+        () => {
+            if (isMultiple) {
+                return options.filter(option => rest.values.includes(option.id));
+            }
+
+            return selectedOption ? [selectedOption] : [];
+        },
+        [isMultiple, options, rest, selectedOption]
+    );
+    const singleValue = isMultiple ? '' : rest.value;
+
+    const [query, setQuery] = useState(isMultiple ? '' : selectedOption?.label ?? '');
     const [open, setOpen] = useState(false);
     const blurTimeout = useRef<number | null>(null);
 
     useEffect(() => {
-        setQuery(selectedOption?.label ?? '');
-    }, [selectedOption?.label]);
+        setQuery(isMultiple ? '' : selectedOption?.label ?? '');
+    }, [isMultiple, selectedOption?.label]);
 
     useEffect(() => {
         return () => {
@@ -61,8 +84,13 @@ export function SearchableSelect({
 
     const filteredOptions = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
+        const selectedIds = new Set(selectedOptions.map(option => option.id));
 
         return options.filter(option => {
+            if (isMultiple && selectedIds.has(option.id)) {
+                return false;
+            }
+
             if (!normalizedQuery) {
                 return true;
             }
@@ -72,17 +100,33 @@ export function SearchableSelect({
                 option.description?.toLowerCase().includes(normalizedQuery)
             );
         }).slice(0, maxResults);
-    }, [maxResults, options, query]);
+    }, [isMultiple, maxResults, options, query, selectedOptions]);
 
     const handleSelect = (option: SearchableSelectOption) => {
-        onChange(option);
+        if (isMultiple) {
+            const nextSelected = [...selectedOptions, option];
+            rest.onChange(nextSelected);
+            setQuery('');
+            setOpen(true);
+            return;
+        }
+
+        rest.onChange(option);
         setQuery(option.label);
         setOpen(false);
     };
 
     const handleClear = () => {
+        if (isMultiple) {
+            rest.onClear?.();
+            rest.onChange([]);
+            setQuery('');
+            setOpen(true);
+            return;
+        }
+
         setQuery('');
-        onClear?.();
+        rest.onClear?.();
         setOpen(true);
     };
 
@@ -113,23 +157,47 @@ export function SearchableSelect({
             setOpen(false);
         }
 
-        if (event.key === 'Backspace' && !query && value) {
+        if (event.key === 'Backspace' && !query && selectedOptions.length > 0) {
             handleClear();
         }
     };
 
+    const handleRemoveChip = (optionId: string) => {
+        if (!isMultiple) {
+            return;
+        }
+
+        const nextSelected = selectedOptions.filter(option => option.id !== optionId);
+        rest.onChange(nextSelected);
+        setOpen(true);
+    };
+
     return (
-        <div className={cn(styles.root, className)}>
-            <div className={styles.shell}>
+        <div className={className ? `${styles.root} ${className}` : styles.root}>
+            <div className={isMultiple ? `${styles.shell} ${styles.shellMulti}` : styles.shell}>
+                {isMultiple && selectedOptions.map(option => (
+                    <button
+                        key={option.id}
+                        type="button"
+                        className={styles.chip}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={() => handleRemoveChip(option.id)}
+                        title={`Remove ${option.label}`}
+                    >
+                        <span className={styles.chipLabel}>{option.label}</span>
+                        <X className={styles.chipRemoveIcon} />
+                    </button>
+                ))}
+
                 <input
                     type="text"
                     value={query}
                     disabled={disabled}
-                    placeholder={selectedOption ? searchPlaceholder : placeholder}
-                    className={styles.input}
+                    placeholder={isMultiple ? (selectedOptions.length > 0 ? searchPlaceholder : placeholder) : (selectedOption ? searchPlaceholder : placeholder)}
+                    className={isMultiple ? `${styles.input} ${styles.inputMulti}` : styles.input}
                     onFocus={(event) => {
                         setOpen(true);
-                        if (selectedOption && query === selectedOption.label) {
+                        if (!isMultiple && selectedOption && query === selectedOption.label) {
                             event.currentTarget.select();
                         }
                     }}
@@ -141,14 +209,14 @@ export function SearchableSelect({
                         setQuery(nextValue);
                         setOpen(true);
 
-                        if (selectedOption && nextValue !== selectedOption.label) {
-                            onClear?.();
+                        if (!isMultiple && selectedOption && nextValue !== selectedOption.label) {
+                            rest.onClear?.();
                         }
                     }}
                     onKeyDown={handleKeyDown}
                 />
 
-                {value && (
+                {selectedOptions.length > 0 && (
                     <button
                         type="button"
                         className={styles.clearButton}
@@ -156,7 +224,7 @@ export function SearchableSelect({
                         onClick={handleClear}
                         aria-label="Clear selection"
                     >
-                        <X className="w-3.5 h-3.5" />
+                        <X className={styles.iconSmall} />
                     </button>
                 )}
 
@@ -168,7 +236,7 @@ export function SearchableSelect({
                     aria-label="Toggle suggestions"
                     disabled={disabled}
                 >
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className={styles.iconMedium} />
                 </button>
             </div>
 
@@ -186,10 +254,7 @@ export function SearchableSelect({
                             <button
                                 key={option.id}
                                 type="button"
-                                className={cn(
-                                    styles.option,
-                                    option.id === value && styles.optionActive
-                                )}
+                                className={option.id === singleValue ? `${styles.option} ${styles.optionActive}` : styles.option}
                                 onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => handleSelect(option)}
                             >

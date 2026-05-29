@@ -1,21 +1,14 @@
-'use client'
+'use client';
 
-import {useState, useEffect} from "react";
-import {useRouter} from "next/navigation";
-import {X, MapPin, Clock, Users, DollarSign, FileText, Building, FolderOpen, CheckSquare, AlertTriangle} from "lucide-react";
-import {useTranslation} from "react-i18next";
-import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from "@/lib/actions/ridesManagementActions";
-import {RideStatus, OPTIONS} from "@/content/database_types/ride";
-import {SearchableSelect} from "@/components/classicComponents/SearchableSelect";
-import styles from "./AddRideModal.module.css";
-
-type Props = {
-    isOpen: boolean;
-    onClose?: () => void;
-    onSuccess?: () => void;
-    mode?: 'modal' | 'page';
-    returnTo?: string;
-};
+import Link from 'next/link';
+import {useEffect, useState} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {AlertTriangle, Building, CheckSquare, Clock, DollarSign, FileText, FolderOpen, MapPin, Users, X} from 'lucide-react';
+import {useTranslation} from 'react-i18next';
+import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from '@/lib/actions/ridesManagementActions';
+import {RideStatus} from '@/content/database_types/ride';
+import {SearchableSelect} from '@/components/classicComponents/SearchableSelect';
+import styles from '@/components/admin/rideManagement/AddRideModal.module.css';
 
 type DropdownOption = {
     id: string;
@@ -34,13 +27,16 @@ type ProjectOption = {
     productionId: string | null;
 };
 
-export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'modal', returnTo}: Props) {
+export default function NewRidePage() {
     const {t} = useTranslation();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const returnTo = searchParams.get('returnTo') || '/admin/ride-management';
+
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
+    const [error, setError] = useState('');
 
-    // Form data
     const [departure, setDeparture] = useState('');
     const [destination, setDestination] = useState('');
     const [departureTime, setDepartureTime] = useState('');
@@ -52,29 +48,20 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
     const [productionId, setProductionId] = useState('');
     const [projectId, setProjectId] = useState('');
 
-    // Dropdown data
     const [customers, setCustomers] = useState<DropdownOption[]>([]);
     const [drivers, setDrivers] = useState<DropdownOption[]>([]);
     const [productions, setProductions] = useState<ProductionOption[]>([]);
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [filteredProjects, setFilteredProjects] = useState<ProjectOption[]>([]);
 
-    // Error state
-    const [error, setError] = useState('');
-
-    // Load dropdown data
     useEffect(() => {
-        if (isOpen) {
-            loadDropdownData();
-        }
-    }, [isOpen]);
+        loadDropdownData();
+    }, []);
 
-    // Filter projects based on selected production
     useEffect(() => {
         if (productionId) {
-            setFilteredProjects(projects.filter(p => p.productionId === productionId));
-            // Reset project if it doesn't belong to the selected production
-            if (projectId && !projects.find(p => p.id === projectId && p.productionId === productionId)) {
+            setFilteredProjects(projects.filter(project => project.productionId === productionId));
+            if (projectId && !projects.find(project => project.id === projectId && project.productionId === productionId)) {
                 setProjectId('');
             }
         } else {
@@ -83,16 +70,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
     }, [productionId, projects, projectId]);
 
     const selectedProduction = productions.find(production => production.id === productionId) || null;
-    const fallbackReturnTo = returnTo || '/admin/ride-management';
-
-    const goBack = () => {
-        if (mode === 'page') {
-            router.replace(fallbackReturnTo);
-            return;
-        }
-
-        onClose();
-    };
 
     const loadDropdownData = async () => {
         setLoadingData(true);
@@ -101,7 +78,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                 fetchAllCustomers(),
                 fetchAvailableDrivers(),
                 fetchAllProductions(),
-                fetchAllProjects()
+                fetchAllProjects(),
             ]);
 
             if (customersRes.success && customersRes.data) {
@@ -116,20 +93,18 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
             if (projectsRes.success && projectsRes.data) {
                 setProjects(projectsRes.data);
             }
-        } catch (err) {
-            console.error('Error loading dropdown data:', err);
+        } catch (requestError) {
+            console.error('Error loading dropdown data:', requestError);
             setError('Failed to load form data');
         } finally {
             setLoadingData(false);
         }
     };
 
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
         setError('');
 
-        // Validation
         if (!departure.trim()) {
             setError('Departure is required');
             return;
@@ -167,90 +142,56 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
             });
 
             if (result.success) {
-                // Reset form
-                setDeparture('');
-                setDestination('');
-                setDepartureTime('');
-                setPrice('');
-                setStatus('pending');
-                setDriverId('');
-                setSelectedCustomers([]);
-                setCustomerNotes('');
-                setProductionId('');
-                setProjectId('');
-                
-                if (mode === 'page') {
-                    router.replace(fallbackReturnTo);
-                    return;
-                }
-
-                onSuccess?.();
-                onClose();
-            } else {
-                setError(result.error || 'Failed to create ride');
+                router.replace(returnTo);
+                return;
             }
-        } catch (err) {
-            console.error('Error creating ride:', err);
+
+            setError(result.error || 'Failed to create ride');
+        } catch (requestError) {
+            console.error('Error creating ride:', requestError);
             setError('An unexpected error occurred');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleClose = () => {
+    const handleCancel = () => {
         if (!loading) {
-            goBack();
+            router.replace(returnTo);
         }
     };
 
-    if (!isOpen) return null;
-
-    const isPageMode = mode === 'page';
-
     return (
-        <div className={isPageMode ? styles.pageShell : styles.modalOverlay}>
-            <div className={isPageMode ? styles.pageContainer : styles.modalContainer}>
-                {isPageMode ? (
-                    <div className={styles.pageHeader}>
-                        <div className={styles.pageHeaderText}>
-                            <div className={styles.pageEyebrow}>Ride management</div>
-                            <h1 className={styles.pageTitle}>
-                                <CheckSquare className={styles.titleIcon} />
-                                {t('rideManagement.addRide', 'Add New Ride')}
-                            </h1>
-                            <p className={styles.pageSubtitle}>
-                                Fill the ride details below, then return to the previous screen automatically.
-                            </p>
-                        </div>
-
-                        <button
-                            onClick={handleClose}
-                            disabled={loading}
-                            className={styles.pageBackButton}
-                            type="button"
-                        >
-                            <X className={styles.closeIcon} />
-                            <span>Back</span>
-                        </button>
-                    </div>
-                ) : (
-                    <div className={styles.modalHeader}>
-                        <h2 className={styles.modalTitle}>
+        <div className={styles.pageShell}>
+            <div className={styles.pageContainer}>
+                <div className={styles.pageHeader}>
+                    <div className={styles.pageHeaderText}>
+                        <div className={styles.pageEyebrow}>Ride management</div>
+                        <h1 className={styles.pageTitle}>
                             <CheckSquare className={styles.titleIcon} />
                             {t('rideManagement.addRide', 'Add New Ride')}
-                        </h2>
-                        <button
-                            onClick={handleClose}
-                            disabled={loading}
-                            className={styles.modalCloseButton}
-                            type="button"
-                        >
-                            <X className={styles.closeIcon} />
-                        </button>
+                        </h1>
+                        <p className={styles.pageSubtitle}>
+                            Fill the ride details below, then return to the previous screen automatically.
+                        </p>
                     </div>
-                )}
 
-                <form onSubmit={handleSubmit} className={isPageMode ? styles.pageContent : styles.modalContent}>
+                    <Link
+                        href={returnTo}
+                        className={styles.pageBackButton}
+                        aria-disabled={loading}
+                        onClick={(event) => {
+                            if (loading) {
+                                event.preventDefault();
+                            }
+                        }}
+                    >
+                        <X className={styles.closeIcon} />
+                        <span>Back</span>
+                    </Link>
+                </div>
+
+                <form onSubmit={handleSubmit} className={styles.pageContent}>
                     {error && (
                         <div className={styles.errorMessage}>
                             <AlertTriangle className={styles.alertIcon} />
@@ -264,7 +205,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                         </div>
                     ) : (
                         <div className={styles.formSection}>
-                            {/* Location Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
                                     <MapPin className={styles.sectionTitleIcon} /> {t('rideManagement.location', 'Location')}
@@ -304,7 +244,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 </div>
                             </div>
 
-                            {/* Time & Details Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
                                     <Clock className={styles.sectionTitleIcon} /> {t('rideManagement.details', 'Ride Details')}
@@ -343,7 +282,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 </div>
                             </div>
 
-                            {/* Driver & Customers Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
                                     <Users className={styles.sectionTitleIcon} /> {t('rideManagement.participants', 'Participants')}
@@ -392,9 +330,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                         helperText="Press Enter to add the first match, or click a suggestion."
                                     />
                                     <div className={styles.tagHintRow}>
-                                        <p className={styles.tagHintText}>
-                                            Press Enter to add the first match, or click a suggestion.
-                                        </p>
                                         <p className={styles.tagHintCount}>
                                             {selectedCustomers.length} selected
                                         </p>
@@ -402,7 +337,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 </div>
                             </div>
 
-                            {/* Production & Project */}
                             <div>
                                 <div className={styles.sectionTitle}>
                                     <Building className={styles.sectionTitleIcon} /> {t('rideManagement.production', 'Production Info')}
@@ -448,31 +382,25 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             <FolderOpen className={styles.formLabelIconCyan} />
                                             {t('rideManagement.project', 'Project (Optional)')}
                                         </label>
-                                            <SearchableSelect
-                                                value={projectId}
-                                                options={filteredProjects.map(project => ({
-                                                    id: project.id,
-                                                    label: project.name,
-                                                    description: productions.find(production => production.id === project.productionId)?.name || undefined,
-                                                }))}
-                                                onChange={(project) => setProjectId(project.id)}
-                                                onClear={() => setProjectId('')}
-                                                placeholder={t('rideManagement.selectProject', 'Select a project...')}
-                                                searchPlaceholder="Search projects..."
-                                                emptyText={productionId ? 'No matching project' : 'Select a production first'}
-                                                helperText={productionId ? 'Type to search, then use Enter or click a result.' : 'Select a production first'}
-                                                disabled={!productionId}
-                                            />
-                                        {!productionId && (
-                                            <p style={{fontSize: '0.75rem', color: 'var(--app-muted-color)', margin: '0.25rem 0 0 0'}}>
-                                                Select a production first
-                                            </p>
-                                        )}
+                                        <SearchableSelect
+                                            value={projectId}
+                                            options={filteredProjects.map(project => ({
+                                                id: project.id,
+                                                label: project.name,
+                                                description: productions.find(production => production.id === project.productionId)?.name || undefined,
+                                            }))}
+                                            onChange={(project) => setProjectId(project.id)}
+                                            onClear={() => setProjectId('')}
+                                            placeholder={t('rideManagement.selectProject', 'Select a project...')}
+                                            searchPlaceholder="Search projects..."
+                                            emptyText={productionId ? 'No matching project' : 'Select a production first'}
+                                            helperText={productionId ? 'Type to search, then use Enter or click a result.' : 'Select a production first'}
+                                            disabled={!productionId}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Notes */}
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>
                                     <FileText className={styles.formLabelIconGray} />
@@ -490,12 +418,12 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                     )}
                 </form>
 
-                <div className={isPageMode ? styles.pageFooter : styles.modalFooter}>
+                <div className={styles.pageFooter}>
                     <button
                         type="button"
-                        onClick={handleClose}
+                        onClick={handleCancel}
                         disabled={loading}
-                        className={styles.buttonCancel}
+                        className={`${styles.buttonBase} ${styles.buttonCancel}`}
                     >
                         {t('common.cancel', 'Cancel')}
                     </button>
@@ -505,15 +433,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                         disabled={loading || loadingData}
                         className={styles.buttonCreate}
                     >
-                        {loading ? (
-                            <>
-                                {t('common.creating', 'Creating...')}
-                            </>
-                        ) : (
-                            <>
-                                {t('rideManagement.createRide', 'Create Ride')}
-                            </>
-                        )}
+                        {loading ? t('common.creating', 'Creating...') : t('rideManagement.createRide', 'Create Ride')}
                     </button>
                 </div>
             </div>

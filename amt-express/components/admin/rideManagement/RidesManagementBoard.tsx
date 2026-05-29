@@ -1,13 +1,13 @@
 'use client'
 
 import {useState, useEffect} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {fetchRidesForManagement, updateRideDetails, assignDriverToRide, cancelRide, deleteRide, fetchAvailableDrivers, exportRidesToCSV, createRide, fetchAllCustomers, RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
-import {AddRideModal} from "./AddRideModal";
 import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
@@ -26,6 +26,10 @@ import {DeleteConfirmModal} from "./DeleteConfirmModal";
 export function RidesManagementBoard() {
     const {t} = useTranslation();
     const {session} = useSessionWithRole();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const currentReturnTo = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
     // Main data state - stores fetched rides and pagination info
     const [data, setData] = useState<RidesManagementData | null>(null);
@@ -46,8 +50,6 @@ export function RidesManagementBoard() {
         redirect('/');
     }
 
-    // Modal visibility states - control which modal is currently open
-    const [addModal, setAddModal] = useState(false);
     const [editModal, setEditModal] = useState<{open: boolean; ride: RideWithRelations | null}>({
         open: false,
         ride: null // Stores the ride being edited
@@ -348,7 +350,7 @@ export function RidesManagementBoard() {
 
                             {/* Add Ride Button */}
                             <button
-                                onClick={() => setAddModal(true)}
+                                onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
                                 className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-none min-w-45"
                             >
                                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -493,14 +495,6 @@ export function RidesManagementBoard() {
                         </div>
                     )}
                 </div>
-
-                {/* Modals */}
-                {addModal && (
-                    <AddRideModal
-                        onClose={() => {setAddModal(false); window.location.reload();}}
-                        isOpen={addModal}
-                    />
-                )}
 
                 {editModal.open && editModal.ride && (
                     <EditRideModal
