@@ -1,0 +1,142 @@
+.root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.shell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
+    background: var(--theme-bg);
+    color: var(--app-title-color);
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.shell:focus-within {
+    border-color: var(--app-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input {
+    width: 100%;
+    min-width: 0;
+    max-height: 40px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--app-title-color);
+    font: inherit;
+    padding: 0;
+    line-height: 1.2;
+}
+
+.input::placeholder {
+    color: var(--app-muted-color);
+}
+
+.clearButton,
+.caretButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: var(--app-muted-color);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.clearButton {
+    right: 2.2rem;
+}
+
+.caretButton {
+    right: 0.35rem;
+}
+
+.clearButton:hover,
+.caretButton:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--app-title-color);
+}
+
+.caretButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.helperText {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--app-muted-color);
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    right: 0;
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
+    background: var(--theme-bg);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+    max-height: 240px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+}
+
+.option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--theme-border);
+    background: transparent;
+    color: var(--app-title-color);
+    border-radius: 0;
+}
+
+.option:last-child {
+    border-bottom: none;
+}
+
+.option:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.optionActive {
+    background: rgba(59, 130, 246, 0.14);
+}
+
+.optionLabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--app-title-color);
+}
+
+.optionDescription {
+    font-size: 0.75rem;
+    color: var(--app-muted-color);
+}
+
+.emptyText {
+    margin: 0;
+    padding: 0.625rem 0.75rem;
+    color: var(--app-muted-color);
+    font-size: 0.875rem;
+}

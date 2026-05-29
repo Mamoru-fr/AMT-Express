@@ -131,9 +131,7 @@ textarea,
 select {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
   border-radius: var(--radius-md);
-  background-color: var(--color-white);
   transition: all var(--transition-base);
 }
 
@@ -145,6 +143,7 @@ input[type='tel']:focus,
 textarea:focus,
 select:focus {
   outline: none;
+  max-height: 40px;
   border-color: var(--color-client-gradient-end);
   box-shadow: 0 0 0 3px rgba(255, 128, 8, 0.1);
 }

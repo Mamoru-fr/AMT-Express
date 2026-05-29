@@ -214,6 +214,196 @@
     cursor: pointer;
 }
 
+.tagDropdownWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tagInputShell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.5rem;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-bg);
+    transition: all 0.2s ease;
+}
+
+.tagInputShell:focus-within {
+    border-color: var(--app-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tagInput {
+    flex: 1 1 180px;
+    min-width: 140px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--app-title-color);
+    font: inherit;
+    padding: 0.25rem 0.25rem 0.25rem 0;
+}
+
+.tagInput::placeholder {
+    color: var(--app-muted-color);
+}
+
+.customerTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+    background: var(--app-primary);
+    color: var(--app-primary-text);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.customerTag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.tagDropdown {
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-bg);
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.tagDropdownItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--theme-border);
+    background: transparent;
+    text-align: left;
+    padding: 0.75rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: var(--app-title-color);
+}
+
+.tagDropdownItem:last-child {
+    border-bottom: none;
+}
+
+.tagDropdownItem:hover {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.tagDropdownItemActive {
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.tagDropdownName {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.tagDropdownMeta {
+    font-size: 0.75rem;
+    color: var(--app-muted-color);
+}
+
+.tagDropdownEmpty {
+    margin: 0;
+    padding: 0.85rem;
+    color: var(--app-muted-color);
+    font-size: 0.875rem;
+}
+
+.singleSelectWrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.singleSelectShell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.1rem 2.25rem 0.1rem 0.75rem;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-bg);
+    transition: all 0.2s ease;
+}
+
+.singleSelectShell:focus-within {
+    border-color: var(--app-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.singleSelectInput {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--app-title-color);
+    font: inherit;
+    padding: 0.6rem 0;
+}
+
+.singleSelectInput::placeholder {
+    color: var(--app-muted-color);
+}
+
+.singleSelectCaret {
+    position: absolute;
+    right: 0.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    width: 1.75rem;
+    height: 1.75rem;
+    background: transparent;
+    color: var(--app-muted-color);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.singleSelectCaret:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--app-title-color);
+}
+
+.tagHintRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.tagHintText,
+.tagHintCount {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--app-muted-color);
+}
+
 .modalFooter {
     display: flex;
     gap: 0.75rem;

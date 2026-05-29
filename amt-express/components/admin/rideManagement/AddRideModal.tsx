@@ -5,6 +5,7 @@ import {X, MapPin, Clock, Users, DollarSign, FileText, Building, FolderOpen, Che
 import {useTranslation} from "react-i18next";
 import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, OPTIONS, Option} from "@/content/database_types/ride";
+import {SearchableSelect} from "@/components/classicComponents/SearchableSelect";
 import styles from "./AddRideModal.module.css";
 
 type Props = {
@@ -43,6 +44,7 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
     const [status, setStatus] = useState<RideStatus>('pending');
     const [driverId, setDriverId] = useState('');
     const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+    const [customerQuery, setCustomerQuery] = useState('');
     const [customerNotes, setCustomerNotes] = useState('');
     const [productionId, setProductionId] = useState('');
     const [projectId, setProjectId] = useState('');
@@ -77,6 +79,8 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
             setFilteredProjects(projects);
         }
     }, [productionId, projects, projectId]);
+
+    const selectedProduction = productions.find(production => production.id === productionId) || null;
 
     const loadDropdownData = async () => {
         setLoadingData(true);
@@ -114,6 +118,66 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
                 ? prev.filter(id => id !== customerId)
                 : [...prev, customerId]
         );
+    };
+
+    const handleCustomerSelect = (customerId: string) => {
+        setSelectedCustomers(prev =>
+            prev.includes(customerId) ? prev : [...prev, customerId]
+        );
+        setCustomerQuery('');
+    };
+
+    const handleCustomerRemove = (customerId: string) => {
+        setSelectedCustomers(prev => prev.filter(id => id !== customerId));
+    };
+
+    const selectedCustomerItems = selectedCustomers
+        .map(customerId => customers.find(customer => customer.id === customerId))
+        .filter((customer): customer is DropdownOption => Boolean(customer));
+
+    const filteredCustomers = customers.filter(customer => {
+        const alreadySelected = selectedCustomers.includes(customer.id);
+        const query = customerQuery.trim().toLowerCase();
+
+        if (alreadySelected) {
+            return false;
+        }
+
+        if (!query) {
+            return true;
+        }
+
+        return customer.name.toLowerCase().includes(query) || customer.email?.toLowerCase().includes(query);
+    });
+
+    const customerSuggestions = filteredCustomers.slice(0, 8);
+
+    const handleCustomerQueryKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            if (customerSuggestions.length === 1) {
+                handleCustomerSelect(customerSuggestions[0].id);
+                return;
+            }
+
+            const exactMatch = filteredCustomers.find(
+                customer => customer.name.toLowerCase() === customerQuery.trim().toLowerCase()
+            );
+
+            if (exactMatch) {
+                handleCustomerSelect(exactMatch.id);
+                return;
+            }
+
+            if (customerSuggestions.length > 0) {
+                handleCustomerSelect(customerSuggestions[0].id);
+            }
+        }
+
+        if (e.key === 'Backspace' && !customerQuery && selectedCustomers.length > 0) {
+            handleCustomerRemove(selectedCustomers[selectedCustomers.length - 1]);
+        }
     };
 
     const handleOptionToggle = (option: Option) => {
@@ -174,6 +238,7 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
                 setStatus('pending');
                 setDriverId('');
                 setSelectedCustomers([]);
+                setCustomerQuery('');
                 setCustomerNotes('');
                 setProductionId('');
                 setProjectId('');
@@ -343,31 +408,59 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
                                         {t('rideManagement.customers', 'Customers')}
                                         <span className={styles.formLabelRequired}>*</span>
                                     </label>
-                                    <div style={{border: '1px solid var(--theme-border)', borderRadius: '6px', padding: '0.75rem', maxHeight: '200px', overflowY: 'auto'}}>
-                                        {customers.length === 0 ? (
-                                            <p style={{color: 'var(--app-muted-color)', fontSize: '0.875rem', margin: 0}}>
-                                                No customers available
-                                            </p>
-                                        ) : (
-                                            <div>
-                                                {customers.map(customer => (
-                                                    <label key={customer.id} className={styles.customerCheckbox}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedCustomers.includes(customer.id)}
-                                                            onChange={() => handleCustomerToggle(customer.id)}
-                                                        />
-                                                        <span>{customer.name}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        )}
+                                    <div className={styles.tagDropdownWrap}>
+                                        <div className={styles.tagInputShell}>
+                                            {selectedCustomerItems.map(customer => (
+                                                <button
+                                                    key={customer.id}
+                                                    type="button"
+                                                    className={styles.customerTag}
+                                                    onClick={() => handleCustomerRemove(customer.id)}
+                                                    title={`Remove ${customer.name}`}
+                                                >
+                                                    <span>{customer.name}</span>
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            ))}
+                                            <input
+                                                type="text"
+                                                value={customerQuery}
+                                                onChange={(e) => setCustomerQuery(e.target.value)}
+                                                onKeyDown={handleCustomerQueryKeyDown}
+                                                placeholder={selectedCustomers.length === 0 ? 'Type a customer name...' : 'Add another customer...'}
+                                                className={styles.tagInput}
+                                            />
+                                        </div>
+                                        <div className={styles.tagDropdown}>
+                                            {customers.length === 0 ? (
+                                                <p className={styles.tagDropdownEmpty}>No customers available</p>
+                                            ) : customerSuggestions.length > 0 ? (
+                                                customerSuggestions.map(customer => (
+                                                    <button
+                                                        key={customer.id}
+                                                        type="button"
+                                                        className={styles.tagDropdownItem}
+                                                        onClick={() => handleCustomerSelect(customer.id)}
+                                                    >
+                                                        <span className={styles.tagDropdownName}>{customer.name}</span>
+                                                        {customer.email && (
+                                                            <span className={styles.tagDropdownMeta}>{customer.email}</span>
+                                                        )}
+                                                    </button>
+                                                ))
+                                            ) : (
+                                                <p className={styles.tagDropdownEmpty}>No matching customer</p>
+                                            )}
+                                        </div>
                                     </div>
-                                    {selectedCustomers.length > 0 && (
-                                        <p style={{fontSize: '0.75rem', color: 'var(--app-muted-color)', margin: '0.25rem 0 0 0'}}>
-                                            {selectedCustomers.length} customer(s) selected
+                                    <div className={styles.tagHintRow}>
+                                        <p className={styles.tagHintText}>
+                                            Press Enter to add the first match, or click a suggestion.
                                         </p>
-                                    )}
+                                        <p className={styles.tagHintCount}>
+                                            {selectedCustomers.length} selected
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -382,18 +475,34 @@ export function AddRideModal({isOpen, onClose, onSuccess}: Props) {
                                             <Building className="w-4 h-4 text-indigo-600" />
                                             {t('rideManagement.production', 'Production (Optional)')}
                                         </label>
-                                        <select
+                                        <SearchableSelect
                                             value={productionId}
-                                            onChange={(e) => setProductionId(e.target.value)}
-                                            className={styles.formSelect}
-                                        >
-                                            <option value="">{t('rideManagement.selectProduction', 'Select a production...')}</option>
-                                            {productions.map(production => (
-                                                <option key={production.id} value={production.id}>
-                                                    {production.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            options={productions.map(production => ({
+                                                id: production.id,
+                                                label: production.name,
+                                                description: 'Production',
+                                            }))}
+                                            onChange={(production) => {
+                                                setProductionId(production.id);
+                                                setProjectId('');
+                                            }}
+                                            onClear={() => {
+                                                setProductionId('');
+                                                setProjectId('');
+                                            }}
+                                            placeholder="Type a production name..."
+                                            searchPlaceholder="Search to replace production..."
+                                            emptyText="No matching production"
+                                            helperText="Type to search, then use Enter or click a result."
+                                        />
+                                        <div className={styles.tagHintRow}>
+                                            <p className={styles.tagHintText}>
+                                                {selectedProduction ? selectedProduction.name : 'No production selected'}
+                                            </p>
+                                            <p className={styles.tagHintCount}>
+                                                {productionId ? '1 selected' : '0 selected'}
+                                            </p>
+                                        </div>
                                     </div>
 
                                     <div className={styles.formGroup}>
