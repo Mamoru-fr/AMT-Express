@@ -288,6 +288,11 @@
     width: 100%;
 }
 
+.mobileLauncher,
+.mobileBackdrop {
+    display: none;
+}
+
 .shellCollapsed .brandText,
 .shellCollapsed .navText,
 .shellCollapsed .mobileToggle span,
@@ -332,19 +337,115 @@
         padding-left: 0;
     }
 
-    .sidebar {
-        position: sticky;
-        inset: auto;
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--app-surface-border);
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    .shell {
+        position: relative;
+    }
+
+    .shellMobileOpen {
+        overflow: hidden;
+    }
+
+    .mobileLauncher {
+        position: fixed;
+        top: 0.75rem;
+        left: 0.75rem;
+        z-index: 60;
+        display: grid;
+        place-items: center;
+        width: 3rem;
+        height: 3rem;
+        border: 1px solid var(--app-surface-border);
+        border-radius: 1rem;
         background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        color: var(--app-primary);
+    }
+
+    .mobileLauncherIcon {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .mobileBackdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 48;
+        display: block;
+        border: none;
+        background: rgba(15, 23, 42, 0.38);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .shellMobileOpen .mobileBackdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        inset: 0 auto 0 0;
+        width: min(88vw, 20rem);
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow: auto;
+        padding: 1rem 0.9rem 0.9rem;
+        border-right: none;
+        border-bottom: none;
+        box-shadow: 18px 0 40px rgba(15, 23, 42, 0.18);
+        background: rgba(255, 255, 255, 0.98);
+        transform: translateX(-102%);
+        transition: transform 0.25s ease;
+        z-index: 55;
+        visibility: hidden;
+    }
+
+    .shellMobileOpen .sidebar {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .brandButton {
+        border: 1px solid var(--app-surface-border);
+        border-radius: 1.15rem;
+        background: rgba(255, 255, 255, 0.96);
+        padding: 0.75rem;
+    }
+
+    .brandRow {
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    .nav {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        gap: 0.55rem;
+    }
+
+    .navItem {
+        min-height: 4rem;
+    }
+
+    .bottomSection {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        gap: 0.55rem;
+    }
+
+    .languageBlock {
+        grid-column: 1 / -1;
+    }
+
+    .utilityItem {
+        min-height: 4rem;
     }
 
     .mobileToggle {
-        display: inline-flex;
+        display: none;
     }
 
     .collapseButton {
@@ -357,9 +458,18 @@
         display: flex;
     }
 
+    .shellCollapsed .nav {
+        grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
+    }
+
     .shellCollapsed .navItem {
         justify-content: flex-start;
         padding-inline: 0.9rem;
+    }
+
+    .shellCollapsed .navItemActive,
+    .shellCollapsed .navItemActiveSubtle {
+        justify-content: flex-start;
     }
 
     .shellCollapsed .utilityItem {

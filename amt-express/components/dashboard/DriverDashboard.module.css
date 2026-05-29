@@ -5,7 +5,7 @@
 }
 
 .driverInner {
-  width: 95vw;
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   display: flex;
@@ -454,7 +454,7 @@
 
 @media (min-width: 640px) {
   .driverInner {
-    width: 90vw;
+    width: 100%;
     gap: 1.25rem;
   }
 

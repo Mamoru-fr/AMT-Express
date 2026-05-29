@@ -7,8 +7,6 @@ export const metadata = {
 
 export default function RideManagementPage() {
     return (
-        <div className="min-h-dvh w-full overflow-y-auto z-10">
-            <RidesManagementBoard />
-        </div>
+        <RidesManagementBoard />
     );
 }

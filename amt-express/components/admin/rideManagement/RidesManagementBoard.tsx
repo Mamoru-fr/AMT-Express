@@ -12,6 +12,7 @@ import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
 import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
+import styles from './RidesManagementBoard.module.css';
 
 /**
  * RidesManagementBoard Component
@@ -296,9 +297,11 @@ export function RidesManagementBoard() {
     // Show loading state while initial data is being fetched
     if (loading && !data) {
         return (
-            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6">
-                <div className="w-full max-w-7xl mx-auto">
-                    <div className="text-center text-(--app-text-color) text-sm sm:text-base">Loading rides...</div>
+            <div className={styles.pageShell}>
+                <div className={styles.pageInner}>
+                    <div className={styles.hero}>
+                        <div className={styles.title}>Loading rides...</div>
+                    </div>
                 </div>
             </div>
         );
@@ -306,39 +309,36 @@ export function RidesManagementBoard() {
 
     return (
         <AdminNavigationShell>
-            <div className="w-full py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 overflow-y-auto">
-            <div className="w-full max-w-7xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
-                {/* Header */}
-                <div className="mb-4 sm:mb-6 md:mb-8">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-(--app-title-color)">
-                        {t('ridesManagement.title', 'Ride Management')}
-                    </h1>
-                    <p className="text-(--app-muted-color) mt-1 sm:mt-2 text-sm sm:text-base">
-                        {t('ridesManagement.subtitle', 'Excel-like view to manage all platform rides')}
-                    </p>
-                </div>
+            <div className={styles.pageShell}>
+            <div className={styles.pageInner}>
+                <section className={styles.hero}>
+                    <div className={styles.heroTop}>
+                        <div>
+                            <p className={styles.eyebrow}>Admin workspace</p>
+                            <h1 className={styles.title}>{t('ridesManagement.title', 'Ride Management')}</h1>
+                            <p className={styles.subtitle}>{t('ridesManagement.subtitle', 'Excel-like view to manage all platform rides')}</p>
+                        </div>
+                    </div>
+                </section>
 
-                {/* Filters and Actions Bar */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 sm:p-4 space-y-3 sm:space-y-4">
-                    <div className="flex flex-col gap-2 sm:gap-3">
-                        {/* Search */}
-                        <div className="relative w-full">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                <section className={styles.controlsCard}>
+                    <div className={styles.controlsStack}>
+                        <div className={styles.searchRow}>
+                            <Search className={styles.searchIcon} />
                             <input
                                 type="text"
                                 placeholder={t('ridesManagement.searchPlaceholder', 'Search by ID, departure, destination...')}
-                                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                                className={styles.searchInput}
                                 value={filters.search}
                                 onChange={(e) => handleSearch(e.target.value)}
                             />
                         </div>
 
-                        {/* Status Filter and Action Buttons */}
-                        <div className="flex flex-wrap gap-2">
-                            <div className="flex items-center gap-2 flex-1 min-w-45">
-                                <Filter className="text-gray-600 w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                        <div className={styles.toolbarRow}>
+                            <div className={styles.actionRow}>
+                                <Filter className={styles.filterIcon} />
                                 <select
-                                    className="flex-1 px-2 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm"
+                                    className={styles.selectInput}
                                     value={filters.status}
                                     onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
                                 >
@@ -348,99 +348,94 @@ export function RidesManagementBoard() {
                                     <option value="completed">{t('ridesManagement.completed', 'Completed')}</option>
                                     <option value="cancelled">{t('ridesManagement.cancelled', 'Cancelled')}</option>
                                 </select>
+
+                                <button
+                                    onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                                    className={styles.actionButton}
+                                >
+                                    <Plus className={styles.buttonIcon} />
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.addRide', 'Add Ride')}</span>
+                                    <span className="sm:hidden">Add</span>
+                                </button>
+
+                                <button
+                                    onClick={handleExportCSV}
+                                    className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                                >
+                                    <Download className={styles.buttonIcon} />
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.exportCSV', 'Export CSV')}</span>
+                                    <span className="sm:hidden">Export</span>
+                                </button>
                             </div>
-
-                            {/* Add Ride Button */}
-                            <button
-                                onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
-                                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-none min-w-45"
-                            >
-                                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="hidden xs:inline">{t('ridesManagement.addRide', 'Add Ride')}</span>
-                                <span className="xs:hidden">Add</span>
-                            </button>
-
-                            {/* Export Button */}
-                            <button
-                                onClick={handleExportCSV}
-                                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs sm:text-sm flex-1 sm:flex-none min-w-25"
-                            >
-                                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="hidden xs:inline">{t('ridesManagement.exportCSV', 'Export CSV')}</span>
-                                <span className="xs:hidden">Export</span>
-                            </button>
+                            <div className={styles.resultsLine}>
+                                {t('ridesManagement.showing', 'Showing')} {data?.rides.length || 0} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* Results count */}
-                    <div className="text-xs sm:text-sm text-gray-600">
-                        {t('ridesManagement.showing', 'Showing')} {data?.rides.length || 0} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
-                    </div>
-                </div>
-
-                {/* Table */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-100 border-b border-gray-200">
+                <section className={styles.tableCard}>
+                    <div className={styles.tableScroll}>
+                        <table className={styles.tableRoot}>
+                            <thead className={styles.tableHead}>
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('departureTime')}>
                                         {t('ridesManagement.dateHour', 'Date & Hour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('clients')}>
                                         {t('ridesManagement.clients', 'Clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('departure')}>
                                         {t('ridesManagement.departure', 'Departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('destination')}>
                                         {t('ridesManagement.arrival', 'Arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('driver')}>
                                         {t('ridesManagement.driver', 'Driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('price')}>
                                         {t('ridesManagement.price', 'Price (€)')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                                    <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('status')}>
                                         {t('ridesManagement.status', 'Status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    <th className={`${styles.tableHeadCell} ${styles.tableActionsHead}`}>
                                         {t('ridesManagement.actions', 'Actions')}
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody>
                                 {data?.rides.map((ride) => (
-                                    <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                    <tr key={ride.id} className={styles.tableBodyRow}>
+                                        <td className={styles.tableCell}>
                                             {new Date(ride.departureTime).toLocaleString('fr-FR')}
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                        <td className={styles.tableCell}>
                                             {ride.customers.map(c => c.name).join(', ') || 'N/A'}
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-gray-700">{ride.departure}</td>
-                                        <td className="px-4 py-3 text-sm text-gray-700">{ride.destination}</td>
-                                        <td className="px-4 py-3 text-sm text-gray-700">
+                                        <td className={styles.tableCell}>{ride.departure}</td>
+                                        <td className={styles.tableCell}>{ride.destination}</td>
+                                        <td className={`${styles.tableCell} ${!ride.driver ? styles.tableCellMuted : ''}`}>
                                             {ride.driver?.name || (
-                                                <span className="text-gray-400 italic">Unassigned</span>
+                                                <span>Unassigned</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-sm font-medium text-gray-900">€{ride.price}</td>
-                                        <td className="px-4 py-3 text-sm">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ride.status)}`}>
+                                        <td className={`${styles.tableCell} ${styles.tablePrice}`}>€{ride.price}</td>
+                                        <td className={styles.tableCell}>
+                                            <span className={`${styles.statusBadge} ${getStatusColor(ride.status)}`}>
                                                 {ride.status}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-sm">
-                                            <div className="flex items-center gap-2">
+                                        <td className={`${styles.tableCell} ${styles.tableActionsCell}`}>
+                                            <div className={styles.tableActionsGroup}>
                                                 <button
                                                     onClick={() => setEditModal({open: true, ride})}
                                                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
@@ -474,29 +469,29 @@ export function RidesManagementBoard() {
 
                     {/* Pagination */}
                     {data && data.totalPages > 1 && (
-                        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-                            <div className="text-sm text-gray-700">
+                        <div className={styles.paginationBar}>
+                                <div className={styles.paginationMeta}>
                                 Page {data.page} of {data.totalPages}
                             </div>
-                            <div className="flex gap-2">
+                                <div className={styles.paginationControls}>
                                 <button
                                     onClick={() => handlePageChange(data.page - 1)}
                                     disabled={data.page === 1}
-                                    className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className={styles.paginationButton}
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => handlePageChange(data.page + 1)}
                                     disabled={data.page === data.totalPages}
-                                    className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className={styles.paginationButton}
                                 >
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
                     )}
-                </div>
+                </section>
 
                 {editModal.open && editModal.ride && (
                     <EditRideModal
