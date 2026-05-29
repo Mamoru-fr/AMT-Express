@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
+import {usePathname, useSearchParams} from 'next/navigation';
 import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings2, HelpCircle} from 'lucide-react';
 import {useState} from 'react';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
@@ -12,7 +12,8 @@ type NavItem = {
     label: string;
     description: string;
     icon: React.ComponentType<{className?: string}>;
-    match: (pathname: string) => boolean;
+    match: (url: string) => boolean;
+    matchMode: 'exact' | 'ancestor';
 };
 
 const navItems: NavItem[] = [
@@ -21,21 +22,24 @@ const navItems: NavItem[] = [
         label: 'Dashboard',
         description: 'Overview',
         icon: LayoutDashboard,
-        match: (pathname) => pathname === '/',
+        match: (url) => url === '/',
+        matchMode: 'exact',
     },
     {
         href: '/admin/ride-management',
         label: 'Ride Management',
         description: 'Manage rides',
         icon: Route,
-        match: (pathname) => pathname.startsWith('/admin/ride-management'),
+        match: (url) => url.startsWith('/admin/ride-management'),
+        matchMode: 'ancestor',
     },
     {
         href: '/admin/ride-management/new',
         label: 'New Ride',
         description: 'Create a ride',
         icon: PlusCircle,
-        match: (pathname) => pathname === '/admin/ride-management/new',
+        match: (url) => url.startsWith('/admin/ride-management/new'),
+        matchMode: 'exact',
     },
 ];
 
@@ -45,7 +49,9 @@ type Props = {
 
 export function AdminNavigationShell({children}: Props) {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [collapsed, setCollapsed] = useState(false);
+    const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
 
     return (
         <div className={collapsed ? `${styles.shell} ${styles.shellCollapsed}` : styles.shell} data-collapsed={collapsed ? 'true' : 'false'}>
@@ -74,15 +80,21 @@ export function AdminNavigationShell({children}: Props) {
 
                 <nav className={styles.nav} aria-label="Admin navigation">
                     {navItems.map((item) => {
-                        const active = item.match(pathname);
+                        const active = item.match(currentUrl);
                         const Icon = item.icon;
 
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={active ? `${styles.navItem} ${styles.navItemActive}` : styles.navItem}
-                                aria-current={active ? 'page' : undefined}
+                                className={
+                                    active
+                                        ? item.matchMode === 'exact'
+                                            ? `${styles.navItem} ${styles.navItemActive}`
+                                            : `${styles.navItem} ${styles.navItemActiveSubtle}`
+                                        : styles.navItem
+                                }
+                                aria-current={active ? (item.matchMode === 'exact' ? 'page' : 'location') : undefined}
                             >
                                 <span className={styles.navIconWrap}>
                                     <Icon className={styles.navIcon} />
