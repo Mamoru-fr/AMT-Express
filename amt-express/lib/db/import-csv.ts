@@ -8,9 +8,10 @@
  */
 
 import db from './drizzle';
-import { rides, users, productions } from './schema';
+import { rides, rideCustomers, users, productions, projects, drivers } from './schema';
 import { readFileSync } from 'fs';
-import { eq } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
+import { and, eq } from 'drizzle-orm';
 import 'dotenv/config';
 
 interface CSVRow {
@@ -31,6 +32,13 @@ interface CSVRow {
     factChauffeur: string;  // Driver makes own invoice
     forfait: string;        // Flat rate price
     attentionMention: string; // Additional notes
+}
+
+interface ImportSummary {
+    total: number;
+    successCount: number;
+    skipCount: number;
+    errorCount: number;
 }
 
 /**
@@ -128,9 +136,9 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
         }
         parts.push(current.trim()); // Add last field
         
-        // Expected 17 columns
+        // Expected 16 columns (forfait column was removed in newer CSV format)
         if (parts.length < 16) {
-            console.warn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/17)`);
+            console.warn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/16)`);
             continue;
         }
         
@@ -150,8 +158,8 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
             tarifAgenda: parts[12] || '',
             tarifClient: parts[13] || '',
             factChauffeur: parts[14] || '',
-            forfait: parts[15] || '',
-            attentionMention: parts[16] || '',
+            forfait: '',  // No longer in CSV, set to empty
+            attentionMention: parts[15] || '',
         });
     }
     
@@ -161,66 +169,179 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
 /**
  * Get or create a driver by ID and name
  */
-async function getOrCreateDriver(driverId: string, driverName: string) {
-    if (!driverId || driverName === 'ANNULE') {
+async function getOrCreateDriver(accountingCode: string, driverName: string) {
+    if (!accountingCode || driverName === 'ANNULE') {
         return null;
     }
-    
-    // Check if driver exists
-    const existingDriver = await db.select().from(users).where(eq(users.id, driverId)).limit(1);
-    
+
+    // Rechercher par accountingCode
+    const existingDriver = await db.select().from(drivers).where(eq(drivers.accountingCode, accountingCode)).limit(1);
+
     if (existingDriver.length > 0) {
-        return existingDriver[0].id;
+        return existingDriver[0].userId;
     }
-    
-    // Create new driver
-    const email = `${driverId.toLowerCase()}@amt-express.com`;
-    await db.insert(users).values({
-        id: driverId,
-        name: driverName || driverId,
-        email: email,
-        role: 'driver',
-        emailVerified: false,
+
+    // Rechercher par nom de chauffeur (au cas où l'accountingCode aurait changé mais le nom est le même)
+    const existingDriverByName = await db.select()
+        .from(users)
+        .where(and(eq(users.name, driverName), eq(users.role, 'driver')))
+        .limit(1);
+
+
+    if (existingDriverByName.length > 0) {
+        // Rechercher si un drivers existe déjà pour ce userId
+        const existingDriverForUser = await db.select().from(drivers).where(eq(drivers.userId, existingDriverByName[0].id)).limit(1);
+        if (existingDriverForUser.length > 0) {
+            // Mettre à jour le driver existant avec le nouveau code comptable
+            await db.update(drivers)
+                .set({ accountingCode: accountingCode })
+                .where(eq(drivers.id, existingDriverForUser[0].id));
+            
+            console.log(`  🔄 Updated driver: ${driverName} with new accounting code ${accountingCode}`);
+            return existingDriverByName[0].id;
+        }
+
+        await db.insert(drivers).values({
+            userId: existingDriverByName[0].id,
+            accountingCode: accountingCode,
+            vehiclePlate: `PENDING-${accountingCode}`,
+            vehicleType: 'unknown',
+            available: true,
+        });
+
+        console.log(`  ➕ Created driver profile for existing user: ${driverName} (${accountingCode})`);
+        return existingDriverByName[0].id;
+    }
+
+    // Créer un nouveau chauffeur avec un GUID partagé entre users et drivers
+    const userId = randomUUID();
+    const email = `${accountingCode.toLowerCase()}@amt-express.com`;
+
+    await db.transaction(async (tx) => {
+        await tx.insert(users).values({
+            id: userId,
+            name: driverName,
+            email: email,
+            role: 'driver',
+            emailVerified: false,
+        });
+        
+        await tx.insert(drivers).values({
+            userId: userId,
+            accountingCode: accountingCode,
+            vehiclePlate: `PENDING-${accountingCode}`,
+            vehicleType: 'unknown',
+            available: true,
+        });
     });
-    
-    console.log(`  ➕ Created driver: ${driverName} (${driverId})`);
-    return driverId;
+
+    console.log(`  ➕ Created driver: ${driverName} (${accountingCode})`);
+    return userId;
 }
 
 /**
  * Get or create a production company
  */
 async function getOrCreateProduction(productionName: string) {
-    if (!productionName || productionName.trim() === '') {
+    if (!productionName || productionName.trim() === '' || productionName.toUpperCase() === 'PAYE') {
         return null;
     }
-    
-    // Generate ID from name
+
     const productionId = productionName
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
-    
-    // Check if production exists
+
     const existingProduction = await db.select().from(productions).where(eq(productions.id, productionId)).limit(1);
-    
+
     if (existingProduction.length > 0) {
         return existingProduction[0].id;
     }
-    
-    // Create new production
+
+    // Créer un projet générique pour la production
+    const genericProjectId = `${productionId}-general`;
+    await db.insert(projects).values({
+        id: genericProjectId,
+        name: `${productionName} - General`,
+        productionId: productionId,
+        isGeneric: true,
+        startDate: new Date(),
+        endDate: new Date(),
+    });
+
+    // Créer la production
     const email = `${productionId}@production.com`;
     await db.insert(productions).values({
         id: productionId,
         name: productionName,
         contactEmail: email,
     });
-    
-    console.log(`  ➕ Created production: ${productionName}`);
+
+    console.log(`  ➕ Created production: ${productionName} with generic project`);
     return productionId;
 }
 
-async function importCSV(csvPath: string) {
+async function getOrCreateProject(projectName: string, productionId: string) {
+    if (!projectName || projectName.trim() === '' || projectName.toUpperCase() === 'PAYE') {
+        return null;
+    }
+
+    const projectId = projectName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+    const existingProject = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
+
+    if (existingProject.length > 0) {
+        return existingProject[0].id;
+    }
+
+    await db.insert(projects).values({
+        id: projectId,
+        name: projectName,
+        productionId: productionId,
+        isGeneric: false,
+        startDate: new Date(),
+        endDate: new Date(),
+    });
+
+    console.log(`  ➕ Created project: ${projectName}`);
+    return projectId;
+}
+
+async function getOrCreateCustomer(customerName: string) {
+    if (!customerName || customerName.trim() === '') {
+        return null;
+    }
+
+    // Extraire le nom principal (ex: "ROBIC - 4P" → "ROBIC")
+    const mainName = customerName.split(' - ')[0].trim();
+
+    // Rechercher le client
+    const existingCustomer = await db.select().from(users).where(eq(users.name, mainName)).limit(1);
+
+    if (existingCustomer.length > 0) {
+        return existingCustomer[0].id;
+    }
+
+    // Créer un nouveau client
+    const customerId = randomUUID();
+    const email = `${mainName.toLowerCase()}@customer.com`;
+
+    await db.insert(users).values({
+        id: customerId,
+        name: mainName,
+        email: email,
+        role: 'customer',
+        emailVerified: false,
+    });
+
+    console.log(`  ➕ Created customer: ${mainName}`);
+    return customerId;
+}
+
+async function importCSV(csvPath: string): Promise<ImportSummary> {
     console.log('\n📂 CSV Ride Import Script\n');
     console.log(`📄 Reading file: ${csvPath}\n`);
     
@@ -232,7 +353,12 @@ async function importCSV(csvPath: string) {
         
         if (rows.length === 0) {
             console.log('ℹ️  No valid rides found in CSV');
-            return;
+            return {
+                total: 0,
+                successCount: 0,
+                skipCount: 0,
+                errorCount: 0,
+            };
         }
         
         // Fetch existing rides from database to avoid duplicates
@@ -301,7 +427,7 @@ async function importCSV(csvPath: string) {
                 const driverPrice = parsePrice(row.tarifChauffeur);
                 const plannedPrice = parsePrice(row.tarifAgenda);
                 const clientPrice = parsePrice(row.tarifClient);
-                const finalPrice = clientPrice > 0 ? clientPrice : (plannedPrice > 0 ? plannedPrice : driverPrice);
+                const finalPrice = driverPrice > 0 ? driverPrice : (plannedPrice > 0 ? plannedPrice : clientPrice);
                 
                 if (finalPrice === 0) {
                     const reason = 'No valid price found';
@@ -351,8 +477,35 @@ async function importCSV(csvPath: string) {
                     driverIdInteger = driverRecord?.id ?? null;
                 }
                 
-                // Get or create production
-                const productionId = await getOrCreateProduction(row.facturation);
+                let productionId: string | null = null;
+                let projectId: string | null = null;
+
+                // Get or create production and project
+                if (row.facturation && row.facturation.toUpperCase() !== 'PAYE') {
+                    productionId = await getOrCreateProduction(row.facturation);
+
+                    if (productionId) {
+                        if (row.btBc && row.btBc.toUpperCase() !== 'PAYE') {
+                            projectId = await getOrCreateProject(row.btBc, productionId);
+                        } else {
+                            const genericProject = await db.select().from(projects).where(eq(projects.productionId, productionId)).limit(1);
+                            projectId = genericProject[0]?.id ?? null;
+                        }
+                    }
+                }
+
+                // Get or create customers
+                const customerNames = row.nom
+                    ? row.nom.split('/').map(name => name.trim()).filter(Boolean)
+                    : [];
+                const customerIds: string[] = [];
+
+                for (const customerName of customerNames) {
+                    const customerId = await getOrCreateCustomer(customerName);
+                    if (customerId) {
+                        customerIds.push(customerId);
+                    }
+                }
                 
                 // Build customer notes
                 const notes: string[] = [];
@@ -366,16 +519,26 @@ async function importCSV(csvPath: string) {
                 if (plannedPrice > 0) notes.push(`Planned price: €${plannedPrice.toFixed(2)}`);
                 
                 // Insert ride
-                await db.insert(rides).values({
+                const [ride] = await db.insert(rides).values({
                     departure: row.depart,
                     destination: row.arrivee,
                     departureTime: departureTime,
                     price: finalPrice.toString(),
                     status: 'completed',
                     driverId: driverIdInteger,
-                    projectId: productionId ?? undefined,
+                    projectId: projectId ?? undefined,
                     customerNotes: notes.join(' | ') || null,
-                });
+                }).returning({ id: rides.id });
+
+                // Associate customers to the ride
+                if (customerIds.length > 0) {
+                    await db.insert(rideCustomers).values(
+                        customerIds.map(customerId => ({
+                            rideId: ride.id,
+                            customerId,
+                        }))
+                    );
+                }
                 
                 // Mark this ride as imported (add to duplicate check set)
                 importedRides.add(rideHash);
@@ -429,6 +592,12 @@ async function importCSV(csvPath: string) {
         }
         
         console.log('\n');
+        return {
+            total: rows.length,
+            successCount,
+            skipCount,
+            errorCount,
+        };
         
     } catch (error) {
         console.error('❌ Fatal error during import:', error);
@@ -449,7 +618,12 @@ if (!csvPath) {
 }
 
 importCSV(csvPath)
-    .then(() => {
+    .then((summary) => {
+        console.log('\n📌 Bilan de l\'import:');
+        console.log(`   • Total lignes lues: ${summary.total}`);
+        console.log(`   • Courses importées: ${summary.successCount}`);
+        console.log(`   • Lignes ignorées: ${summary.skipCount}`);
+        console.log(`   • Erreurs: ${summary.errorCount}`);
         console.log('✅ Import completed successfully');
         process.exit(0);
     })

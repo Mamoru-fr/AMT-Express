@@ -2,7 +2,7 @@
 // This file contains the main function that aggregates all dashboard metrics
 
 import db from '@/lib/db/drizzle';
-import {rides, users, invoices, rideCustomers} from '@/lib/db/schema';
+import {rides, users, invoices, rideCustomers, drivers} from '@/lib/db/schema';
 import {eq, sql, and, gte} from 'drizzle-orm';
 import {auth} from '@/lib/auth/auth';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
@@ -187,7 +187,8 @@ export async function getAdminDashboardData(): Promise<ActionResponse<AdminDashb
                 customerId: rideCustomers.customerId
             })
             .from(rides)
-            .leftJoin(users, eq(rides.driverId, users.id))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
             .leftJoin(rideCustomers, eq(rides.id, rideCustomers.rideId))
             .orderBy(sql`${rides.createdAt} DESC`)
             .limit(10);
