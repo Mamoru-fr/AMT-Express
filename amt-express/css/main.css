@@ -2,8 +2,8 @@
 
 :root {
   /* Light Theme (Default) */
-  --theme-bg: #F9FAFB;
-  --theme-bg-secondary: #f9fafb;
+  --theme-bg: #f8f9fa;
+  --theme-bg-secondary: #f8f9fa;
   --theme-text: #1a1a1a;
   --theme-text-secondary: #6b7280;
   --theme-border: #e5e7eb;

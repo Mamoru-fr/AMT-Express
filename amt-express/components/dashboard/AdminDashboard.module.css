@@ -57,9 +57,14 @@
 }
 
 .kpiGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.kpiGrid > * {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 0;
 }
 
 .actionsRow {
@@ -95,14 +100,14 @@
 }
 
 .chartGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.875rem;
 }
 
 .bottomGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.875rem;
   align-items: stretch;
 }
@@ -156,24 +161,46 @@
 
 @media (min-width: 768px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.75rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.5625rem);
   }
 }
 
 @media (min-width: 1024px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.75rem);
   }
 
   .chartGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 1.25rem;
+  }
+  
+  .chartGrid > * {
+    flex: 1 1 calc(50% - 0.625rem);
+    min-width: 0;
   }
 
   .bottomGrid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    flex-direction: row;
     gap: 1.25rem;
+  }
+  
+  .bottomGrid > *:nth-child(1) {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .bottomGrid > *:nth-child(2) {
+    flex: 2;
+    min-width: 0;
   }
 }

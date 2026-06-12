@@ -63,7 +63,7 @@
     min-width: 320px;
     position: relative;
     overflow-x: hidden;
-    background: var(--theme-bg);
+    background: var(--app-page-bg);
     color: var(--theme-text);
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);

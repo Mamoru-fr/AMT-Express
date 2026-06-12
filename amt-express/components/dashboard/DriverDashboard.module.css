@@ -93,9 +93,14 @@
 }
 
 .kpiGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.kpiGrid > * {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 0;
 }
 
 .panel {
@@ -203,8 +208,8 @@
 }
 
 .rideGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.7rem;
 }
 
@@ -274,8 +279,8 @@
 }
 
 .suggestedGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.85rem;
 }
 
@@ -478,25 +483,43 @@
   }
 
   .rideGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .rideGrid > * {
+    flex: 1 1 calc(50% - 0.35rem);
+    min-width: 0;
   }
 
   .suggestedGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .suggestedGrid > * {
+    flex: 1 1 calc(50% - 0.425rem);
+    min-width: 0;
   }
 }
 
 @media (min-width: 768px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.75rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.5625rem);
   }
 }
 
 @media (min-width: 1024px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.75rem);
   }
 
   .panel {
@@ -504,7 +527,11 @@
   }
 
   .suggestedGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
+  }
+  
+  .suggestedGrid > * {
+    flex: 1 1 calc(33.333% - 0.666rem);
+    min-width: 0;
   }
 }
