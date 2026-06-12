@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {AuthService} from '@/lib/services/AuthService';
 import {headers} from 'next/headers';
+import {verifyAuth} from '@/lib/middleware/roleMiddleware';
 
 // Validation schemas
 const SignInSchema = z.object({
@@ -127,6 +128,10 @@ export class AuthController {
      */
     static async signOut(): Promise<ActionResponse<void>> {
         try {
+            // === SÉCURITÉ: Vérifier la session ===
+            const authCheck = await verifyAuth();
+            if (!authCheck.success) return authCheck;
+
             // === APPEL AU SERVICE ===
             const headersInstance = await headers();
             await AuthService.signout(headersInstance);
