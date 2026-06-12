@@ -13,10 +13,10 @@ import {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {
+    fetchDriverRidesCount,
     fetchDriverCompletedRides,
     fetchDriverAssignedRides,
-    fetchPendingRides,
-    fetchDriverRidesCount
+    fetchPendingRides
 } from "@/lib/actions/ridesViewActions";
 import {Calendar, MapPin, Clock, User, DollarSign, CheckCircle} from "lucide-react";
 

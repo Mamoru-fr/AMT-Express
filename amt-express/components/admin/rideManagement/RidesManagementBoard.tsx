@@ -2,7 +2,17 @@
 
 import {useState, useEffect} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {fetchRidesForManagement, updateRideDetails, assignDriverToRide, cancelRide, deleteRide, fetchAvailableDrivers, exportRidesToCSV, createRide, fetchAllCustomers, RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
+import {
+    fetchRidesForManagement,
+    fetchAvailableDrivers,
+    exportRidesToCSV,
+    updateRideDetails,
+    assignDriverToRide,
+    cancelRide,
+    deleteRide,
+    fetchAllCustomers
+} from "@/lib/actions/ridesManagementActions";
+import type {RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
@@ -11,6 +21,7 @@ import {redirect} from "next/navigation";
 import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
+import {AddRideModal} from "./AddRideModal";
 import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 import styles from './RidesManagementBoard.module.css';
 
@@ -36,6 +47,7 @@ export function RidesManagementBoard() {
     // Main data state - stores fetched rides and pagination info
     const [data, setData] = useState<RidesManagementData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // Filter state - controls search, sorting, pagination, and status filtering
     const [filters, setFilters] = useState<RideFilters>({
@@ -248,27 +260,11 @@ export function RidesManagementBoard() {
     };
 
     /**
-     * Creates a new ride with provided data from AddRideModal
-     * Handles multiple customers, optional driver assignment, and pricing
-     * Refreshes ride list after successful creation
+     * Called after successful ride creation in AddRideModal
+     * Simply reloads the ride list
      */
-    const handleCreateRide = async (data: {
-        departureTime: Date;
-        customerIds: string[];
-        departure: string;
-        destination: string;
-        driverId?: string;
-        price?: string;
-        status?: RideStatus;
-    }) => {
-        try {
-            await createRide(data);
-            setAddModal(false);
-            loadRides();
-        } catch (error) {
-            console.error('Failed to create ride:', error);
-            alert('Failed to create ride');
-        }
+    const handleCreateRide = async () => {
+        loadRides();
     };
 
     /**
@@ -350,7 +346,7 @@ export function RidesManagementBoard() {
                                 </select>
 
                                 <button
-                                    onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                                    onClick={() => setIsAddModalOpen(true)}
                                     className={styles.actionButton}
                                 >
                                     <Plus className={styles.buttonIcon} />
@@ -492,6 +488,12 @@ export function RidesManagementBoard() {
                         </div>
                     )}
                 </section>
+
+                <AddRideModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={handleCreateRide}
+                />
 
                 {editModal.open && editModal.ride && (
                     <EditRideModal

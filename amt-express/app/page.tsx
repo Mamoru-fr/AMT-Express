@@ -3,6 +3,8 @@ import {getAdminDashboardData} from "@/lib/actions/adminDashboardActions";
 import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
 import {fetchDriverDashboard} from "@/lib/actions/driverDashboardActions";
 import {getSessionWithRole} from "@/lib/auth/session";
+import type {AdminDashboardData} from "@/lib/services/AdminDashboardService";
+import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
 import {redirect} from "next/navigation";
 import {AlertTriangle, Car} from "lucide-react";
 import styles from "./page.module.css";

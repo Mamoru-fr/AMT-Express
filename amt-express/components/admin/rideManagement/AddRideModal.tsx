@@ -4,7 +4,13 @@ import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {X, MapPin, Clock, Users, DollarSign, FileText, Building, FolderOpen, CheckSquare, AlertTriangle} from "lucide-react";
 import {useTranslation} from "react-i18next";
-import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from "@/lib/actions/ridesManagementActions";
+import {
+    createRide,
+    fetchAllCustomers,
+    fetchAvailableDrivers,
+    fetchAllProductions,
+    fetchAllProjects
+} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, OPTIONS} from "@/content/database_types/ride";
 import {SearchableSelect} from "@/components/classicComponents/SearchableSelect";
 import styles from "./AddRideModal.module.css";
