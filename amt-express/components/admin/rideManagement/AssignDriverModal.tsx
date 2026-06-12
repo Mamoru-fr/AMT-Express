@@ -3,6 +3,7 @@
 import {useState} from "react";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
+import {useTranslation} from "react-i18next";
 import styles from "./AssignDriverModal.module.css";
 
 /**
@@ -25,6 +26,7 @@ type AssignDriverModalProps = {
  * Displays ride details and allows selection from available drivers list
  */
 export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriverModalProps) {
+    const {t} = useTranslation();
     // Track the selected driver ID from dropdown
     const [selectedDriver, setSelectedDriver] = useState('');
 
@@ -45,34 +47,34 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
         <div className={styles.modalOverlay}>
             <div className={styles.modalContainer}>
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Assign Driver to Ride #{ride.id}</h3>
-                    <button onClick={onClose} className={styles.closeButton}>
+                    <h3 className={styles.modalTitle}>{t('rideModals.assignDriver.title', {rideId: ride.id})}</h3>
+                    <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>
                 </div>
 
                 <div className={styles.rideInfo}>
                     <p className={styles.rideInfoLine}>
-                        <span className={styles.rideInfoLabel}>From:</span> {ride.departure}
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.from')}</span> {ride.departure}
                     </p>
                     <p className={styles.rideInfoLine}>
-                        <span className={styles.rideInfoLabel}>To:</span> {ride.destination}
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.to')}</span> {ride.destination}
                     </p>
                     <p className={styles.rideInfoLine}>
-                        <span className={styles.rideInfoLabel}>Time:</span> {new Date(ride.departureTime).toLocaleString('fr-FR')}
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.time')}</span> {new Date(ride.departureTime).toLocaleString()}
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Select Driver</label>
+                        <label className={styles.formLabel}>{t('rideModals.assignDriver.selectDriver')}</label>
                         <select
                             value={selectedDriver}
                             onChange={(e) => setSelectedDriver(e.target.value)}
                             className={styles.formSelect}
                             required
                         >
-                            <option value="">-- Choose a driver --</option>
+                            <option value="">{t('rideModals.assignDriver.chooseDriver')}</option>
                             {drivers.map(driver => (
                                 <option key={driver.id} value={driver.id}>
                                     {driver.name} ({driver.email})
@@ -87,14 +89,14 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
                             onClick={onClose}
                             className={styles.cancelButton}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
                             className={styles.assignButton}
                             disabled={!selectedDriver}
                         >
-                            Assign Driver
+                            {t('rideModals.assignDriver.assignButton')}
                         </button>
                     </div>
                 </form>

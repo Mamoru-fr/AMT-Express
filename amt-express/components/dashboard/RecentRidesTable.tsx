@@ -7,6 +7,7 @@
  */
 
 import styles from "./RecentRidesTable.module.css";
+import {useTranslation} from 'react-i18next';
 
 type Ride = {
     id: number;
@@ -31,16 +32,28 @@ const statusStyles = {
 };
 
 export function RecentRidesTable({rides}: Props) {
+    const {t} = useTranslation();
+    
+    const getStatusText = (status: string) => {
+        const statusMap: Record<string, string> = {
+            pending: t('ridesManagement.pending', 'Pending'),
+            assigned: t('ridesManagement.assigned', 'Assigned'),
+            completed: t('ridesManagement.completed', 'Completed'),
+            cancelled: t('ridesManagement.cancelled', 'Cancelled')
+        };
+        return statusMap[status] || status;
+    };
+    
     return (
         <section className={styles.card}>
             <div className={styles.header}>
-                <h3 className={styles.title}>Recent Rides</h3>
+                <h3 className={styles.title}>{t('recentRides.title', 'Recent Rides')}</h3>
             </div>
             <div className={styles.list}>
                 {/* Show empty state if no rides available */}
                 {rides.length === 0 ? (
                     <div className={styles.emptyState}>
-                        No rides found
+                        {t('recentRides.noRidesFound', 'No rides found')}
                     </div>
                 ) : (
                     /* Render each ride as a card-style row */
@@ -69,7 +82,7 @@ export function RecentRidesTable({rides}: Props) {
                                 </span>
                                 <span className={styles.price}>€{ride.price}</span>
                                 <span className={`${styles.badge} ${styles[statusStyles[ride.status]]}`}>
-                                    {ride.status.charAt(0).toUpperCase() + ride.status.slice(1)}
+                                    {getStatusText(ride.status)}
                                 </span>
                             </div>
                         </div>

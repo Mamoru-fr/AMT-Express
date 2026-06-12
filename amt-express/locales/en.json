@@ -23,6 +23,8 @@
         "allFieldsRequired": "All fields are required",
         "passwordMismatch": "Passwords do not match",
         "Invalid email or password": "Incorrect email or password",
+        "accessDenied": "Access Denied",
+        "unauthorizedRole": "Your account role is not authorized to view this page.",
         "Session required": "You must be signed in to access this resource",
         "Unauthorized": "You don't have permission to perform this action",
         "Invalid credentials": "Incorrect email or password",
@@ -116,6 +118,166 @@
         "confirmRequest": "Send Request"
     },
     "common": {
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "save": "Save",
+        "create": "Create",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirm": "Confirm",
+        "close": "Close",
+        "yes": "Yes",
+        "no": "No",
+        "required": "Required",
+        "optional": "Optional"
+    },
+    "adminNavigation": {
+        "dashboard": "Dashboard",
+        "dashboardDescription": "Overview",
+        "rideManagement": "Ride Management",
+        "rideManagementDescription": "Manage rides",
+        "newRide": "New Ride",
+        "newRideDescription": "Create a ride",
+        "navigation": "Navigation",
+        "settings": "Settings",
+        "settingsDescription": "Connection area",
+        "help": "Help",
+        "helpDescription": "Get support",
+        "brandTitle": "AMT Express",
+        "brandSubtitle": "Workspace",
+        "openNavigation": "Open navigation",
+        "closeNavigation": "Close navigation",
+        "collapseNavigation": "Collapse navigation",
+        "expandNavigation": "Expand navigation"
+    },
+    "ridesManagement": {
+        "title": "Ride Management",
+        "subtitle": "Excel-like view to manage all platform rides",
+        "searchPlaceholder": "Search by ID, departure, destination...",
+        "allStatuses": "All Statuses",
+        "loading": "Loading rides...",
+        "unassigned": "Unassigned",
+        "showing": "Showing",
+        "of": "of",
+        "rides": "rides",
+        "addRide": "Add Ride",
+        "addRideSubtitle": "Fill the ride details below, then return to the previous screen automatically.",
+        "exportCSV": "Export CSV",
+        "dateHour": "Date & Hour",
+        "clients": "Clients",
+        "departure": "Departure",
+        "arrival": "Arrival",
+        "driver": "Driver",
+        "price": "Price (€)",
+        "status": "Status",
+        "actions": "Actions",
+        "location": "Location",
+        "details": "Ride Details",
+        "departureTime": "Departure Time",
+        "participants": "Participants",
+        "driverOptional": "Driver (Optional)",
+        "customers": "Customers",
+        "selectDriver": "Select a driver...",
+        "selectCustomer": "Type a customer name...",
+        "productionInfo": "Production Info",
+        "productionOptional": "Production (Optional)",
+        "selectProduction": "Type a production name...",
+        "projectOptional": "Project (Optional)",
+        "selectProject": "Select a project...",
+        "notes": "Customer Notes (Optional)",
+        "createRide": "Create Ride",
+        "creating": "Creating...",
+        "departurePlaceholder": "E.g., 123 Main St, Paris",
+        "destinationPlaceholder": "E.g., 456 Park Ave, Lyon",
+        "pricePlaceholder": "0.00",
+        "notesPlaceholder": "Add any special instructions...",
+        "noProductionSelected": "No production selected",
+        "selected": "selected"
+    },
+    "rideModals": {
+        "assignDriver": {
+            "title": "Assign Driver to Ride #{{rideId}}",
+            "from": "From:",
+            "to": "To:",
+            "time": "Time:",
+            "selectDriver": "Select Driver",
+            "chooseDriver": "-- Choose a driver --",
+            "assignButton": "Assign Driver"
+        },
+        "deleteConfirm": {
+            "title": "Confirm Deletion",
+            "message": "Are you sure you want to delete ride <strong>#{{rideId}}</strong>? This action cannot be undone.",
+            "deleteButton": "Delete Ride"
+        },
+        "editRide": {
+            "title": "Edit Ride #{{rideId}}",
+            "departure": "Departure",
+            "destination": "Destination",
+            "departureTime": "Departure Time",
+            "price": "Price (€)",
+            "status": "Status",
+            "customerNotes": "Customer Notes",
+            "saveButton": "Save Changes",
+            "statusOptions": {
+                "pending": "Pending",
+                "assigned": "Assigned",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            }
+        }
+    },
+    "addRideModal": {
+        "addRideSubtitle": "Fill the ride details below, then return to the previous screen automatically.",
+        "back": "Back",
+        "searchDrivers": "Search drivers...",
+        "noMatchingDriver": "No matching driver",
+        "typeToSearchDriver": "Type to search, then use Enter or click a result.",
+        "typeCustomerName": "Type a customer name...",
+        "addAnotherCustomer": "Add another customer...",
+        "noMatchingCustomer": "No matching customer",
+        "pressEnterToAdd": "Press Enter to add the first match, or click a suggestion.",
+        "searchProductions": "Type a production name...",
+        "replaceProduction": "Search to replace production...",
+        "noMatchingProduction": "No matching production",
+        "selectProductionFirst": "Select a production first",
+        "searchProjects": "Search projects...",
+        "noMatchingProject": "No matching project"
+    },
+    "adminDashboard": {
+        "title": "Admin Dashboard",
+        "subtitle": "Complete overview of platform activity",
+        "kpis": {
+            "totalRides": "Total Rides",
+            "activeUsers": "Active Users",
+            "pendingInvoices": "Pending Invoices",
+            "monthlyRevenue": "Monthly Revenue"
+        },
+        "actions": {
+            "addNewRide": "Add New Ride"
+        },
+        "charts": {
+            "monthlyRides": "Monthly Rides",
+            "monthlyRevenue": "Monthly Revenue",
+            "statusDistribution": "Status Distribution"
+        },
+        "recentRides": {
+            "title": "Recent Rides"
+        }
+    },
+    "searchableSelect": {
+        "clearSelection": "Clear selection",
+        "toggleSuggestions": "Toggle suggestions",
+        "noMatchingResult": "No matching result",
+        "typeToSearch": "Type to search..."
+    },
+    "languageDropdown": {
+        "language": "Language",
+        "languageSelector": "Language selector"
+    },
+    "recentRides": {
+        "title": "Recent Rides",
+        "noRidesFound": "No rides found"
+    },
+    "statusPieChart": {
+        "title": "Rides by Status"
     }
 }

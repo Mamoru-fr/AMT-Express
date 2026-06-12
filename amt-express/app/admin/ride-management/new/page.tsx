@@ -174,13 +174,13 @@ export default function NewRidePage() {
                 <div className={styles.pageContainer}>
                 <div className={styles.pageHeader}>
                     <div className={styles.pageHeaderText}>
-                        <div className={styles.pageEyebrow}>Ride management</div>
+                        <div className={styles.pageEyebrow}>{t('ridesManagement.title')}</div>
                         <h1 className={styles.pageTitle}>
                             <CheckSquare className={styles.titleIcon} />
-                            {t('rideManagement.addRide', 'Add New Ride')}
+                            {t('rideManagement.addRide')}
                         </h1>
                         <p className={styles.pageSubtitle}>
-                            Fill the ride details below, then return to the previous screen automatically.
+                            {t('rideManagement.addRideSubtitle', 'Fill the ride details below, then return to the previous screen automatically.')}
                         </p>
                     </div>
 
@@ -195,7 +195,7 @@ export default function NewRidePage() {
                         }}
                     >
                         <X className={styles.closeIcon} />
-                        <span>Back</span>
+                        <span>{t('common.cancel')}</span>
                     </Link>
                 </div>
 
@@ -215,20 +215,20 @@ export default function NewRidePage() {
                         <div className={styles.formSection}>
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <MapPin className={styles.sectionTitleIcon} /> {t('rideManagement.location', 'Location')}
+                                    <MapPin className={styles.sectionTitleIcon} /> {t('ridesManagement.location')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconGreen} />
-                                            {t('rideManagement.departure', 'Departure')}
+                                            {t('ridesManagement.departure')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={departure}
                                             onChange={(e) => setDeparture(e.target.value)}
-                                            placeholder="E.g., 123 Main St, Paris"
+                                            placeholder={t('ridesManagement.departurePlaceholder', 'E.g., 123 Main St, Paris')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -237,14 +237,14 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconRed} />
-                                            {t('rideManagement.destination', 'Destination')}
+                                            {t('ridesManagement.destination')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
-                                            placeholder="E.g., 456 Park Ave, Lyon"
+                                            placeholder={t('ridesManagement.destinationPlaceholder')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -254,13 +254,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Clock className={styles.sectionTitleIcon} /> {t('rideManagement.details', 'Ride Details')}
+                                    <Clock className={styles.sectionTitleIcon} /> {t('ridesManagement.details')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Clock className={styles.formLabelIconBlue} />
-                                            {t('rideManagement.departureTime', 'Departure Time')}
+                                            {t('ridesManagement.departureTime')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
@@ -275,7 +275,7 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <DollarSign className={styles.formLabelIconGreen} />
-                                            {t('rideManagement.price', 'Price (€)')}
+                                            {t('ridesManagement.price')}
                                         </label>
                                         <input
                                             type="number"
@@ -283,7 +283,7 @@ export default function NewRidePage() {
                                             min="0"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
-                                            placeholder="0.00"
+                                            placeholder={t('ridesManagement.pricePlaceholder')}
                                             className={styles.formInput}
                                         />
                                     </div>
@@ -310,9 +310,9 @@ export default function NewRidePage() {
                                         onChange={(driver) => setDriverId(driver.id)}
                                         onClear={() => setDriverId('')}
                                         placeholder={t('rideManagement.selectDriver', 'Select a driver...')}
-                                        searchPlaceholder="Search drivers..."
-                                        emptyText="No matching driver"
-                                        helperText="Type to search, then use Enter or click a result."
+                                        searchPlaceholder={t('addRideModal.searchDrivers', 'Search drivers...')}
+                                        emptyText={t('addRideModal.noMatchingDriver', 'No matching driver')}
+                                        helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                     />
                                 </div>
 
@@ -332,14 +332,14 @@ export default function NewRidePage() {
                                         }))}
                                         onChange={(selectedOptions) => setSelectedCustomers(selectedOptions.map(option => option.id))}
                                         onClear={() => setSelectedCustomers([])}
-                                        placeholder="Type a customer name..."
-                                        searchPlaceholder="Add another customer..."
-                                        emptyText="No matching customer"
-                                        helperText="Press Enter to add the first match, or click a suggestion."
+                                        placeholder={t('addRideModal.typeCustomerName', 'Type a customer name...')}
+                                        searchPlaceholder={t('addRideModal.addAnotherCustomer', 'Add another customer...')}
+                                        emptyText={t('addRideModal.noMatchingCustomer', 'No matching customer')}
+                                        helperText={t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                     />
                                     <div className={styles.tagHintRow}>
                                         <p className={styles.tagHintCount}>
-                                            {selectedCustomers.length} selected
+                                            {selectedCustomers.length} {t('ridesManagement.selected', 'selected')}
                                         </p>
                                     </div>
                                 </div>
@@ -370,17 +370,17 @@ export default function NewRidePage() {
                                                 setProductionId('');
                                                 setProjectId('');
                                             }}
-                                            placeholder="Type a production name..."
-                                            searchPlaceholder="Search to replace production..."
-                                            emptyText="No matching production"
-                                            helperText="Type to search, then use Enter or click a result."
+                                            placeholder={t('addRideModal.searchProductions', 'Type a production name...')}
+                                            searchPlaceholder={t('addRideModal.replaceProduction', 'Search to replace production...')}
+                                            emptyText={t('addRideModal.noMatchingProduction', 'No matching production')}
+                                            helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                         />
                                         <div className={styles.tagHintRow}>
                                             <p className={styles.tagHintText}>
-                                                {selectedProduction ? selectedProduction.name : 'No production selected'}
+                                                {selectedProduction ? selectedProduction.name : t('ridesManagement.noProductionSelected', 'No production selected')}
                                             </p>
                                             <p className={styles.tagHintCount}>
-                                                {productionId ? '1 selected' : '0 selected'}
+                                                {productionId ? '1' : '0'} {t('ridesManagement.selected', 'selected')}
                                             </p>
                                         </div>
                                     </div>
@@ -400,9 +400,9 @@ export default function NewRidePage() {
                                             onChange={(project) => setProjectId(project.id)}
                                             onClear={() => setProjectId('')}
                                             placeholder={t('rideManagement.selectProject', 'Select a project...')}
-                                            searchPlaceholder="Search projects..."
-                                            emptyText={productionId ? 'No matching project' : 'Select a production first'}
-                                            helperText={productionId ? 'Type to search, then use Enter or click a result.' : 'Select a production first'}
+                                            searchPlaceholder={t('addRideModal.searchProjects', 'Search projects...')}
+                                            emptyText={productionId ? t('addRideModal.noMatchingProject', 'No matching project') : t('addRideModal.selectProductionFirst', 'Select a production first')}
+                                            helperText={productionId ? t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('addRideModal.selectProductionFirst', 'Select a production first')}
                                             disabled={!productionId}
                                         />
                                     </div>
@@ -417,7 +417,7 @@ export default function NewRidePage() {
                                 <textarea
                                     value={customerNotes}
                                     onChange={(e) => setCustomerNotes(e.target.value)}
-                                    placeholder="Add any special instructions..."
+                                    placeholder={t('rideManagement.notesPlaceholder', 'Add any special instructions...')}
                                     rows={3}
                                     className={`${styles.formInput} ${styles.notesTextarea}`}
                                 />

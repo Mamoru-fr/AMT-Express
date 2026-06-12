@@ -23,6 +23,8 @@
         "allFieldsRequired": "Tous les champs sont requis",
         "passwordMismatch": "Les mots de passe ne correspondent pas",
         "Invalid email or password": "Email ou mot de passe incorrect",
+        "accessDenied": "Accès refusé",
+        "unauthorizedRole": "Votre rôle utilisateur n'est pas autorisé à afficher cette page.",
         "Session required": "Vous devez être connecté pour accéder à cette ressource",
         "Unauthorized": "Vous n'avez pas la permission d'effectuer cette action",
         "Invalid credentials": "Email ou mot de passe incorrect",
@@ -116,6 +118,166 @@
         "confirmRequest": "Envoyer la Demande"
     },
     "common": {
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "create": "Créer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "confirm": "Confirmer",
+        "close": "Fermer",
+        "yes": "Oui",
+        "no": "Non",
+        "required": "Requis",
+        "optional": "Optionnel"
+    },
+    "adminNavigation": {
+        "dashboard": "Tableau de bord",
+        "dashboardDescription": "Aperçu",
+        "rideManagement": "Gestion des courses",
+        "rideManagementDescription": "Gérer les courses",
+        "newRide": "Nouvelle course",
+        "newRideDescription": "Créer une course",
+        "navigation": "Navigation",
+        "settings": "Paramètres",
+        "settingsDescription": "Zone de connexion",
+        "help": "Aide",
+        "helpDescription": "Obtenir de l'aide",
+        "brandTitle": "AMT Express",
+        "brandSubtitle": "Espace de travail",
+        "openNavigation": "Ouvrir la navigation",
+        "closeNavigation": "Fermer la navigation",
+        "collapseNavigation": "Réduire la navigation",
+        "expandNavigation": "Étendre la navigation"
+    },
+    "ridesManagement": {
+        "title": "Gestion des Courses",
+        "subtitle": "Vue de type Excel pour gérer toutes les courses de la plateforme",
+        "searchPlaceholder": "Rechercher par ID, départ, destination...",
+        "allStatuses": "Tous les Statuts",
+        "loading": "Chargement des courses...",
+        "unassigned": "Non assigné",
+        "showing": "Affichage de",
+        "of": "sur",
+        "rides": "courses",
+        "addRide": "Ajouter une Course",
+        "addRideSubtitle": "Remplissez les détails de la course ci-dessous, puis retournez automatiquement à l'écran précédent.",
+        "exportCSV": "Exporter CSV",
+        "dateHour": "Date et Heure",
+        "clients": "Clients",
+        "departure": "Départ",
+        "arrival": "Arrivée",
+        "driver": "Chauffeur",
+        "price": "Prix (€)",
+        "status": "Statut",
+        "actions": "Actions",
+        "location": "Localisation",
+        "details": "Détails de la course",
+        "departureTime": "Heure de départ",
+        "participants": "Participants",
+        "driverOptional": "Chauffeur (Optionnel)",
+        "customers": "Clients",
+        "selectDriver": "Sélectionner un chauffeur...",
+        "selectCustomer": "Tapez un nom de client...",
+        "productionInfo": "Informations de production",
+        "productionOptional": "Production (Optionnelle)",
+        "selectProduction": "Tapez un nom de production...",
+        "projectOptional": "Projet (Optionnel)",
+        "selectProject": "Sélectionner un projet...",
+        "notes": "Notes client (Optionnel)",
+        "createRide": "Créer une course",
+        "creating": "Création...",
+        "departurePlaceholder": "Ex. : 123 Rue de Paris, Paris",
+        "destinationPlaceholder": "Ex. : 456 Avenue des Champs, Lyon",
+        "pricePlaceholder": "0,00",
+        "notesPlaceholder": "Ajoutez des instructions spéciales...",
+        "noProductionSelected": "Aucune production sélectionnée",
+        "selected": "sélectionné(s)"
+    },
+    "rideModals": {
+        "assignDriver": {
+            "title": "Assigner un chauffeur à la course #{{rideId}}",
+            "from": "Départ :",
+            "to": "Arrivée :",
+            "time": "Heure :",
+            "selectDriver": "Sélectionner un chauffeur",
+            "chooseDriver": "-- Choisir un chauffeur --",
+            "assignButton": "Assigner le chauffeur"
+        },
+        "deleteConfirm": {
+            "title": "Confirmer la suppression",
+            "message": "Êtes-vous sûr de vouloir supprimer la course <strong>#{{rideId}}</strong> ? Cette action est irréversible.",
+            "deleteButton": "Supprimer la course"
+        },
+        "editRide": {
+            "title": "Modifier la course #{{rideId}}",
+            "departure": "Départ",
+            "destination": "Destination",
+            "departureTime": "Heure de départ",
+            "price": "Prix (€)",
+            "status": "Statut",
+            "customerNotes": "Notes client",
+            "saveButton": "Enregistrer les modifications",
+            "statusOptions": {
+                "pending": "En attente",
+                "assigned": "Assignée",
+                "completed": "Terminée",
+                "cancelled": "Annulée"
+            }
+        }
+    },
+    "addRideModal": {
+        "addRideSubtitle": "Remplissez les détails de la course ci-dessous, puis retournez automatiquement à l'écran précédent.",
+        "back": "Retour",
+        "searchDrivers": "Rechercher des conducteurs...",
+        "noMatchingDriver": "Aucun conducteur correspondant",
+        "typeToSearchDriver": "Tapez pour rechercher, puis utilisez Entrée ou cliquez sur un résultat.",
+        "typeCustomerName": "Tapez un nom de client...",
+        "addAnotherCustomer": "Ajouter un autre client...",
+        "noMatchingCustomer": "Aucun client correspondant",
+        "pressEnterToAdd": "Appuyez sur Entrée pour ajouter la première correspondance, ou cliquez sur une suggestion.",
+        "searchProductions": "Tapez un nom de production...",
+        "replaceProduction": "Rechercher pour remplacer la production...",
+        "noMatchingProduction": "Aucune production correspondante",
+        "selectProductionFirst": "Sélectionnez d'abord une production",
+        "searchProjects": "Rechercher des projets...",
+        "noMatchingProject": "Aucun projet correspondant"
+    },
+    "adminDashboard": {
+        "title": "Tableau de bord Admin",
+        "subtitle": "Vue complète de l'activité de la plateforme",
+        "kpis": {
+            "totalRides": "Total des courses",
+            "activeUsers": "Utilisateurs actifs",
+            "pendingInvoices": "Factures en attente",
+            "monthlyRevenue": "Revenu mensuel"
+        },
+        "actions": {
+            "addNewRide": "Ajouter une nouvelle course"
+        },
+        "charts": {
+            "monthlyRides": "Courses mensuelles",
+            "monthlyRevenue": "Revenu mensuel",
+            "statusDistribution": "Répartition des statuts"
+        },
+        "recentRides": {
+            "title": "Courses récentes"
+        }
+    },
+    "searchableSelect": {
+        "clearSelection": "Effacer la sélection",
+        "toggleSuggestions": "Afficher/masquer les suggestions",
+        "noMatchingResult": "Aucun résultat correspondant",
+        "typeToSearch": "Tapez pour rechercher..."
+    },
+    "languageDropdown": {
+        "language": "Langue",
+        "languageSelector": "Sélecteur de langue"
+    },
+    "recentRides": {
+        "title": "Courses récentes",
+        "noRidesFound": "Aucune course trouvée"
+    },
+    "statusPieChart": {
+        "title": "Répartition des courses par statut"
     }
 }

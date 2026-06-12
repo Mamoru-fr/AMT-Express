@@ -3,6 +3,7 @@
 import {useState} from "react";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
+import {useTranslation} from "react-i18next";
 import styles from "./EditRideModal.module.css";
 
 /**
@@ -23,6 +24,8 @@ type EditRideModalProps = {
  * Pre-populates form with current ride data and allows modifications to all editable fields
  */
 export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
+    const {t} = useTranslation();
+    
     // Initialize form data with existing ride details
     // departureTime is converted to datetime-local format (YYYY-MM-DDTHH:mm)
     const [formData, setFormData] = useState({
@@ -51,8 +54,8 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
         <div className={styles.modalOverlay}>
             <div className={styles.modalContainer}>
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Edit Ride #{ride.id}</h3>
-                    <button onClick={onClose} className={styles.closeButton}>
+                    <h3 className={styles.modalTitle}>{t('rideModals.editRide.title', {rideId: ride.id})}</h3>
+                    <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>
                 </div>
@@ -60,7 +63,8 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            Departure <span className={styles.formLabelRequired}>
+                            {t('rideModals.editRide.departure')} <span className={styles.formLabelRequired}>
+                                {t('common.required')}
                         </span></label>
                         <input
                             type="text"
@@ -73,7 +77,8 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            Destination <span className={styles.formLabelRequired}>
+                            {t('rideModals.editRide.destination')} <span className={styles.formLabelRequired}>
+                                {t('common.required')}
                         </span></label>
                         <input
                             type="text"
@@ -86,7 +91,8 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            Departure Time <span className={styles.formLabelRequired}>
+                            {t('rideModals.editRide.departureTime')} <span className={styles.formLabelRequired}>
+                                {t('common.required')}
                         </span></label>
                         <input
                             type="datetime-local"
@@ -99,7 +105,8 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            Price (€) <span className={styles.formLabelRequired}>
+                            {t('rideModals.editRide.price')} <span className={styles.formLabelRequired}>
+                                {t('common.required')}
                         </span></label>
                         <input
                             type="number"
@@ -112,21 +119,21 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Status</label>
+                        <label className={styles.formLabel}>{t('rideModals.editRide.status')}</label>
                         <select
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value as RideStatus})}
                             className={styles.formSelect}
                         >
-                            <option value="pending">Pending</option>
-                            <option value="assigned">Assigned</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="pending">{t('rideModals.editRide.statusOptions.pending')}</option>
+                            <option value="assigned">{t('rideModals.editRide.statusOptions.assigned')}</option>
+                            <option value="completed">{t('rideModals.editRide.statusOptions.completed')}</option>
+                            <option value="cancelled">{t('rideModals.editRide.statusOptions.cancelled')}</option>
                         </select>
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Customer Notes</label>
+                        <label className={styles.formLabel}>{t('rideModals.editRide.customerNotes')}</label>
                         <textarea
                             value={formData.customerNotes}
                             onChange={(e) => setFormData({...formData, customerNotes: e.target.value})}
@@ -141,13 +148,13 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                             onClick={onClose}
                             className={styles.cancelButton}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
                             className={styles.saveButton}
                         >
-                            Save Changes
+                            {t('rideModals.editRide.saveButton')}
                         </button>
                     </div>
                 </form>

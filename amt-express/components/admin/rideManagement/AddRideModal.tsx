@@ -225,7 +225,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 {t('rideManagement.addRide', 'Add New Ride')}
                             </h1>
                             <p className={styles.pageSubtitle}>
-                                Fill the ride details below, then return to the previous screen automatically.
+                                {t('addRideModal.addRideSubtitle', 'Fill the ride details below, then return to the previous screen automatically.')}
                             </p>
                         </div>
 
@@ -236,7 +236,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             type="button"
                         >
                             <X className={styles.closeIcon} />
-                            <span>Back</span>
+                            <span>{t('addRideModal.back', 'Back')}</span>
                         </button>
                     </div>
                 ) : (
@@ -286,7 +286,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             type="text"
                                             value={departure}
                                             onChange={(e) => setDeparture(e.target.value)}
-                                            placeholder="E.g., 123 Main St, Paris"
+                                            placeholder={t('rideManagement.departurePlaceholder', 'E.g., 123 Main St, Paris')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -302,7 +302,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             type="text"
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
-                                            placeholder="E.g., 456 Park Ave, Lyon"
+                                            placeholder={t('rideManagement.destinationPlaceholder', 'E.g., 456 Park Ave, Lyon')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -342,7 +342,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             min="0"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
-                                            placeholder="0.00"
+                                            placeholder={t('rideManagement.pricePlaceholder', '0.00')}
                                             className={styles.formInput}
                                         />
                                     </div>
@@ -370,9 +370,9 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                         onChange={(driver) => setDriverId(driver.id)}
                                         onClear={() => setDriverId('')}
                                         placeholder={t('rideManagement.selectDriver', 'Select a driver...')}
-                                        searchPlaceholder="Search drivers..."
-                                        emptyText="No matching driver"
-                                        helperText="Type to search, then use Enter or click a result."
+                                        searchPlaceholder={t('addRideModal.searchDrivers', 'Search drivers...')}
+                                        emptyText={t('addRideModal.noMatchingDriver', 'No matching driver')}
+                                        helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                     />
                                 </div>
 
@@ -392,14 +392,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                         }))}
                                         onChange={(selectedOptions) => setSelectedCustomers(selectedOptions.map(option => option.id))}
                                         onClear={() => setSelectedCustomers([])}
-                                        placeholder="Type a customer name..."
-                                        searchPlaceholder="Add another customer..."
-                                        emptyText="No matching customer"
-                                        helperText="Press Enter to add the first match, or click a suggestion."
+                                        placeholder={t('addRideModal.typeCustomerName', 'Type a customer name...')}
+                                        searchPlaceholder={t('addRideModal.addAnotherCustomer', 'Add another customer...')}
+                                        emptyText={t('addRideModal.noMatchingCustomer', 'No matching customer')}
+                                        helperText={t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                     />
                                     <div className={styles.tagHintRow}>
                                         <p className={styles.tagHintText}>
-                                            Press Enter to add the first match, or click a suggestion.
+                                            {t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                         </p>
                                         <p className={styles.tagHintCount}>
                                             {selectedCustomers.length} selected
@@ -434,10 +434,10 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                                 setProductionId('');
                                                 setProjectId('');
                                             }}
-                                            placeholder="Type a production name..."
-                                            searchPlaceholder="Search to replace production..."
-                                            emptyText="No matching production"
-                                            helperText="Type to search, then use Enter or click a result."
+                                            placeholder={t('addRideModal.searchProductions', 'Type a production name...')}
+                                            searchPlaceholder={t('addRideModal.replaceProduction', 'Search to replace production...')}
+                                            emptyText={t('addRideModal.noMatchingProduction', 'No matching production')}
+                                            helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                         />
                                         <div className={styles.tagHintRow}>
                                             <p className={styles.tagHintText}>
@@ -464,14 +464,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                                 onChange={(project) => setProjectId(project.id)}
                                                 onClear={() => setProjectId('')}
                                                 placeholder={t('rideManagement.selectProject', 'Select a project...')}
-                                                searchPlaceholder="Search projects..."
-                                                emptyText={productionId ? 'No matching project' : 'Select a production first'}
-                                                helperText={productionId ? 'Type to search, then use Enter or click a result.' : 'Select a production first'}
+                                                searchPlaceholder={t('addRideModal.searchProjects', 'Search projects...')}
+                                                emptyText={productionId ? t('addRideModal.noMatchingProject', 'No matching project') : t('addRideModal.selectProductionFirst', 'Select a production first')}
+                                                helperText={productionId ? t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('addRideModal.selectProductionFirst', 'Select a production first')}
                                                 disabled={!productionId}
                                             />
                                         {!productionId && (
                                             <p style={{fontSize: '0.75rem', color: 'var(--app-muted-color)', margin: '0.25rem 0 0 0'}}>
-                                                Select a production first
+                                                {t('addRideModal.selectProductionFirst', 'Select a production first')}
                                             </p>
                                         )}
                                     </div>
@@ -487,7 +487,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 <textarea
                                     value={customerNotes}
                                     onChange={(e) => setCustomerNotes(e.target.value)}
-                                    placeholder="Add any special instructions..."
+                                    placeholder={t('rideManagement.notesPlaceholder', 'Add any special instructions...')}
                                     rows={3}
                                     className={`${styles.formInput} ${styles.notesTextarea}`}
                                 />

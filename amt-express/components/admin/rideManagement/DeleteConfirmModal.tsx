@@ -1,6 +1,7 @@
 'use client'
 
 import {X} from "lucide-react";
+import {useTranslation} from "react-i18next";
 import styles from "./DeleteConfirmModal.module.css";
 
 /**
@@ -21,18 +22,20 @@ type DeleteConfirmModalProps = {
  * Displays warning message and requires explicit user confirmation
  */
 export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmModalProps) {
+    const {t} = useTranslation();
+    
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContainer}>
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Confirm Deletion</h3>
-                    <button onClick={onClose} className={styles.closeButton}>
+                    <h3 className={styles.modalTitle}>{t('rideModals.deleteConfirm.title')}</h3>
+                    <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>
                 </div>
 
                 <p className={styles.confirmationMessage}>
-                    Are you sure you want to delete ride <strong>#{rideId}</strong>? This action cannot be undone.
+                    {t('rideModals.deleteConfirm.message', {rideId: rideId})}
                 </p>
 
                 <div className={styles.modalFooter}>
@@ -40,13 +43,13 @@ export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmMo
                         onClick={onClose}
                         className={styles.cancelButton}
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={() => onConfirm(rideId)}
                         className={styles.deleteButton}
                     >
-                        Delete Ride
+                        {t('rideModals.deleteConfirm.deleteButton')}
                     </button>
                 </div>
             </div>

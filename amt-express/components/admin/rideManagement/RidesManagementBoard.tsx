@@ -296,7 +296,7 @@ export function RidesManagementBoard() {
             <div className={styles.pageShell}>
                 <div className={styles.pageInner}>
                     <div className={styles.hero}>
-                        <div className={styles.title}>Loading rides...</div>
+                        <div className={styles.title}>{t('ridesManagement.loading')}</div>
                     </div>
                 </div>
             </div>
@@ -310,9 +310,9 @@ export function RidesManagementBoard() {
                 <section className={styles.hero}>
                     <div className={styles.heroTop}>
                         <div>
-                            <p className={styles.eyebrow}>Admin workspace</p>
-                            <h1 className={styles.title}>{t('ridesManagement.title', 'Ride Management')}</h1>
-                            <p className={styles.subtitle}>{t('ridesManagement.subtitle', 'Excel-like view to manage all platform rides')}</p>
+                            <p className={styles.eyebrow}>{t('adminDashboard.subtitle')}</p>
+                            <h1 className={styles.title}>{t('ridesManagement.title')}</h1>
+                            <p className={styles.subtitle}>{t('ridesManagement.subtitle')}</p>
                         </div>
                     </div>
                 </section>
@@ -338,11 +338,11 @@ export function RidesManagementBoard() {
                                     value={filters.status}
                                     onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
                                 >
-                                    <option value="all">{t('ridesManagement.allStatuses', 'All Statuses')}</option>
-                                    <option value="pending">{t('ridesManagement.pending', 'Pending')}</option>
-                                    <option value="assigned">{t('ridesManagement.assigned', 'Assigned')}</option>
-                                    <option value="completed">{t('ridesManagement.completed', 'Completed')}</option>
-                                    <option value="cancelled">{t('ridesManagement.cancelled', 'Cancelled')}</option>
+                                    <option value="all">{t('ridesManagement.allStatuses')}</option>
+                                    <option value="pending">{t('ridesManagement.pending')}</option>
+                                    <option value="assigned">{t('ridesManagement.assigned')}</option>
+                                    <option value="completed">{t('ridesManagement.completed')}</option>
+                                    <option value="cancelled">{t('ridesManagement.cancelled')}</option>
                                 </select>
 
                                 <button
@@ -350,8 +350,8 @@ export function RidesManagementBoard() {
                                     className={styles.actionButton}
                                 >
                                     <Plus className={styles.buttonIcon} />
-                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.addRide', 'Add Ride')}</span>
-                                    <span className="sm:hidden">Add</span>
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.addRide')}</span>
+                                    <span className="sm:hidden">{t('common.create')}</span>
                                 </button>
 
                                 <button
@@ -359,8 +359,8 @@ export function RidesManagementBoard() {
                                     className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
                                 >
                                     <Download className={styles.buttonIcon} />
-                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.exportCSV', 'Export CSV')}</span>
-                                    <span className="sm:hidden">Export</span>
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.exportCSV')}</span>
+                                    <span className="sm:hidden">{t('ridesManagement.exportCSV')}</span>
                                 </button>
                             </div>
                             <div className={styles.resultsLine}>
@@ -377,34 +377,34 @@ export function RidesManagementBoard() {
                                 <tr>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('departureTime')}>
-                                        {t('ridesManagement.dateHour', 'Date & Hour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.dateHour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('clients')}>
-                                        {t('ridesManagement.clients', 'Clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('departure')}>
-                                        {t('ridesManagement.departure', 'Departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('destination')}>
-                                        {t('ridesManagement.arrival', 'Arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('driver')}>
-                                        {t('ridesManagement.driver', 'Driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('price')}>
-                                        {t('ridesManagement.price', 'Price (€)')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.price')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={styles.tableHeadCell}
                                         onClick={() => handleSort('status')}>
-                                        {t('ridesManagement.status', 'Status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                        {t('ridesManagement.status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
                                     </th>
                                     <th className={`${styles.tableHeadCell} ${styles.tableActionsHead}`}>
-                                        {t('ridesManagement.actions', 'Actions')}
+                                        {t('ridesManagement.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -415,13 +415,13 @@ export function RidesManagementBoard() {
                                             {new Date(ride.departureTime).toLocaleString('fr-FR')}
                                         </td>
                                         <td className={styles.tableCell}>
-                                            {ride.customers.map(c => c.name).join(', ') || 'N/A'}
+                                            {ride.customers.map(c => c.name).join(', ') || t('common.optional')}
                                         </td>
                                         <td className={styles.tableCell}>{ride.departure}</td>
                                         <td className={styles.tableCell}>{ride.destination}</td>
                                         <td className={`${styles.tableCell} ${!ride.driver ? styles.tableCellMuted : ''}`}>
                                             {ride.driver?.name || (
-                                                <span>Unassigned</span>
+                                                <span>{t('ridesManagement.unassigned')}</span>
                                             )}
                                         </td>
                                         <td className={`${styles.tableCell} ${styles.tablePrice}`}>€{ride.price}</td>

@@ -1,0 +1,565 @@
+{
+  "date": "2026-06-12T11:28:13.784Z",
+  "stats": {
+    "filesAnalyzed": 15,
+    "totalMissing": 128
+  },
+  "top10": [
+    {
+      "file": "components/driver/DriverRidesView.tsx",
+      "count": 47,
+      "texts": [
+        "My Rides",
+        "View and manage your assigned and available rides",
+        "Retry",
+        "No rides found in this view",
+        "Ride ID",
+        "Route",
+        "Price",
+        "No customers",
+        "Assigned Rides",
+        "Completed Rides",
+        "min-h-screen bg-gray-50 p-6",
+        "max-w-7xl mx-auto",
+        "text-3xl font-bold text-gray-900",
+        "text-gray-600 mt-2",
+        "bg-white shadow rounded-lg mb-6",
+        "ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+        "p-12 text-center",
+        "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+        "text-gray-500 mt-4",
+        "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+        "bg-gray-50 border-b",
+        "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+        "bg-white divide-y divide-gray-200",
+        "hover:bg-gray-50 transition-colors",
+        "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+        "px-6 py-4",
+        "flex flex-col space-y-1",
+        "flex items-center text-sm text-gray-900",
+        "h-4 w-4 mr-2 text-green-500",
+        "flex items-center text-sm text-gray-500",
+        "h-4 w-4 mr-2 text-red-500",
+        "px-6 py-4 whitespace-nowrap",
+        "h-4 w-4 mr-2 text-gray-400",
+        "text-sm text-gray-500",
+        "flex items-center text-sm font-medium text-gray-900",
+        "h-4 w-4 mr-1 text-green-500",
+        "mt-6 grid grid-cols-1 md:grid-cols-3 gap-4",
+        "bg-white shadow rounded-lg p-6",
+        "text-sm text-gray-600",
+        "text-2xl font-bold text-blue-600",
+        "h-10 w-10 text-blue-600 opacity-20",
+        "text-2xl font-bold text-yellow-600",
+        "h-10 w-10 text-yellow-600 opacity-20",
+        "text-2xl font-bold text-green-600",
+        "h-10 w-10 text-green-600 opacity-20"
+      ]
+    },
+    {
+      "file": "components/customer/CustomerRidesView.tsx",
+      "count": 43,
+      "texts": [
+        "My Rides",
+        "View your ride history and track pending rides",
+        "Retry",
+        "Ride ID",
+        "Route",
+        "Price",
+        "Not assigned",
+        "Pending Rides",
+        "Completed Rides",
+        "min-h-screen bg-gray-50 p-6",
+        "max-w-7xl mx-auto",
+        "text-3xl font-bold text-gray-900",
+        "text-gray-600 mt-2",
+        "bg-white shadow rounded-lg mb-6",
+        "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+        "p-12 text-center",
+        "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+        "text-gray-500 mt-4",
+        "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+        "bg-gray-50 border-b",
+        "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+        "bg-white divide-y divide-gray-200",
+        "hover:bg-gray-50 transition-colors",
+        "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+        "px-6 py-4",
+        "flex flex-col space-y-1",
+        "flex items-center text-sm text-gray-900",
+        "h-4 w-4 mr-2 text-green-500",
+        "flex items-center text-sm text-gray-500",
+        "h-4 w-4 mr-2 text-red-500",
+        "px-6 py-4 whitespace-nowrap",
+        "h-4 w-4 mr-2 text-gray-400",
+        "text-sm text-gray-500",
+        "flex items-center text-sm font-medium text-gray-900",
+        "h-4 w-4 mr-1 text-green-500",
+        "mt-6 grid grid-cols-1 md:grid-cols-2 gap-4",
+        "bg-white shadow rounded-lg p-6",
+        "text-sm text-gray-600",
+        "text-2xl font-bold text-yellow-600",
+        "h-10 w-10 text-yellow-600 opacity-20",
+        "text-2xl font-bold text-green-600",
+        "h-10 w-10 text-green-600 opacity-20"
+      ]
+    },
+    {
+      "file": "components/admin/rideManagement/AddRideModal.tsx",
+      "count": 7,
+      "texts": [
+        "Back",
+        "Press Enter to add the first match, or click a suggestion.",
+        "Select a production first",
+        "Type to search, then use Enter or click a result.",
+        "No matching driver",
+        "No matching customer",
+        "No matching production"
+      ]
+    },
+    {
+      "file": "app/admin/ride-management/new/page.tsx",
+      "count": 5,
+      "texts": [
+        "Type to search, then use Enter or click a result.",
+        "Press Enter to add the first match, or click a suggestion.",
+        "No matching driver",
+        "No matching customer",
+        "No matching production"
+      ]
+    },
+    {
+      "file": "app/page.tsx",
+      "count": 5,
+      "texts": [
+        "Dashboard Error",
+        "Something went wrong while loading your view.",
+        "Customer Dashboard",
+        "A shared layout inspired by the connection page.",
+        "This area will host the customer dashboard once it is ready."
+      ]
+    },
+    {
+      "file": "app/rides/page.tsx",
+      "count": 4,
+      "texts": [
+        "Access Denied",
+        "Your account role is not authorized to view this page.",
+        "min-h-screen bg-gray-50 flex items-center justify-center",
+        "text-2xl font-bold text-gray-900 mb-2"
+      ]
+    },
+    {
+      "file": "components/admin/rideManagement/RidesManagementBoard.tsx",
+      "count": 4,
+      "texts": [
+        "p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors",
+        "w-4 h-4",
+        "p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors",
+        "p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+      ]
+    },
+    {
+      "file": "app/connections/page.tsx",
+      "count": 3,
+      "texts": [
+        "email",
+        "password",
+        "confirmPassword"
+      ]
+    },
+    {
+      "file": "components/EyeButton.tsx",
+      "count": 2,
+      "texts": [
+        "eyeButton",
+        "w-5 h-5"
+      ]
+    },
+    {
+      "file": "components/LanguageComponents/LanguageDropdown.tsx",
+      "count": 2,
+      "texts": [
+        "Language",
+        "Language selector"
+      ]
+    }
+  ],
+  "suggestions": {
+    "DriverRidesView": {
+      "myRides": "My Rides",
+      "viewAndManageYourAssignedAndAvailableRides": "View and manage your assigned and available rides",
+      "retry": "Retry",
+      "noRidesFoundInThisView": "No rides found in this view",
+      "rideId": "Ride ID",
+      "route": "Route",
+      "price": "Price",
+      "noCustomers": "No customers",
+      "assignedRides": "Assigned Rides",
+      "completedRides": "Completed Rides",
+      "minHScreenBgGray50P6": "min-h-screen bg-gray-50 p-6",
+      "maxW7xlMxAuto": "max-w-7xl mx-auto",
+      "text3xlFontBoldTextGray900": "text-3xl font-bold text-gray-900",
+      "textGray600Mt2": "text-gray-600 mt-2",
+      "bgWhiteShadowRoundedLgMb6": "bg-white shadow rounded-lg mb-6",
+      "ml2Px2Py1BgBlue100TextBlue600RoundedFullTextXs": "ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs",
+      "ml2Px2Py1BgYellow100TextYellow600RoundedFullTextXs": "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+      "ml2Px2Py1BgGreen100TextGreen600RoundedFullTextXs": "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+      "p12TextCenter": "p-12 text-center",
+      "animateSpinRoundedFullH12W12BorderB2BorderBlue600MxAuto": "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+      "textGray500Mt4": "text-gray-500 mt-4",
+      "mt4Px4Py2BgBlue600TextWhiteRoundedHover:bgBlue700TransitionColors": "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+      "bgGray50BorderB": "bg-gray-50 border-b",
+      "px6Py3TextLeftTextXsFontMediumTextGray500UppercaseTrackingWider": "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+      "bgWhiteDivideYDivideGray200": "bg-white divide-y divide-gray-200",
+      "hover:bgGray50TransitionColors": "hover:bg-gray-50 transition-colors",
+      "px6Py4WhitespaceNowrapTextSmFontMediumTextGray900": "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+      "px6Py4": "px-6 py-4",
+      "flexFlexColSpaceY1": "flex flex-col space-y-1",
+      "flexItemsCenterTextSmTextGray900": "flex items-center text-sm text-gray-900",
+      "h4W4Mr2TextGreen500": "h-4 w-4 mr-2 text-green-500",
+      "flexItemsCenterTextSmTextGray500": "flex items-center text-sm text-gray-500",
+      "h4W4Mr2TextRed500": "h-4 w-4 mr-2 text-red-500",
+      "px6Py4WhitespaceNowrap": "px-6 py-4 whitespace-nowrap",
+      "h4W4Mr2TextGray400": "h-4 w-4 mr-2 text-gray-400",
+      "textSmTextGray500": "text-sm text-gray-500",
+      "flexItemsCenterTextSmFontMediumTextGray900": "flex items-center text-sm font-medium text-gray-900",
+      "h4W4Mr1TextGreen500": "h-4 w-4 mr-1 text-green-500",
+      "mt6GridGridCols1Md:gridCols3Gap4": "mt-6 grid grid-cols-1 md:grid-cols-3 gap-4",
+      "bgWhiteShadowRoundedLgP6": "bg-white shadow rounded-lg p-6",
+      "textSmTextGray600": "text-sm text-gray-600",
+      "text2xlFontBoldTextBlue600": "text-2xl font-bold text-blue-600",
+      "h10W10TextBlue600Opacity20": "h-10 w-10 text-blue-600 opacity-20",
+      "text2xlFontBoldTextYellow600": "text-2xl font-bold text-yellow-600",
+      "h10W10TextYellow600Opacity20": "h-10 w-10 text-yellow-600 opacity-20",
+      "text2xlFontBoldTextGreen600": "text-2xl font-bold text-green-600",
+      "h10W10TextGreen600Opacity20": "h-10 w-10 text-green-600 opacity-20"
+    },
+    "CustomerRidesView": {
+      "myRides": "My Rides",
+      "viewYourRideHistoryAndTrackPendingRides": "View your ride history and track pending rides",
+      "retry": "Retry",
+      "rideId": "Ride ID",
+      "route": "Route",
+      "price": "Price",
+      "notAssigned": "Not assigned",
+      "pendingRides": "Pending Rides",
+      "completedRides": "Completed Rides",
+      "minHScreenBgGray50P6": "min-h-screen bg-gray-50 p-6",
+      "maxW7xlMxAuto": "max-w-7xl mx-auto",
+      "text3xlFontBoldTextGray900": "text-3xl font-bold text-gray-900",
+      "textGray600Mt2": "text-gray-600 mt-2",
+      "bgWhiteShadowRoundedLgMb6": "bg-white shadow rounded-lg mb-6",
+      "ml2Px2Py1BgYellow100TextYellow600RoundedFullTextXs": "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+      "ml2Px2Py1BgGreen100TextGreen600RoundedFullTextXs": "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+      "p12TextCenter": "p-12 text-center",
+      "animateSpinRoundedFullH12W12BorderB2BorderBlue600MxAuto": "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+      "textGray500Mt4": "text-gray-500 mt-4",
+      "mt4Px4Py2BgBlue600TextWhiteRoundedHover:bgBlue700TransitionColors": "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+      "bgGray50BorderB": "bg-gray-50 border-b",
+      "px6Py3TextLeftTextXsFontMediumTextGray500UppercaseTrackingWider": "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+      "bgWhiteDivideYDivideGray200": "bg-white divide-y divide-gray-200",
+      "hover:bgGray50TransitionColors": "hover:bg-gray-50 transition-colors",
+      "px6Py4WhitespaceNowrapTextSmFontMediumTextGray900": "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+      "px6Py4": "px-6 py-4",
+      "flexFlexColSpaceY1": "flex flex-col space-y-1",
+      "flexItemsCenterTextSmTextGray900": "flex items-center text-sm text-gray-900",
+      "h4W4Mr2TextGreen500": "h-4 w-4 mr-2 text-green-500",
+      "flexItemsCenterTextSmTextGray500": "flex items-center text-sm text-gray-500",
+      "h4W4Mr2TextRed500": "h-4 w-4 mr-2 text-red-500",
+      "px6Py4WhitespaceNowrap": "px-6 py-4 whitespace-nowrap",
+      "h4W4Mr2TextGray400": "h-4 w-4 mr-2 text-gray-400",
+      "textSmTextGray500": "text-sm text-gray-500",
+      "flexItemsCenterTextSmFontMediumTextGray900": "flex items-center text-sm font-medium text-gray-900",
+      "h4W4Mr1TextGreen500": "h-4 w-4 mr-1 text-green-500",
+      "mt6GridGridCols1Md:gridCols2Gap4": "mt-6 grid grid-cols-1 md:grid-cols-2 gap-4",
+      "bgWhiteShadowRoundedLgP6": "bg-white shadow rounded-lg p-6",
+      "textSmTextGray600": "text-sm text-gray-600",
+      "text2xlFontBoldTextYellow600": "text-2xl font-bold text-yellow-600",
+      "h10W10TextYellow600Opacity20": "h-10 w-10 text-yellow-600 opacity-20",
+      "text2xlFontBoldTextGreen600": "text-2xl font-bold text-green-600",
+      "h10W10TextGreen600Opacity20": "h-10 w-10 text-green-600 opacity-20"
+    },
+    "AddRideModal": {
+      "back": "Back",
+      "pressEnterToAddTheFirstMatch,OrClickASuggestion.": "Press Enter to add the first match, or click a suggestion.",
+      "selectAProductionFirst": "Select a production first",
+      "typeToSearch,ThenUseEnterOrClickAResult.": "Type to search, then use Enter or click a result.",
+      "noMatchingDriver": "No matching driver",
+      "noMatchingCustomer": "No matching customer",
+      "noMatchingProduction": "No matching production"
+    },
+    "page": {
+      "typeToSearch,ThenUseEnterOrClickAResult.": "Type to search, then use Enter or click a result.",
+      "pressEnterToAddTheFirstMatch,OrClickASuggestion.": "Press Enter to add the first match, or click a suggestion.",
+      "noMatchingDriver": "No matching driver",
+      "noMatchingCustomer": "No matching customer",
+      "noMatchingProduction": "No matching production",
+      "dashboardError": "Dashboard Error",
+      "somethingWentWrongWhileLoadingYourView.": "Something went wrong while loading your view.",
+      "customerDashboard": "Customer Dashboard",
+      "aSharedLayoutInspiredByTheConnectionPage.": "A shared layout inspired by the connection page.",
+      "thisAreaWillHostTheCustomerDashboardOnceItIsReady.": "This area will host the customer dashboard once it is ready.",
+      "accessDenied": "Access Denied",
+      "yourAccountRoleIsNotAuthorizedToViewThisPage.": "Your account role is not authorized to view this page.",
+      "minHScreenBgGray50FlexItemsCenterJustifyCenter": "min-h-screen bg-gray-50 flex items-center justify-center",
+      "text2xlFontBoldTextGray900Mb2": "text-2xl font-bold text-gray-900 mb-2",
+      "email": "email",
+      "password": "password",
+      "confirmpassword": "confirmPassword"
+    },
+    "RidesManagementBoard": {
+      "p1.5TextBlue600Hover:bgBlue50RoundedTransitionColors": "p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors",
+      "w4H4": "w-4 h-4",
+      "p1.5TextGreen600Hover:bgGreen50RoundedTransitionColors": "p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors",
+      "p1.5TextRed600Hover:bgRed50RoundedTransitionColors": "p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+    },
+    "EyeButton": {
+      "eyebutton": "eyeButton",
+      "w5H5": "w-5 h-5"
+    },
+    "LanguageDropdown": {
+      "language": "Language",
+      "languageSelector": "Language selector"
+    },
+    "SearchableSelect": {
+      "clearSelection": "Clear selection",
+      "toggleSuggestions": "Toggle suggestions"
+    },
+    "AdminNavigationShell": {
+      "adminNavigation": "Admin navigation"
+    },
+    "Input": {
+      "inputcontainer": "inputContainer"
+    },
+    "RecentRidesTable": {
+      "noRidesFound": "No rides found"
+    },
+    "StatusPieChart": {
+      "ridesByStatus": "Rides by Status"
+    }
+  },
+  "details": [
+    {
+      "file": "components/driver/DriverRidesView.tsx",
+      "count": 47,
+      "texts": [
+        "My Rides",
+        "View and manage your assigned and available rides",
+        "Retry",
+        "No rides found in this view",
+        "Ride ID",
+        "Route",
+        "Price",
+        "No customers",
+        "Assigned Rides",
+        "Completed Rides",
+        "min-h-screen bg-gray-50 p-6",
+        "max-w-7xl mx-auto",
+        "text-3xl font-bold text-gray-900",
+        "text-gray-600 mt-2",
+        "bg-white shadow rounded-lg mb-6",
+        "ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+        "p-12 text-center",
+        "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+        "text-gray-500 mt-4",
+        "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+        "bg-gray-50 border-b",
+        "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+        "bg-white divide-y divide-gray-200",
+        "hover:bg-gray-50 transition-colors",
+        "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+        "px-6 py-4",
+        "flex flex-col space-y-1",
+        "flex items-center text-sm text-gray-900",
+        "h-4 w-4 mr-2 text-green-500",
+        "flex items-center text-sm text-gray-500",
+        "h-4 w-4 mr-2 text-red-500",
+        "px-6 py-4 whitespace-nowrap",
+        "h-4 w-4 mr-2 text-gray-400",
+        "text-sm text-gray-500",
+        "flex items-center text-sm font-medium text-gray-900",
+        "h-4 w-4 mr-1 text-green-500",
+        "mt-6 grid grid-cols-1 md:grid-cols-3 gap-4",
+        "bg-white shadow rounded-lg p-6",
+        "text-sm text-gray-600",
+        "text-2xl font-bold text-blue-600",
+        "h-10 w-10 text-blue-600 opacity-20",
+        "text-2xl font-bold text-yellow-600",
+        "h-10 w-10 text-yellow-600 opacity-20",
+        "text-2xl font-bold text-green-600",
+        "h-10 w-10 text-green-600 opacity-20"
+      ]
+    },
+    {
+      "file": "components/customer/CustomerRidesView.tsx",
+      "count": 43,
+      "texts": [
+        "My Rides",
+        "View your ride history and track pending rides",
+        "Retry",
+        "Ride ID",
+        "Route",
+        "Price",
+        "Not assigned",
+        "Pending Rides",
+        "Completed Rides",
+        "min-h-screen bg-gray-50 p-6",
+        "max-w-7xl mx-auto",
+        "text-3xl font-bold text-gray-900",
+        "text-gray-600 mt-2",
+        "bg-white shadow rounded-lg mb-6",
+        "ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs",
+        "ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs",
+        "p-12 text-center",
+        "animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto",
+        "text-gray-500 mt-4",
+        "mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+        "bg-gray-50 border-b",
+        "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+        "bg-white divide-y divide-gray-200",
+        "hover:bg-gray-50 transition-colors",
+        "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900",
+        "px-6 py-4",
+        "flex flex-col space-y-1",
+        "flex items-center text-sm text-gray-900",
+        "h-4 w-4 mr-2 text-green-500",
+        "flex items-center text-sm text-gray-500",
+        "h-4 w-4 mr-2 text-red-500",
+        "px-6 py-4 whitespace-nowrap",
+        "h-4 w-4 mr-2 text-gray-400",
+        "text-sm text-gray-500",
+        "flex items-center text-sm font-medium text-gray-900",
+        "h-4 w-4 mr-1 text-green-500",
+        "mt-6 grid grid-cols-1 md:grid-cols-2 gap-4",
+        "bg-white shadow rounded-lg p-6",
+        "text-sm text-gray-600",
+        "text-2xl font-bold text-yellow-600",
+        "h-10 w-10 text-yellow-600 opacity-20",
+        "text-2xl font-bold text-green-600",
+        "h-10 w-10 text-green-600 opacity-20"
+      ]
+    },
+    {
+      "file": "components/admin/rideManagement/AddRideModal.tsx",
+      "count": 7,
+      "texts": [
+        "Back",
+        "Press Enter to add the first match, or click a suggestion.",
+        "Select a production first",
+        "Type to search, then use Enter or click a result.",
+        "No matching driver",
+        "No matching customer",
+        "No matching production"
+      ]
+    },
+    {
+      "file": "app/admin/ride-management/new/page.tsx",
+      "count": 5,
+      "texts": [
+        "Type to search, then use Enter or click a result.",
+        "Press Enter to add the first match, or click a suggestion.",
+        "No matching driver",
+        "No matching customer",
+        "No matching production"
+      ]
+    },
+    {
+      "file": "app/page.tsx",
+      "count": 5,
+      "texts": [
+        "Dashboard Error",
+        "Something went wrong while loading your view.",
+        "Customer Dashboard",
+        "A shared layout inspired by the connection page.",
+        "This area will host the customer dashboard once it is ready."
+      ]
+    },
+    {
+      "file": "app/rides/page.tsx",
+      "count": 4,
+      "texts": [
+        "Access Denied",
+        "Your account role is not authorized to view this page.",
+        "min-h-screen bg-gray-50 flex items-center justify-center",
+        "text-2xl font-bold text-gray-900 mb-2"
+      ]
+    },
+    {
+      "file": "components/admin/rideManagement/RidesManagementBoard.tsx",
+      "count": 4,
+      "texts": [
+        "p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors",
+        "w-4 h-4",
+        "p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors",
+        "p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+      ]
+    },
+    {
+      "file": "app/connections/page.tsx",
+      "count": 3,
+      "texts": [
+        "email",
+        "password",
+        "confirmPassword"
+      ]
+    },
+    {
+      "file": "components/EyeButton.tsx",
+      "count": 2,
+      "texts": [
+        "eyeButton",
+        "w-5 h-5"
+      ]
+    },
+    {
+      "file": "components/LanguageComponents/LanguageDropdown.tsx",
+      "count": 2,
+      "texts": [
+        "Language",
+        "Language selector"
+      ]
+    },
+    {
+      "file": "components/classicComponents/SearchableSelect.tsx",
+      "count": 2,
+      "texts": [
+        "Clear selection",
+        "Toggle suggestions"
+      ]
+    },
+    {
+      "file": "components/admin/navigation/AdminNavigationShell.tsx",
+      "count": 1,
+      "texts": [
+        "Admin navigation"
+      ]
+    },
+    {
+      "file": "components/classicComponents/Input.tsx",
+      "count": 1,
+      "texts": [
+        "inputContainer"
+      ]
+    },
+    {
+      "file": "components/dashboard/RecentRidesTable.tsx",
+      "count": 1,
+      "texts": [
+        "No rides found"
+      ]
+    },
+    {
+      "file": "components/dashboard/StatusPieChart.tsx",
+      "count": 1,
+      "texts": [
+        "Rides by Status"
+      ]
+    }
+  ]
+}
