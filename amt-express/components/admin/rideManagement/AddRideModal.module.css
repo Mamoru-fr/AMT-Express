@@ -14,6 +14,8 @@
     min-height: 100dvh;
     width: 100%;
     padding: 0;
+    display: flex;
+    flex-direction: column;
     background:
         radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 28%),
         linear-gradient(180deg, rgba(249, 250, 251, 0.98), rgba(255, 255, 255, 1));
@@ -32,12 +34,14 @@
 }
 
 .pageContainer {
-    width: min(1400px, 100%);
+    width: 100%;
+    max-width: 1400px;
     min-height: 100dvh;
     margin: 0 auto;
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 1rem;
 }
 
@@ -103,8 +107,11 @@
 
 .pageContent {
     flex: 1;
+    min-width: 0;
     overflow: visible;
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .pageContent .formSection {
@@ -161,7 +168,12 @@
 
     .pageFooter {
         padding-bottom: 1rem;
-        flex-direction: column-reverse;
+        flex-wrap: wrap;
+    }
+    
+    .buttonCancel,
+    .buttonCreate {
+        flex: 1 1 100%;
     }
 }
 
@@ -355,14 +367,19 @@
 }
 
 .formSectionGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.25rem;
 }
 
+.formSectionGrid > * {
+    flex: 1 1 250px;
+    min-width: 0;
+}
+
 @media (max-width: 640px) {
-    .formSectionGrid {
-        grid-template-columns: 1fr;
+    .formSectionGrid > * {
+        flex: 1 1 100%;
     }
 }
 
@@ -653,10 +670,12 @@
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
@@ -668,7 +687,6 @@
 .buttonCancel {
     background: var(--theme-border);
     color: var(--app-title-color);
-    width: 100%;
     height: 40px;
 }
 
@@ -680,7 +698,6 @@
 .buttonCreate {
     background: var(--app-primary);
     color: var(--app-primary-text);
-    width: 100%;
 }
 
 .buttonCreate:hover:not(:disabled) {

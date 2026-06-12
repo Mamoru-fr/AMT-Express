@@ -92,8 +92,8 @@ export default function CustomerRidesView() {
     const rides = getCurrentRides();
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-[100dvh] bg-gray-50 flex flex-col p-6">
+            <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">My Rides</h1>
@@ -239,8 +239,8 @@ export default function CustomerRidesView() {
 
                 {/* Summary Stats */}
                 {!loading && !error && (
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-white shadow rounded-lg p-6">
+                    <div className="mt-6 flex flex-wrap gap-4">
+                        <div className="bg-white shadow rounded-lg p-6 w-full md:w-[calc(50%-1rem)] min-w-0">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600">Pending Rides</p>
@@ -249,7 +249,7 @@ export default function CustomerRidesView() {
                                 <Clock className="h-10 w-10 text-yellow-600 opacity-20" />
                             </div>
                         </div>
-                        <div className="bg-white shadow rounded-lg p-6">
+                        <div className="bg-white shadow rounded-lg p-6 w-full md:w-[calc(50%-1rem)] min-w-0">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600">Completed Rides</p>

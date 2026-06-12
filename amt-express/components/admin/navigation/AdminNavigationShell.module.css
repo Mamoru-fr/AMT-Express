@@ -1,6 +1,7 @@
 .shell {
     --sidebar-width: 292px;
-    display: block;
+    display: flex;
+    flex-direction: column;
     min-height: 100dvh;
     padding-left: var(--sidebar-width);
     background:
@@ -16,6 +17,7 @@
     position: fixed;
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
+    min-height: 100dvh;
     height: 100dvh;
     padding: 1rem 0.95rem 0.95rem;
     display: flex;
@@ -60,8 +62,9 @@
 
 .brandMark {
     position: relative;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 2.85rem;
     height: 2.85rem;
     border-radius: 1rem;
@@ -79,8 +82,9 @@
 .brandOverlayIcon {
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: inherit;
     background: transparent;
     opacity: 0;
@@ -203,8 +207,9 @@
     width: 2.1rem;
     height: 2.1rem;
     border-radius: 0.8rem;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--app-surface-border);
     flex-shrink: 0;
@@ -286,6 +291,9 @@
     min-height: 0;
     background: transparent;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .mobileLauncher,
@@ -350,8 +358,9 @@
         top: 0.75rem;
         left: 0.75rem;
         z-index: 60;
-        display: grid;
-        place-items: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 3rem;
         height: 3rem;
         border: 1px solid var(--app-surface-border);
@@ -421,9 +430,14 @@
     }
 
     .nav {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.55rem;
+    }
+
+    .nav > * {
+        flex: 1 1 8rem;
+        min-width: 0;
     }
 
     .navItem {
@@ -431,13 +445,18 @@
     }
 
     .bottomSection {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.55rem;
     }
 
+    .bottomSection > * {
+        flex: 1 1 8rem;
+        min-width: 0;
+    }
+
     .languageBlock {
-        grid-column: 1 / -1;
+        flex: 1 1 100%;
     }
 
     .utilityItem {
@@ -458,8 +477,8 @@
         display: flex;
     }
 
-    .shellCollapsed .nav {
-        grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
+    .shellCollapsed .nav > * {
+        flex: 1 1 4.75rem;
     }
 
     .shellCollapsed .navItem {

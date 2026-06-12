@@ -53,19 +53,39 @@ export default function RidesPage() {
 
     // Render appropriate component based on role
     if (userRole === "admin") {
-        return <RidesManagementBoard />;
+        return (
+            <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+                <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
+                    <RidesManagementBoard />
+                </div>
+            </div>
+        );
     } else if (userRole === "driver") {
-        return <DriverRidesView />;
+        return (
+            <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+                <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
+                    <DriverRidesView />
+                </div>
+            </div>
+        );
     } else if (userRole === "customer") {
-        return <CustomerRidesView />;
+        return (
+            <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+                <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
+                    <CustomerRidesView />
+                </div>
+            </div>
+        );
     }
 
     // Fallback for unknown roles
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('errors.accessDenied')}</h1>
-                <p className="text-gray-600">{t('errors.unauthorizedRole')}</p>
+        <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+            <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col items-center justify-center p-6">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('errors.accessDenied')}</h1>
+                    <p className="text-gray-600">{t('errors.unauthorizedRole')}</p>
+                </div>
             </div>
         </div>
     );

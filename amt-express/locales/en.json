@@ -165,6 +165,7 @@
         "dateHour": "Date & Hour",
         "clients": "Clients",
         "departure": "Departure",
+        "destination": "Destination",
         "arrival": "Arrival",
         "driver": "Driver",
         "price": "Price (€)",

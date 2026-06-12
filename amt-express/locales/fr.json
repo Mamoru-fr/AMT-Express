@@ -92,6 +92,7 @@
         "dateHour": "Date et Heure",
         "clients": "Clients",
         "departure": "Départ",
+        "destination": "Destination",
         "arrival": "Arrivée",
         "driver": "Chauffeur",
         "price": "Prix (€)",

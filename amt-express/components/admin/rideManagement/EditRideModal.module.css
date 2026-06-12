@@ -120,6 +120,7 @@
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid var(--app-surface-border);
+    flex-wrap: nowrap;
 }
 
 /* Cancel Button */
@@ -132,6 +133,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .cancelButton:hover {
@@ -149,6 +155,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .saveButton:hover {
@@ -174,13 +185,12 @@
     }
     
     .modalFooter {
-        flex-direction: column;
+        flex-wrap: wrap;
     }
     
     .cancelButton,
     .saveButton {
-        width: 100%;
-        justify-content: center;
+        flex: 1 1 100%;
     }
 }
 
