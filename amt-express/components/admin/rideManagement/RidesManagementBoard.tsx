@@ -2,7 +2,8 @@
 
 import {useState, useEffect} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {fetchRidesForManagement, updateRideDetails, assignDriverToRide, cancelRide, deleteRide, fetchAvailableDrivers, exportRidesToCSV, createRide, fetchAllCustomers, RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
+import {RidesManagementController} from "@/lib/actions/RidesManagementActions";
+import type {RideFilters, RidesManagementData} from "@/lib/actions/RidesManagementActions";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
@@ -11,6 +12,7 @@ import {redirect} from "next/navigation";
 import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
+import {AddRideModal} from "./AddRideModal";
 import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 import styles from './RidesManagementBoard.module.css';
 
@@ -36,6 +38,7 @@ export function RidesManagementBoard() {
     // Main data state - stores fetched rides and pagination info
     const [data, setData] = useState<RidesManagementData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // Filter state - controls search, sorting, pagination, and status filtering
     const [filters, setFilters] = useState<RideFilters>({
@@ -83,14 +86,14 @@ export function RidesManagementBoard() {
      */
     const fetchAvailableDriversAndCustomers = async () => {
         try {
-            const driversResponse = await fetchAvailableDrivers();
+            const driversResponse = await RidesManagementController.fetchAvailableDrivers();
             if (driversResponse.success) {
                 setAvailableDrivers(driversResponse.data);
             } else {
                 console.error('Failed to fetch drivers:', driversResponse.error);
             }
 
-            const customersResponse = await fetchAllCustomers();
+            const customersResponse = await RidesManagementController.fetchAllCustomers();
             if (customersResponse.success) {
                 setAvailableCustomers(customersResponse.data);
             } else {
@@ -112,7 +115,7 @@ export function RidesManagementBoard() {
     const loadRides = async () => {
         setLoading(true);
         try {
-            const result = await fetchRidesForManagement(filters);
+            const result = await RidesManagementController.fetchRidesForManagement(filters);
             if (!result.success) {
                 console.error('Failed to fetch rides:', result.error);
             } else {
@@ -169,7 +172,7 @@ export function RidesManagementBoard() {
      */
     const handleExportCSV = async () => {
         try {
-            const csv = await exportRidesToCSV(filters);
+            const csv = await RidesManagementController.exportRidesToCSV(filters);
             if (!csv.success) {
                 console.error('Failed to export CSV:', csv.error);
             } else {
@@ -193,7 +196,7 @@ export function RidesManagementBoard() {
      */
     const handleEditRide = async (ride: RideWithRelations, updates: any) => {
         try {
-            await updateRideDetails(ride.id, updates);
+            await RidesManagementController.updateRideDetails(ride.id, updates);
             setEditModal({open: false, ride: null});
             loadRides();
         } catch (error) {
@@ -208,7 +211,7 @@ export function RidesManagementBoard() {
      */
     const handleAssignDriver = async (rideId: number, driverId: string) => {
         try {
-            await assignDriverToRide(rideId, driverId);
+            await RidesManagementController.assignDriverToRide(rideId, driverId);
             setAssignModal({open: false, ride: null});
             loadRides();
         } catch (error) {
@@ -223,7 +226,7 @@ export function RidesManagementBoard() {
      */
     const handleCancelRide = async (rideId: number) => {
         try {
-            await cancelRide(rideId);
+            await RidesManagementController.cancelRide(rideId);
             loadRides();
         } catch (error) {
             console.error('Failed to cancel ride:', error);
@@ -238,7 +241,7 @@ export function RidesManagementBoard() {
      */
     const handleDeleteRide = async (rideId: number) => {
         try {
-            await deleteRide(rideId);
+            await RidesManagementController.deleteRide(rideId);
             setDeleteModal({open: false, rideId: null});
             loadRides();
         } catch (error) {
@@ -248,27 +251,11 @@ export function RidesManagementBoard() {
     };
 
     /**
-     * Creates a new ride with provided data from AddRideModal
-     * Handles multiple customers, optional driver assignment, and pricing
-     * Refreshes ride list after successful creation
+     * Called after successful ride creation in AddRideModal
+     * Simply reloads the ride list
      */
-    const handleCreateRide = async (data: {
-        departureTime: Date;
-        customerIds: string[];
-        departure: string;
-        destination: string;
-        driverId?: string;
-        price?: string;
-        status?: RideStatus;
-    }) => {
-        try {
-            await createRide(data);
-            setAddModal(false);
-            loadRides();
-        } catch (error) {
-            console.error('Failed to create ride:', error);
-            alert('Failed to create ride');
-        }
+    const handleCreateRide = async () => {
+        loadRides();
     };
 
     /**
@@ -350,7 +337,7 @@ export function RidesManagementBoard() {
                                 </select>
 
                                 <button
-                                    onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                                    onClick={() => setIsAddModalOpen(true)}
                                     className={styles.actionButton}
                                 >
                                     <Plus className={styles.buttonIcon} />
@@ -492,6 +479,12 @@ export function RidesManagementBoard() {
                         </div>
                     )}
                 </section>
+
+                <AddRideModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={handleCreateRide}
+                />
 
                 {editModal.open && editModal.ride && (
                     <EditRideModal

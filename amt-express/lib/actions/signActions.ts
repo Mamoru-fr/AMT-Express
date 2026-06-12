@@ -1,78 +1,97 @@
-"use server";
+'use server'
 
-import {auth} from "@/lib/auth/auth";
-import {headers} from "next/headers";
-import {redirect} from "next/navigation";
+import {z} from 'zod';
+import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
+import {AuthService} from '@/lib/services/AuthService';
+import {redirect} from 'next/navigation';
 
-export const signin = async (formData: FormData) => {
-    /* 
-        This function handles the sign-in process for users. It takes a FormData object as input, which contains the user's email and password.
-    */
+// Validation schemas
+const SignInSchema = z.object({
+    email: z.string().email('Email invalide'),
+    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
+});
 
+const SignUpSchema = z.object({
+    name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+    email: z.string().email('Email invalide'),
+    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+    confirmPassword: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
+});
+
+/**
+ * Sign-in action
+ * Validation + Sécurité + Service call
+ */
+export async function signin(formData: FormData) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     if (!email || !password) {
-        // If either the email or password is missing, redirect back to the signin page with an error message indicating that both fields are required.
         redirect("/connections?view=signin&error=" + encodeURIComponent("errors.emailPasswordRequired"));
     }
 
-    const response = await auth.api.signInEmail({
-        body: {
-            email,
-            password,
-        },
-        asResponse: true,
-    });
-    if (!response.ok) {
-        // If the sign-in request fails, attempt to extract a meaningful error message from the response and redirect back to the signin page with that error message.
-        const errorData = await response.json();
-        console.error("Sign in failed:", errorData);
-        const errorMessage = errorData.message || errorData.error || "errors.invalidCredentials";
+    try {
+        // === VALIDATION ===
+        const validationResult = SignInSchema.safeParse({email, password});
+        if (!validationResult.success) {
+            redirect("/connections?view=signin&error=" + encodeURIComponent("errors.validationFailed"));
+        }
+
+        // === APPEL AU SERVICE ===
+        await AuthService.signin(email, password);
+        redirect("/");
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'errors.invalidCredentials';
         redirect(`/connections?view=signin&error=${encodeURIComponent(errorMessage)}`);
     }
-    redirect("/"); // When sign-in is successful, redirect the user to the home page or dashboard.
-};
+}
 
-export const signup = async (formData: FormData) => {
-    /* 
-        This function handles the sign-up process for new users. It takes a FormData object as input, which contains the user's name, email, password, and password confirmation.
-    */
-
+/**
+ * Sign-up action
+ * Validation + Sécurité + Service call
+ */
+export async function signup(formData: FormData) {
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (!name || !email || !password || !confirmPassword) {
-        // If any of the required fields are missing, redirect back to the signup page with an error message indicating that all fields are required.
         redirect("/connections?view=signup&error=" + encodeURIComponent("errors.allFieldsRequired"));
     }
 
-    if (password !== confirmPassword) {
-        // If the password and confirmation do not match, redirect back to the signup page with an error message indicating that the passwords do not match.
-        redirect("/connections?view=signup&error=" + encodeURIComponent("errors.passwordMismatch"));
-    }
+    try {
+        // === VALIDATION ===
+        const validationResult = SignUpSchema.safeParse({name, email, password, confirmPassword});
+        if (!validationResult.success) {
+            redirect("/connections?view=signup&error=" + encodeURIComponent("errors.validationFailed"));
+        }
 
-    const response = await auth.api.signUpEmail({
-        body: {
-            name,
-            email,
-            password,
-        },
-        asResponse: true,
-    });
-    if (!response.ok) {
-        // If the sign-up request fails, attempt to extract a meaningful error message from the response and redirect back to the signup page with that error message.
-        const errorData = await response.json();
-        console.error("Sign up failed:", errorData);
-        const errorMessage = errorData.message || errorData.error || "errors.signupFailed";
+        // === SÉCURITÉ: Vérifier que les mots de passe correspondent ===
+        if (password !== confirmPassword) {
+            redirect("/connections?view=signup&error=" + encodeURIComponent("errors.passwordsDoNotMatch"));
+        }
+
+        // === APPEL AU SERVICE ===
+        await AuthService.signup(name, email, password, confirmPassword);
+        redirect("/");
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'errors.signupFailed';
         redirect(`/connections?view=signup&error=${encodeURIComponent(errorMessage)}`);
     }
-    redirect("/"); // When sign-up is successful, redirect the user to the home page or dashboard.
-};
+}
 
-export const signout = async () => {
-    // This function handles the sign-out process for users. It calls the signOut method from the authentication API and Discards the cookies which contains the session token. 
-    await auth.api.signOut({headers: await headers()});
-};
+/**
+ * Sign-out action
+ * Service call
+ */
+export async function signout() {
+    try {
+        // === APPEL AU SERVICE ===
+        await AuthService.signout();
+        redirect("/connections?view=signin");
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'errors.signoutFailed';
+        redirect(`/connections?view=signin&error=${encodeURIComponent(errorMessage)}`);
+    }
+}

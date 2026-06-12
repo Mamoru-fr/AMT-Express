@@ -4,7 +4,7 @@ import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {X, MapPin, Clock, Users, DollarSign, FileText, Building, FolderOpen, CheckSquare, AlertTriangle} from "lucide-react";
 import {useTranslation} from "react-i18next";
-import {createRide, fetchAllCustomers, fetchAvailableDrivers, fetchAllProductions, fetchAllProjects} from "@/lib/actions/ridesManagementActions";
+import {RidesManagementController} from "@/lib/actions/RidesManagementActions";
 import {RideStatus, OPTIONS} from "@/content/database_types/ride";
 import {SearchableSelect} from "@/components/classicComponents/SearchableSelect";
 import styles from "./AddRideModal.module.css";
@@ -98,10 +98,10 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
         setLoadingData(true);
         try {
             const [customersRes, driversRes, productionsRes, projectsRes] = await Promise.all([
-                fetchAllCustomers(),
-                fetchAvailableDrivers(),
-                fetchAllProductions(),
-                fetchAllProjects()
+                RidesManagementController.fetchAllCustomers(),
+                RidesManagementController.fetchAvailableDrivers(),
+                RidesManagementController.fetchAllProductions(),
+                RidesManagementController.fetchAllProjects()
             ]);
 
             if (customersRes.success && customersRes.data) {
@@ -156,7 +156,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
         setLoading(true);
 
         try {
-            const result = await createRide({
+            const result = await RidesManagementController.createRide({
                 departure: departure.trim(),
                 destination: destination.trim(),
                 departureTime: departureDate,

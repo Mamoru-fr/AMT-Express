@@ -2,7 +2,8 @@
 
 import {useEffect, useState} from "react";
 import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
-import {fetchDriverDashboard, DriverDashboardData} from "@/lib/actions/driverDashboardActions";
+import {DriverDashboardController} from "@/lib/actions/DriverDashboardActions";
+import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
 

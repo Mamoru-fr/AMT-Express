@@ -9,7 +9,8 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {Car, Users, FileText, Euro, LayoutDashboard} from "lucide-react";
 
 // Actions imports from the rides management library and admin dashboard library
-import {AdminDashboardData} from "@/lib/actions/adminDashboardActions";
+import {AdminDashboardController} from "@/lib/actions/AdminDashboardActions";
+import type {AdminDashboardData} from "@/lib/services/AdminDashboardService";
 
 // Component imports for dashboard cards, charts, tables, and modals
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";

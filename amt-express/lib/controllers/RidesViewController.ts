@@ -1,12 +1,11 @@
-'use server'
-
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RidesViewService} from '@/lib/services/RidesViewService';
 import {RideWithRelations} from '@/content/database_types/ride';
 import {getSessionWithRole} from '@/lib/auth/session';
 
 /**
- * Rides View Actions - Validation + Sécurité + Service calls
+ * RidesViewController - Gère la sécurité et la validation
+ * Délègue la logique métier à RidesViewService
  */
 export class RidesViewController {
     /**
@@ -184,14 +183,5 @@ export class RidesViewController {
                 code: ErrorCodes.DATABASE_ERROR
             };
         }
-    }
-
-    // Aliases for backward compatibility
-    static async fetchCustomerCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        return this.fetchCustomerRides();
-    }
-
-    static async fetchCustomerRequestedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        return this.fetchCustomerRides();
     }
 }

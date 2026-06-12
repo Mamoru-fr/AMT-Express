@@ -13,11 +13,8 @@ import {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {
-    fetchDriverCompletedRides,
-    fetchDriverAssignedRides,
-    fetchPendingRides,
-    fetchDriverRidesCount
-} from "@/lib/actions/ridesViewActions";
+    RidesViewController
+} from "@/lib/actions/RidesViewActions";
 import {Calendar, MapPin, Clock, User, DollarSign, CheckCircle} from "lucide-react";
 
 type DriverView = "completed" | "assigned" | "available";
@@ -43,7 +40,7 @@ export default function DriverRidesView() {
         setError(null);
 
         try {
-            const results = await fetchDriverRidesCount();
+            const results = await RidesViewController.fetchDriverRidesCount();
             if (results.success) {
                 setCountCompletedRides(results.data.completed);
                 setCountAssignedRides(results.data.pending);
@@ -52,21 +49,21 @@ export default function DriverRidesView() {
             }
 
             if (activeView === "completed") {
-                const result = await fetchDriverCompletedRides();
+                const result = await RidesViewController.fetchDriverCompletedRides();
                 if (result.success) {
                     setCompletedRides(result.data);
                 } else {
                     setError(result.error || "Failed to load completed rides");
                 }
             } else if (activeView === "assigned") {
-                const result = await fetchDriverAssignedRides();
+                const result = await RidesViewController.fetchDriverAssignedRides();
                 if (result.success) {
                     setAssignedRides(result.data);
                 } else {
                     setError(result.error || "Failed to load assigned rides");
                 }
             } else {
-                const result = await fetchPendingRides();
+                const result = await RidesViewController.fetchPendingRides();
                 if (result.success) {
                     setAvailableRides(result.data);
                 } else {

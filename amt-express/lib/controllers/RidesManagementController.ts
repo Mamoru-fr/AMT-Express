@@ -1,5 +1,3 @@
-'use server'
-
 import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RidesManagementService} from '@/lib/services/RidesManagementService';
@@ -13,27 +11,12 @@ import {
 import {RideStatus} from '@/content/database_types/ride';
 import {getSessionWithRole} from '@/lib/auth/session';
 
-// Local type definitions
-interface RideFilters {
-    search?: string;
-    status?: RideStatus | 'all';
-    sortBy?: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
-    sortOrder?: 'asc' | 'desc';
-    page?: number;
-    limit?: number;
-}
-
-interface RidesManagementData {
-    rides: any[];
-    total: number;
-    page: number;
-    totalPages: number;
-}
-
-export type {RidesManagementData, RideFilters};
+// Import types
+import type {RideFilters, RidesManagementData} from '@/lib/services/RidesManagementService';
 
 /**
- * Rides Management Actions - Validation + Sécurité + Service calls
+ * RidesManagementController - Gère la validation et la sécurité
+ * Délègue la logique métier à RidesManagementService
  */
 export class RidesManagementController {
     /**

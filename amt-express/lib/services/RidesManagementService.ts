@@ -1,0 +1,371 @@
+import db from "@/lib/db/drizzle";
+import {rides, users, drivers, rideCustomers, productions, projects} from "@/lib/db/schema";
+import {eq, sql, desc, asc, and, or, ilike} from "drizzle-orm";
+import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
+
+export interface RideFilters {
+    search?: string;
+    status?: RideStatus | 'all';
+    sortBy?: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
+    sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+}
+
+export interface RidesManagementData {
+    rides: RideWithRelations[];
+    total: number;
+    page: number;
+    totalPages: number;
+}
+
+export class RidesManagementService {
+    /**
+     * Fetches rides for the management board with filtering, sorting, and pagination
+     */
+    static async getRidesForManagement(filters: RideFilters = {}): Promise<RidesManagementData> {
+        const {
+            search = '',
+            status = 'all',
+            sortBy = 'departureTime',
+            sortOrder = 'desc',
+            page = 1,
+            limit = 50
+        } = filters;
+
+        // === BUILD WHERE CONDITIONS ===
+        const conditions = [];
+
+        if (status && status !== 'all') {
+            conditions.push(eq(rides.status, status));
+        }
+
+        if (search) {
+            const searchLower = search.toLowerCase();
+            conditions.push(
+                or(
+                    sql`CAST(${rides.id} AS TEXT) ILIKE ${`%${searchLower}%`}`,
+                    ilike(rides.departure, `%${searchLower}%`),
+                    ilike(rides.destination, `%${searchLower}%`)
+                )
+            );
+        }
+
+        // === GET TOTAL COUNT ===
+        const countResult = await db
+            .select({count: sql<number>`count(*)`})
+            .from(rides)
+            .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+        const total = Number(countResult[0]?.count || 0);
+        const totalPages = Math.ceil(total / limit);
+        const offset = (page - 1) * limit;
+
+        // === DETERMINE SORT COLUMN ===
+        const sortInMemory = sortBy === 'clients' || sortBy === 'driver';
+        
+        const sortColumn = !sortInMemory ? ({
+            departureTime: rides.departureTime,
+            departure: rides.departure,
+            destination: rides.destination,
+            price: rides.price,
+            status: rides.status
+        }[sortBy] || rides.departureTime) : rides.departureTime;
+
+        // === FETCH RIDES WITH DRIVER INFO ===
+        const ridesData = await db
+            .select({
+                ride: rides,
+                driver: users,
+            })
+            .from(rides)
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(conditions.length > 0 ? and(...conditions) : undefined)
+            .orderBy(sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn))
+            .limit(limit)
+            .offset(offset);
+
+        // === FETCH CUSTOMER DATA FOR EACH RIDE ===
+        const ridesWithCustomers: RideWithRelations[] = await Promise.all(
+            ridesData.map(async (row) => {
+                const customers = await db
+                    .select({customer: users})
+                    .from(rideCustomers)
+                    .innerJoin(users, eq(rideCustomers.customerId, users.id))
+                    .where(eq(rideCustomers.rideId, row.ride.id));
+
+                return {
+                    ...row.ride,
+                    driver: row.driver || null,
+                    customers: customers.map(c => c.customer),
+                    selectedOptions: [],
+                    price: row.ride.price.toString(),
+                    distanceKm: row.ride.distanceKm?.toString() || null,
+                    waitingTime: row.ride.waitingTime ?? 0,
+                    options: [],
+                };
+            })
+        );
+
+        // === IN-MEMORY SORTING ===
+        if (sortInMemory) {
+            ridesWithCustomers.sort((a, b) => {
+                let compareValue = 0;
+                
+                if (sortBy === 'clients') {
+                    const aClients = a.customers.map(c => c.name).join(', ').toLowerCase();
+                    const bClients = b.customers.map(c => c.name).join(', ').toLowerCase();
+                    compareValue = aClients.localeCompare(bClients);
+                } else if (sortBy === 'driver') {
+                    const aDriver = a.driver?.name?.toLowerCase() || '';
+                    const bDriver = b.driver?.name?.toLowerCase() || '';
+                    compareValue = aDriver.localeCompare(bDriver);
+                }
+                
+                return sortOrder === 'asc' ? compareValue : -compareValue;
+            });
+        }
+
+        return {
+            rides: ridesWithCustomers,
+            total,
+            page,
+            totalPages
+        };
+    }
+
+    /**
+     * Updates specific fields of a ride
+     */
+    static async updateRideDetails(
+        rideId: number,
+        data: {
+            departure?: string;
+            destination?: string;
+            departureTime?: Date;
+            price?: string;
+            status?: RideStatus;
+            customerNotes?: string;
+        }
+    ): Promise<void> {
+        const updateData: Record<string, unknown> = {};
+
+        if (data.departure) updateData.departure = data.departure;
+        if (data.destination) updateData.destination = data.destination;
+        if (data.departureTime) updateData.departureTime = data.departureTime;
+        if (data.price) updateData.price = data.price;
+        if (data.status) updateData.status = data.status;
+        if (data.customerNotes !== undefined) updateData.customerNotes = data.customerNotes;
+
+        await db
+            .update(rides)
+            .set(updateData)
+            .where(eq(rides.id, rideId));
+    }
+
+    /**
+     * Assigns a driver to a ride and updates its status
+     */
+    static async assignDriverToRide(rideId: number, driverUserId: string): Promise<void> {
+        // Check if ride exists and is available
+        const ride = await db.query.rides.findFirst({
+            where: (rides, {eq}) => eq(rides.id, rideId),
+        });
+
+        if (!ride) {
+            throw new Error('Ride not found');
+        }
+
+        if (ride.status !== 'pending') {
+            throw new Error('Ride is not available for assignment');
+        }
+        
+        // Convert userId to drivers.id
+        const driver = await db.query.drivers.findFirst({
+            where: eq(drivers.userId, driverUserId)
+        });
+        
+        if (!driver) {
+            throw new Error('Driver not found');
+        }
+
+        await db
+            .update(rides)
+            .set({
+                driverId: driver.id,
+                status: 'assigned'
+            })
+            .where(eq(rides.id, rideId));
+    }
+
+    /**
+     * Cancels a ride by updating its status to 'cancelled'
+     */
+    static async cancelRide(rideId: number): Promise<void> {
+        await db
+            .update(rides)
+            .set({ status: 'cancelled' })
+            .where(eq(rides.id, rideId));
+    }
+
+    /**
+     * Permanently deletes a ride and all associated data
+     */
+    static async deleteRide(rideId: number): Promise<void> {
+        // Delete associated ride-customer relationships first
+        await db
+            .delete(rideCustomers)
+            .where(eq(rideCustomers.rideId, rideId));
+
+        // Then delete the ride itself
+        await db
+            .delete(rides)
+            .where(eq(rides.id, rideId));
+    }
+
+    /**
+     * Fetches all users with 'driver' role
+     */
+    static async getAvailableDrivers(): Promise<Array<{id: string, name: string, email: string}>> {
+        return db
+            .select({
+                id: users.id,
+                name: users.name,
+                email: users.email
+            })
+            .from(users)
+            .where(eq(users.role, 'driver'));
+    }
+
+    /**
+     * Exports rides to CSV format based on current filters
+     */
+    static async exportRidesToCSV(filters: RideFilters = {}): Promise<string> {
+        const result = await this.getRidesForManagement({
+            ...filters,
+            limit: 10000,
+            page: 1
+        });
+
+        const ridesData = result.rides;
+
+        const headers = [
+            'ID',
+            'Departure',
+            'Destination',
+            'Client(s)',
+            'Driver',
+            'Departure Time',
+            'Price (€)',
+            'Status'
+        ];
+
+        const rows = ridesData.map(ride => [
+            ride.id.toString(),
+            ride.departure,
+            ride.destination,
+            ride.customers.map(c => c.name).join(', '),
+            ride.driver?.name || 'Unassigned',
+            new Date(ride.departureTime).toLocaleString('fr-FR'),
+            ride.price,
+            ride.status
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        return csvContent;
+    }
+
+    /**
+     * Creates a new ride and associates it with customers
+     */
+    static async createRide(data: {
+        departureTime: Date;
+        customerIds: string[];
+        departure: string;
+        destination: string;
+        driverId?: string;
+        price?: string;
+        status?: RideStatus;
+    }): Promise<number> {
+        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, status} = data;
+
+        // If driverId provided, convert from userId to drivers.id
+        let driverId: number | null = null;
+        if (driverUserId) {
+            const driver = await db.query.drivers.findFirst({
+                where: eq(drivers.userId, driverUserId)
+            });
+            driverId = driver?.id ?? null;
+        }
+
+        const [newRide] = await db
+            .insert(rides)
+            .values({
+                departure,
+                destination,
+                departureTime,
+                price: price || '0',
+                status: status || 'pending',
+                driverId: driverId,
+            })
+            .returning({id: rides.id});
+
+        // Associate customers
+        if (customerIds.length > 0) {
+            await db.insert(rideCustomers).values(
+                customerIds.map(customerId => ({
+                    rideId: newRide.id,
+                    customerId,
+                }))
+            );
+        }
+
+        return newRide.id;
+    }
+
+    /**
+     * Fetches all users with 'customer' role
+     */
+    static async getAllCustomers(): Promise<Array<{id: string, name: string, email: string}>> {
+        return db
+            .select({
+                id: users.id,
+                name: users.name,
+                email: users.email
+            })
+            .from(users)
+            .where(eq(users.role, 'customer'));
+    }
+
+    /**
+     * Fetches all productions
+     */
+    static async getAllProductions(): Promise<Array<{id: string, name: string}>> {
+        return db
+            .select({
+                id: productions.id,
+                name: productions.name
+            })
+            .from(productions)
+            .orderBy(asc(productions.name));
+    }
+
+    /**
+     * Fetches all projects
+     */
+    static async getAllProjects(): Promise<Array<{id: string, name: string, productionId: string | null}>> {
+        return db
+            .select({
+                id: projects.id,
+                name: projects.name,
+                productionId: projects.productionId
+            })
+            .from(projects)
+            .orderBy(asc(projects.name));
+    }
+}

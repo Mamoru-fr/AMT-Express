@@ -1,7 +1,7 @@
 import {AdminDashboard} from "@/components/dashboard/AdminDashboard";
-import {getAdminDashboardData} from "@/lib/actions/adminDashboardActions";
+import {AdminDashboardController} from "@/lib/actions/AdminDashboardActions";
 import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
-import {fetchDriverDashboard} from "@/lib/actions/driverDashboardActions";
+import {DriverDashboardController} from "@/lib/actions/DriverDashboardActions";
 import {getSessionWithRole} from "@/lib/auth/session";
 import {redirect} from "next/navigation";
 import {AlertTriangle, Car} from "lucide-react";
@@ -39,7 +39,7 @@ export default async function Home() {
 
   // Admin Dashboard
   if (isAdmin) {
-    const response = await getAdminDashboardData();
+    const response = await AdminDashboardController.getAdminDashboardData();
     if (!response.success) {
       return renderErrorState(response.error);
     }
