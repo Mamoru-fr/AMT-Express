@@ -177,10 +177,10 @@ export default function NewRidePage() {
                         <div className={styles.pageEyebrow}>{t('ridesManagement.title')}</div>
                         <h1 className={styles.pageTitle}>
                             <CheckSquare className={styles.titleIcon} />
-                            {t('rideManagement.addRide')}
+                            {t('ridesManagement.addRide')}
                         </h1>
                         <p className={styles.pageSubtitle}>
-                            {t('rideManagement.addRideSubtitle', 'Fill the ride details below, then return to the previous screen automatically.')}
+                            {t('ridesManagement.addRideSubtitle')}
                         </p>
                     </div>
 
@@ -292,13 +292,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Users className={styles.sectionTitleIcon} /> {t('rideManagement.participants', 'Participants')}
+                                    <Users className={styles.sectionTitleIcon} /> {t('ridesManagement.participants', 'Participants')}
                                 </div>
 
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconBlue} />
-                                        {t('rideManagement.driver', 'Driver (Optional)')}
+                                        {t('ridesManagement.driver', 'Driver (Optional)')}
                                     </label>
                                     <SearchableSelect
                                         value={driverId}
@@ -309,7 +309,7 @@ export default function NewRidePage() {
                                         }))}
                                         onChange={(driver) => setDriverId(driver.id)}
                                         onClear={() => setDriverId('')}
-                                        placeholder={t('rideManagement.selectDriver', 'Select a driver...')}
+                                        placeholder={t('ridesManagement.selectDriver', 'Select a driver...')}
                                         searchPlaceholder={t('addRideModal.searchDrivers', 'Search drivers...')}
                                         emptyText={t('addRideModal.noMatchingDriver', 'No matching driver')}
                                         helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
@@ -319,7 +319,7 @@ export default function NewRidePage() {
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconOrange} />
-                                        {t('rideManagement.customers', 'Customers')}
+                                        {t('ridesManagement.customers', 'Customers')}
                                         <span className={styles.formLabelRequired}>*</span>
                                     </label>
                                     <SearchableSelect
@@ -347,13 +347,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Building className={styles.sectionTitleIcon} /> {t('rideManagement.production', 'Production Info')}
+                                    <Building className={styles.sectionTitleIcon} /> {t('ridesManagement.productionInfo', 'Production Info')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Building className={styles.formLabelIconIndigo} />
-                                            {t('rideManagement.production', 'Production (Optional)')}
+                                            {t('ridesManagement.productionOptional', 'Production (Optional)')}
                                         </label>
                                         <SearchableSelect
                                             value={productionId}
@@ -388,7 +388,7 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <FolderOpen className={styles.formLabelIconCyan} />
-                                            {t('rideManagement.project', 'Project (Optional)')}
+                                            {t('ridesManagement.projectOptional', 'Project (Optional)')}
                                         </label>
                                         <SearchableSelect
                                             value={projectId}
@@ -399,7 +399,7 @@ export default function NewRidePage() {
                                             }))}
                                             onChange={(project) => setProjectId(project.id)}
                                             onClear={() => setProjectId('')}
-                                            placeholder={t('rideManagement.selectProject', 'Select a project...')}
+                                            placeholder={t('ridesManagement.selectProject', 'Select a project...')}
                                             searchPlaceholder={t('addRideModal.searchProjects', 'Search projects...')}
                                             emptyText={productionId ? t('addRideModal.noMatchingProject', 'No matching project') : t('addRideModal.selectProductionFirst', 'Select a production first')}
                                             helperText={productionId ? t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('addRideModal.selectProductionFirst', 'Select a production first')}
@@ -412,12 +412,12 @@ export default function NewRidePage() {
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>
                                     <FileText className={styles.formLabelIconGray} />
-                                    {t('rideManagement.notes', 'Customer Notes (Optional)')}
+                                    {t('ridesManagement.notes', 'Customer Notes (Optional)')}
                                 </label>
                                 <textarea
                                     value={customerNotes}
                                     onChange={(e) => setCustomerNotes(e.target.value)}
-                                    placeholder={t('rideManagement.notesPlaceholder', 'Add any special instructions...')}
+                                    placeholder={t('ridesManagement.notesPlaceholder', 'Add any special instructions...')}
                                     rows={3}
                                     className={`${styles.formInput} ${styles.notesTextarea}`}
                                 />
@@ -441,7 +441,7 @@ export default function NewRidePage() {
                         disabled={loading || loadingData}
                         className={styles.buttonCreate}
                     >
-                        {loading ? t('common.creating', 'Creating...') : t('rideManagement.createRide', 'Create Ride')}
+                        {loading ? t('common.creating', 'Creating...') : t('ridesManagement.createRide')}
                     </button>
                 </div>
             </div>

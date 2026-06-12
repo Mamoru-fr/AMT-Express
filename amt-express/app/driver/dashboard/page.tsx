@@ -23,8 +23,10 @@ export default function DriverDashboardPage() {
 
             if (!dashboardData.success) {
                 return (
-                    <div className="min-h-screen w-full flex items-center justify-center">
-                        <div className="text-red-600">Error loading dashboard: {dashboardData.error}</div>
+                    <div className="min-h-[100dvh] w-full flex flex-col bg-gray-50">
+                        <div className="max-w-7xl mx-auto w-full flex flex-1 items-center justify-center p-6">
+                            <div className="text-red-600 text-center">Error loading dashboard: {dashboardData.error}</div>
+                        </div>
                     </div>
                 );
             }
@@ -43,11 +45,19 @@ export default function DriverDashboardPage() {
 
     if (loading || !data) {
         return (
-            <div className="w-full min-h-screen flex items-center justify-center">
-                <div className="text-white text-xl">Loading driver dashboard...</div>
+            <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+                <div className="max-w-7xl mx-auto w-full flex flex-1 items-center justify-center p-6">
+                    <div className="text-gray-900 text-xl">Loading driver dashboard...</div>
+                </div>
             </div>
         );
     }
 
-    return <DriverDashboard data={data} onRefresh={loadData} />;
+    return (
+        <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
+            <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
+                <DriverDashboard data={data} onRefresh={loadData} />
+            </div>
+        </div>
+    );
 }
