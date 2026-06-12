@@ -12,8 +12,9 @@ import {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {
-    RidesViewController
-} from "@/lib/actions/RidesViewActions";
+    fetchCustomerCompletedRides,
+    fetchCustomerRequestedRides
+} from "@/lib/actions/ridesViewActions";
 import {Calendar, MapPin, User, DollarSign, CheckCircle, Clock} from "lucide-react";
 
 type CustomerView = "completed" | "pending";
@@ -36,14 +37,14 @@ export default function CustomerRidesView() {
 
         try {
             if (activeView === "completed") {
-                const result = await RidesViewController.fetchCustomerCompletedRides();
+                const result = await fetchCustomerCompletedRides();
                 if (result.success) {
                     setCompletedRides(result.data);
                 } else {
                     setError(result.error || "Failed to load completed rides");
                 }
             } else {
-                const result = await RidesViewController.fetchCustomerRequestedRides();
+                const result = await fetchCustomerRequestedRides();
                 if (result.success) {
                     setPendingRides(result.data);
                 } else {

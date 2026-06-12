@@ -1,197 +1,39 @@
 'use server'
 
-import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
-import {RidesViewService} from '@/lib/services/RidesViewService';
+import {RidesViewController} from '@/lib/controllers/RidesViewController';
+import {ActionResponse} from '@/lib/types/action-response';
 import {RideWithRelations} from '@/content/database_types/ride';
-import {getSessionWithRole} from '@/lib/auth/session';
 
 /**
- * Rides View Actions - Validation + Sécurité + Service calls
+ * Rides View Actions - Server Actions minimalistes
+ * Délèguent tout au RidesViewController
  */
-export class RidesViewController {
-    /**
-     * SÉCURITÉ: Driver only
-     */
-    static async fetchDriverRidesCount(): Promise<ActionResponse<{completed: number, pending: number}>> {
-        try {
-            // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
 
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+export async function fetchDriverRidesCount(): Promise<ActionResponse<{completed: number, pending: number}>> {
+    return RidesViewController.fetchDriverRidesCount();
+}
 
-            // === APPEL AU SERVICE ===
-            const driver = await RidesViewService.getDriverForUser(user.id);
-            if (!driver) {
-                return {
-                    success: false,
-                    error: 'Driver profile not found',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+export async function fetchDriverCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return RidesViewController.fetchDriverCompletedRides();
+}
 
-            const data = await RidesViewService.fetchDriverRidesCount(driver.id);
+export async function fetchDriverAssignedRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return RidesViewController.fetchDriverAssignedRides();
+}
 
-            return {success: true, data};
-        } catch (error) {
-            console.error('Error fetching rides count:', error);
-            return {
-                success: false,
-                error: 'Failed to fetch rides count',
-                code: ErrorCodes.DATABASE_ERROR
-            };
-        }
-    }
+export async function fetchPendingRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return RidesViewController.fetchPendingRides();
+}
 
-    /**
-     * SÉCURITÉ: Driver only
-     */
-    static async fetchDriverCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        try {
-            // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
+export async function fetchCustomerRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return RidesViewController.fetchCustomerRides();
+}
 
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+// Aliases for backward compatibility
+export async function fetchCustomerCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return fetchCustomerRides();
+}
 
-            // === APPEL AU SERVICE ===
-            const driver = await RidesViewService.getDriverForUser(user.id);
-            if (!driver) {
-                return {
-                    success: false,
-                    error: 'Driver profile not found',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
-
-            const data = await RidesViewService.fetchDriverCompletedRides(driver.id);
-
-            return {success: true, data};
-        } catch (error) {
-            console.error('Error fetching completed rides:', error);
-            return {
-                success: false,
-                error: 'Failed to fetch completed rides',
-                code: ErrorCodes.DATABASE_ERROR
-            };
-        }
-    }
-
-    /**
-     * SÉCURITÉ: Driver only
-     */
-    static async fetchDriverAssignedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        try {
-            // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
-
-            // === APPEL AU SERVICE ===
-            const driver = await RidesViewService.getDriverForUser(user.id);
-            if (!driver) {
-                return {
-                    success: false,
-                    error: 'Driver profile not found',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
-
-            const data = await RidesViewService.fetchDriverAssignedRides(driver.id);
-
-            return {success: true, data};
-        } catch (error) {
-            console.error('Error fetching assigned rides:', error);
-            return {
-                success: false,
-                error: 'Failed to fetch assigned rides',
-                code: ErrorCodes.DATABASE_ERROR
-            };
-        }
-    }
-
-    /**
-     * SÉCURITÉ: Driver only
-     */
-    static async fetchPendingRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        try {
-            // === SÉCURITÉ ===
-            const {session, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
-
-            // === APPEL AU SERVICE ===
-            const data = await RidesViewService.fetchPendingRides();
-
-            return {success: true, data};
-        } catch (error) {
-            console.error('Error fetching pending rides:', error);
-            return {
-                success: false,
-                error: 'Failed to fetch pending rides',
-                code: ErrorCodes.DATABASE_ERROR
-            };
-        }
-    }
-
-    /**
-     * SÉCURITÉ: Customer only
-     */
-    static async fetchCustomerRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        try {
-            // === SÉCURITÉ ===
-            const {session, user, isCustomer} = await getSessionWithRole();
-
-            if (!session || !isCustomer || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Customer access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
-
-            // === APPEL AU SERVICE ===
-            const data = await RidesViewService.fetchCustomerRides(user.id);
-
-            return {success: true, data};
-        } catch (error) {
-            console.error('Error fetching customer rides:', error);
-            return {
-                success: false,
-                error: 'Failed to fetch rides',
-                code: ErrorCodes.DATABASE_ERROR
-            };
-        }
-    }
-
-    // Aliases for backward compatibility
-    static async fetchCustomerCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        return this.fetchCustomerRides();
-    }
-
-    static async fetchCustomerRequestedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-        return this.fetchCustomerRides();
-    }
+export async function fetchCustomerRequestedRides(): Promise<ActionResponse<RideWithRelations[]>> {
+    return fetchCustomerRides();
 }

@@ -1,221 +1,26 @@
 'use server'
 
-import {z} from 'zod';
-import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
-import {DriverDashboardService, DriverDashboardData, DriverStats, SuggestedRide} from '@/lib/services/DriverDashboardService';
-import {RideWithRelations} from '@/content/database_types/ride';
-import {ToggleAvailabilitySchema, RequestRideAssignmentSchema, RideHistorySchema} from '@/lib/validations/dashboard';
-import {getSessionWithRole} from '@/lib/auth/session';
-
-export type {DriverDashboardData, DriverStats, SuggestedRide};
+import {DriverDashboardController} from '@/lib/controllers/DriverDashboardController';
+import {ActionResponse} from '@/lib/types/action-response';
+import type {DriverDashboardData, DriverStats, SuggestedRide} from '@/lib/services/DriverDashboardService';
 
 /**
- * Driver Dashboard Actions - Validation + Sécurité + Service calls
+ * Driver Dashboard Actions - Server Actions minimalistes
+ * Délèguent tout au DriverDashboardController
  */
 
-/**
- * SÉCURITÉ: Driver only
- */
 export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashboardData>> {
-    try {
-        // === SÉCURITÉ ===
-        const {session, user, isDriver} = await getSessionWithRole();
-
-        if (!session || !isDriver || !user) {
-            return {
-                success: false,
-                error: 'Unauthorized: Driver access only',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        // === APPEL AU SERVICE ===
-        const driver = await DriverDashboardService.getDriverForUser(user.id);
-        if (!driver) {
-            return {
-                success: false,
-                error: 'Driver profile not found',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        const data = await DriverDashboardService.getDriverDashboard(driver.id, driver.available);
-
-        return {
-            success: true,
-            data
-        };
-    } catch (error) {
-        console.error('Error fetching driver dashboard:', error);
-        return {
-            success: false,
-            error: 'Failed to fetch driver dashboard',
-            code: ErrorCodes.DATABASE_ERROR
-        };
-    }
+    return DriverDashboardController.fetchDriverDashboard();
 }
 
-/**
- * SÉCURITÉ: Driver only
- * VALIDATION: Zod schema
- */
 export async function toggleDriverAvailability(available: boolean): Promise<ActionResponse<void>> {
-    try {
-        // === SÉCURITÉ ===
-        const {session, user, isDriver} = await getSessionWithRole();
-
-        if (!session || !isDriver || !user) {
-            return {
-                success: false,
-                error: 'Unauthorized: Driver access only',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        // === VALIDATION ===
-        const validationResult = ToggleAvailabilitySchema.safeParse({available});
-        if (!validationResult.success) {
-            return {
-                success: false,
-                error: 'Validation failed',
-                code: ErrorCodes.VALIDATION_ERROR,
-                details: validationResult.error.flatten()
-            };
-        }
-
-        // === APPEL AU SERVICE ===
-        const driver = await DriverDashboardService.getDriverForUser(user.id);
-        if (!driver) {
-            return {
-                success: false,
-                error: 'Driver profile not found',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        await DriverDashboardService.updateAvailability(driver.id, available);
-
-        return {success: true, data: undefined};
-    } catch (error) {
-        console.error('Error toggling availability:', error);
-        return {
-            success: false,
-            error: 'Failed to toggle availability',
-            code: ErrorCodes.DATABASE_ERROR
-        };
-    }
+    return DriverDashboardController.toggleDriverAvailability(available);
 }
 
-/**
- * SÉCURITÉ: Driver only
- * VALIDATION: Zod schema
- */
 export async function requestRideAssignment(rideId: number, message?: string): Promise<ActionResponse<void>> {
-    try {
-        // === SÉCURITÉ ===
-        const {session, user, isDriver} = await getSessionWithRole();
-
-        if (!session || !isDriver || !user) {
-            return {
-                success: false,
-                error: 'Unauthorized: Driver access only',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        // === VALIDATION ===
-        const validationResult = RequestRideAssignmentSchema.safeParse({rideId, message});
-        if (!validationResult.success) {
-            return {
-                success: false,
-                error: 'Validation failed',
-                code: ErrorCodes.VALIDATION_ERROR,
-                details: validationResult.error.flatten()
-            };
-        }
-
-        // === APPEL AU SERVICE ===
-        const driver = await DriverDashboardService.getDriverForUser(user.id);
-        if (!driver) {
-            return {
-                success: false,
-                error: 'Driver profile not found',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        await DriverDashboardService.requestRideAssignment(driver.id, rideId);
-
-        return {success: true, data: undefined};
-    } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        if (errorMsg.includes('Maximum requests')) {
-            return {
-                success: false,
-                error: errorMsg,
-                code: ErrorCodes.VALIDATION_ERROR
-            };
-        }
-        console.error('Error requesting assignment:', error);
-        return {
-            success: false,
-            error: 'Failed to request assignment',
-            code: ErrorCodes.DATABASE_ERROR
-        };
-    }
+    return DriverDashboardController.requestRideAssignment(rideId, message);
 }
 
-/**
- * SÉCURITÉ: Driver only
- * VALIDATION: Zod schema
- */
-export async function getDriverRideHistory(
-    page: number = 1,
-    limit: number = 10
-): Promise<ActionResponse<{rides: RideWithRelations[], total: number, page: number, totalPages: number}>> {
-    try {
-        // === SÉCURITÉ ===
-        const {session, user, isDriver} = await getSessionWithRole();
-
-        if (!session || !isDriver || !user) {
-            return {
-                success: false,
-                error: 'Unauthorized: Driver access only',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        // === VALIDATION ===
-        const validationResult = RideHistorySchema.safeParse({page, limit});
-        if (!validationResult.success) {
-            return {
-                success: false,
-                error: 'Validation failed',
-                code: ErrorCodes.VALIDATION_ERROR,
-                details: validationResult.error.flatten()
-            };
-        }
-
-        // === APPEL AU SERVICE ===
-        const driver = await DriverDashboardService.getDriverForUser(user.id);
-        if (!driver) {
-            return {
-                success: false,
-                error: 'Driver profile not found',
-                code: ErrorCodes.UNAUTHORIZED
-            };
-        }
-
-        const data = await DriverDashboardService.getDriverRideHistory(driver.id, page, limit);
-
-        return {success: true, data};
-    } catch (error) {
-        console.error('Error fetching ride history:', error);
-        return {
-            success: false,
-            error: 'Failed to fetch ride history',
-            code: ErrorCodes.DATABASE_ERROR
-        };
-    }
-}
+export async function getDriverRideHistory(page: number = 1, limit: number = 10): Promise<ActionResponse<{rides: any[], total: number, page: number, totalPages: number}>> {
+    return DriverDashboardController.getDriverRideHistory(page, limit);
 }

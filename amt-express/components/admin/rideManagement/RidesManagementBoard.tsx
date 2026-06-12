@@ -2,8 +2,17 @@
 
 import {useState, useEffect} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {RidesManagementController} from "@/lib/actions/RidesManagementActions";
-import type {RideFilters, RidesManagementData} from "@/lib/actions/RidesManagementActions";
+import {
+    fetchRidesForManagement,
+    fetchAvailableDrivers,
+    exportRidesToCSV,
+    updateRideDetails,
+    assignDriverToRide,
+    cancelRide,
+    deleteRide,
+    fetchAllCustomers
+} from "@/lib/actions/ridesManagementActions";
+import type {RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
@@ -86,14 +95,14 @@ export function RidesManagementBoard() {
      */
     const fetchAvailableDriversAndCustomers = async () => {
         try {
-            const driversResponse = await RidesManagementController.fetchAvailableDrivers();
+            const driversResponse = await fetchAvailableDrivers();
             if (driversResponse.success) {
                 setAvailableDrivers(driversResponse.data);
             } else {
                 console.error('Failed to fetch drivers:', driversResponse.error);
             }
 
-            const customersResponse = await RidesManagementController.fetchAllCustomers();
+            const customersResponse = await fetchAllCustomers();
             if (customersResponse.success) {
                 setAvailableCustomers(customersResponse.data);
             } else {
@@ -115,7 +124,7 @@ export function RidesManagementBoard() {
     const loadRides = async () => {
         setLoading(true);
         try {
-            const result = await RidesManagementController.fetchRidesForManagement(filters);
+            const result = await fetchRidesForManagement(filters);
             if (!result.success) {
                 console.error('Failed to fetch rides:', result.error);
             } else {
@@ -172,7 +181,7 @@ export function RidesManagementBoard() {
      */
     const handleExportCSV = async () => {
         try {
-            const csv = await RidesManagementController.exportRidesToCSV(filters);
+            const csv = await exportRidesToCSV(filters);
             if (!csv.success) {
                 console.error('Failed to export CSV:', csv.error);
             } else {
@@ -196,7 +205,7 @@ export function RidesManagementBoard() {
      */
     const handleEditRide = async (ride: RideWithRelations, updates: any) => {
         try {
-            await RidesManagementController.updateRideDetails(ride.id, updates);
+            await updateRideDetails(ride.id, updates);
             setEditModal({open: false, ride: null});
             loadRides();
         } catch (error) {
@@ -211,7 +220,7 @@ export function RidesManagementBoard() {
      */
     const handleAssignDriver = async (rideId: number, driverId: string) => {
         try {
-            await RidesManagementController.assignDriverToRide(rideId, driverId);
+            await assignDriverToRide(rideId, driverId);
             setAssignModal({open: false, ride: null});
             loadRides();
         } catch (error) {
@@ -226,7 +235,7 @@ export function RidesManagementBoard() {
      */
     const handleCancelRide = async (rideId: number) => {
         try {
-            await RidesManagementController.cancelRide(rideId);
+            await cancelRide(rideId);
             loadRides();
         } catch (error) {
             console.error('Failed to cancel ride:', error);
@@ -241,7 +250,7 @@ export function RidesManagementBoard() {
      */
     const handleDeleteRide = async (rideId: number) => {
         try {
-            await RidesManagementController.deleteRide(rideId);
+            await deleteRide(rideId);
             setDeleteModal({open: false, rideId: null});
             loadRides();
         } catch (error) {

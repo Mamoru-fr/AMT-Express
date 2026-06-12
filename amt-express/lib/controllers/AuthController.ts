@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {AuthService} from '@/lib/services/AuthService';
+import {headers} from 'next/headers';
 
 // Validation schemas
 const SignInSchema = z.object({
@@ -97,7 +98,7 @@ export class AuthController {
             }
 
             // === APPEL AU SERVICE ===
-            await AuthService.signup(name, email, password, confirmPassword);
+            await AuthService.signup(name, email, password);
 
             return {
                 success: true,
@@ -128,7 +129,8 @@ export class AuthController {
     static async signOut(): Promise<ActionResponse<void>> {
         try {
             // === APPEL AU SERVICE ===
-            await AuthService.signout();
+            const headersInstance = await headers();
+            await AuthService.signout(headersInstance);
 
             return {
                 success: true,

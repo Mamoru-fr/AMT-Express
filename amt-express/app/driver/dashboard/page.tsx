@@ -2,10 +2,10 @@
 
 import {useEffect, useState} from "react";
 import {DriverDashboard} from "@/components/dashboard/DriverDashboard";
-import {DriverDashboardController} from "@/lib/actions/DriverDashboardActions";
-import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
+import {fetchDriverDashboard} from "@/lib/actions/driverDashboardActions";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
+import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
 
 export default function DriverDashboardPage() {
     const {session, isDriver} = useSessionWithRole();

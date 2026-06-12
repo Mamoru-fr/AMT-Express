@@ -1,7 +1,7 @@
 'use client'
 
 import {useState} from "react";
-import {DriverDashboardController} from "@/lib/actions/DriverDashboardActions";
+import {toggleDriverAvailability, requestRideAssignment} from "@/lib/actions/driverDashboardActions";
 import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
 import {Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X} from "lucide-react";
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";

@@ -1,15 +1,11 @@
 import {auth} from "@/lib/auth/auth";
-import {headers} from "next/headers";
 
 export class AuthService {
     /**
      * Handle sign-in with email and password
+     * NOTE: Validation is handled by AuthController
      */
     static async signin(email: string, password: string): Promise<Response> {
-        if (!email || !password) {
-            throw new Error('errors.emailPasswordRequired');
-        }
-
         const response = await auth.api.signInEmail({
             body: {
                 email,
@@ -30,21 +26,13 @@ export class AuthService {
 
     /**
      * Handle sign-up for new users
+     * NOTE: Validation is handled by AuthController
      */
     static async signup(
         name: string,
         email: string,
-        password: string,
-        confirmPassword: string
+        password: string
     ): Promise<Response> {
-        if (!name || !email || !password || !confirmPassword) {
-            throw new Error('errors.allFieldsRequired');
-        }
-
-        if (password !== confirmPassword) {
-            throw new Error('errors.passwordsDoNotMatch');
-        }
-
         const response = await auth.api.signUpEmail({
             body: {
                 name,
@@ -66,11 +54,12 @@ export class AuthService {
 
     /**
      * Handle sign-out
+     * @param headersInstance - Headers from next/headers, passed from Controller
      */
-    static async signout(): Promise<Response> {
+    static async signout(headersInstance: Headers): Promise<Response> {
         const response = await auth.api.signOut({
             asResponse: true,
-            headers: await headers(),
+            headers: headersInstance,
         });
 
         return response;
