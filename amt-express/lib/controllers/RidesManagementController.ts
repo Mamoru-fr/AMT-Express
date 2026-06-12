@@ -9,7 +9,7 @@ import {
     RideFiltersSchema
 } from '@/lib/validations/ride';
 import {RideStatus} from '@/content/database_types/ride';
-import {getSessionWithRole} from '@/lib/auth/session';
+import {verifyRole, verifyAuth} from '@/lib/middleware/roleMiddleware';
 
 // Import types
 import type {RideFilters, RidesManagementData} from '@/lib/services/RidesManagementService';
@@ -26,14 +26,8 @@ export class RidesManagementController {
     static async fetchRidesForManagement(filters: RideFilters = {}): Promise<ActionResponse<RidesManagementData>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === VALIDATION ===
             const validationResult = RideFiltersSchema.safeParse(filters);
@@ -76,14 +70,8 @@ export class RidesManagementController {
     ): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === VALIDATION ===
             const validationResult = UpdateRideDetailsSchema.safeParse({rideId, ...data});
@@ -116,14 +104,8 @@ export class RidesManagementController {
     static async assignDriverToRide(rideId: number, driverId: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === VALIDATION ===
             const validationResult = AssignDriverSchema.safeParse({rideId, driverId});
@@ -164,14 +146,8 @@ export class RidesManagementController {
     static async cancelRide(rideId: number): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session} = await getSessionWithRole();
-            if (!session) {
-                return {
-                    success: false,
-                    error: 'Unauthorized',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const authCheck = await verifyAuth();
+            if (!authCheck.success) return authCheck;
 
             // === VALIDATION ===
             const validationResult = RideIdSchema.safeParse({rideId});
@@ -204,14 +180,8 @@ export class RidesManagementController {
     static async deleteRide(rideId: number): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === VALIDATION ===
             const validationResult = RideIdSchema.safeParse({rideId});
@@ -243,14 +213,8 @@ export class RidesManagementController {
     static async fetchAvailableDrivers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const data = await RidesManagementService.getAvailableDrivers();
@@ -271,14 +235,8 @@ export class RidesManagementController {
     static async exportRidesToCSV(filters: RideFilters = {}): Promise<ActionResponse<string>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const csv = await RidesManagementService.exportRidesToCSV(filters);
@@ -308,14 +266,8 @@ export class RidesManagementController {
     }): Promise<ActionResponse<number>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === VALIDATION ===
             const validationResult = CreateRideSchema.safeParse(data);
@@ -347,14 +299,8 @@ export class RidesManagementController {
     static async fetchAllCustomers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const data = await RidesManagementService.getAllCustomers();
@@ -375,14 +321,8 @@ export class RidesManagementController {
     static async fetchAllProductions(): Promise<ActionResponse<Array<{id: string, name: string}>>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const data = await RidesManagementService.getAllProductions();
@@ -403,14 +343,8 @@ export class RidesManagementController {
     static async fetchAllProjects(): Promise<ActionResponse<Array<{id: string, name: string, productionId: string | null}>>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isAdmin} = await getSessionWithRole();
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const data = await RidesManagementService.getAllProjects();

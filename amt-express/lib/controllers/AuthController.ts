@@ -12,8 +12,7 @@ const SignInSchema = z.object({
 const SignUpSchema = z.object({
     name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
     email: z.string().email('Email invalide'),
-    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-    confirmPassword: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
+    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
 });
 
 /**
@@ -78,7 +77,7 @@ export class AuthController {
     ): Promise<ActionResponse<void>> {
         try {
             // === VALIDATION DES CHAMPS ===
-            const validationResult = SignUpSchema.safeParse({name, email, password, confirmPassword});
+            const validationResult = SignUpSchema.safeParse({name, email, password});
             if (!validationResult.success) {
                 return {
                     success: false,

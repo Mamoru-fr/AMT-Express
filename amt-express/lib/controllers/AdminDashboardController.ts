@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {AdminDashboardService, AdminDashboardData} from '@/lib/services/AdminDashboardService';
-import {getSessionWithRole} from '@/lib/auth/session';
+import {verifyRole} from '@/lib/middleware/roleMiddleware';
 
 /**
  * AdminDashboardController - Gère la sécurité et la validation
@@ -15,15 +15,9 @@ export class AdminDashboardController {
     static async getAdminDashboardData(): Promise<ActionResponse<AdminDashboardData>> {
         try {
             // === SÉCURITÉ: Vérifier le rôle ===
-            const {session, isAdmin} = await getSessionWithRole();
-
-            if (!session || !isAdmin) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Admin access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const data = await AdminDashboardService.getAdminDashboardData();

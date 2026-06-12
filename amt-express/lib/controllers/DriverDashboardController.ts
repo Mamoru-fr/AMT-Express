@@ -3,7 +3,7 @@ import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {DriverDashboardService, DriverDashboardData, DriverStats, SuggestedRide} from '@/lib/services/DriverDashboardService';
 import {RideWithRelations} from '@/content/database_types/ride';
 import {ToggleAvailabilitySchema, RequestRideAssignmentSchema, RideHistorySchema} from '@/lib/validations/dashboard';
-import {getSessionWithRole} from '@/lib/auth/session';
+import {verifyRole} from '@/lib/middleware/roleMiddleware';
 
 /**
  * DriverDashboardController - Gère la sécurité et la validation
@@ -16,15 +16,9 @@ export class DriverDashboardController {
     static async fetchDriverDashboard(): Promise<ActionResponse<DriverDashboardData>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const driver = await DriverDashboardService.getDriverForUser(user.id);
@@ -59,15 +53,9 @@ export class DriverDashboardController {
     static async toggleDriverAvailability(available: boolean): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === VALIDATION ===
             const validationResult = ToggleAvailabilitySchema.safeParse({available});
@@ -110,15 +98,9 @@ export class DriverDashboardController {
     static async requestRideAssignment(rideId: number, message?: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === VALIDATION ===
             const validationResult = RequestRideAssignmentSchema.safeParse({rideId, message});
@@ -172,15 +154,9 @@ export class DriverDashboardController {
     ): Promise<ActionResponse<{rides: RideWithRelations[], total: number, page: number, totalPages: number}>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === VALIDATION ===
             const validationResult = RideHistorySchema.safeParse({page, limit});

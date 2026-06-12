@@ -1,7 +1,7 @@
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RidesViewService} from '@/lib/services/RidesViewService';
 import {RideWithRelations} from '@/content/database_types/ride';
-import {getSessionWithRole} from '@/lib/auth/session';
+import {verifyRole} from '@/lib/middleware/roleMiddleware';
 
 /**
  * RidesViewController - Gère la sécurité et la validation
@@ -14,15 +14,9 @@ export class RidesViewController {
     static async fetchDriverRidesCount(): Promise<ActionResponse<{completed: number, pending: number}>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const driver = await RidesViewService.getDriverForUser(user.id);
@@ -53,15 +47,9 @@ export class RidesViewController {
     static async fetchDriverCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const driver = await RidesViewService.getDriverForUser(user.id);
@@ -92,15 +80,9 @@ export class RidesViewController {
     static async fetchDriverAssignedRides(): Promise<ActionResponse<RideWithRelations[]>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const driver = await RidesViewService.getDriverForUser(user.id);
@@ -131,15 +113,8 @@ export class RidesViewController {
     static async fetchPendingRides(): Promise<ActionResponse<RideWithRelations[]>> {
         try {
             // === SÉCURITÉ ===
-            const {session, isDriver} = await getSessionWithRole();
-
-            if (!session || !isDriver) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Driver access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
 
             // === APPEL AU SERVICE ===
             const data = await RidesViewService.fetchPendingRides();
@@ -161,15 +136,9 @@ export class RidesViewController {
     static async fetchCustomerRides(): Promise<ActionResponse<RideWithRelations[]>> {
         try {
             // === SÉCURITÉ ===
-            const {session, user, isCustomer} = await getSessionWithRole();
-
-            if (!session || !isCustomer || !user) {
-                return {
-                    success: false,
-                    error: 'Unauthorized: Customer access only',
-                    code: ErrorCodes.UNAUTHORIZED
-                };
-            }
+            const roleCheck = await verifyRole('customer');
+            if (!roleCheck.success) return roleCheck;
+            const {session, user} = roleCheck.data!;
 
             // === APPEL AU SERVICE ===
             const data = await RidesViewService.fetchCustomerRides(user.id);
