@@ -12,7 +12,7 @@ import {
     deleteRide,
     fetchAllCustomers
 } from "@/lib/actions/ridesManagementActions";
-import type {RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
+import type {RideFilters, RidesManagementData} from "@/lib/services/RidesManagementService";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
 import {useTranslation} from "react-i18next";
@@ -339,10 +339,10 @@ export function RidesManagementBoard() {
                                     onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
                                 >
                                     <option value="all">{t('ridesManagement.allStatuses')}</option>
-                                    <option value="pending">{t('ridesManagement.pending')}</option>
-                                    <option value="assigned">{t('ridesManagement.assigned')}</option>
-                                    <option value="completed">{t('ridesManagement.completed')}</option>
-                                    <option value="cancelled">{t('ridesManagement.cancelled')}</option>
+                                    <option value="pending">{t('rideModals.editRide.statusOptions.pending')}</option>
+                                    <option value="assigned">{t('rideModals.editRide.statusOptions.assigned')}</option>
+                                    <option value="completed">{t('rideModals.editRide.statusOptions.completed')}</option>
+                                    <option value="cancelled">{t('rideModals.editRide.statusOptions.cancelled')}</option>
                                 </select>
 
                                 <button

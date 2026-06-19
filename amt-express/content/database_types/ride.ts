@@ -113,16 +113,6 @@ export interface CreateAssignmentRequestInput {
   driverId: string;
 }
 
-export interface RideFilters {
-  status?: RideStatus;
-  driverId?: string;
-  customerId?: string;
-  production?: string;
-  project?: string;
-  startDate?: Date;
-  endDate?: Date;
-}
-
 export interface RideStats {
   totalRides: number;
   completedRides: number;
