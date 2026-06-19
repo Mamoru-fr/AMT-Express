@@ -245,15 +245,21 @@
 }
 
 .tableCard {
-  overflow: hidden;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
+.tableHeaderSticky {
+  position: sticky;
+  top: 0.25rem;
+  z-index: 100;
+  background: rgba(248, 250, 252, 0.96);
+}
+
 .tableScroll {
-  overflow-x: auto;
+  overflow: auto;
   flex: 1;
 }
 
@@ -261,6 +267,7 @@
   width: 100%;
   min-width: min(1020px, 100vw);
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .tableHead {

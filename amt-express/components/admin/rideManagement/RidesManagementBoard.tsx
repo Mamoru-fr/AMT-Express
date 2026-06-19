@@ -644,7 +644,7 @@ export function RidesManagementBoard() {
                 </section>
 
                 <section className={styles.tableCard}>
-                    <div className={styles.tableScroll}>
+                    <div className={styles.tableHeaderSticky}>
                         <table className={styles.tableRoot}>
                             <thead className={styles.tableHead}>
                                 <tr>
@@ -737,6 +737,10 @@ export function RidesManagementBoard() {
                                     </th>
                                 </tr>
                             </thead>
+                        </table>
+                    </div>
+                    <div className={styles.tableScroll}>
+                        <table className={styles.tableRoot}>
                             <tbody>
                                 {sortedRides.map((ride) => (
                                     <tr key={ride.id} className={styles.tableBodyRow}>
