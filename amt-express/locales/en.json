@@ -9,6 +9,7 @@
         "ConfirmPasswordPlaceholder": "Confirm your password",
         "CreateAccount": "Create Account",
         "LoginViewButton": "Register",
+        "RegisterViewButton": "Create Account",
         "NoAccount": "Don't have an account?",
         "HasAccount": "Already have an account?",
         "Login": {
@@ -74,29 +75,6 @@
         "Method not allowed": "Request method not allowed",
         "Invalid request body": "Invalid request data",
         "Internal server error": "An unexpected error occurred. Please try again later"
-    },
-    "ridesManagement": {
-        "title": "Ride Management",
-        "subtitle": "Excel-like view to manage all platform rides",
-        "searchPlaceholder": "Search by ID, departure, destination...",
-        "allStatuses": "All Statuses",
-        "pending": "Pending",
-        "assigned": "Assigned",
-        "completed": "Completed",
-        "cancelled": "Cancelled",
-        "addRide": "Add Ride",
-        "exportCSV": "Export CSV",
-        "showing": "Showing",
-        "of": "of",
-        "rides": "rides",
-        "dateHour": "Date & Hour",
-        "clients": "Clients",
-        "departure": "Departure",
-        "arrival": "Arrival",
-        "driver": "Driver",
-        "price": "Price (€)",
-        "status": "Status",
-        "actions": "Actions"
     },
     "driverDashboard": {
         "title": "Driver Dashboard",

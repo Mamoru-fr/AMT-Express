@@ -1,6 +1,6 @@
 {
     "Authentication": {
-        "Title": "AMT Express",
+        "Title": "AMT Express FR",
         "Subtitle": "Votre chauffeur d'excellence",
         "NamePlaceholder": "Entrez votre nom complet",
         "NameWarning": "Votre nom sera visible par les conducteurs",
@@ -9,6 +9,7 @@
         "ConfirmPasswordPlaceholder": "Confirmez votre mot de passe",
         "CreateAccount": "Créer un compte",
         "LoginViewButton": "Se connecter",
+        "RegisterViewButton": "Créer un compte",
         "NoAccount": "Pas encore de compte ?",
         "HasAccount": "Vous avez déjà un compte ?",
         "Login": {
@@ -166,6 +167,7 @@
         "dateHour": "Date et Heure",
         "clients": "Clients",
         "departure": "Départ",
+        "destination": "Destination",
         "arrival": "Arrivée",
         "driver": "Chauffeur",
         "price": "Prix (€)",
