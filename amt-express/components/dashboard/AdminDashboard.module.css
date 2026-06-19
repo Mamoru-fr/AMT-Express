@@ -78,6 +78,7 @@
 
 .primaryAction {
   display: inline-flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -201,12 +202,13 @@
   }
   
   .bottomGrid > *:nth-child(1) {
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 0;
   }
   
   .bottomGrid > *:nth-child(2) {
-    flex: 2;
+    flex: 0 1 auto;
     min-width: 0;
+    width: 100%;
   }
 }

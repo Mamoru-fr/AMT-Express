@@ -123,12 +123,10 @@ export function AdminDashboard({data}: Props) {
 
                 {/* ========== Status Overview & Recent Activity ========== */}
                 {/* Left: Pie chart showing ride status distribution */}
-                {/* Right: Table of most recent rides with quick actions (2/3 width on large screens) */}
+                {/* Right: Table of most recent rides - takes natural width without stretching container */}
                 <div className={styles.bottomGrid}>
                     <StatusPieChart data={statusDistribution} />
-                    <div className={styles.recentRidesCol}>
-                        <RecentRidesTable rides={recentRides} />
-                    </div>
+                    <RecentRidesTable rides={recentRides} />
                 </div>
             </div>
             </div>
