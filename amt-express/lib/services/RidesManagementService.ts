@@ -5,7 +5,7 @@ import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 
 export interface RideFilters {
     search?: string;
-    status?: RideStatus | 'all';
+    status?: RideStatus | 'all' | RideStatus[];
     sortBy?: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
     sortOrder?: 'asc' | 'desc';
     page?: number;
@@ -37,7 +37,13 @@ export class RidesManagementService {
         const conditions = [];
 
         if (status && status !== 'all') {
-            conditions.push(eq(rides.status, status));
+            if (Array.isArray(status)) {
+                if (status.length > 0) {
+                    conditions.push(sql`${rides.status} = ANY(${status})`);
+                }
+            } else {
+                conditions.push(eq(rides.status, status));
+            }
         }
 
         if (search) {

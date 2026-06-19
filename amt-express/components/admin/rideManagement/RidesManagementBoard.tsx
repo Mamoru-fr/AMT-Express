@@ -12,9 +12,9 @@ import {
     deleteRide,
     fetchAllCustomers
 } from "@/lib/actions/ridesManagementActions";
-import type {RideFilters, RidesManagementData} from "@/lib/actions/ridesManagementActions";
+import type {RideFilters, RidesManagementData} from "@/lib/services/RidesManagementService";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
-import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus} from "lucide-react";
+import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
@@ -22,6 +22,7 @@ import {EditRideModal} from "./EditRideModal";
 import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
 import {AddRideModal} from "./AddRideModal";
+import {ColumnFilter} from "./ColumnFilter";
 import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 import styles from './RidesManagementBoard.module.css';
 
@@ -58,6 +59,176 @@ export function RidesManagementBoard() {
         page: 1,
         limit: 50
     });
+
+    // Column-specific filters (Excel-like multi-select filters)
+    const [columnFilters, setColumnFilters] = useState<Record<string, string[]>>({
+        departureTime: [],
+        clients: [],
+        departure: [],
+        destination: [],
+        driver: [],
+        price: [],
+        status: []
+    });
+
+    // Extract unique values for column filters
+    const getColumnOptions = (columnKey: string, rides: RideWithRelations[] = []): { value: string; label: string; count: number }[] => {
+        if (!data?.rides) return [];
+        
+        const currentRides = rides.length > 0 ? rides : data.rides;
+        
+        switch (columnKey) {
+            case 'status':
+                const statusCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    statusCounts[ride.status] = (statusCounts[ride.status] || 0) + 1;
+                });
+                return Object.entries(statusCounts).map(([value, count]) => ({
+                    value,
+                    label: value.charAt(0).toUpperCase() + value.slice(1),
+                    count
+                }));
+            case 'departure':
+                const departureCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    departureCounts[ride.departure] = (departureCounts[ride.departure] || 0) + 1;
+                });
+                return Object.entries(departureCounts).map(([value, count]) => ({
+                    value,
+                    label: value,
+                    count
+                }));
+            case 'destination':
+                const destinationCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    destinationCounts[ride.destination] = (destinationCounts[ride.destination] || 0) + 1;
+                });
+                return Object.entries(destinationCounts).map(([value, count]) => ({
+                    value,
+                    label: value,
+                    count
+                }));
+            case 'driver':
+                const driverCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    const driverName = ride.driver?.name || 'Unassigned';
+                    driverCounts[driverName] = (driverCounts[driverName] || 0) + 1;
+                });
+                return Object.entries(driverCounts).map(([value, count]) => ({
+                    value,
+                    label: value,
+                    count
+                }));
+            case 'clients':
+                const clientCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    ride.customers.forEach(customer => {
+                        clientCounts[customer.name] = (clientCounts[customer.name] || 0) + 1;
+                    });
+                });
+                return Object.entries(clientCounts).map(([value, count]) => ({
+                    value,
+                    label: value,
+                    count
+                }));
+            case 'price':
+                const priceCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    priceCounts[ride.price] = (priceCounts[ride.price] || 0) + 1;
+                });
+                return Object.entries(priceCounts).map(([value, count]) => ({
+                    value,
+                    label: `€${value}`,
+                    count
+                }));
+            case 'departureTime':
+                const dateCounts: Record<string, number> = {};
+                currentRides.forEach(ride => {
+                    const date = new Date(ride.departureTime).toLocaleDateString('fr-FR');
+                    dateCounts[date] = (dateCounts[date] || 0) + 1;
+                });
+                return Object.entries(dateCounts).map(([value, count]) => ({
+                    value,
+                    label: value,
+                    count
+                }));
+            default:
+                return [];
+        }
+    };
+
+    // Handle column filter change
+    const handleColumnFilterChange = (column: string, values: string[]) => {
+        setColumnFilters(prev => ({
+            ...prev,
+            [column]: values
+        }));
+        
+        // Synchronize status column filter with server-side filter
+        if (column === 'status') {
+            const statusValues = values.length > 0 ? values as RideStatus[] : 'all';
+            setFilters(prev => ({...prev, status: statusValues, page: 1}));
+        }
+    };
+
+    // Clear all column filters
+    const clearAllColumnFilters = () => {
+        setColumnFilters({
+            departureTime: [],
+            clients: [],
+            departure: [],
+            destination: [],
+            driver: [],
+            price: [],
+            status: []
+        });
+        // Also reset server-side status filter
+        setFilters(prev => ({...prev, status: 'all', page: 1}));
+    };
+
+    // Check if any column filter is active
+    const hasActiveColumnFilters = Object.values(columnFilters).some(values => values.length > 0);
+
+    // Check if a ride passes all column filters
+    const passesColumnFilters = (ride: RideWithRelations): boolean => {
+        // If no column filters are active, pass
+        const activeFilters = Object.entries(columnFilters).filter(([_, values]) => values.length > 0);
+        if (activeFilters.length === 0) return true;
+        
+        for (const [column, values] of activeFilters) {
+            switch (column) {
+                case 'status':
+                    if (!values.includes(ride.status)) return false;
+                    break;
+                case 'departure':
+                    if (!values.includes(ride.departure)) return false;
+                    break;
+                case 'destination':
+                    if (!values.includes(ride.destination)) return false;
+                    break;
+                case 'driver':
+                    const driverName = ride.driver?.name || 'Unassigned';
+                    if (!values.includes(driverName)) return false;
+                    break;
+                case 'clients':
+                    const customerNames = ride.customers.map(c => c.name);
+                    const hasMatchingCustomer = values.some(value => customerNames.includes(value));
+                    if (!hasMatchingCustomer) return false;
+                    break;
+                case 'price':
+                    if (!values.includes(ride.price)) return false;
+                    break;
+                case 'departureTime':
+                    const rideDate = new Date(ride.departureTime).toLocaleDateString('fr-FR');
+                    if (!values.includes(rideDate)) return false;
+                    break;
+            }
+        }
+        return true;
+    };
+
+    // Get filtered rides based on column filters
+    const filteredRides = data?.rides.filter(passesColumnFilters) || [];
 
     // Security check - redirect non-admin users to home page
     if (!session || session.user.role !== 'admin') {
@@ -146,22 +317,14 @@ export function RidesManagementBoard() {
     };
 
     /**
-     * Filters rides by status (pending, assigned, completed, cancelled, or all)
-     * Resets to page 1 when status filter changes
-     */
-    const handleStatusFilter = (status: RideStatus | 'all') => {
-        setFilters(prev => ({...prev, status, page: 1}));
-    };
-
-    /**
      * Handles column header clicks to sort the table
      * Toggles between ascending and descending order for the same column
      * Clicking a new column defaults to ascending order
      */
-    const handleSort = (sortBy: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status') => {
+    const handleSort = (sortBy: string) => {
         setFilters(prev => ({
             ...prev,
-            sortBy,
+            sortBy: sortBy as 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status',
             sortOrder: prev.sortBy === sortBy && prev.sortOrder === 'asc' ? 'desc' : 'asc'
         }));
     };
@@ -332,18 +495,17 @@ export function RidesManagementBoard() {
 
                         <div className={styles.toolbarRow}>
                             <div className={styles.actionRow}>
-                                <Filter className={styles.filterIcon} />
-                                <select
-                                    className={styles.selectInput}
-                                    value={filters.status}
-                                    onChange={(e) => handleStatusFilter(e.target.value as RideStatus | 'all')}
-                                >
-                                    <option value="all">{t('ridesManagement.allStatuses')}</option>
-                                    <option value="pending">{t('ridesManagement.pending')}</option>
-                                    <option value="assigned">{t('ridesManagement.assigned')}</option>
-                                    <option value="completed">{t('ridesManagement.completed')}</option>
-                                    <option value="cancelled">{t('ridesManagement.cancelled')}</option>
-                                </select>
+                                {hasActiveColumnFilters && (
+                                    <button
+                                        onClick={clearAllColumnFilters}
+                                        className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                                        title="Effacer tous les filtres"
+                                    >
+                                        <X className={styles.buttonIcon} />
+                                        <span className={styles.actionLabelDesktop}>Effacer filtres</span>
+                                        <span className="sm:hidden">Effacer</span>
+                                    </button>
+                                )}
 
                                 <button
                                     onClick={() => setIsAddModalOpen(true)}
@@ -364,7 +526,7 @@ export function RidesManagementBoard() {
                                 </button>
                             </div>
                             <div className={styles.resultsLine}>
-                                {t('ridesManagement.showing', 'Showing')} {data?.rides.length || 0} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
+                                {t('ridesManagement.showing', 'Showing')} {filteredRides.length} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
                             </div>
                         </div>
                     </div>
@@ -375,33 +537,89 @@ export function RidesManagementBoard() {
                         <table className={styles.tableRoot}>
                             <thead className={styles.tableHead}>
                                 <tr>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('departureTime')}>
-                                        {t('ridesManagement.dateHour')} {filters.sortBy === 'departureTime' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="departureTime"
+                                            label={t('ridesManagement.dateHour')}
+                                            options={getColumnOptions('departureTime')}
+                                            selectedValues={columnFilters.departureTime}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('clients')}>
-                                        {t('ridesManagement.clients')} {filters.sortBy === 'clients' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="clients"
+                                            label={t('ridesManagement.clients')}
+                                            options={getColumnOptions('clients')}
+                                            selectedValues={columnFilters.clients}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('departure')}>
-                                        {t('ridesManagement.departure')} {filters.sortBy === 'departure' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="departure"
+                                            label={t('ridesManagement.departure')}
+                                            options={getColumnOptions('departure')}
+                                            selectedValues={columnFilters.departure}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('destination')}>
-                                        {t('ridesManagement.arrival')} {filters.sortBy === 'destination' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="destination"
+                                            label={t('ridesManagement.arrival')}
+                                            options={getColumnOptions('destination')}
+                                            selectedValues={columnFilters.destination}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('driver')}>
-                                        {t('ridesManagement.driver')} {filters.sortBy === 'driver' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="driver"
+                                            label={t('ridesManagement.driver')}
+                                            options={getColumnOptions('driver')}
+                                            selectedValues={columnFilters.driver}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('price')}>
-                                        {t('ridesManagement.price')} {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="price"
+                                            label={t('ridesManagement.price')}
+                                            options={getColumnOptions('price')}
+                                            selectedValues={columnFilters.price}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
-                                    <th className={styles.tableHeadCell}
-                                        onClick={() => handleSort('status')}>
-                                        {t('ridesManagement.status')} {filters.sortBy === 'status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+                                    <th className={styles.tableHeadCell}>
+                                        <ColumnFilter
+                                            columnKey="status"
+                                            label={t('ridesManagement.status')}
+                                            options={getColumnOptions('status')}
+                                            selectedValues={columnFilters.status}
+                                            onFilterChange={handleColumnFilterChange}
+                                            sortBy={filters.sortBy}
+                                            sortOrder={filters.sortOrder}
+                                            onSort={handleSort}
+                                        />
                                     </th>
                                     <th className={`${styles.tableHeadCell} ${styles.tableActionsHead}`}>
                                         {t('ridesManagement.actions')}
@@ -409,7 +627,7 @@ export function RidesManagementBoard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data?.rides.map((ride) => (
+                                {filteredRides.map((ride) => (
                                     <tr key={ride.id} className={styles.tableBodyRow}>
                                         <td className={styles.tableCell}>
                                             {new Date(ride.departureTime).toLocaleString('fr-FR')}

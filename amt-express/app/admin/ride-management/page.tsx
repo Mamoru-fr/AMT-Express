@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function RideManagementPage() {
     return (
-        <div className="min-h-[100dvh] bg-gray-50 flex flex-col">
-            <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
+        <div className="min-h-dvh bg-gray-50 flex flex-col">
+            <div className="mx-auto w-full flex flex-1 flex-col">
                 <RidesManagementBoard />
             </div>
         </div>

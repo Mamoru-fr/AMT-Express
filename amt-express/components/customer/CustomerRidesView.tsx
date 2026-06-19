@@ -92,7 +92,7 @@ export default function CustomerRidesView() {
     const rides = getCurrentRides();
 
     return (
-        <div className="min-h-[100dvh] bg-gray-50 flex flex-col p-6">
+        <div className="min-h-dvh bg-gray-50 flex flex-col p-6">
             <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
                 {/* Header */}
                 <div className="mb-8">
