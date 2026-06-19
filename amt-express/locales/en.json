@@ -106,7 +106,10 @@
         "yes": "Yes",
         "no": "No",
         "required": "Required",
-        "optional": "Optional"
+        "optional": "Optional",
+        "moveUp": "Move Up",
+        "moveDown": "Move Down",
+        "sort": "Sort"
     },
     "adminNavigation": {
         "dashboard": "Dashboard",
@@ -152,6 +155,17 @@
         "location": "Location",
         "details": "Ride Details",
         "departureTime": "Departure Time",
+        "advancedSort": {
+            "title": "Advanced Sort",
+            "description": "Define the priority order of sort columns. The first rule has the highest priority.",
+            "activeRulesTitle": "Active Sort Rules",
+            "noRules": "No sort rules defined",
+            "addColumnTitle": "Add a Sort Column",
+            "reset": "Reset",
+            "cancel": "Cancel",
+            "apply": "Apply Sort",
+            "resetSort": "Reset Sort"
+        },
         "participants": "Participants",
         "driverOptional": "Driver (Optional)",
         "customers": "Customers",

@@ -14,7 +14,7 @@ import {
 } from "@/lib/actions/ridesManagementActions";
 import type {RideFilters, RidesManagementData} from "@/lib/services/RidesManagementService";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
-import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X} from "lucide-react";
+import {Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X, ArrowUpDown} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import {useSessionWithRole} from "@/context/SessionContext";
 import {redirect} from "next/navigation";
@@ -23,6 +23,7 @@ import {AssignDriverModal} from "./AssignDriverModal";
 import {DeleteConfirmModal} from "./DeleteConfirmModal";
 import {AddRideModal} from "./AddRideModal";
 import {ColumnFilter} from "./ColumnFilter";
+import {AdvancedSortModal} from "./AdvancedSortModal";
 import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
 import styles from './RidesManagementBoard.module.css';
 
@@ -49,6 +50,13 @@ export function RidesManagementBoard() {
     const [data, setData] = useState<RidesManagementData | null>(null);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isAdvancedSortModalOpen, setIsAdvancedSortModalOpen] = useState(false);
+
+    // Advanced sort state - multi-column sorting with priority
+    type SortRule = { column: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status'; direction: 'asc' | 'desc' };
+    const [sortRules, setSortRules] = useState<SortRule[]>([
+        { column: 'departureTime', direction: 'desc' }
+    ]);
 
     // Filter state - controls search, sorting, pagination, and status filtering
     const [filters, setFilters] = useState<RideFilters>({
@@ -230,6 +238,48 @@ export function RidesManagementBoard() {
     // Get filtered rides based on column filters
     const filteredRides = data?.rides.filter(passesColumnFilters) || [];
 
+    // Apply multi-column sorting with priority
+    const sortedRides = [...filteredRides].sort((a, b) => {
+        for (const rule of sortRules) {
+            let comparison = 0;
+            
+            switch (rule.column) {
+                case 'departureTime':
+                    comparison = new Date(a.departureTime).getTime() - new Date(b.departureTime).getTime();
+                    break;
+                case 'clients':
+                    const aClients = a.customers.map(c => c.name).join(', ').toLowerCase();
+                    const bClients = b.customers.map(c => c.name).join(', ').toLowerCase();
+                    comparison = aClients.localeCompare(bClients);
+                    break;
+                case 'departure':
+                    comparison = (a.departure || '').toLowerCase().localeCompare((b.departure || '').toLowerCase());
+                    break;
+                case 'destination':
+                    comparison = (a.destination || '').toLowerCase().localeCompare((b.destination || '').toLowerCase());
+                    break;
+                case 'driver':
+                    const aDriver = a.driver?.name?.toLowerCase() || '';
+                    const bDriver = b.driver?.name?.toLowerCase() || '';
+                    comparison = aDriver.localeCompare(bDriver);
+                    break;
+                case 'price':
+                    comparison = parseFloat(a.price || '0') - parseFloat(b.price || '0');
+                    break;
+                case 'status':
+                    comparison = (a.status || '').toLowerCase().localeCompare((b.status || '').toLowerCase());
+                    break;
+            }
+            
+            // If columns are different, return the comparison with direction
+            if (comparison !== 0) {
+                return rule.direction === 'asc' ? comparison : -comparison;
+            }
+            // If equal, continue to next rule
+        }
+        return 0;
+    });
+
     // Security check - redirect non-admin users to home page
     if (!session || session.user.role !== 'admin') {
         redirect('/');
@@ -322,11 +372,43 @@ export function RidesManagementBoard() {
      * Clicking a new column defaults to ascending order
      */
     const handleSort = (sortBy: string) => {
-        setFilters(prev => ({
-            ...prev,
-            sortBy: sortBy as 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status',
-            sortOrder: prev.sortBy === sortBy && prev.sortOrder === 'asc' ? 'desc' : 'asc'
-        }));
+        // Update single column sort for server-side filtering
+        const typedSortBy = sortBy as 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
+        setFilters(prev => {
+            const currentSortBy = prev.sortBy || 'departureTime';
+            const currentSortOrder = prev.sortOrder || 'desc';
+            const newSortOrder = (currentSortBy === typedSortBy && currentSortOrder === 'asc') ? 'desc' : 'asc' as 'asc' | 'desc';
+            const newFilters: RideFilters = {
+                ...prev,
+                sortBy: typedSortBy,
+                sortOrder: newSortOrder
+            };
+            
+            // Also update advanced sort rules to sync with simple sort
+            setSortRules([{ column: typedSortBy, direction: newSortOrder }]);
+            
+            return newFilters;
+        });
+    };
+
+    /**
+     * Applies advanced multi-column sorting with priority
+     * First rule has highest priority, then second, etc.
+     */
+    const handleApplyAdvancedSort = (rules: Array<{column: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status'; direction: 'asc' | 'desc'}>) => {
+        setSortRules(rules);
+        setIsAdvancedSortModalOpen(false);
+        
+        // If there are rules, use the first one for server-side sorting
+        if (rules.length > 0) {
+            const firstRule = rules[0];
+            setFilters(prev => ({
+                ...prev,
+                sortBy: firstRule.column,
+                sortOrder: firstRule.direction,
+                page: 1
+            }));
+        }
     };
 
     /**
@@ -508,6 +590,35 @@ export function RidesManagementBoard() {
                                 )}
 
                                 <button
+                                    onClick={() => {
+                                        const defaultRules = [{ column: 'departureTime' as const, direction: 'desc' as const }];
+                                        setSortRules(defaultRules);
+                                        setFilters(prev => ({
+                                            ...prev,
+                                            sortBy: 'departureTime',
+                                            sortOrder: 'desc',
+                                            page: 1
+                                        }));
+                                    }}
+                                    className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                                    title={t('ridesManagement.advancedSort.resetSort')}
+                                >
+                                    <X className={styles.buttonIcon} />
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.advancedSort.resetSort')}</span>
+                                    <span className="sm:hidden">{t('ridesManagement.advancedSort.resetSort')}</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setIsAdvancedSortModalOpen(true)}
+                                    className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                                    title={t('ridesManagement.advancedSort.title')}
+                                >
+                                    <ArrowUpDown className={styles.buttonIcon} />
+                                    <span className={styles.actionLabelDesktop}>{t('ridesManagement.advancedSort.title')}</span>
+                                    <span className="sm:hidden">{t('common.sort') || 'Sort'}</span>
+                                </button>
+
+                                <button
                                     onClick={() => setIsAddModalOpen(true)}
                                     className={styles.actionButton}
                                 >
@@ -526,7 +637,7 @@ export function RidesManagementBoard() {
                                 </button>
                             </div>
                             <div className={styles.resultsLine}>
-                                {t('ridesManagement.showing', 'Showing')} {filteredRides.length} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
+                                {t('ridesManagement.showing', 'Showing')} {sortedRides.length} {t('ridesManagement.of', 'of')} {data?.total || 0} {t('ridesManagement.rides', 'rides')}
                             </div>
                         </div>
                     </div>
@@ -627,7 +738,7 @@ export function RidesManagementBoard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredRides.map((ride) => (
+                                {sortedRides.map((ride) => (
                                     <tr key={ride.id} className={styles.tableBodyRow}>
                                         <td className={styles.tableCell}>
                                             {new Date(ride.departureTime).toLocaleString('fr-FR')}
@@ -735,6 +846,15 @@ export function RidesManagementBoard() {
                         rideId={deleteModal.rideId}
                         onClose={() => setDeleteModal({open: false, rideId: null})}
                         onConfirm={handleDeleteRide}
+                    />
+                )}
+
+                {isAdvancedSortModalOpen && (
+                    <AdvancedSortModal
+                        isOpen={isAdvancedSortModalOpen}
+                        onClose={() => setIsAdvancedSortModalOpen(false)}
+                        currentSortRules={sortRules}
+                        onApply={handleApplyAdvancedSort}
                     />
                 )}
             </div>
