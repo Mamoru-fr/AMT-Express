@@ -4,7 +4,7 @@ import { ActionResponse, ErrorCodes } from '../lib/types/action-response';
 describe('ActionResponse Type', () => {
     describe('Success Response', () => {
         it('should create a valid success response with data', () => {
-            const response: ActionResponse<string> = {
+            const response: ActionResponse<string> & { error?: undefined; code?: undefined; details?: undefined } = {
                 success: true,
                 data: 'test data'
             };
@@ -59,7 +59,7 @@ describe('ActionResponse Type', () => {
 
     describe('Error Response', () => {
         it('should create a valid error response with error message', () => {
-            const response: ActionResponse<any> = {
+            const response: ActionResponse<any> & { data?: undefined }= {
                 success: false,
                 error: 'Something went wrong'
             };
@@ -144,11 +144,13 @@ describe('ActionResponse Type', () => {
 
             responses.forEach(response => {
                 if (response.success) {
-                    expect(response.error).toBeUndefined();
-                    expect(response.data).toBeDefined();
+                    const successResp = response as ActionResponse<string | number> & { error?: undefined };
+                    expect(successResp.error).toBeUndefined();
+                    expect(successResp.data).toBeDefined();
                 } else {
-                    expect(response.error).toBeDefined();
-                    expect(response.data).toBeUndefined();
+                    const errorResp = response as ActionResponse<string | number> & { data?: undefined };
+                    expect(errorResp.error).toBeDefined();
+                    expect(errorResp.data).toBeUndefined();
                 }
             });
         });
