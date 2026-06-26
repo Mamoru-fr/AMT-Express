@@ -651,7 +651,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="departureTime"
-                                            label={t('ridesManagement.dateHour')}
+                                            label={t('labels.dateHour')}
                                             options={getColumnOptions('departureTime')}
                                             selectedValues={columnFilters.departureTime}
                                             onFilterChange={handleColumnFilterChange}
@@ -663,7 +663,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="clients"
-                                            label={t('ridesManagement.clients')}
+                                            label={t('labels.clients')}
                                             options={getColumnOptions('clients')}
                                             selectedValues={columnFilters.clients}
                                             onFilterChange={handleColumnFilterChange}
@@ -675,7 +675,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="departure"
-                                            label={t('ridesManagement.departure')}
+                                            label={t('labels.departure')}
                                             options={getColumnOptions('departure')}
                                             selectedValues={columnFilters.departure}
                                             onFilterChange={handleColumnFilterChange}
@@ -687,7 +687,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="destination"
-                                            label={t('ridesManagement.arrival')}
+                                            label={t('labels.arrival')}
                                             options={getColumnOptions('destination')}
                                             selectedValues={columnFilters.destination}
                                             onFilterChange={handleColumnFilterChange}
@@ -699,7 +699,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="driver"
-                                            label={t('ridesManagement.driver')}
+                                            label={t('labels.driver')}
                                             options={getColumnOptions('driver')}
                                             selectedValues={columnFilters.driver}
                                             onFilterChange={handleColumnFilterChange}
@@ -711,7 +711,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="price"
-                                            label={t('ridesManagement.price')}
+                                            label={t('labels.price')}
                                             options={getColumnOptions('price')}
                                             selectedValues={columnFilters.price}
                                             onFilterChange={handleColumnFilterChange}
@@ -723,7 +723,7 @@ export function RidesManagementBoard() {
                                     <th className={styles.tableHeadCell}>
                                         <ColumnFilter
                                             columnKey="status"
-                                            label={t('ridesManagement.status')}
+                                            label={t('labels.status')}
                                             options={getColumnOptions('status')}
                                             selectedValues={columnFilters.status}
                                             onFilterChange={handleColumnFilterChange}
@@ -733,7 +733,7 @@ export function RidesManagementBoard() {
                                         />
                                     </th>
                                     <th className={`${styles.tableHeadCell} ${styles.tableActionsHead}`}>
-                                        {t('ridesManagement.actions')}
+                                        {t('labels.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -754,7 +754,7 @@ export function RidesManagementBoard() {
                                         <td className={styles.tableCell}>{ride.destination}</td>
                                         <td className={`${styles.tableCell} ${!ride.driver ? styles.tableCellMuted : ''}`}>
                                             {ride.driver?.name || (
-                                                <span>{t('ridesManagement.unassigned')}</span>
+                                                <span>{t('status.unassigned')}</span>
                                             )}
                                         </td>
                                         <td className={`${styles.tableCell} ${styles.tablePrice}`}>€{ride.price}</td>

@@ -180,7 +180,7 @@ export default function NewRidePage() {
                             {t('ridesManagement.addRide')}
                         </h1>
                         <p className={styles.pageSubtitle}>
-                            {t('ridesManagement.addRideSubtitle')}
+                            {t('addRideModal.addRideSubtitle')}
                         </p>
                     </div>
 
@@ -195,7 +195,7 @@ export default function NewRidePage() {
                         }}
                     >
                         <X className={styles.closeIcon} />
-                        <span>{t('common.cancel')}</span>
+                        <span>{t('addRideModal.back')}</span>
                     </Link>
                 </div>
 
@@ -215,20 +215,20 @@ export default function NewRidePage() {
                         <div className={styles.formSection}>
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <MapPin className={styles.sectionTitleIcon} /> {t('ridesManagement.location')}
+                                    <MapPin className={styles.sectionTitleIcon} /> {t('labels.location')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconGreen} />
-                                            {t('ridesManagement.departure')}
+                                            {t('labels.departure')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={departure}
                                             onChange={(e) => setDeparture(e.target.value)}
-                                            placeholder={t('ridesManagement.departurePlaceholder', 'E.g., 123 Main St, Paris')}
+                                            placeholder={t('placeholders.departure')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -237,14 +237,14 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconRed} />
-                                            {t('ridesManagement.destination')}
+                                            {t('labels.destination')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
-                                            placeholder={t('ridesManagement.destinationPlaceholder')}
+                                            placeholder={t('placeholders.destination')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -254,13 +254,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Clock className={styles.sectionTitleIcon} /> {t('ridesManagement.details')}
+                                    <Clock className={styles.sectionTitleIcon} /> {t('labels.details')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Clock className={styles.formLabelIconBlue} />
-                                            {t('ridesManagement.departureTime')}
+                                            {t('labels.departureTime')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
@@ -275,7 +275,7 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <DollarSign className={styles.formLabelIconGreen} />
-                                            {t('ridesManagement.price')}
+                                            {t('labels.price')}
                                         </label>
                                         <input
                                             type="number"
@@ -283,7 +283,7 @@ export default function NewRidePage() {
                                             min="0"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
-                                            placeholder={t('ridesManagement.pricePlaceholder')}
+                                            placeholder={t('placeholders.price')}
                                             className={styles.formInput}
                                         />
                                     </div>
@@ -292,13 +292,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Users className={styles.sectionTitleIcon} /> {t('ridesManagement.participants', 'Participants')}
+                                    <Users className={styles.sectionTitleIcon} /> {t('labels.participants', 'Participants')}
                                 </div>
 
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconBlue} />
-                                        {t('ridesManagement.driver', 'Driver (Optional)')}
+                                        {t('labels.driver', 'Driver (Optional)')}
                                     </label>
                                     <SearchableSelect
                                         value={driverId}
@@ -309,17 +309,17 @@ export default function NewRidePage() {
                                         }))}
                                         onChange={(driver) => setDriverId(driver.id)}
                                         onClear={() => setDriverId('')}
-                                        placeholder={t('ridesManagement.selectDriver', 'Select a driver...')}
-                                        searchPlaceholder={t('addRideModal.searchDrivers', 'Search drivers...')}
-                                        emptyText={t('addRideModal.noMatchingDriver', 'No matching driver')}
-                                        helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
+                                        placeholder={t('placeholders.selectDriver', 'Select a driver...')}
+                                        searchPlaceholder={t('messages.searchDrivers', 'Search drivers...')}
+                                        emptyText={t('messages.noMatchingDriver', 'No matching driver')}
+                                        helperText={t('messages.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconOrange} />
-                                        {t('ridesManagement.customers', 'Customers')}
+                                        {t('labels.customers', 'Customers')}
                                         <span className={styles.formLabelRequired}>*</span>
                                     </label>
                                     <SearchableSelect
@@ -332,10 +332,10 @@ export default function NewRidePage() {
                                         }))}
                                         onChange={(selectedOptions) => setSelectedCustomers(selectedOptions.map(option => option.id))}
                                         onClear={() => setSelectedCustomers([])}
-                                        placeholder={t('addRideModal.typeCustomerName', 'Type a customer name...')}
-                                        searchPlaceholder={t('addRideModal.addAnotherCustomer', 'Add another customer...')}
-                                        emptyText={t('addRideModal.noMatchingCustomer', 'No matching customer')}
-                                        helperText={t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
+                                        placeholder={t('messages.typeCustomerName', 'Type a customer name...')}
+                                        searchPlaceholder={t('messages.addAnotherCustomer', 'Add another customer...')}
+                                        emptyText={t('messages.noMatchingCustomer', 'No matching customer')}
+                                        helperText={t('messages.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                     />
                                     <div className={styles.tagHintRow}>
                                         <p className={styles.tagHintCount}>
@@ -347,13 +347,13 @@ export default function NewRidePage() {
 
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Building className={styles.sectionTitleIcon} /> {t('ridesManagement.productionInfo', 'Production Info')}
+                                    <Building className={styles.sectionTitleIcon} /> {t('labels.productionInfo', 'Production Info')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Building className={styles.formLabelIconIndigo} />
-                                            {t('ridesManagement.productionOptional', 'Production (Optional)')}
+                                            {t('labels.productionOptional', 'Production (Optional)')}
                                         </label>
                                         <SearchableSelect
                                             value={productionId}
@@ -370,10 +370,10 @@ export default function NewRidePage() {
                                                 setProductionId('');
                                                 setProjectId('');
                                             }}
-                                            placeholder={t('addRideModal.searchProductions', 'Type a production name...')}
-                                            searchPlaceholder={t('addRideModal.replaceProduction', 'Search to replace production...')}
-                                            emptyText={t('addRideModal.noMatchingProduction', 'No matching production')}
-                                            helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
+                                            placeholder={t('messages.searchProductions', 'Type a production name...')}
+                                            searchPlaceholder={t('messages.replaceProduction', 'Search to replace production...')}
+                                            emptyText={t('messages.noMatchingProduction', 'No matching production')}
+                                            helperText={t('messages.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                         />
                                         <div className={styles.tagHintRow}>
                                             <p className={styles.tagHintText}>
@@ -388,7 +388,7 @@ export default function NewRidePage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <FolderOpen className={styles.formLabelIconCyan} />
-                                            {t('ridesManagement.projectOptional', 'Project (Optional)')}
+                                            {t('labels.projectOptional', 'Project (Optional)')}
                                         </label>
                                         <SearchableSelect
                                             value={projectId}
@@ -399,10 +399,10 @@ export default function NewRidePage() {
                                             }))}
                                             onChange={(project) => setProjectId(project.id)}
                                             onClear={() => setProjectId('')}
-                                            placeholder={t('ridesManagement.selectProject', 'Select a project...')}
-                                            searchPlaceholder={t('addRideModal.searchProjects', 'Search projects...')}
-                                            emptyText={productionId ? t('addRideModal.noMatchingProject', 'No matching project') : t('addRideModal.selectProductionFirst', 'Select a production first')}
-                                            helperText={productionId ? t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('addRideModal.selectProductionFirst', 'Select a production first')}
+                                            placeholder={t('placeholders.selectProject', 'Select a project...')}
+                                            searchPlaceholder={t('messages.searchProjects', 'Search projects...')}
+                                            emptyText={productionId ? t('messages.noMatchingProject', 'No matching project') : t('messages.selectProductionFirst', 'Select a production first')}
+                                            helperText={productionId ? t('messages.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('messages.selectProductionFirst', 'Select a production first')}
                                             disabled={!productionId}
                                         />
                                     </div>
@@ -412,12 +412,12 @@ export default function NewRidePage() {
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>
                                     <FileText className={styles.formLabelIconGray} />
-                                    {t('ridesManagement.notes', 'Customer Notes (Optional)')}
+                                    {t('labels.notes', 'Customer Notes (Optional)')}
                                 </label>
                                 <textarea
                                     value={customerNotes}
                                     onChange={(e) => setCustomerNotes(e.target.value)}
-                                    placeholder={t('ridesManagement.notesPlaceholder', 'Add any special instructions...')}
+                                    placeholder={t('placeholders.notes', 'Add any special instructions...')}
                                     rows={3}
                                     className={`${styles.formInput} ${styles.notesTextarea}`}
                                 />

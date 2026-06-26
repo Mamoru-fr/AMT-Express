@@ -63,7 +63,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            {t('rideModals.editRide.departure')} <span className={styles.formLabelRequired}>
+                            {t('labels.departure')} <span className={styles.formLabelRequired}>
                                 {t('common.required')}
                         </span></label>
                         <input
@@ -77,7 +77,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            {t('rideModals.editRide.destination')} <span className={styles.formLabelRequired}>
+                            {t('labels.destination')} <span className={styles.formLabelRequired}>
                                 {t('common.required')}
                         </span></label>
                         <input
@@ -91,7 +91,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            {t('rideModals.editRide.departureTime')} <span className={styles.formLabelRequired}>
+                            {t('labels.departureTime')} <span className={styles.formLabelRequired}>
                                 {t('common.required')}
                         </span></label>
                         <input
@@ -105,7 +105,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
                     <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                            {t('rideModals.editRide.price')} <span className={styles.formLabelRequired}>
+                            {t('labels.price')} <span className={styles.formLabelRequired}>
                                 {t('common.required')}
                         </span></label>
                         <input
@@ -119,21 +119,21 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t('rideModals.editRide.status')}</label>
+                        <label className={styles.formLabel}>{t('labels.status')}</label>
                         <select
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value as RideStatus})}
                             className={styles.formSelect}
                         >
-                            <option value="pending">{t('rideModals.editRide.statusOptions.pending')}</option>
-                            <option value="assigned">{t('rideModals.editRide.statusOptions.assigned')}</option>
-                            <option value="completed">{t('rideModals.editRide.statusOptions.completed')}</option>
-                            <option value="cancelled">{t('rideModals.editRide.statusOptions.cancelled')}</option>
+                            <option value="pending">{t('status.pending')}</option>
+                            <option value="assigned">{t('status.assigned')}</option>
+                            <option value="completed">{t('status.completed')}</option>
+                            <option value="cancelled">{t('status.cancelled')}</option>
                         </select>
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t('rideModals.editRide.customerNotes')}</label>
+                        <label className={styles.formLabel}>{t('labels.customerNotes')}</label>
                         <textarea
                             value={formData.customerNotes}
                             onChange={(e) => setFormData({...formData, customerNotes: e.target.value})}
@@ -154,7 +154,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                             type="submit"
                             className={styles.saveButton}
                         >
-                            {t('rideModals.editRide.saveButton')}
+                            {t('common.save')}
                         </button>
                     </div>
                 </form>

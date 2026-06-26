@@ -20,6 +20,26 @@ describe('Translations', () => {
             expect(en.errors).toBeDefined();
             expect(fr.errors).toBeDefined();
         });
+
+        it('should have labels section in both languages', () => {
+            expect(en.labels).toBeDefined();
+            expect(fr.labels).toBeDefined();
+        });
+
+        it('should have status section in both languages', () => {
+            expect(en.status).toBeDefined();
+            expect(fr.status).toBeDefined();
+        });
+
+        it('should have placeholders section in both languages', () => {
+            expect(en.placeholders).toBeDefined();
+            expect(fr.placeholders).toBeDefined();
+        });
+
+        it('should have messages section in both languages', () => {
+            expect(en.messages).toBeDefined();
+            expect(fr.messages).toBeDefined();
+        });
     });
 
     describe('Authentication translations', () => {
@@ -115,6 +135,50 @@ describe('Translations', () => {
             requiredErrors.forEach(errorKey => {
                 expect(en.errors[errorKey as keyof typeof en.errors]).toBeDefined();
                 expect(fr.errors[errorKey as keyof typeof fr.errors]).toBeDefined();
+            });
+        });
+    });
+
+    describe('Labels translations', () => {
+        const labelKeys = [
+            'departure',
+            'destination',
+            'arrival',
+            'driver',
+            'price',
+            'status',
+            'actions',
+            'location',
+            'clients',
+            'customers',
+            'participants'
+        ];
+
+        labelKeys.forEach(key => {
+            it(`should have labels.${key} in both languages`, () => {
+                expect(en.labels[key as keyof typeof en.labels]).toBeDefined();
+                expect(fr.labels[key as keyof typeof fr.labels]).toBeDefined();
+                expect(en.labels[key as keyof typeof en.labels]).not.toBe('');
+                expect(fr.labels[key as keyof typeof fr.labels]).not.toBe('');
+            });
+        });
+    });
+
+    describe('Status translations', () => {
+        const statusKeys = [
+            'pending',
+            'assigned',
+            'completed',
+            'cancelled',
+            'unassigned'
+        ];
+
+        statusKeys.forEach(key => {
+            it(`should have status.${key} in both languages`, () => {
+                expect(en.status[key as keyof typeof en.status]).toBeDefined();
+                expect(fr.status[key as keyof typeof fr.status]).toBeDefined();
+                expect(en.status[key as keyof typeof en.status]).not.toBe('');
+                expect(fr.status[key as keyof typeof fr.status]).not.toBe('');
             });
         });
     });

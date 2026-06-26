@@ -36,10 +36,10 @@ export function RecentRidesTable({rides}: Props) {
     
     const getStatusText = (status: string) => {
         const statusMap: Record<string, string> = {
-            pending: t('ridesManagement.pending', 'Pending'),
-            assigned: t('ridesManagement.assigned', 'Assigned'),
-            completed: t('ridesManagement.completed', 'Completed'),
-            cancelled: t('ridesManagement.cancelled', 'Cancelled')
+            pending: t('status.pending', 'Pending'),
+            assigned: t('status.assigned', 'Assigned'),
+            completed: t('status.completed', 'Completed'),
+            cancelled: t('status.cancelled', 'Cancelled')
         };
         return statusMap[status] || status;
     };
