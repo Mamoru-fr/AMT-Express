@@ -11,8 +11,7 @@ import type {RideFilters, RidesManagementData} from '@/lib/services/RidesManagem
  */
 
 // Re-export types for backward compatibility
-export type {RideFilters, RidesManagementData};
-
+// Note: Types are now imported directly from RidesManagementService
 export async function fetchRidesForManagement(filters: any = {}): Promise<ActionResponse<RidesManagementData>> {
     return RidesManagementController.fetchRidesForManagement(filters);
 }

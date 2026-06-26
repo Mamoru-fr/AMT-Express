@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
 import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings2, HelpCircle} from 'lucide-react';
 import {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
 import styles from './AdminNavigationShell.module.css';
 
@@ -16,43 +17,44 @@ type NavItem = {
     matchMode: 'exact' | 'ancestor';
 };
 
-const navItems: NavItem[] = [
-    {
-        href: '/',
-        label: 'Dashboard',
-        description: 'Overview',
-        icon: LayoutDashboard,
-        match: (url) => url === '/',
-        matchMode: 'exact',
-    },
-    {
-        href: '/admin/ride-management',
-        label: 'Ride Management',
-        description: 'Manage rides',
-        icon: Route,
-        match: (url) => url.startsWith('/admin/ride-management'),
-        matchMode: 'ancestor',
-    },
-    {
-        href: '/admin/ride-management/new',
-        label: 'New Ride',
-        description: 'Create a ride',
-        icon: PlusCircle,
-        match: (url) => url.startsWith('/admin/ride-management/new'),
-        matchMode: 'exact',
-    },
-];
-
 type Props = {
     children: React.ReactNode;
 };
 
 export function AdminNavigationShell({children}: Props) {
+    const {t} = useTranslation();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+
+    const navItems: NavItem[] = [
+        {
+            href: '/',
+            label: t('adminNavigation.dashboard'),
+            description: t('adminNavigation.dashboardDescription'),
+            icon: LayoutDashboard,
+            match: (url) => url === '/',
+            matchMode: 'exact',
+        },
+        {
+            href: '/admin/ride-management',
+            label: t('adminNavigation.rideManagement'),
+            description: t('adminNavigation.rideManagementDescription'),
+            icon: Route,
+            match: (url) => url.startsWith('/admin/ride-management'),
+            matchMode: 'ancestor',
+        },
+        {
+            href: '/admin/ride-management/new',
+            label: t('adminNavigation.newRide'),
+            description: t('adminNavigation.newRideDescription'),
+            icon: PlusCircle,
+            match: (url) => url.startsWith('/admin/ride-management/new'),
+            matchMode: 'exact',
+        },
+    ];
 
     useEffect(() => {
         setMobileNavOpen(false);
@@ -76,7 +78,7 @@ export function AdminNavigationShell({children}: Props) {
                 type="button"
                 className={styles.mobileLauncher}
                 onClick={() => setMobileNavOpen(previous => !previous)}
-                aria-label={mobileNavOpen ? 'Close navigation' : 'Open navigation'}
+                aria-label={mobileNavOpen ? t('adminNavigation.closeNavigation') : t('adminNavigation.openNavigation')}
                 aria-expanded={mobileNavOpen}
             >
                 <Sparkles className={styles.mobileLauncherIcon} />
@@ -85,7 +87,7 @@ export function AdminNavigationShell({children}: Props) {
             <button
                 type="button"
                 className={styles.mobileBackdrop}
-                aria-label="Close navigation backdrop"
+                aria-label={t('adminNavigation.closeNavigation')}
                 onClick={closeMobileNav}
             />
 
@@ -101,7 +103,7 @@ export function AdminNavigationShell({children}: Props) {
 
                         setCollapsed(previous => !previous);
                     }}
-                    aria-label={mobileNavOpen ? 'Close navigation' : collapsed ? 'Expand navigation' : 'Collapse navigation'}
+                    aria-label={mobileNavOpen ? t('adminNavigation.closeNavigation') : collapsed ? t('adminNavigation.expandNavigation') : t('adminNavigation.collapseNavigation')}
                 >
                     <div className={styles.brandRow}>
                         <div className={styles.brandMark}>
@@ -111,15 +113,15 @@ export function AdminNavigationShell({children}: Props) {
                             </span>
                         </div>
                     <div className={styles.brandText}>
-                        <div className={styles.brandTitle}>AMT Express</div>
-                        <div className={styles.brandSubtitle}>Workspace</div>
+                        <div className={styles.brandTitle}>{t('adminNavigation.brandTitle')}</div>
+                        <div className={styles.brandSubtitle}>{t('adminNavigation.brandSubtitle')}</div>
                     </div>
                     </div>
                 </button>
 
-                <div className={styles.sectionLabel}>Navigation</div>
+                <div className={styles.sectionLabel}>{t('adminNavigation.navigation')}</div>
 
-                <nav className={styles.nav} aria-label="Admin navigation">
+                <nav className={styles.nav} aria-label={t('adminNavigation.navigation')}>
                     {navItems.map((item) => {
                         const active = item.match(currentUrl);
                         const Icon = item.icon;
@@ -156,16 +158,16 @@ export function AdminNavigationShell({children}: Props) {
                     <Link href="/connections" className={styles.utilityItem} onClick={closeMobileNav}>
                         <Settings2 className={styles.utilityIcon} />
                         <span className={styles.navText}>
-                            <span className={styles.navLabel}>Settings</span>
-                            <span className={styles.navDescription}>Connection area</span>
+                            <span className={styles.navLabel}>{t('adminNavigation.settings')}</span>
+                            <span className={styles.navDescription}>{t('adminNavigation.settingsDescription')}</span>
                         </span>
                     </Link>
 
                     <Link href="/connections" className={styles.utilityItem} onClick={closeMobileNav}>
                         <HelpCircle className={styles.utilityIcon} />
                         <span className={styles.navText}>
-                            <span className={styles.navLabel}>Help</span>
-                            <span className={styles.navDescription}>Get support</span>
+                            <span className={styles.navLabel}>{t('adminNavigation.help')}</span>
+                            <span className={styles.navDescription}>{t('adminNavigation.helpDescription')}</span>
                         </span>
                     </Link>
                 </div>
@@ -176,7 +178,7 @@ export function AdminNavigationShell({children}: Props) {
                     onClick={() => setMobileNavOpen(previous => !previous)}
                 >
                     <Menu className={styles.mobileToggleIcon} />
-                    <span>{collapsed ? 'Open navigation' : 'Collapse navigation'}</span>
+                    <span>{collapsed ? t('adminNavigation.openNavigation') : t('adminNavigation.collapseNavigation')}</span>
                 </button>
             </aside>
 

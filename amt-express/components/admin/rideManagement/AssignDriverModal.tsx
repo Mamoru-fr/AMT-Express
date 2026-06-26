@@ -3,6 +3,8 @@
 import {useState} from "react";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
+import {useTranslation} from "react-i18next";
+import styles from "./AssignDriverModal.module.css";
 
 /**
  * Props for the AssignDriverModal component
@@ -24,6 +26,7 @@ type AssignDriverModalProps = {
  * Displays ride details and allows selection from available drivers list
  */
 export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriverModalProps) {
+    const {t} = useTranslation();
     // Track the selected driver ID from dropdown
     const [selectedDriver, setSelectedDriver] = useState('');
 
@@ -41,33 +44,37 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">Assign Driver to Ride #{ride.id}</h3>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-6 h-6"/>
+        <div className={styles.modalOverlay}>
+            <div className={styles.modalContainer}>
+                <div className={styles.modalHeader}>
+                    <h3 className={styles.modalTitle}>{t('rideModals.assignDriver.title', {rideId: ride.id})}</h3>
+                    <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
+                        <X className={styles.closeIcon}/>
                     </button>
                 </div>
 
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600"><strong>From:</strong> {ride.departure}</p>
-                    <p className="text-sm text-gray-600"><strong>To:</strong> {ride.destination}</p>
-                    <p className="text-sm text-gray-600">
-                        <strong>Time:</strong> {new Date(ride.departureTime).toLocaleString('fr-FR')}
+                <div className={styles.rideInfo}>
+                    <p className={styles.rideInfoLine}>
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.from')}</span> {ride.departure}
+                    </p>
+                    <p className={styles.rideInfoLine}>
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.to')}</span> {ride.destination}
+                    </p>
+                    <p className={styles.rideInfoLine}>
+                        <span className={styles.rideInfoLabel}>{t('rideModals.assignDriver.time')}</span> {new Date(ride.departureTime).toLocaleString()}
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Driver</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>{t('rideModals.assignDriver.selectDriver')}</label>
                         <select
                             value={selectedDriver}
                             onChange={(e) => setSelectedDriver(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={styles.formSelect}
                             required
                         >
-                            <option value="">-- Choose a driver --</option>
+                            <option value="">{t('rideModals.assignDriver.chooseDriver')}</option>
                             {drivers.map(driver => (
                                 <option key={driver.id} value={driver.id}>
                                     {driver.name} ({driver.email})
@@ -76,19 +83,20 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
                         </select>
                     </div>
 
-                    <div className="flex gap-3 justify-end">
+                    <div className={styles.modalFooter}>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            className={styles.cancelButton}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            className={styles.assignButton}
+                            disabled={!selectedDriver}
                         >
-                            Assign Driver
+                            {t('rideModals.assignDriver.assignButton')}
                         </button>
                     </div>
                 </form>

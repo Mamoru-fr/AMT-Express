@@ -222,10 +222,10 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             <div className={styles.pageEyebrow}>Ride management</div>
                             <h1 className={styles.pageTitle}>
                                 <CheckSquare className={styles.titleIcon} />
-                                {t('rideManagement.addRide', 'Add New Ride')}
+                                {t('ridesManagement.addRide', 'Add New Ride')}
                             </h1>
                             <p className={styles.pageSubtitle}>
-                                Fill the ride details below, then return to the previous screen automatically.
+                                {t('addRideModal.addRideSubtitle', 'Fill the ride details below, then return to the previous screen automatically.')}
                             </p>
                         </div>
 
@@ -236,14 +236,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             type="button"
                         >
                             <X className={styles.closeIcon} />
-                            <span>Back</span>
+                            <span>{t('addRideModal.back', 'Back')}</span>
                         </button>
                     </div>
                 ) : (
                     <div className={styles.modalHeader}>
                         <h2 className={styles.modalTitle}>
                             <CheckSquare className={styles.titleIcon} />
-                            {t('rideManagement.addRide', 'Add New Ride')}
+                            {t('ridesManagement.addRide', 'Add New Ride')}
                         </h2>
                         <button
                             onClick={handleClose}
@@ -273,20 +273,20 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             {/* Location Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <MapPin className={styles.sectionTitleIcon} /> {t('rideManagement.location', 'Location')}
+                                    <MapPin className={styles.sectionTitleIcon} /> {t('ridesManagement.location', 'Location')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconGreen} />
-                                            {t('rideManagement.departure', 'Departure')}
+                                            {t('ridesManagement.departure', 'Departure')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={departure}
                                             onChange={(e) => setDeparture(e.target.value)}
-                                            placeholder="E.g., 123 Main St, Paris"
+                                            placeholder={t('ridesManagement.departurePlaceholder', 'E.g., 123 Main St, Paris')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -295,14 +295,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconRed} />
-                                            {t('rideManagement.destination', 'Destination')}
+                                            {t('ridesManagement.destination', 'Destination')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
-                                            placeholder="E.g., 456 Park Ave, Lyon"
+                                            placeholder={t('ridesManagement.destinationPlaceholder', 'E.g., 456 Park Ave, Lyon')}
                                             className={styles.formInput}
                                             required
                                         />
@@ -313,13 +313,13 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             {/* Time & Details Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Clock className={styles.sectionTitleIcon} /> {t('rideManagement.details', 'Ride Details')}
+                                    <Clock className={styles.sectionTitleIcon} /> {t('ridesManagement.details', 'Ride Details')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Clock className={styles.formLabelIconBlue} />
-                                            {t('rideManagement.departureTime', 'Departure Time')}
+                                            {t('ridesManagement.departureTime', 'Departure Time')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
@@ -334,7 +334,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <DollarSign className={styles.formLabelIconGreen} />
-                                            {t('rideManagement.price', 'Price (€)')}
+                                            {t('ridesManagement.price', 'Price (€)')}
                                         </label>
                                         <input
                                             type="number"
@@ -342,7 +342,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             min="0"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
-                                            placeholder="0.00"
+                                            placeholder={t('ridesManagement.pricePlaceholder', '0.00')}
                                             className={styles.formInput}
                                         />
                                     </div>
@@ -352,13 +352,13 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             {/* Driver & Customers Section */}
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Users className={styles.sectionTitleIcon} /> {t('rideManagement.participants', 'Participants')}
+                                    <Users className={styles.sectionTitleIcon} /> {t('ridesManagement.participants', 'Participants')}
                                 </div>
 
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconBlue} />
-                                        {t('rideManagement.driver', 'Driver (Optional)')}
+                                        {t('ridesManagement.driver', 'Driver (Optional)')}
                                     </label>
                                     <SearchableSelect
                                         value={driverId}
@@ -369,17 +369,17 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                         }))}
                                         onChange={(driver) => setDriverId(driver.id)}
                                         onClear={() => setDriverId('')}
-                                        placeholder={t('rideManagement.selectDriver', 'Select a driver...')}
-                                        searchPlaceholder="Search drivers..."
-                                        emptyText="No matching driver"
-                                        helperText="Type to search, then use Enter or click a result."
+                                        placeholder={t('ridesManagement.selectDriver', 'Select a driver...')}
+                                        searchPlaceholder={t('addRideModal.searchDrivers', 'Search drivers...')}
+                                        emptyText={t('addRideModal.noMatchingDriver', 'No matching driver')}
+                                        helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
                                     <label className={styles.formLabel}>
                                         <Users className={styles.formLabelIconOrange} />
-                                        {t('rideManagement.customers', 'Customers')}
+                                        {t('ridesManagement.customers', 'Customers')}
                                         <span className={styles.formLabelRequired}>*</span>
                                     </label>
                                     <SearchableSelect
@@ -392,14 +392,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                         }))}
                                         onChange={(selectedOptions) => setSelectedCustomers(selectedOptions.map(option => option.id))}
                                         onClear={() => setSelectedCustomers([])}
-                                        placeholder="Type a customer name..."
-                                        searchPlaceholder="Add another customer..."
-                                        emptyText="No matching customer"
-                                        helperText="Press Enter to add the first match, or click a suggestion."
+                                        placeholder={t('addRideModal.typeCustomerName', 'Type a customer name...')}
+                                        searchPlaceholder={t('addRideModal.addAnotherCustomer', 'Add another customer...')}
+                                        emptyText={t('addRideModal.noMatchingCustomer', 'No matching customer')}
+                                        helperText={t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                     />
                                     <div className={styles.tagHintRow}>
                                         <p className={styles.tagHintText}>
-                                            Press Enter to add the first match, or click a suggestion.
+                                            {t('addRideModal.pressEnterToAdd', 'Press Enter to add the first match, or click a suggestion.')}
                                         </p>
                                         <p className={styles.tagHintCount}>
                                             {selectedCustomers.length} selected
@@ -411,13 +411,13 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             {/* Production & Project */}
                             <div>
                                 <div className={styles.sectionTitle}>
-                                    <Building className={styles.sectionTitleIcon} /> {t('rideManagement.production', 'Production Info')}
+                                    <Building className={styles.sectionTitleIcon} /> {t('ridesManagement.productionInfo', 'Production Info')}
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <Building className={styles.formLabelIconIndigo} />
-                                            {t('rideManagement.production', 'Production (Optional)')}
+                                            {t('ridesManagement.productionOptional', 'Production (Optional)')}
                                         </label>
                                         <SearchableSelect
                                             value={productionId}
@@ -434,10 +434,10 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                                 setProductionId('');
                                                 setProjectId('');
                                             }}
-                                            placeholder="Type a production name..."
-                                            searchPlaceholder="Search to replace production..."
-                                            emptyText="No matching production"
-                                            helperText="Type to search, then use Enter or click a result."
+                                            placeholder={t('addRideModal.searchProductions', 'Type a production name...')}
+                                            searchPlaceholder={t('addRideModal.replaceProduction', 'Search to replace production...')}
+                                            emptyText={t('addRideModal.noMatchingProduction', 'No matching production')}
+                                            helperText={t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.')}
                                         />
                                         <div className={styles.tagHintRow}>
                                             <p className={styles.tagHintText}>
@@ -452,7 +452,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
                                             <FolderOpen className={styles.formLabelIconCyan} />
-                                            {t('rideManagement.project', 'Project (Optional)')}
+                                            {t('ridesManagement.projectOptional', 'Project (Optional)')}
                                         </label>
                                             <SearchableSelect
                                                 value={projectId}
@@ -463,15 +463,15 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                                 }))}
                                                 onChange={(project) => setProjectId(project.id)}
                                                 onClear={() => setProjectId('')}
-                                                placeholder={t('rideManagement.selectProject', 'Select a project...')}
-                                                searchPlaceholder="Search projects..."
-                                                emptyText={productionId ? 'No matching project' : 'Select a production first'}
-                                                helperText={productionId ? 'Type to search, then use Enter or click a result.' : 'Select a production first'}
+                                                placeholder={t('ridesManagement.selectProject', 'Select a project...')}
+                                                searchPlaceholder={t('addRideModal.searchProjects', 'Search projects...')}
+                                                emptyText={productionId ? t('addRideModal.noMatchingProject', 'No matching project') : t('addRideModal.selectProductionFirst', 'Select a production first')}
+                                                helperText={productionId ? t('addRideModal.typeToSearchDriver', 'Type to search, then use Enter or click a result.') : t('addRideModal.selectProductionFirst', 'Select a production first')}
                                                 disabled={!productionId}
                                             />
                                         {!productionId && (
                                             <p style={{fontSize: '0.75rem', color: 'var(--app-muted-color)', margin: '0.25rem 0 0 0'}}>
-                                                Select a production first
+                                                {t('addRideModal.selectProductionFirst', 'Select a production first')}
                                             </p>
                                         )}
                                     </div>
@@ -482,12 +482,12 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>
                                     <FileText className={styles.formLabelIconGray} />
-                                    {t('rideManagement.notes', 'Customer Notes (Optional)')}
+                                    {t('ridesManagement.notes', 'Customer Notes (Optional)')}
                                 </label>
                                 <textarea
                                     value={customerNotes}
                                     onChange={(e) => setCustomerNotes(e.target.value)}
-                                    placeholder="Add any special instructions..."
+                                    placeholder={t('ridesManagement.notesPlaceholder', 'Add any special instructions...')}
                                     rows={3}
                                     className={`${styles.formInput} ${styles.notesTextarea}`}
                                 />
@@ -517,7 +517,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                             </>
                         ) : (
                             <>
-                                {t('rideManagement.createRide', 'Create Ride')}
+                                {t('ridesManagement.createRide', 'Create Ride')}
                             </>
                         )}
                     </button>

@@ -31,7 +31,7 @@ export class AuthController {
             if (!validationResult.success) {
                 return {
                     success: false,
-                    error: 'Validation échouée',
+                    error: 'errors.Custom validation failed',
                     code: ErrorCodes.VALIDATION_ERROR,
                     details: validationResult.error.flatten()
                 };
@@ -49,19 +49,22 @@ export class AuthController {
                 data: undefined
             };
         } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue';
+            const errorMsg = error instanceof Error ? error.message : 'Internal server error';
 
             if (errorMsg.includes('Invalid credentials')) {
                 return {
                     success: false,
-                    error: 'Email ou mot de passe incorrect',
+                    error: 'errors.Invalid credentials',
                     code: ErrorCodes.UNAUTHORIZED
                 };
             }
 
+            // Map better-auth error messages to translation keys
+            // These match the keys in locales/en.json and locales/fr.json
+            const errorKey = errorMsg.includes('errors.') ? errorMsg : `errors.${errorMsg}`;
             return {
                 success: false,
-                error: errorMsg,
+                error: errorKey,
                 code: ErrorCodes.DATABASE_ERROR
             };
         }
@@ -82,7 +85,7 @@ export class AuthController {
             if (!validationResult.success) {
                 return {
                     success: false,
-                    error: 'Validation échouée',
+                    error: 'errors.Custom validation failed',
                     code: ErrorCodes.VALIDATION_ERROR,
                     details: validationResult.error.flatten()
                 };
@@ -92,7 +95,7 @@ export class AuthController {
             if (password !== confirmPassword) {
                 return {
                     success: false,
-                    error: 'Les mots de passe ne correspondent pas',
+                    error: 'errors.passwordMismatch',
                     code: ErrorCodes.VALIDATION_ERROR
                 };
             }
@@ -105,19 +108,21 @@ export class AuthController {
                 data: undefined
             };
         } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue';
+            const errorMsg = error instanceof Error ? error.message : 'Internal server error';
 
             if (errorMsg.includes('already exists')) {
                 return {
                     success: false,
-                    error: 'Cet email est déjà utilisé',
+                    error: 'errors.Email already in use',
                     code: ErrorCodes.VALIDATION_ERROR
                 };
             }
 
+            // Map better-auth error messages to translation keys
+            const errorKey = errorMsg.includes('errors.') ? errorMsg : `errors.${errorMsg}`;
             return {
                 success: false,
-                error: errorMsg,
+                error: errorKey,
                 code: ErrorCodes.DATABASE_ERROR
             };
         }
@@ -141,10 +146,12 @@ export class AuthController {
                 data: undefined
             };
         } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue';
+            const errorMsg = error instanceof Error ? error.message : 'Internal server error';
+            // Map better-auth error messages to translation keys
+            const errorKey = errorMsg.includes('errors.') ? errorMsg : `errors.${errorMsg}`;
             return {
                 success: false,
-                error: errorMsg,
+                error: errorKey,
                 code: ErrorCodes.DATABASE_ERROR
             };
         }

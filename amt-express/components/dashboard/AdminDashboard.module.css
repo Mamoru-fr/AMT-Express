@@ -1,6 +1,6 @@
 .adminDashboard {
   width: 100%;
-  min-height: 100%;
+  min-height: 100dvh;
   padding: 0;
 }
 
@@ -11,6 +11,7 @@
   padding: 1rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 2rem;
 }
 
@@ -57,19 +58,27 @@
 }
 
 .kpiGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.kpiGrid > * {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 0;
 }
 
 .actionsRow {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: 0;
+  width: 100%;
 }
 
 .primaryAction {
-  width: 100%;
-  display: flex;
+  display: inline-flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -82,6 +91,8 @@
   border-radius: 6px;
   box-shadow: var(--app-surface-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .primaryAction:hover {
@@ -95,14 +106,14 @@
 }
 
 .chartGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.875rem;
 }
 
 .bottomGrid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.875rem;
   align-items: stretch;
 }
@@ -139,7 +150,8 @@
   }
 
   .primaryAction {
-    min-width: 220px;
+    min-width: min(220px, 100%);
+    flex-shrink: 0;
   }
 
   .chartGrid,
@@ -156,24 +168,47 @@
 
 @media (min-width: 768px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.75rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.5625rem);
   }
 }
 
 @media (min-width: 1024px) {
   .kpiGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.75rem);
   }
 
   .chartGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 1.25rem;
+  }
+  
+  .chartGrid > * {
+    flex: 1 1 calc(50% - 0.625rem);
+    min-width: 0;
   }
 
   .bottomGrid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    flex-direction: row;
     gap: 1.25rem;
+  }
+  
+  .bottomGrid > *:nth-child(1) {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+  
+  .bottomGrid > *:nth-child(2) {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: 100%;
   }
 }

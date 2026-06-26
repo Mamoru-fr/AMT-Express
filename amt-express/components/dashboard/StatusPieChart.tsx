@@ -8,6 +8,7 @@
 
 import {PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip} from 'recharts';
 import styles from "./StatusPieChart.module.css";
+import {useTranslation} from 'react-i18next';
 
 type StatusData = {
     name: string;
@@ -28,9 +29,11 @@ const COLORS = {
 };
 
 export function StatusPieChart({data}: Props) {
+    const {t} = useTranslation();
+    
     return (
         <section className={styles.card}>
-            <h3 className={styles.title}>Rides by Status</h3>
+            <h3 className={styles.title}>{t('statusPieChart.title', 'Rides by Status')}</h3>
             {/* ResponsiveContainer: Makes pie chart resize with its parent container */}
             <ResponsiveContainer width="100%" height={300}>
                 {/* 

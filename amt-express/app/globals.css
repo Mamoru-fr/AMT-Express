@@ -24,6 +24,26 @@
     --app-status-completed-text: #047857;
     --app-status-cancelled-bg: rgba(239, 68, 68, 0.14);
     --app-status-cancelled-text: #b91c1c;
+
+    /* Success colors */
+    --app-success: #16a34a;
+    --app-success-bg: rgba(22, 163, 74, 0.14);
+    --app-success-text: #047857;
+
+    /* Warning colors */
+    --app-warning: #d97706;
+    --app-warning-bg: rgba(217, 119, 6, 0.14);
+    --app-warning-text: #b45309;
+
+    /* Danger/Error colors */
+    --app-danger: #dc2626;
+    --app-danger-bg: rgba(220, 38, 38, 0.14);
+    --app-danger-text: #b91c1c;
+
+    /* Info colors */
+    --app-info: #2563eb;
+    --app-info-bg: rgba(37, 99, 235, 0.14);
+    --app-info-text: #1d4ed8;
   }
 
   * {
@@ -43,7 +63,7 @@
     min-width: 320px;
     position: relative;
     overflow-x: hidden;
-    background: var(--theme-bg);
+    background: var(--app-page-bg);
     color: var(--theme-text);
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);

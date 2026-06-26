@@ -1,6 +1,8 @@
 'use client'
 
 import {X} from "lucide-react";
+import {useTranslation} from "react-i18next";
+import styles from "./DeleteConfirmModal.module.css";
 
 /**
  * Props for the DeleteConfirmModal component
@@ -20,32 +22,34 @@ type DeleteConfirmModalProps = {
  * Displays warning message and requires explicit user confirmation
  */
 export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmModalProps) {
+    const {t} = useTranslation();
+    
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Confirm Deletion</h3>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-5 h-5 sm:w-6 sm:h-6"/>
+        <div className={styles.modalOverlay}>
+            <div className={styles.modalContainer}>
+                <div className={styles.modalHeader}>
+                    <h3 className={styles.modalTitle}>{t('rideModals.deleteConfirm.title')}</h3>
+                    <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
+                        <X className={styles.closeIcon}/>
                     </button>
                 </div>
 
-                <p className="text-gray-700 mb-6">
-                    Are you sure you want to delete ride <strong>#{rideId}</strong>? This action cannot be undone.
+                <p className={styles.confirmationMessage}>
+                    {t('rideModals.deleteConfirm.message', {rideId: rideId})}
                 </p>
 
-                <div className="flex gap-3 justify-end">
+                <div className={styles.modalFooter}>
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className={styles.cancelButton}
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={() => onConfirm(rideId)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        className={styles.deleteButton}
                     >
-                        Delete Ride
+                        {t('rideModals.deleteConfirm.deleteButton')}
                     </button>
                 </div>
             </div>

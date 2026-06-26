@@ -9,7 +9,11 @@
     "lint": "eslint",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
     "db:generate": "drizzle-kit generate && drizzle-kit push",
-    "db:import-csv": "tsx lib/db/import-csv.ts"
+    "db:import-csv": "tsx lib/db/import-csv.ts",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "i18next": "^25.7.4",

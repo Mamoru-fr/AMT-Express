@@ -17,7 +17,7 @@ export class AuthService {
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Sign in failed:", errorData);
-            const errorMessage = errorData.message || errorData.error || "errors.invalidCredentials";
+            const errorMessage = errorData.message || errorData.error || "errors.Invalid credentials";
             throw new Error(errorMessage);
         }
 
@@ -45,7 +45,7 @@ export class AuthService {
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Sign up failed:", errorData);
-            const errorMessage = errorData.message || errorData.error || "errors.signupFailed";
+            const errorMessage = errorData.message || errorData.error || "errors.Failed to create user";
             throw new Error(errorMessage);
         }
 

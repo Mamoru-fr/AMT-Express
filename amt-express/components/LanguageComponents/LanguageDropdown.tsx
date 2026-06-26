@@ -17,7 +17,7 @@ type Props = {
 };
 
 export function LanguageDropdown({className, variant = 'floating'}: Props) {
-    const {i18n} = useTranslation();
+    const {t, i18n} = useTranslation();
 
     useEffect(() => {
         i18n.changeLanguage(localStorage.getItem('preferredLanguage') || 'en');
@@ -31,14 +31,14 @@ export function LanguageDropdown({className, variant = 'floating'}: Props) {
 
     return (
         <div className={[styles.root, styles[variant], className].filter(Boolean).join(' ')}>
-            {variant === 'sidebar' && <div className={styles.label}>Language</div>}
+            {variant === 'sidebar' && <div className={styles.label}>{t('languageDropdown.language', 'Language')}</div>}
 
             <div className={styles.control}>
                 <select
                     className={styles.select}
                     value={i18n.language}
                     onChange={handleLanguageChange}
-                    aria-label="Language selector"
+                    aria-label={t('languageDropdown.languageSelector', 'Language selector')}
                 >
                     {Object.entries(languageList).map(([code, lang]) => (
                         <option key={code} value={code}>

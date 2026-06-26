@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect, useMemo, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {ChevronDown, X} from 'lucide-react';
 import styles from './SearchableSelect.module.css';
 
@@ -40,14 +41,19 @@ type Props = SingleProps | MultiProps;
 export function SearchableSelect({
     options,
     placeholder,
-    searchPlaceholder = 'Type to search...',
-    emptyText = 'No matching result',
+    searchPlaceholder,
+    emptyText,
     helperText,
     disabled = false,
     className,
     maxResults = 8,
     ...rest
 }: Props) {
+    const {t} = useTranslation();
+    
+    // Utiliser les traductions comme valeurs par défaut
+    const effectiveSearchPlaceholder = searchPlaceholder || t('searchableSelect.typeToSearch', 'Type to search...');
+    const effectiveEmptyText = emptyText || t('searchableSelect.noMatchingResult', 'No matching result');
     const isMultiple = rest.multiple === true;
     const selectedOption = useMemo(
         () => !isMultiple ? options.find(option => option.id === rest.value) || null : null,
@@ -193,7 +199,7 @@ export function SearchableSelect({
                     type="text"
                     value={query}
                     disabled={disabled}
-                    placeholder={isMultiple ? (selectedOptions.length > 0 ? searchPlaceholder : placeholder) : (selectedOption ? searchPlaceholder : placeholder)}
+                    placeholder={isMultiple ? (selectedOptions.length > 0 ? effectiveSearchPlaceholder : placeholder) : (selectedOption ? effectiveSearchPlaceholder : placeholder)}
                     className={isMultiple ? `${styles.input} ${styles.inputMulti}` : styles.input}
                     onFocus={(event) => {
                         setOpen(true);
@@ -222,7 +228,7 @@ export function SearchableSelect({
                         className={styles.clearButton}
                         onMouseDown={(event) => event.preventDefault()}
                         onClick={handleClear}
-                        aria-label="Clear selection"
+                        aria-label={t('searchableSelect.clearSelection', 'Clear selection')}
                     >
                         <X className={styles.iconSmall} />
                     </button>
@@ -233,7 +239,7 @@ export function SearchableSelect({
                     className={styles.caretButton}
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => setOpen(previous => !previous)}
-                    aria-label="Toggle suggestions"
+                    aria-label={t('searchableSelect.toggleSuggestions', 'Toggle suggestions')}
                     disabled={disabled}
                 >
                     <ChevronDown className={styles.iconMedium} />
@@ -265,7 +271,7 @@ export function SearchableSelect({
                             </button>
                         ))
                     ) : (
-                        <p className={styles.emptyText}>{emptyText}</p>
+                        <p className={styles.emptyText}>{effectiveEmptyText}</p>
                     )}
                 </div>
             )}
