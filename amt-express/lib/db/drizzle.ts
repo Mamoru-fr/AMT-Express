@@ -11,43 +11,43 @@
     ! Neon Serverless Setup:
 */
 
-// // import for all setup and configuration related to Drizzle ORM and database connection
-// import * as dotenv from "dotenv";
-// import * as schema from "@/lib/db/schema";
-// import { drizzle } from "drizzle-orm/neon-http";
-// import {neon} from "@neondatabase/serverless";
+// import for all setup and configuration related to Drizzle ORM and database connection
+import * as dotenv from "dotenv";
+import * as schema from "@/lib/db/schema";
+import { drizzle } from "drizzle-orm/neon-http";
+import {neon} from "@neondatabase/serverless";
 
-// dotenv.config();
+dotenv.config();
 
-// const sql = neon(process.env.DATABASE_URL!);
+const sql = neon(process.env.DATABASE_URL!);
 
-// const db = drizzle(sql, { schema });
+const db = drizzle(sql, { schema });
 
 /*
     ! Local Development Setup
 */ 
 
 
-import * as dotenv from "dotenv";
-import * as schema from "@/lib/db/schema";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+// import * as dotenv from "dotenv";
+// import * as schema from "@/lib/db/schema";
+// import { drizzle } from "drizzle-orm/postgres-js";
+// import postgres from "postgres";
 
-dotenv.config();
+// dotenv.config();
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-    throw new Error("DATABASE_URL environment variable is not set");
-}
+// const connectionString = process.env.DATABASE_URL;
+// if (!connectionString) {
+//     throw new Error("DATABASE_URL environment variable is not set");
+// }
 
-// Lazy connection - only connect when actually querying
-const sql = postgres(connectionString, {
-    max: 1, // Limit connections during build
-    idle_timeout: 20,
-    connect_timeout: 10,
-});
+// // Lazy connection - only connect when actually querying
+// const sql = postgres(connectionString, {
+//     max: 1, // Limit connections during build
+//     idle_timeout: 20,
+//     connect_timeout: 10,
+// });
 
-const db = drizzle(sql, {schema});
+// const db = drizzle(sql, {schema});
 
 
 console.log('✅ Database connection initialized');

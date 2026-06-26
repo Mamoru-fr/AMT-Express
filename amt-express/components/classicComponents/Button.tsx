@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import '@/css/components/classicComponents/button.css';
+import styles from './button.module.css';
 
 type Props = {
     content: string;
@@ -11,14 +11,14 @@ type Props = {
 }
 
 export function Button({ content, className, variant = 'primary', onClick, type = 'button', disabled = false }: Props) {
-    const variantClass = variant === 'primary' ? 'buttonPrimary' : 'buttonSecondary';
+    const variantClass = variant === 'primary' ? styles.buttonPrimary : styles.buttonSecondary;
     
     return (
         <button 
             type={type}
             disabled={disabled}
             className={cn(
-                'button',
+                styles.button,
                 variantClass,
                 className
             )}
