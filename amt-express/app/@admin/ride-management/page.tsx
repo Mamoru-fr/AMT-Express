@@ -1,11 +1,5 @@
 'use client'
 
-// Metadata (doit rester en haut pour Next.js)
-export const metadata = {
-    title: "Ride Management | AMT Express",
-    description: "Manage all platform rides"
-};
-
 // Import des dépendances nécessaires
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

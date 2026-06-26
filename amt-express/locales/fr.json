@@ -168,7 +168,8 @@
         "moveDown": "Descendre",
         "no": "Non",
         "required": "Requis",
-        "optional": "Optionnel"
+        "optional": "Optionnel",
+        "sort": "Trier"
     },
     "adminNavigation": {
         "dashboard": "Tableau de bord",

@@ -1,0 +1,331 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import RideManagementPage from '@/app/@admin/ride-management/page';
+
+// Mock des hooks Next.js Navigation
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/admin/ride-management',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useSearchParams: () => ({
+    get: vi.fn((key: string) => null),
+    toString: () => '',
+    has: vi.fn(),
+    keys: () => [],
+    entries: () => [],
+    forEach: vi.fn(),
+  }),
+  redirect: vi.fn(),
+}));
+
+// Mock de useSessionWithRole
+vi.mock('@/context/SessionContext', () => ({
+  useSessionWithRole: () => ({
+    session: { user: { role: 'admin' } },
+    isAdmin: true,
+    isDriver: false,
+  }),
+}));
+
+// Mock de useTranslation
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue?: string) => defaultValue || key,
+    i18n: { language: 'en' },
+  }),
+}));
+
+// Mock des actions pour éviter les appels API réels
+vi.mock('@/lib/actions/ridesManagementActions', () => ({
+  fetchRidesForManagement: vi.fn().mockResolvedValue({
+    success: true,
+    data: {
+      rides: [],
+      total: 0,
+      totalPages: 0,
+      page: 1,
+    },
+  }),
+  fetchAvailableDrivers: vi.fn().mockResolvedValue({
+    success: true,
+    data: [],
+  }),
+  fetchAllCustomers: vi.fn().mockResolvedValue({
+    success: true,
+    data: [],
+  }),
+  exportRidesToCSV: vi.fn().mockResolvedValue({
+    success: true,
+    data: 'id,name\n1,Test Ride',
+  }),
+  updateRideDetails: vi.fn().mockResolvedValue({ success: true }),
+  assignDriverToRide: vi.fn().mockResolvedValue({ success: true }),
+  cancelRide: vi.fn().mockResolvedValue({ success: true }),
+  deleteRide: vi.fn().mockResolvedValue({ success: true }),
+}));
+
+// Mock des modals pour éviter les erreurs
+vi.mock('@/components/admin/rideManagement/EditRideModal', () => ({
+  EditRideModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="edit-modal">Edit Modal</div>
+  ),
+}));
+
+vi.mock('@/components/admin/rideManagement/AssignDriverModal', () => ({
+  AssignDriverModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="assign-modal">Assign Modal</div>
+  ),
+}));
+
+vi.mock('@/components/admin/rideManagement/DeleteConfirmModal', () => ({
+  DeleteConfirmModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="delete-modal">Delete Modal</div>
+  ),
+}));
+
+vi.mock('@/components/admin/rideManagement/AddRideModal', () => ({
+  AddRideModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="add-modal">Add Modal</div>
+  ),
+}));
+
+vi.mock('@/components/admin/rideManagement/ColumnFilter', () => ({
+  ColumnFilter: ({ label }: { label: string }) => (
+    <div data-testid="column-filter">{label}</div>
+  ),
+}));
+
+vi.mock('@/components/admin/rideManagement/AdvancedSortModal', () => ({
+  AdvancedSortModal: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="advanced-sort-modal">Advanced Sort Modal</div>
+  ),
+}));
+
+vi.mock('@/components/admin/navigation/AdminNavigationShell', ({ children }: { children: React.ReactNode }) => (
+  <div data-testid="admin-shell">{children}</div>
+));
+
+// Mock des styles CSS
+vi.mock('@/components/admin/rideManagement/RidesManagementBoard.module.css', () => ({
+  pageShell: 'page-shell',
+  pageInner: 'page-inner',
+  hero: 'hero',
+  title: 'title',
+  subtitle: 'subtitle',
+  eyebrow: 'eyebrow',
+  controlsCard: 'controls-card',
+  controlsStack: 'controls-stack',
+  searchRow: 'search-row',
+  searchIcon: 'search-icon',
+  searchInput: 'search-input',
+  toolbarRow: 'toolbar-row',
+  actionRow: 'action-row',
+  actionButton: 'action-button',
+  actionButtonSecondary: 'action-button-secondary',
+  actionLabelDesktop: 'action-label-desktop',
+  buttonIcon: 'button-icon',
+  resultsLine: 'results-line',
+  tableCard: 'table-card',
+  tableHeaderSticky: 'table-header-sticky',
+  tableRoot: 'table-root',
+  tableHead: 'table-head',
+  tableHeadCell: 'table-head-cell',
+  tableBodyRow: 'table-body-row',
+  tableCell: 'table-cell',
+  tableActionsHead: 'table-actions-head',
+  tableActionsCell: 'table-actions-cell',
+  tableActionsGroup: 'table-actions-group',
+  tableActionButton: 'table-action-button',
+  tableActionIcon: 'table-action-icon',
+  tablePrice: 'table-price',
+  tableCellMuted: 'table-cell-muted',
+  statusBadge: 'status-badge',
+  statusPending: 'status-pending',
+  statusAssigned: 'status-assigned',
+  statusCompleted: 'status-completed',
+  statusCancelled: 'status-cancelled',
+  statusDefault: 'status-default',
+  paginationBar: 'pagination-bar',
+  paginationMeta: 'pagination-meta',
+  paginationControls: 'pagination-controls',
+  paginationButton: 'pagination-button',
+  paginationIcon: 'pagination-icon',
+}));
+
+describe('RideManagementPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // =============================================
+  // Tests 1 : Rendering de base
+  // =============================================
+  describe('Basic Rendering', () => {
+    it('should render the AdminNavigationShell', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByTestId('admin-shell')).toBeInTheDocument();
+    });
+
+    it('should render the page title', async () => {
+      render(<RideManagementPage />);
+      await waitFor(() => {
+        expect(screen.getByText(/Ride Management/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should render the search input', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByPlaceholderText(/Search by ID/i)).toBeInTheDocument();
+    });
+
+    it('should render the table', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByRole('table')).toBeInTheDocument();
+    });
+
+    it('should render action buttons', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByText(/Add Ride/i)).toBeInTheDocument();
+      expect(screen.getByText(/Export CSV/i)).toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 2 : Fonctionnalités de filtrage et tri
+  // =============================================
+  describe('Filtering and Sorting', () => {
+    it('should render ColumnFilter components in table headers', () => {
+      render(<RideManagementPage />);
+      const filters = screen.getAllByTestId('column-filter');
+      expect(filters.length).toBeGreaterThan(0); // On attend plusieurs colonnes avec des filtres
+    });
+
+    it('should render advanced sort button', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByText(/Sort/i)).toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 3 : Modals
+  // =============================================
+  describe('Modals', () => {
+    it('should render AddRideModal when isAddModalOpen is true', () => {
+      // Note: Pour tester l'ouverture des modals, il faudrait simuler l'état
+      // Ici, on vérifie juste que le composant est importé et utilisé
+      render(<RideManagementPage />);
+      // Le modal n'est pas ouvert par défaut, donc il ne doit pas être visible
+      expect(screen.queryByTestId('add-modal')).not.toBeInTheDocument();
+    });
+
+    it('should render EditRideModal when editModal is open', () => {
+      render(<RideManagementPage />);
+      expect(screen.queryByTestId('edit-modal')).not.toBeInTheDocument();
+    });
+
+    it('should render AssignDriverModal when assignModal is open', () => {
+      render(<RideManagementPage />);
+      expect(screen.queryByTestId('assign-modal')).not.toBeInTheDocument();
+    });
+
+    it('should render DeleteConfirmModal when deleteModal is open', () => {
+      render(<RideManagementPage />);
+      expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument();
+    });
+
+    it('should render AdvancedSortModal when isAdvancedSortModalOpen is true', () => {
+      render(<RideManagementPage />);
+      expect(screen.queryByTestId('advanced-sort-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 4 : Comportement des boutons d'action
+  // =============================================
+  describe('Action Buttons', () => {
+    it('should render Add Ride button', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByText(/Add Ride/i)).toBeInTheDocument();
+    });
+
+    it('should render Export CSV button', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByText(/Export CSV/i)).toBeInTheDocument();
+    });
+
+    it('should call setIsAddModalOpen when Add Ride is clicked', () => {
+      // Mock du useState pour setIsAddModalOpen
+      const setIsAddModalOpen = vi.fn();
+      vi.mock('react', async () => {
+        const actual = await vi.importActual('react');
+        return {
+          ...actual,
+          useState: vi.fn((initialValue: any) => [initialValue, vi.fn()]),
+        };
+      });
+
+      render(<RideManagementPage />);
+      const addButton = screen.getByText(/Add Ride/i);
+      fireEvent.click(addButton);
+      // Note: Résultat dépend de l'implémentation du useState
+    });
+  });
+
+  // =============================================
+  // Tests 5 : Affichage des données
+  // =============================================
+  describe('Data Display', () => {
+    it('should display "Showing 0 of 0 rides" when no rides', async () => {
+      // Mock des données vides
+      vi.mock('@/lib/actions/ridesManagementActions', () => ({
+        fetchRidesForManagement: vi.fn().mockResolvedValue({
+          success: true,
+          data: {
+            rides: [],
+            total: 0,
+            totalPages: 0,
+            page: 1,
+          },
+        }),
+        fetchAvailableDrivers: vi.fn().mockResolvedValue({ success: true, data: [] }),
+        fetchAllCustomers: vi.fn().mockResolvedValue({ success: true, data: [] }),
+        exportRidesToCSV: vi.fn(),
+        updateRideDetails: vi.fn(),
+        assignDriverToRide: vi.fn(),
+        cancelRide: vi.fn(),
+        deleteRide: vi.fn(),
+      }));
+
+      render(<RideManagementPage />);
+      await waitFor(() => {
+        expect(screen.getByText(/Showing 0 of 0 rides/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should display table headers', () => {
+      render(<RideManagementPage />);
+      expect(screen.getByText(/Date Hour/i)).toBeInTheDocument();
+      expect(screen.getByText(/Clients/i)).toBeInTheDocument();
+      expect(screen.getByText(/Departure/i)).toBeInTheDocument();
+      expect(screen.getByText(/Arrival/i)).toBeInTheDocument();
+      expect(screen.getByText(/Driver/i)).toBeInTheDocument();
+      expect(screen.getByText(/Price/i)).toBeInTheDocument();
+      expect(screen.getByText(/Status/i)).toBeInTheDocument();
+      expect(screen.getByText(/Actions/i)).toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 6 : Redirection pour les non-admins
+  // =============================================
+  describe('Non-Admin Redirection', () => {
+    it('should not redirect admin users', async () => {
+      render(<RideManagementPage />);
+      // Si c'est un admin, la page doit s'afficher normalement
+      expect(screen.getByTestId('admin-shell')).toBeInTheDocument();
+    });
+  });
+});

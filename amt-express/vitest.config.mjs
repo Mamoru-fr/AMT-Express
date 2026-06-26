@@ -5,11 +5,11 @@ export default defineConfig({
   test: {
     // Configuration de base
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
     passWithNoTests: true,
     
     // Répertoire des tests
-    include: ['test/**/*.test.ts', 'test/**/*.test.tsx'],
+    include: ['test/**/*.test.ts', 'test/**/*.test.tsx', '.test/**/*.test.ts'],
     
     // Configuration pour Next.js
     alias: {
@@ -23,22 +23,7 @@ export default defineConfig({
       '@/utils': path.resolve(__dirname, './utils'),
     },
     
-    // Gestion des modules
-    modules: {
-      // Mock Next.js specific modules
-      'next/headers': {
-        headers: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null }),
-        cookies: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null }),
-      },
-      'next/navigation': {
-        useRouter: () => ({ push: () => null, replace: () => null, prefetch: () => null, back: () => null, forward: () => null }),
-        useSearchParams: () => ({ get: () => null, has: () => false, entries: () => [], forEach: () => null }),
-        usePathname: () => '/',
-        redirect: () => { throw new Error('Redirect') },
-        permanentRedirect: () => { throw new Error('Permanent redirect') },
-        notFound: () => { throw new Error('Not found') },
-      },
-    },
+   // Mock Next.js specific modules (sera géré par le setup file)
     
     // Coverage (optionnel)
     coverage: {

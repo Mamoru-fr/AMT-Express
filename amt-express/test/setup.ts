@@ -4,6 +4,10 @@
  */
 
 import { beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { expect } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+expect.extend(matchers);
 
 // Global test timeout
 const TEST_TIMEOUT = 10000;

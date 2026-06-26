@@ -39,20 +39,20 @@ export default async function RootLayout({
           <SessionProvider session={session}>
             {/* 
               Parallel Routes :
-              - Si non authentifié : afficher le slot @auth (redirige vers /connections via proxy)
-              - Sinon : afficher le slot correspondant au rôle
-              - Le Proxy a déjà vérifié l'authentification, donc pas besoin de rediriger ici
+              - @admin : affiché pour /admin/*
+              - @driver : affiché pour /driver/*
+              - @customer : affiché pour /customer/*
+              - @auth : affiché pour /connections
+              - children : le contenu de la page de base
+              
+              Le Proxy gère les redirections et la logique d'authentification.
+              Tous les slots sont rendus simultanément, mais seul le contenu du slot actif est affiché.
             */}
-            {!isAuthenticated ? (
-              authSlot
-            ) : isAdmin && admin ? (
-              admin
-            ) : isDriver && driver ? (
-              driver
-            ) : (
-              customer
-            )}
             {children}
+            {admin}
+            {driver}
+            {customer}
+            {authSlot}
           </SessionProvider>
         </I18nProvider>
       </body>
