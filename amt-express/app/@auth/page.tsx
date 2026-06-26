@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+'use client';
+
+import { redirect, useSearchParams } from 'next/navigation';
 
 export default function AuthPage() {
-  redirect("/connections");
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo') || '/';
+  redirect(`/connections?returnTo=${encodeURIComponent(returnTo)}`);
 }

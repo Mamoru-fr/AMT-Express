@@ -26,20 +26,28 @@ export default async function RootLayout({
   customer?: ReactNode;
   auth?: ReactNode;
 }>) {
+  // Récupérer la session pour le SessionProvider et la gestion des slots
   const session = await auth.api.getSession({ headers: await headers() });
   const { isAuthenticated, isAdmin, isDriver } = await getSessionWithRole();
 
+  // Le Proxy gère déjà les redirections pour les utilisateurs non authentifiés
+  // ou sans les bons rôles. Ici, on affiche simplement le bon slot.
   return (
-    <html lang="en">
+    <html lang="fr">
       <body className={`antialiased`}>
         <I18nProvider>
           <SessionProvider session={session}>
-            {/* Afficher le bon slot en fonction du rôle */}
+            {/* 
+              Parallel Routes :
+              - Si non authentifié : afficher le slot @auth (redirige vers /connections via proxy)
+              - Sinon : afficher le slot correspondant au rôle
+              - Le Proxy a déjà vérifié l'authentification, donc pas besoin de rediriger ici
+            */}
             {!isAuthenticated ? (
               authSlot
-            ) : isAdmin ? (
+            ) : isAdmin && admin ? (
               admin
-            ) : isDriver ? (
+            ) : isDriver && driver ? (
               driver
             ) : (
               customer
