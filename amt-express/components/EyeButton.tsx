@@ -6,7 +6,7 @@
 
 
 import { Eye, EyeOff } from "lucide-react";
-import '@/css/components/eyeButton.css';
+import './eyeButton.module.css';
 
 type Props = {
     isPassword: boolean;

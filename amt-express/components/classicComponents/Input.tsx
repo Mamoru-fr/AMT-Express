@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { EyeButton } from "../EyeButton";
-import { cn } from "@/utils/cn";
-import '@/css/components/classicComponents/input.css';
+import styles from './input.module.css';
 
 type Props = {
     placeholder: string;
@@ -18,13 +17,17 @@ export function Input({ placeholder, className, type, value, onChange, name, req
     const isPassword = type === 'password';
     const inputType = isPassword && showPassword ? 'text' : type;
 
+    // Classe supplémentaire pour le conteneur si c'est un password
+    const containerClassName = isPassword 
+        ? `${styles.inputContainer} ${styles.inputContainerWithIcon}` 
+        : styles.inputContainer;
+
+    console.log(containerClassName);
+
     return (
-        <div className="inputContainer">
+        <div className={containerClassName}>
             <input
-                className={cn(
-                    "input",
-                    className
-                )}
+                className={`${styles.input} ${className || ''}`.trim()}
                 placeholder={placeholder}
                 type={inputType}
                 name={name}
@@ -32,11 +35,13 @@ export function Input({ placeholder, className, type, value, onChange, name, req
                 {...(value !== undefined && { value })}
                 {...(onChange && { onChange: (e) => onChange(e.target.value) })}
             />
-            <EyeButton
-                isPassword={isPassword}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-            />
+            {isPassword && (
+                <EyeButton
+                    isPassword={isPassword}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                />
+            )}
         </div>
     );
 }

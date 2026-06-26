@@ -3,21 +3,31 @@
 .inputContainer {
   position: relative;
   width: 100%;
+  flex-direction: row;
+  display: flex;
+  gap: 0.5rem;
+  border: 2px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  border-radius: 0.5rem;
+  padding-right: 1rem;
 }
 
 .input {
   /* Base styles */
-  width: 100%;
+  flex: 1;
+  border: none;
   padding: 1rem 1rem;
-  padding-right: 3rem;
   font-size: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.5rem;
   outline: none;
-  transition: all 0.3s ease;
-  background-color: #ffffff;
+  transition: border-color 0.3s ease, outline 0.3s ease;
   font-family: inherit;
-  color: #1a1a1a;
+  background-color: transparent;
+}
+
+/* Style pour les inputs de type password (espace pour l'icône EyeButton) */
+.inputContainerWithIcon .input {
+  padding-right: 4rem;
 }
 
 /* Placeholder styling */
@@ -27,9 +37,9 @@
 
 /* Focus state */
 .input:focus {
-  border-color: #3b82f6;
-  ring: 2px;
-  box-shadow: 0 0 0 2px #dbeafe;
+  border-color: none;
+  outline: 2px solid #dbeafe;
+  outline-offset: -2px;
 }
 
 /* Disabled state */
@@ -55,4 +65,3 @@
     border-radius: 0.75rem;
   }
 }
-
