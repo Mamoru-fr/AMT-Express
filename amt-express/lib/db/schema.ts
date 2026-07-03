@@ -1,8 +1,9 @@
 import { pgTable, serial, varchar, timestamp, integer, decimal, boolean, text, pgEnum, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { USER_ROLES } from "@/content/database_types";
 
 // ========== ENUMS ==========
-export const userRoleEnum = pgEnum('user_role', ['admin', 'driver', 'customer']);
+export const userRoleEnum = pgEnum('user_role', USER_ROLES);
 export const rideStatusEnum = pgEnum('ride_status', ['pending', 'assigned', 'completed', 'cancelled']);
 export const shiftStatusEnum = pgEnum('shift_status', ['planned', 'active', 'completed', 'cancelled']);
 export const requestStatusEnum = pgEnum('request_status', ['pending', 'approved', 'rejected']);

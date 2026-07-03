@@ -1,6 +1,6 @@
 // User Types
 
-export type UserRole = 'admin' | 'driver' | 'customer';
+import type { UserRole } from './roles';
 
 export const VEHICLE_TYPE = [
   "sedan",

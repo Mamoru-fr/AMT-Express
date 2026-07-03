@@ -9,6 +9,7 @@ import { Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X, 
 
 // Components
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
+import { StatusBanner } from '@/components/classicComponents/StatusBanner';
 
 // Actions & Types
 import { toggleDriverAvailability, requestRideAssignment, fetchDriverDashboard } from '@/lib/actions/driverDashboardActions';
@@ -34,6 +35,7 @@ export default function DriverDashboardPage() {
   });
   const [requestMessage, setRequestMessage] = useState('');
   const [loadingAction, setLoadingAction] = useState(false);
+  const [feedback, setFeedback] = useState<{ tone: 'info' | 'warning' | 'error' | 'success'; message: string } | null>(null);
 
   // Status classes mapping
   const statusClassByValue = {
@@ -86,9 +88,18 @@ export default function DriverDashboardPage() {
       await toggleDriverAvailability(newStatus);
       setIsAvailable(newStatus);
       await refreshData();
+      setFeedback({
+        tone: 'success',
+        message: newStatus
+          ? t('driverDashboard.available', 'Available')
+          : t('driverDashboard.offline', 'Offline'),
+      });
     } catch (error) {
       console.error('Failed to toggle availability:', error);
-      alert('Failed to update availability');
+      setFeedback({
+        tone: 'error',
+        message: t('driverDashboard.updateAvailabilityFailed', 'Failed to update availability'),
+      });
     } finally {
       setLoadingAction(false);
     }
@@ -102,10 +113,16 @@ export default function DriverDashboardPage() {
       setRequestModal({ open: false, rideId: null });
       setRequestMessage('');
       await refreshData();
-      alert('Ride requested successfully!');
+      setFeedback({
+        tone: 'success',
+        message: t('driverDashboard.requestRideSuccess', 'Ride requested successfully!'),
+      });
     } catch (error) {
       console.error('Failed to request ride:', error);
-      alert('Failed to request ride');
+      setFeedback({
+        tone: 'error',
+        message: t('driverDashboard.requestRideFailed', 'Failed to request ride'),
+      });
     } finally {
       setLoadingAction(false);
     }
@@ -154,6 +171,13 @@ export default function DriverDashboardPage() {
   return (
     <div className={styles.driverDashboard}>
       <div className={styles.driverInner}>
+        {feedback && (
+          <StatusBanner
+            tone={feedback.tone}
+            title={feedback.tone === 'error' ? t('common.error', 'Error') : t('common.status', 'Status')}
+            message={feedback.message}
+          />
+        )}
         {/* Header */}
         <div className={styles.headerBlock}>
           <div>

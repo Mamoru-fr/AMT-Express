@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/classicComponents/Input";
 import { Button } from "@/components/classicComponents/Button";
+import { StatusBanner } from "@/components/classicComponents/StatusBanner";
 import { signin, signup } from "@/lib/actions/signActions";
 import { AlertTriangle, Car } from "lucide-react";
 
@@ -34,6 +35,7 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
     const searchParams = useSearchParams();
     const [view, setView] = useState<View>(() => normalizeView(searchParams.get('view')));
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const error = searchParams.get('error');
@@ -56,7 +58,7 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
     }, [searchParams, t]);
 
     const handleForgotPassword = () => {
-        alert(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));
+        setInfoMessage(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));
     };
 
     return (
@@ -74,10 +76,21 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
             <div className="connections-content-wrapper">
                 <div className="connections-card">
                     {errorMessage && (
-                        <div className="connections-error-message">
-                            <AlertTriangle className="connections-error-icon" />
-                            <p className="connections-error-text">{errorMessage}</p>
-                        </div>
+                        <StatusBanner
+                            tone="error"
+                            title={t('Authentication.ErrorTitle', { defaultValue: 'Authentication failed' })}
+                            message={errorMessage}
+                            className="connections-status-banner"
+                        />
+                    )}
+
+                    {infoMessage && (
+                        <StatusBanner
+                            tone="info"
+                            title={t('Authentication.InfoTitle', { defaultValue: 'Information' })}
+                            message={infoMessage}
+                            className="connections-status-banner"
+                        />
                     )}
 
                     <form

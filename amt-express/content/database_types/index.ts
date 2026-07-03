@@ -2,6 +2,7 @@
 
 // User types
 export * from './user';
+export * from './roles';
 
 // Ride types
 export * from './ride';

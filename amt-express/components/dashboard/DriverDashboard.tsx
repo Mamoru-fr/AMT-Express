@@ -6,6 +6,7 @@ import type {DriverDashboardData} from "@/lib/services/DriverDashboardService";
 import {Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X} from "lucide-react";
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";
 import {useTranslation} from "react-i18next";
+import {StatusBanner} from "@/components/classicComponents/StatusBanner";
 import styles from "./DriverDashboard.module.css";
 
 type Props = {
@@ -22,6 +23,7 @@ export function DriverDashboard({data, onRefresh}: Props) {
     });
     const [requestMessage, setRequestMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [feedback, setFeedback] = useState<{ tone: 'info' | 'warning' | 'error' | 'success'; message: string } | null>(null);
 
     const statusClassByValue = {
         pending: styles.statusPending,
@@ -37,9 +39,18 @@ export function DriverDashboard({data, onRefresh}: Props) {
             await toggleDriverAvailability(newStatus);
             setIsAvailable(newStatus);
             onRefresh?.();
+            setFeedback({
+                tone: 'success',
+                message: newStatus
+                    ? t('driverDashboard.available', 'Available')
+                    : t('driverDashboard.offline', 'Offline'),
+            });
         } catch (error) {
             console.error('Failed to toggle availability:', error);
-            alert('Failed to update availability');
+            setFeedback({
+                tone: 'error',
+                message: t('driverDashboard.updateAvailabilityFailed', 'Failed to update availability'),
+            });
         } finally {
             setLoading(false);
         }
@@ -52,10 +63,16 @@ export function DriverDashboard({data, onRefresh}: Props) {
             setRequestModal({open: false, rideId: null});
             setRequestMessage('');
             onRefresh?.();
-            alert('Ride requested successfully!');
+            setFeedback({
+                tone: 'success',
+                message: t('driverDashboard.requestRideSuccess', 'Ride requested successfully!'),
+            });
         } catch (error) {
             console.error('Failed to request ride:', error);
-            alert('Failed to request ride');
+            setFeedback({
+                tone: 'error',
+                message: t('driverDashboard.requestRideFailed', 'Failed to request ride'),
+            });
         } finally {
             setLoading(false);
         }
@@ -64,6 +81,13 @@ export function DriverDashboard({data, onRefresh}: Props) {
     return (
             <div className={styles.driverDashboard}>
                 <div className={styles.driverInner}>
+                        {feedback && (
+                            <StatusBanner
+                                tone={feedback.tone}
+                                title={feedback.tone === 'error' ? t('common.error', 'Error') : t('common.status', 'Status')}
+                                message={feedback.message}
+                            />
+                        )}
                     {/* Header */}
                     <div className={styles.headerBlock}>
                         <div>
