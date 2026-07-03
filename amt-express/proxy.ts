@@ -29,7 +29,22 @@ export async function proxy(request: NextRequest) {
   // =============================================
   // 2. Récupérer la session et les rôles
   // =============================================
-  const { isAuthenticated, isAdmin, isDriver, session } = await getSessionWithRole();
+  let isAuthenticated = false;
+  let isAdmin = false;
+  let isDriver = false;
+  let session = null;
+
+  try {
+    const sessionResult = await getSessionWithRole();
+    isAuthenticated = sessionResult.isAuthenticated;
+    isAdmin = sessionResult.isAdmin;
+    isDriver = sessionResult.isDriver;
+    session = sessionResult.session;
+  } catch (error) {
+    console.error('Proxy: Failed to get session:', error);
+    // Rediriger vers la page de connexion avec un code d'erreur
+    return NextResponse.redirect(new URL('/connections?error=server_error', request.url));
+  }
 
   // =============================================
   // 3. Définir les paths publics (accessibles sans auth)

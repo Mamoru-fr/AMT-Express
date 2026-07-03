@@ -345,6 +345,14 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
     console.log('\n📂 CSV Ride Import Script\n');
     console.log(`📄 Reading file: ${csvPath}\n`);
     
+    // =============================================
+    // WARNING: This import is NOT atomic!
+    // If an error occurs mid-import, some data may have been inserted
+    // =============================================
+    console.log('⚠️  IMPORTANT: This import operation is NOT transactional.');
+    console.log('⚠️  If an error occurs, some data may be partially imported.');
+    console.log('⚠️  Always test with a backup before running on production data.\n');
+    
     try {
         // Parse CSV
         console.log('📋 Parsing CSV file...');
@@ -601,6 +609,15 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
         
     } catch (error) {
         console.error('❌ Fatal error during import:', error);
+        // Provide guidance on how to recover
+        if (error instanceof Error) {
+            console.error('\n💡 Recovery suggestions:');
+            console.error('   1. Check your CSV file for invalid data');
+            console.error('   2. Verify your database connection');
+            console.error('   3. Some data may have been partially imported.');
+            console.error('   4. Run a backup check: pnpm db:backup');
+            console.error('   5. Review the error above for specific details');
+        }
         throw error;
     }
 }

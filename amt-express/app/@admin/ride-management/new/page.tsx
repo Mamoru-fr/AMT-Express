@@ -138,11 +138,14 @@ export default function NewRidePage() {
         setLoading(true);
 
         try {
+            // Convert price to number for the schema
+            const priceNumber = price ? parseFloat(price) : undefined;
+            
             const result = await createRide({
                 departure: departure.trim(),
                 destination: destination.trim(),
                 departureTime: departureDate,
-                price: price || '0',
+                price: priceNumber,
                 status,
                 driverId: driverId || undefined,
                 customerIds: selectedCustomers,
