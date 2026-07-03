@@ -68,7 +68,7 @@ export function validateSignIn(input: unknown): { success: boolean; data?: SignI
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -82,6 +82,6 @@ export function validateSignUp(input: unknown): { success: boolean; data?: SignU
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }

@@ -13,28 +13,27 @@ import db from '@/lib/db/drizzle';
 import * as schema from '@/lib/db/schema';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { format } from 'date-fn';
 
 // Define all tables from schema
 const tables = {
-    users,
-    drivers,
-    productions,
-    projects,
-    rides,
-    shiftPlanning,
-    rideOptions,
-    rideSelectedOptions,
-    rideCustomers,
-    assignmentRequests,
-    invoices,
-    invoiceItems,
-    notifications,
-    notificationPreferences,
-    activityLogs,
-    session,
-    account,
-    verification,
+    users: schema.users,
+    drivers: schema.drivers,
+    productions: schema.productions,
+    projects: schema.projects,
+    rides: schema.rides,
+    shiftPlanning: schema.shiftPlanning,
+    rideOptions: schema.rideOptions,
+    rideSelectedOptions: schema.rideSelectedOptions,
+    rideCustomers: schema.rideCustomers,
+    assignmentRequests: schema.assignmentRequests,
+    invoices: schema.invoices,
+    invoiceItems: schema.invoiceItems,
+    notifications: schema.notifications,
+    notificationPreferences: schema.notificationPreferences,
+    activityLogs: schema.activityLogs,
+    session: schema.session,
+    account: schema.account,
+    verification: schema.verification,
 } as const;
 
 // Type for table names
@@ -52,7 +51,7 @@ async function backupDatabase() {
         }
         
         // Generate filename with timestamp
-        const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const filename = join(backupsDir, `db_backup_${timestamp}.json`);
         
         console.log(`💾 Backing up to: ${filename}`);

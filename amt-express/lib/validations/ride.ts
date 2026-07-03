@@ -19,7 +19,8 @@ export const CreateRideSchema = z.object({
       const date = new Date(val);
       if (isNaN(date.getTime())) {
         ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid date format',
         });
         return z.NEVER;
       }
@@ -77,7 +78,8 @@ export const UpdateRideDetailsSchema = z.object({
       const date = new Date(val);
       if (isNaN(date.getTime())) {
         ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid date format',
         });
         return z.NEVER;
       }
@@ -178,7 +180,7 @@ export function validateRideId(input: unknown): { success: boolean; data?: RideI
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -192,7 +194,7 @@ export function validateCreateRide(input: unknown): { success: boolean; data?: C
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -206,7 +208,7 @@ export function validateUpdateRide(input: unknown): { success: boolean; data?: U
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -220,7 +222,7 @@ export function validateAssignDriver(input: unknown): { success: boolean; data?:
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -234,7 +236,7 @@ export function validateRideFilters(input: unknown): { success: boolean; data?: 
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }
 
@@ -248,6 +250,6 @@ export function validateToggleDriverAvailability(input: unknown): { success: boo
   }
   return {
     success: false,
-    error: result.error.errors.map(e => e.message).join(', '),
+    error: result.error.issues.map(e => e.message).join(', '),
   };
 }

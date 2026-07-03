@@ -3,104 +3,72 @@
 import {RidesViewController} from '@/lib/controllers/RidesViewController';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RideWithRelations} from '@/content/database_types/ride';
-import {requireRole} from '@/lib/middleware/roleMiddleware';
-import {validateCsrfToken} from '@/lib/middleware/csrfMiddleware';
+import {verifyAuth} from '@/lib/middleware/roleMiddleware';
 
 /**
  * Rides View Actions - Server Actions sécurisées
- * - Vérifie les permissions selon le rôle
- * - Vérifie le token CSRF
+ * - Vérifie que l'utilisateur est authentifié
  * - Délègue au RidesViewController
  */
 
-/**
- * Fetch driver rides count
- * @returns ActionResponse with rides count or error
- */
 export async function fetchDriverRidesCount(): Promise<ActionResponse<{completed: number, pending: number}>> {
-  // Verify driver role
-  const roleCheck = await requireRole('driver');
-  if (!roleCheck.success) {
+  const sessionCheck = await verifyAuth();
+  if (!sessionCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: sessionCheck.error || 'Unauthorized access',
+      code: sessionCheck.code,
     };
   }
-
-  return RidesViewController.fetchDriverRidesCount();
+    return RidesViewController.fetchDriverRidesCount();
 }
 
-/**
- * Fetch driver completed rides
- * @returns ActionResponse with rides list or error
- */
 export async function fetchDriverCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  // Verify driver role
-  const roleCheck = await requireRole('driver');
-  if (!roleCheck.success) {
+  const sessionCheck = await verifyAuth();
+  if (!sessionCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: sessionCheck.error || 'Unauthorized access',
+      code: sessionCheck.code,
     };
   }
-
-  return RidesViewController.fetchDriverCompletedRides();
+    return RidesViewController.fetchDriverCompletedRides();
 }
 
-/**
- * Fetch driver assigned rides
- * @returns ActionResponse with rides list or error
- */
 export async function fetchDriverAssignedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  // Verify driver role
-  const roleCheck = await requireRole('driver');
-  if (!roleCheck.success) {
+  const sessionCheck = await verifyAuth();
+  if (!sessionCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: sessionCheck.error || 'Unauthorized access',
+      code: sessionCheck.code,
     };
   }
-
-  return RidesViewController.fetchDriverAssignedRides();
+    return RidesViewController.fetchDriverAssignedRides();
 }
 
-/**
- * Fetch pending rides (for drivers)
- * @returns ActionResponse with rides list or error
- */
 export async function fetchPendingRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  // Verify driver role
-  const roleCheck = await requireRole('driver');
-  if (!roleCheck.success) {
+  const sessionCheck = await verifyAuth();
+  if (!sessionCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: sessionCheck.error || 'Unauthorized access',
+      code: sessionCheck.code,
     };
   }
-
-  return RidesViewController.fetchPendingRides();
+    return RidesViewController.fetchPendingRides();
 }
 
-/**
- * Fetch customer rides
- * @returns ActionResponse with rides list or error
- */
 export async function fetchCustomerRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  // Verify customer role
-  const roleCheck = await requireRole('customer');
-  if (!roleCheck.success) {
+  const sessionCheck = await verifyAuth();
+  if (!sessionCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: sessionCheck.error || 'Unauthorized access',
+      code: sessionCheck.code,
     };
   }
-
-  return RidesViewController.fetchCustomerRides();
+    return RidesViewController.fetchCustomerRides();
 }
 
 // Aliases for backward compatibility
@@ -109,5 +77,5 @@ export async function fetchCustomerCompletedRides(): Promise<ActionResponse<Ride
 }
 
 export async function fetchCustomerRequestedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  return fetchCustomerRides();
+    return fetchCustomerRides();
 }

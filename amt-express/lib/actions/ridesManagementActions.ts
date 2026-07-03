@@ -3,66 +3,60 @@
 import {RidesManagementController} from '@/lib/controllers/RidesManagementController';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RideStatus, RideWithRelations} from '@/content/database_types/ride';
-import type {RideFilters, RidesManagementData} from '@/lib/services/RidesManagementService';
-import {requireRole} from '@/lib/middleware/roleMiddleware';
 import {validateCsrfToken} from '@/lib/middleware/csrfMiddleware';
-import {
-  validateRideFilters,
-  validateCreateRide,
-  validateUpdateRide,
-  validateAssignDriver,
-  validateRideId,
-  RideFiltersInput,
-  CreateRideInput,
-  UpdateRideDetailsInput,
-  AssignDriverInput,
-  RideIdInput,
-} from '@/lib/validations/ride';
+import {requireRole} from '@/lib/middleware/roleMiddleware';
+import {validateRideId, validateCreateRide, validateUpdateRide, validateAssignDriver} from '@/lib/validations/ride';
+import type {RideFilters, RidesManagementData} from '@/lib/services/RidesManagementService';
 
 /**
  * Rides Management Actions - Server Actions sécurisées
  * - Valide les inputs avec Zod
- * - Vérifie les permissions (rôle admin requis)
  * - Vérifie le token CSRF
+ * - Vérifie les rôles utilisateur (admin uniquement)
  * - Délègue au RidesManagementController
  */
 
-/**
- * Fetch rides for management with filters
- * @param filters - Filter criteria
- * @returns ActionResponse with rides data or error
- */
-export async function fetchRidesForManagement(filters: RideFiltersInput = {}): Promise<ActionResponse<RidesManagementData>> {
-  // Validate filters
-  const validation = validateRideFilters(filters);
-  if (!validation.success) {
-    return {
-      success: false,
-      error: validation.error || 'Invalid input',
-      code: ErrorCodes.VALIDATION_ERROR,
-    };
-  }
-
-  // Verify admin role
+// Re-export types for backward compatibility
+// Note: Types are now imported directly from RidesManagementService
+export async function fetchRidesForManagement(filters: any = {}): Promise<ActionResponse<RidesManagementData>> {
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
-  return RidesManagementController.fetchRidesForManagement(validation.data);
+  return RidesManagementController.fetchRidesForManagement(filters);
 }
 
 /**
  * Create a new ride
- * @param data - Ride creation data
+ * @param data - Ride data
  * @param csrfToken - CSRF token for form protection
- * @returns ActionResponse with new ride ID or error
+ * @returns ActionResponse with new ride ID
  */
-export async function createRide(data: CreateRideInput, csrfToken?: string): Promise<ActionResponse<number>> {
+export async function createRide(data: {
+    departureTime: Date;
+    customerIds: string[];
+    departure: string;
+    destination: string;
+    driverId?: string;
+    price?: string | number;
+    status?: RideStatus;
+}, csrfToken?: string): Promise<ActionResponse<number>> {
+  // Verify user is an admin
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) {
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
+  }
+
   // Validate CSRF token if provided
   if (csrfToken) {
     const csrfCheck = await validateCsrfToken(csrfToken);
@@ -75,41 +69,58 @@ export async function createRide(data: CreateRideInput, csrfToken?: string): Pro
     }
   }
 
-  // Validate input
-  const validation = validateCreateRide(data);
-  if (!validation.success) {
+  // Validate input - ensure price is a number for validation
+  const rideData = {
+    ...data,
+    price: data.price !== undefined ? (typeof data.price === 'string' ? parseFloat(data.price) : data.price) : undefined
+  };
+  const validation = validateCreateRide(rideData);
+  if (!validation.success || !validation.data) {
     return {
       success: false,
-      error: validation.error || 'Invalid input',
+      error: validation.error || 'Invalid ride data',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Verify admin role
-  const roleCheck = await requireRole('admin');
-  if (!roleCheck.success) {
-    return {
-      success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
-    };
-  }
+  // Convert back to string for controller
+  const validatedData = {
+    ...validation.data,
+    price: validation.data.price?.toString()
+  };
 
-  return RidesManagementController.createRide(validation.data);
+  return RidesManagementController.createRide(validatedData);
 }
 
 /**
  * Update ride details
- * @param rideId - Ride ID to update
+ * @param rideId - Ride ID
  * @param data - Updated ride data
  * @param csrfToken - CSRF token for form protection
- * @returns ActionResponse with success or error
+ * @returns ActionResponse
  */
 export async function updateRideDetails(
     rideId: number,
-    data: UpdateRideDetailsInput,
+    data: {
+        departure?: string;
+        destination?: string;
+        departureTime?: Date;
+        price?: string;
+        status?: RideStatus;
+        customerNotes?: string;
+    },
     csrfToken?: string
 ): Promise<ActionResponse<void>> {
+  // Verify user is an admin
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) {
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
+  }
+
   // Validate CSRF token if provided
   if (csrfToken) {
     const csrfCheck = await validateCsrfToken(csrfToken);
@@ -127,42 +138,52 @@ export async function updateRideDetails(
   if (!rideIdValidation.success) {
     return {
       success: false,
-      error: rideIdValidation.error,
+      error: rideIdValidation.error || 'Invalid ride ID',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Validate update data
-  const validation = validateUpdateRide({ rideId, ...data });
-  if (!validation.success) {
+  // Validate update data - ensure price is a number for validation
+  const updateData = {
+    ...data,
+    price: data.price !== undefined ? (typeof data.price === 'string' ? parseFloat(data.price) : data.price) : undefined
+  };
+  const validation = validateUpdateRide(updateData);
+  if (!validation.success || !validation.data) {
     return {
       success: false,
-      error: validation.error || 'Invalid input',
+      error: validation.error || 'Invalid update data',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Verify admin role
-  const roleCheck = await requireRole('admin');
-  if (!roleCheck.success) {
-    return {
-      success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
-    };
-  }
+  // Convert back to string for controller
+  const validatedData = {
+    ...validation.data,
+    price: validation.data.price?.toString()
+  };
 
-  return RidesManagementController.updateRideDetails(rideId, validation.data);
+  return RidesManagementController.updateRideDetails(rideId, validatedData);
 }
 
 /**
  * Assign a driver to a ride
- * @param rideId - Ride ID to assign driver to
+ * @param rideId - Ride ID
  * @param driverId - Driver ID to assign
  * @param csrfToken - CSRF token for form protection
- * @returns ActionResponse with success or error
+ * @returns ActionResponse
  */
 export async function assignDriverToRide(rideId: number, driverId: string, csrfToken?: string): Promise<ActionResponse<void>> {
+  // Verify user is an admin
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) {
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
+  }
+
   // Validate CSRF token if provided
   if (csrfToken) {
     const csrfCheck = await validateCsrfToken(csrfToken);
@@ -177,34 +198,34 @@ export async function assignDriverToRide(rideId: number, driverId: string, csrfT
 
   // Validate input
   const validation = validateAssignDriver({ rideId, driverId });
-  if (!validation.success) {
+  if (!validation.success || !validation.data) {
     return {
       success: false,
-      error: validation.error || 'Invalid input',
+      error: validation.error || 'Invalid assignment data',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Verify admin role
-  const roleCheck = await requireRole('admin');
-  if (!roleCheck.success) {
-    return {
-      success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
-    };
-  }
-
-  return RidesManagementController.assignDriverToRide(validation.data!.rideId, validation.data! // @ts-ignore.driverId);
+  return RidesManagementController.assignDriverToRide(validation.data.rideId, validation.data.driverId);
 }
 
 /**
  * Cancel a ride
  * @param rideId - Ride ID to cancel
  * @param csrfToken - CSRF token for form protection
- * @returns ActionResponse with success or error
+ * @returns ActionResponse
  */
 export async function cancelRide(rideId: number, csrfToken?: string): Promise<ActionResponse<void>> {
+  // Verify user is an admin
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) {
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
+  }
+
   // Validate CSRF token if provided
   if (csrfToken) {
     const csrfCheck = await validateCsrfToken(csrfToken);
@@ -219,34 +240,34 @@ export async function cancelRide(rideId: number, csrfToken?: string): Promise<Ac
 
   // Validate ride ID
   const validation = validateRideId({ rideId });
-  if (!validation.success) {
+  if (!validation.success || !validation.data) {
     return {
       success: false,
-      error: validation.error || 'Invalid input',
+      error: validation.error || 'Invalid ride ID',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Verify admin role
-  const roleCheck = await requireRole('admin');
-  if (!roleCheck.success) {
-    return {
-      success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
-    };
-  }
-
-  return RidesManagementController.cancelRide(validation.data! // @ts-ignore.rideId);
+  return RidesManagementController.cancelRide(validation.data.rideId);
 }
 
 /**
- * Delete a ride permanently
+ * Delete a ride
  * @param rideId - Ride ID to delete
  * @param csrfToken - CSRF token for form protection
- * @returns ActionResponse with success or error
+ * @returns ActionResponse
  */
 export async function deleteRide(rideId: number, csrfToken?: string): Promise<ActionResponse<void>> {
+  // Verify user is an admin
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) {
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
+  }
+
   // Validate CSRF token if provided
   if (csrfToken) {
     const csrfCheck = await validateCsrfToken(csrfToken);
@@ -261,122 +282,93 @@ export async function deleteRide(rideId: number, csrfToken?: string): Promise<Ac
 
   // Validate ride ID
   const validation = validateRideId({ rideId });
-  if (!validation.success) {
+  if (!validation.success || !validation.data) {
     return {
       success: false,
-      error: validation.error || 'Invalid input',
+      error: validation.error || 'Invalid ride ID',
       code: ErrorCodes.VALIDATION_ERROR,
     };
   }
 
-  // Verify admin role
-  const roleCheck = await requireRole('admin');
-  if (!roleCheck.success) {
-    return {
-      success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
-    };
-  }
-
-  return RidesManagementController.deleteRide(validation.data! // @ts-ignore.rideId);
+  return RidesManagementController.deleteRide(validation.data.rideId);
 }
 
-/**
- * Fetch all available drivers
- * @returns ActionResponse with drivers list or error
- */
 export async function fetchAvailableDrivers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
-  // Verify admin role
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
   return RidesManagementController.fetchAvailableDrivers();
 }
 
-/**
- * Export rides to CSV
- * @param filters - Filter criteria for export
- * @returns ActionResponse with CSV data or error
- */
-export async function exportRidesToCSV(filters: RideFiltersInput = {}): Promise<ActionResponse<string>> {
-  // Validate filters
-  const validation = validateRideFilters(filters);
-  if (!validation.success) {
-    return {
-      success: false,
-      error: validation.error || 'Invalid input',
-      code: ErrorCodes.VALIDATION_ERROR,
-    };
-  }
-
-  // Verify admin role
+export async function exportRidesToCSV(filters: any = {}, csrfToken?: string): Promise<ActionResponse<string>> {
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
-  return RidesManagementController.exportRidesToCSV(validation.data);
+  // Validate CSRF token if provided
+  if (csrfToken) {
+    const csrfCheck = await validateCsrfToken(csrfToken);
+    if (!csrfCheck.success) {
+      return {
+        success: false,
+        error: csrfCheck.error || 'Invalid CSRF token',
+        code: ErrorCodes.UNAUTHORIZED,
+      };
+    }
+  }
+
+  return RidesManagementController.exportRidesToCSV(filters);
 }
 
-/**
- * Fetch all customers
- * @returns ActionResponse with customers list or error
- */
 export async function fetchAllCustomers(): Promise<ActionResponse<Array<{id: string, name: string, email: string}>>> {
-  // Verify admin role
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
   return RidesManagementController.fetchAllCustomers();
 }
 
-/**
- * Fetch all productions
- * @returns ActionResponse with productions list or error
- */
 export async function fetchAllProductions(): Promise<ActionResponse<Array<{id: string, name: string}>>> {
-  // Verify admin role
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
   return RidesManagementController.fetchAllProductions();
 }
 
-/**
- * Fetch all projects
- * @returns ActionResponse with projects list or error
- */
 export async function fetchAllProjects(): Promise<ActionResponse<Array<{id: string, name: string, productionId: string | null}>>> {
-  // Verify admin role
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
     return {
       success: false,
-      error: roleCheck.error,
-      code: roleCheck.code,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
     };
   }
 
