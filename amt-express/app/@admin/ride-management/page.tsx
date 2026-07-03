@@ -1,11 +1,5 @@
 'use client'
 
-// Metadata (doit rester en haut pour Next.js)
-export const metadata = {
-    title: "Ride Management | AMT Express",
-    description: "Manage all platform rides"
-};
-
 // Import des dépendances nécessaires
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -28,6 +22,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSessionWithRole } from "@/context/SessionContext";
 import { redirect } from "next/navigation";
+import { StatusBanner } from "@/components/classicComponents/StatusBanner";
 
 // Import des modals et composants locaux
 import { EditRideModal } from "@/components/admin/rideManagement/EditRideModal";
@@ -55,6 +50,7 @@ export default function RideManagementPage() {
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isAdvancedSortModalOpen, setIsAdvancedSortModalOpen] = useState(false);
+    const [feedback, setFeedback] = useState<{ tone: 'info' | 'warning' | 'error' | 'success'; message: string } | null>(null);
 
     type SortRule = {
         column: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
@@ -373,6 +369,7 @@ export default function RideManagementPage() {
             const csv = await exportRidesToCSV(filters);
             if (!csv.success) {
                 console.error('Failed to export CSV:', csv.error);
+                setFeedback({ tone: 'error', message: csv.error || t('ridesManagement.exportFailed', 'Failed to export CSV') });
             } else {
                 const blob = new Blob([csv.data], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
@@ -381,10 +378,11 @@ export default function RideManagementPage() {
                 a.download = `rides-export-${new Date().toISOString().split('T')[0]}.csv`;
                 a.click();
                 URL.revokeObjectURL(url);
+                setFeedback({ tone: 'success', message: t('ridesManagement.exportSuccess', 'CSV exported successfully') });
             }
         } catch (error) {
             console.error('Failed to export CSV:', error);
-            alert('Failed to export CSV');
+            setFeedback({ tone: 'error', message: t('ridesManagement.exportFailed', 'Failed to export CSV') });
         }
     };
 
@@ -393,9 +391,10 @@ export default function RideManagementPage() {
             await updateRideDetails(ride.id, updates);
             setEditModal({ open: false, ride: null });
             loadRides();
+            setFeedback({ tone: 'success', message: t('ridesManagement.updateSuccess', 'Ride updated successfully') });
         } catch (error) {
             console.error('Failed to update ride:', error);
-            alert('Failed to update ride');
+            setFeedback({ tone: 'error', message: t('ridesManagement.updateFailed', 'Failed to update ride') });
         }
     };
 
@@ -404,9 +403,10 @@ export default function RideManagementPage() {
             await assignDriverToRide(rideId, driverId);
             setAssignModal({ open: false, ride: null });
             loadRides();
+            setFeedback({ tone: 'success', message: t('ridesManagement.assignSuccess', 'Driver assigned successfully') });
         } catch (error) {
             console.error('Failed to assign driver:', error);
-            alert('Failed to assign driver');
+            setFeedback({ tone: 'error', message: t('ridesManagement.assignFailed', 'Failed to assign driver') });
         }
     };
 
@@ -414,9 +414,10 @@ export default function RideManagementPage() {
         try {
             await cancelRide(rideId);
             loadRides();
+            setFeedback({ tone: 'success', message: t('ridesManagement.cancelSuccess', 'Ride cancelled successfully') });
         } catch (error) {
             console.error('Failed to cancel ride:', error);
-            alert('Failed to cancel ride');
+            setFeedback({ tone: 'error', message: t('ridesManagement.cancelFailed', 'Failed to cancel ride') });
         }
     };
 
@@ -425,9 +426,10 @@ export default function RideManagementPage() {
             await deleteRide(rideId);
             setDeleteModal({ open: false, rideId: null });
             loadRides();
+            setFeedback({ tone: 'success', message: t('ridesManagement.deleteSuccess', 'Ride deleted successfully') });
         } catch (error) {
             console.error('Failed to delete ride:', error);
-            alert('Failed to delete ride');
+            setFeedback({ tone: 'error', message: t('ridesManagement.deleteFailed', 'Failed to delete ride') });
         }
     };
 
@@ -468,6 +470,15 @@ export default function RideManagementPage() {
         <AdminNavigationShell>
             <div className={styles.pageShell}>
                 <div className={styles.pageInner}>
+                    {feedback && (
+                        <div className={styles.feedbackWrapper}>
+                            <StatusBanner
+                                tone={feedback.tone}
+                                title={feedback.tone === 'error' ? t('common.error', 'Error') : t('common.status', 'Status')}
+                                message={feedback.message}
+                            />
+                        </div>
+                    )}
                     <section className={styles.hero}>
                         <div className={styles.heroTop}>
                             <div>

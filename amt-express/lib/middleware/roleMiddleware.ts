@@ -12,6 +12,18 @@ export type RoleCheckResult = ActionResponse<{session: any; user: any}>;
  * Vérifie que l'utilisateur a le rôle requis
  * @param requiredRole - Rôle nécessaire ('admin' | 'driver' | 'customer')
  * @returns RoleCheckResult avec {session, user} dans data si OK, sinon ActionResponse d'erreur
+ * @alias verifyRole
+ */
+export async function requireRole(
+    requiredRole: UserRole
+): Promise<RoleCheckResult> {
+  return verifyRole(requiredRole);
+}
+
+/**
+ * Vérifie que l'utilisateur a le rôle requis
+ * @param requiredRole - Rôle nécessaire ('admin' | 'driver' | 'customer')
+ * @returns RoleCheckResult avec {session, user} dans data si OK, sinon ActionResponse d'erreur
  */
 export async function verifyRole(
     requiredRole: UserRole

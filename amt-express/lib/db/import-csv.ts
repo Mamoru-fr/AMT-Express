@@ -12,6 +12,7 @@ import { rides, rideCustomers, users, productions, projects, drivers } from './s
 import { readFileSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { and, eq } from 'drizzle-orm';
+import { maskSensitive, safeLog, safeError, safeWarn } from '../utils/logger';
 import 'dotenv/config';
 
 interface CSVRow {
@@ -90,7 +91,7 @@ function parseDate(dateStr: string, timeStr: string): Date | null {
         
         return isNaN(date.getTime()) ? null : date;
     } catch (e) {
-        console.error(`Error parsing date: ${dateStr}`, e);
+        safeError(`Error parsing date: ${maskSensitive(dateStr)}`, e);
         return null;
     }
 }
@@ -138,7 +139,7 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
         
         // Expected 16 columns (forfait column was removed in newer CSV format)
         if (parts.length < 16) {
-            console.warn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/16)`);
+            safeWarn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/16)`);
             continue;
         }
         
@@ -197,7 +198,7 @@ async function getOrCreateDriver(accountingCode: string, driverName: string) {
                 .set({ accountingCode: accountingCode })
                 .where(eq(drivers.id, existingDriverForUser[0].id));
             
-            console.log(`  🔄 Updated driver: ${driverName} with new accounting code ${accountingCode}`);
+            safeLog(`  🔄 Updated driver: ${maskSensitive(driverName)} with new accounting code ${maskSensitive(accountingCode)}`);
             return existingDriverByName[0].id;
         }
 
@@ -209,7 +210,7 @@ async function getOrCreateDriver(accountingCode: string, driverName: string) {
             available: true,
         });
 
-        console.log(`  ➕ Created driver profile for existing user: ${driverName} (${accountingCode})`);
+        safeLog(`  ➕ Created driver profile for existing user: ${maskSensitive(driverName)} (${maskSensitive(accountingCode)})`);
         return existingDriverByName[0].id;
     }
 
@@ -235,7 +236,7 @@ async function getOrCreateDriver(accountingCode: string, driverName: string) {
         });
     });
 
-    console.log(`  ➕ Created driver: ${driverName} (${accountingCode})`);
+    safeLog(`  ➕ Created driver: ${maskSensitive(driverName)} (${maskSensitive(accountingCode)})`);
     return userId;
 }
 
@@ -277,7 +278,7 @@ async function getOrCreateProduction(productionName: string) {
         contactEmail: email,
     });
 
-    console.log(`  ➕ Created production: ${productionName} with generic project`);
+    safeLog(`  ➕ Created production: ${maskSensitive(productionName)} with generic project`);
     return productionId;
 }
 
@@ -306,7 +307,7 @@ async function getOrCreateProject(projectName: string, productionId: string) {
         endDate: new Date(),
     });
 
-    console.log(`  ➕ Created project: ${projectName}`);
+    safeLog(`  ➕ Created project: ${maskSensitive(projectName)}`);
     return projectId;
 }
 
@@ -337,13 +338,21 @@ async function getOrCreateCustomer(customerName: string) {
         emailVerified: false,
     });
 
-    console.log(`  ➕ Created customer: ${mainName}`);
+    safeLog(`  ➕ Created customer: ${maskSensitive(mainName)}`);
     return customerId;
 }
 
 async function importCSV(csvPath: string): Promise<ImportSummary> {
     console.log('\n📂 CSV Ride Import Script\n');
     console.log(`📄 Reading file: ${csvPath}\n`);
+    
+    // =============================================
+    // WARNING: This import is NOT atomic!
+    // If an error occurs mid-import, some data may have been inserted
+    // =============================================
+    console.log('⚠️  IMPORTANT: This import operation is NOT transactional.');
+    console.log('⚠️  If an error occurs, some data may be partially imported.');
+    console.log('⚠️  Always test with a backup before running on production data.\n');
     
     try {
         // Parse CSV
@@ -392,7 +401,7 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
         // Process each row
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            console.log(`\n[${i + 1}/${rows.length}] Processing ride: ${row.nom || 'Unnamed'}`);
+            safeLog(`\n[${i + 1}/${rows.length}] Processing ride: ${maskSensitive(row.nom || 'Unnamed')}`);
             
             try {
                 // // Skip cancelled rides
@@ -543,11 +552,11 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                 // Mark this ride as imported (add to duplicate check set)
                 importedRides.add(rideHash);
                 
-                console.log(`  ✅ Imported: ${row.depart} → ${row.arrivee} (€${finalPrice.toFixed(2)})`);
+                safeLog(`  ✅ Imported: ${maskSensitive(row.depart)} → ${maskSensitive(row.arrivee)} (€${finalPrice.toFixed(2)})`);
                 successCount++;
                 
             } catch (error) {
-                console.error(`  ❌ Error:`, error);
+                safeError(`  ❌ Error:`, error);
                 skippedRides.push({row: i + 1, name: row.nom || 'Unnamed', reason: `Error: ${error}`});
                 errorCount++;
             }
@@ -600,7 +609,16 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
         };
         
     } catch (error) {
-        console.error('❌ Fatal error during import:', error);
+        safeError('❌ Fatal error during import:', error);
+        // Provide guidance on how to recover
+        if (error instanceof Error) {
+            safeError('\n💡 Recovery suggestions:');
+            safeError('   1. Check your CSV file for invalid data');
+            safeError('   2. Verify your database connection');
+            safeError('   3. Some data may have been partially imported.');
+            safeError('   4. Run a backup check: pnpm db:backup');
+            safeError('   5. Review the error above for specific details');
+        }
         throw error;
     }
 }

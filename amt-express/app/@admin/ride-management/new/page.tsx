@@ -38,7 +38,7 @@ export default function NewRidePage() {
     const {t} = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const returnTo = searchParams.get('returnTo') || '/admin/ride-management';
+    const returnTo = searchParams.get('returnTo') || '/ride-management';
 
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
@@ -138,11 +138,14 @@ export default function NewRidePage() {
         setLoading(true);
 
         try {
+            // Convert price to number for the schema
+            const priceNumber = price ? parseFloat(price) : undefined;
+            
             const result = await createRide({
                 departure: departure.trim(),
                 destination: destination.trim(),
                 departureTime: departureDate,
-                price: price || '0',
+                price: priceNumber,
                 status,
                 driverId: driverId || undefined,
                 customerIds: selectedCustomers,

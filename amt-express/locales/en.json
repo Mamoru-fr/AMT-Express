@@ -151,6 +151,10 @@
         "driver": "Driver",
         "price": "Price (€)",
         "status": "Status",
+        "pending": "Pending",
+        "assigned": "Assigned",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
         "actions": "Actions",
         "location": "Location",
         "details": "Ride Details",
@@ -272,5 +276,26 @@
     },
     "statusPieChart": {
         "title": "Rides by Status"
+    },
+    "dashboard": {
+        "loading": "Loading dashboard...",
+        "error": {
+            "title": "Dashboard Error",
+            "subtitle": "Something went wrong while loading your view.",
+            "message": "Error loading dashboard"
+        }
+    },
+    "customerDashboard": {
+        "title": "My Customer Space",
+        "subtitle": "Track your rides and history",
+        "totalRides": "Total rides",
+        "pendingRides": "Pending",
+        "completedRides": "Completed",
+        "upcomingRides": "Upcoming rides",
+        "completedCount": "Completed rides",
+        "pendingCount": "Pending rides",
+        "uniqueDrivers": "Unique drivers",
+        "myRides": "My rides",
+        "ridesDescription": "View your ride history and track your current bookings"
     }
 }

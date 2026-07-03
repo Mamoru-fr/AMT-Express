@@ -8,9 +8,10 @@ type Props = {
     onClick?: () => void;
     type?: 'button' | 'submit' | 'reset';
     disabled?: boolean;
+    'aria-label'?: string;
 }
 
-export function Button({ content, className, variant = 'primary', onClick, type = 'button', disabled = false }: Props) {
+export function Button({ content, className, variant = 'primary', onClick, type = 'button', disabled = false, 'aria-label': ariaLabel }: Props) {
     const variantClass = variant === 'primary' ? styles.buttonPrimary : styles.buttonSecondary;
     
     return (
@@ -23,6 +24,7 @@ export function Button({ content, className, variant = 'primary', onClick, type 
                 className
             )}
             onClick={onClick}
+            aria-label={ariaLabel}
         >
             {content}
         </button>

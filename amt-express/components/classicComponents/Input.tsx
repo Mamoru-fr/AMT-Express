@@ -22,8 +22,6 @@ export function Input({ placeholder, className, type, value, onChange, name, req
         ? `${styles.inputContainer} ${styles.inputContainerWithIcon}` 
         : styles.inputContainer;
 
-    console.log(containerClassName);
-
     return (
         <div className={containerClassName}>
             <input

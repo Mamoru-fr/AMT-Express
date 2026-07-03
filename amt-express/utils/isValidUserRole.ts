@@ -10,7 +10,7 @@
  * - 'customer': Can book rides
  */
 
-import {SessionWithUser, UserRole} from "@/content/database_types";
+import {SessionWithUser, UserRole, USER_ROLES} from "@/content/database_types";
 
 /**
  * Type guard to check if a string is a valid UserRole
@@ -30,7 +30,7 @@ import {SessionWithUser, UserRole} from "@/content/database_types";
  * }
  */
 export function isValidUserRole(role: string): role is UserRole {
-  return ['admin', 'driver', 'customer'].includes(role);
+  return USER_ROLES.includes(role as UserRole);
 }
 
 /**

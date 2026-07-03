@@ -89,7 +89,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
     }, [productionId, projects, projectId]);
 
     const selectedProduction = productions.find(production => production.id === productionId) || null;
-    const fallbackReturnTo = returnTo || '/admin/ride-management';
+    const fallbackReturnTo = returnTo || '/ride-management';
 
     const goBack = () => {
         if (mode === 'page') {
@@ -162,11 +162,14 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
         setLoading(true);
 
         try {
+            // Convert price to number for the schema
+            const priceNumber = price ? parseFloat(price) : undefined;
+            
             const result = await createRide({
                 departure: departure.trim(),
                 destination: destination.trim(),
                 departureTime: departureDate,
-                price: price || '0',
+                price: priceNumber,
                 status,
                 driverId: driverId || undefined,
                 customerIds: selectedCustomers,
@@ -277,34 +280,40 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
-                                        <label className={styles.formLabel}>
+                                        <label htmlFor="departure" className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconGreen} />
                                             {t('ridesManagement.departure', 'Departure')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
+                                            id="departure"
                                             type="text"
                                             value={departure}
                                             onChange={(e) => setDeparture(e.target.value)}
                                             placeholder={t('ridesManagement.departurePlaceholder', 'E.g., 123 Main St, Paris')}
                                             className={styles.formInput}
                                             required
+                                            aria-required="true"
+                                            aria-label={t('ridesManagement.departure', 'Departure')}
                                         />
                                     </div>
 
                                     <div className={styles.formGroup}>
-                                        <label className={styles.formLabel}>
+                                        <label htmlFor="destination" className={styles.formLabel}>
                                             <MapPin className={styles.formLabelIconRed} />
                                             {t('ridesManagement.destination', 'Destination')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
+                                            id="destination"
                                             type="text"
                                             value={destination}
                                             onChange={(e) => setDestination(e.target.value)}
                                             placeholder={t('ridesManagement.destinationPlaceholder', 'E.g., 456 Park Ave, Lyon')}
                                             className={styles.formInput}
                                             required
+                                            aria-required="true"
+                                            aria-label={t('ridesManagement.destination', 'Destination')}
                                         />
                                     </div>
                                 </div>
@@ -317,26 +326,30 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                 </div>
                                 <div className={styles.formSectionGrid}>
                                     <div className={styles.formGroup}>
-                                        <label className={styles.formLabel}>
+                                        <label htmlFor="departureTime" className={styles.formLabel}>
                                             <Clock className={styles.formLabelIconBlue} />
                                             {t('ridesManagement.departureTime', 'Departure Time')}
                                             <span className={styles.formLabelRequired}>*</span>
                                         </label>
                                         <input
+                                            id="departureTime"
                                             type="datetime-local"
                                             value={departureTime}
                                             onChange={(e) => setDepartureTime(e.target.value)}
                                             className={styles.formInput}
                                             required
+                                            aria-required="true"
+                                            aria-label={t('ridesManagement.departureTime', 'Departure Time')}
                                         />
                                     </div>
 
                                     <div className={styles.formGroup}>
-                                        <label className={styles.formLabel}>
+                                        <label htmlFor="price" className={styles.formLabel}>
                                             <DollarSign className={styles.formLabelIconGreen} />
                                             {t('ridesManagement.price', 'Price (€)')}
                                         </label>
                                         <input
+                                            id="price"
                                             type="number"
                                             step="0.01"
                                             min="0"
@@ -344,6 +357,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                                             onChange={(e) => setPrice(e.target.value)}
                                             placeholder={t('ridesManagement.pricePlaceholder', '0.00')}
                                             className={styles.formInput}
+                                            aria-label={t('ridesManagement.price', 'Price (€)')}
                                         />
                                     </div>
                                 </div>

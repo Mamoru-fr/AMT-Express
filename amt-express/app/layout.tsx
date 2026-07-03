@@ -27,24 +27,25 @@ export default async function RootLayout({
   auth?: ReactNode;
 }>) {
   const session = await auth.api.getSession({ headers: await headers() });
-  const { isAuthenticated, isAdmin, isDriver } = await getSessionWithRole();
+  const { isAuthenticated, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
+
+  const activeSlot = !isAuthenticated
+    ? authSlot
+    : isAdmin
+      ? admin
+      : isDriver
+        ? driver
+        : isCustomer
+          ? customer
+          : null;
 
   return (
-    <html lang="en">
+    <html lang="fr">
       <body className={`antialiased`}>
         <I18nProvider>
           <SessionProvider session={session}>
-            {/* Afficher le bon slot en fonction du rôle */}
-            {!isAuthenticated ? (
-              authSlot
-            ) : isAdmin ? (
-              admin
-            ) : isDriver ? (
-              driver
-            ) : (
-              customer
-            )}
             {children}
+            {activeSlot}
           </SessionProvider>
         </I18nProvider>
       </body>

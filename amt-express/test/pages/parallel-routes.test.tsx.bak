@@ -1,0 +1,228 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import RootLayout from '@/app/layout';
+
+// Mock des slots et composants
+vi.mock('@/components/classicComponents/Input', () => ({
+  Input: ({ placeholder }: { placeholder: string }) => (
+    <input placeholder={placeholder} data-testid="input" />
+  ),
+}));
+
+// Mock de getSessionWithRole pour les tests
+vi.mock('@/lib/auth/session', () => ({
+  getSessionWithRole: vi.fn(),
+}));
+
+// Mock de auth för SessionProvider
+vi.mock('@/lib/auth/auth', () => ({
+  auth: {
+    api: {
+      getSession: vi.fn(),
+    },
+  },
+}));
+
+// Mock des slots Parallel Routes
+const mockAdminSlot = <div data-testid="admin-slot">Admin Dashboard</div>;
+const mockDriverSlot = <div data-testid="driver-slot">Driver Dashboard</div>;
+const mockCustomerSlot = <div data-testid="customer-slot">Customer Dashboard</div>;
+const mockAuthSlot = <div data-testid="auth-slot">Auth Page</div>;
+
+const mockGetSessionWithRole = vi.mocked((await import('@/lib/auth/session')).getSessionWithRole);
+const mockAuthGetSession = vi.mocked((await import('@/lib/auth/auth')).auth.api.getSession);
+
+describe('Parallel Routes Layout', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Mock par défaut : session non authentifiée
+    mockGetSessionWithRole.mockResolvedValue({
+      isAuthenticated: false,
+      isAdmin: false,
+      isDriver: false,
+    });
+    mockAuthGetSession.mockResolvedValue(null);
+  });
+
+  // =============================================
+  // Tests 1 : Utilisateur non authentifié
+  // =============================================
+  describe('Non-Authenticated User', () => {
+    it('should render the auth slot', async () => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: false,
+        isAdmin: false,
+        isDriver: false,
+      });
+
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          admin: mockAdminSlot,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      // Vérifie que le slot auth est affiché
+      expect(container.querySelector('[data-testid="auth-slot"]')).toBeInTheDocument();
+      // Vérifie que les autres slots ne sont PAS affichés
+      expect(container.querySelector('[data-testid="admin-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="driver-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="customer-slot"]')).not.toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 2 : Utilisateur Admin
+  // =============================================
+  describe('Admin User', () => {
+    beforeEach(() => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: true,
+        isAdmin: true,
+        isDriver: false,
+      });
+      mockAuthGetSession.mockResolvedValue({ user: { role: 'admin' } });
+    });
+
+    it('should render the admin slot', async () => {
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          admin: mockAdminSlot,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      expect(container.querySelector('[data-testid="admin-slot"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="auth-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="driver-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="customer-slot"]')).not.toBeInTheDocument();
+    });
+
+    it('should not render other slots alongside admin', async () => {
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          admin: mockAdminSlot,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      // Un seul slot doit être affiché à la fois
+      expect(container.querySelectorAll('[data-testid*="-slot"]').length).toBe(1);
+    });
+  });
+
+  // =============================================
+  // Tests 3 : Utilisateur Driver
+  // =============================================
+  describe('Driver User', () => {
+    beforeEach(() => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: true,
+        isAdmin: false,
+        isDriver: true,
+      });
+      mockAuthGetSession.mockResolvedValue({ user: { role: 'driver' } });
+    });
+
+    it('should render the driver slot', async () => {
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          admin: mockAdminSlot,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      expect(container.querySelector('[data-testid="driver-slot"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="auth-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="admin-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="customer-slot"]')).not.toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 4 : Utilisateur Customer (par défaut)
+  // =============================================
+  describe('Customer User', () => {
+    beforeEach(() => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: true,
+        isAdmin: false,
+        isDriver: false,
+      });
+      mockAuthGetSession.mockResolvedValue({ user: { role: 'customer' } });
+    });
+
+    it('should render the customer slot', async () => {
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          admin: mockAdminSlot,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      expect(container.querySelector('[data-testid="customer-slot"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="auth-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="admin-slot"]')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-testid="driver-slot"]')).not.toBeInTheDocument();
+    });
+  });
+
+  // =============================================
+  // Tests 5 : Cas edge (slots manquants)
+  // =============================================
+  describe('Edge Cases', () => {
+    it('should handle missing admin slot gracefully', async () => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: true,
+        isAdmin: true,
+        isDriver: false,
+      });
+
+      // PIB : Pas de slot admin fourni
+      const { container } = render(
+        await RootLayout({
+          children: null,
+          driver: mockDriverSlot,
+          customer: mockCustomerSlot,
+          auth: mockAuthSlot,
+        })
+      );
+
+      // Ne doit pas crasher
+      expect(container).toBeInTheDocument();
+    });
+
+    it('should handle missing all slots gracefully', async () => {
+      mockGetSessionWithRole.mockResolvedValue({
+        isAuthenticated: true,
+        isAdmin: true,
+        isDriver: false,
+      });
+
+      // PIB : Aucun slot fourni
+      const { container } = render(
+        await RootLayout({
+          children: <div>Fallback</div>,
+        })
+      );
+
+      // Doit afficher les children
+      expect(screen.getByText('Fallback')).toBeInTheDocument();
+    });
+  });
+});

@@ -107,7 +107,7 @@ export function AdminDashboard({data}: Props) {
                     {/* Button text adapts to screen size: "Add Ride" on mobile, "Add New Ride" on larger screens */}
                     <button
                         className={styles.primaryAction}
-                        onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                        onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
                     >
                         <span className={styles.primaryActionIcon}>+</span>
                         <span>{t('adminDashboard.actions.addNewRide')}</span>

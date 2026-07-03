@@ -92,27 +92,40 @@ export class RidesManagementService {
             .limit(limit)
             .offset(offset);
 
-        // === FETCH CUSTOMER DATA FOR EACH RIDE ===
-        const ridesWithCustomers: RideWithRelations[] = await Promise.all(
-            ridesData.map(async (row) => {
-                const customers = await db
-                    .select({customer: users})
-                    .from(rideCustomers)
-                    .innerJoin(users, eq(rideCustomers.customerId, users.id))
-                    .where(eq(rideCustomers.rideId, row.ride.id));
-
-                return {
-                    ...row.ride,
-                    driver: row.driver || null,
-                    customers: customers.map(c => c.customer),
-                    selectedOptions: [],
-                    price: row.ride.price.toString(),
-                    distanceKm: row.ride.distanceKm?.toString() || null,
-                    waitingTime: row.ride.waitingTime ?? 0,
-                    options: [],
-                };
+        // === FETCH ALL CUSTOMERS FOR ALL RIDES IN A SINGLE QUERY ===
+        // Get all ride IDs from the current result set
+        const rideIds = ridesData.map(row => row.ride.id);
+        
+        // Fetch all ride-customer relationships in one query
+        const customersResult = await db
+            .select({
+                rideId: rideCustomers.rideId,
+                customer: users
             })
-        );
+            .from(rideCustomers)
+            .innerJoin(users, eq(rideCustomers.customerId, users.id))
+            .where(rideIds.length > 0 ? or(...rideIds.map(id => eq(rideCustomers.rideId, id))) : undefined);
+
+        // === GROUP CUSTOMERS BY RIDE ID ===
+        const customersByRideId = new Map<number, typeof users.$inferSelect[]>();
+        customersResult.forEach(row => {
+            if (!customersByRideId.has(row.rideId)) {
+                customersByRideId.set(row.rideId, []);
+            }
+            customersByRideId.get(row.rideId)?.push(row.customer);
+        });
+
+        // === PARSE AND FORMAT RESULTS ===
+        const ridesWithCustomers: RideWithRelations[] = ridesData.map((row) => ({
+            ...row.ride,
+            driver: row.driver || null,
+            customers: customersByRideId.get(row.ride.id) || [],
+            selectedOptions: [],
+            price: row.ride.price.toString(),
+            distanceKm: row.ride.distanceKm?.toString() || null,
+            waitingTime: row.ride.waitingTime ?? 0,
+            options: [],
+        }));
 
         // === IN-MEMORY SORTING ===
         if (sortInMemory) {

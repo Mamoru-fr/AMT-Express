@@ -39,19 +39,19 @@ export function AdminNavigationShell({children}: Props) {
             matchMode: 'exact',
         },
         {
-            href: '/admin/ride-management',
+            href: '/ride-management',
             label: t('adminNavigation.rideManagement'),
             description: t('adminNavigation.rideManagementDescription'),
             icon: Route,
-            match: (url) => url.startsWith('/admin/ride-management'),
+            match: (url) => url.startsWith('/ride-management'),
             matchMode: 'ancestor',
         },
         {
-            href: '/admin/ride-management/new',
+            href: '/ride-management/new',
             label: t('adminNavigation.newRide'),
             description: t('adminNavigation.newRideDescription'),
             icon: PlusCircle,
-            match: (url) => url.startsWith('/admin/ride-management/new'),
+            match: (url) => url.startsWith('/ride-management/new'),
             matchMode: 'exact',
         },
     ];

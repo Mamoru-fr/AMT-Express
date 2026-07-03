@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
   if (isLoading) {
     return (
       <div className={styles.homeContainer}>
-        <p>Loading dashboard...</p>
+        <p>{t('dashboard.loading')}</p>
       </div>
     );
   }
@@ -78,14 +78,14 @@ export default function AdminDashboardPage() {
                 <AlertTriangle className={styles.homeErrorIcon} />
               </div>
               <div className={styles.homeTitleSection}>
-                <h1 className={styles.homeTitle}>Dashboard Error</h1>
+                <h1 className={styles.homeTitle}>{t('dashboard.error.title')}</h1>
                 <p className={styles.homeSubtitle}>
-                  Something went wrong while loading your view.
+                  {t('dashboard.error.subtitle')}
                 </p>
               </div>
             </div>
             <div className={styles.homeErrorMessage}>
-              <p className={styles.homeErrorText}>Error loading dashboard: {error}</p>
+              <p className={styles.homeErrorText}>{t('dashboard.error.message')}: {error}</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
           <div className={adminStyles.actionsRow}>
             <button
               className={adminStyles.primaryAction}
-              onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+              onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
             >
               <span className={adminStyles.primaryActionIcon}>+</span>
               <span>{t('adminDashboard.actions.addNewRide')}</span>
