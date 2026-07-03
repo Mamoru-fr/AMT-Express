@@ -8,8 +8,14 @@ type StatusBannerProps = {
 };
 
 export function StatusBanner({ title, message, className, tone = 'info' }: StatusBannerProps) {
+    const isError = tone === 'error';
+
     return (
-        <div className={cn('statusBanner', `statusBanner--${tone}`, className)} role="status" aria-live="polite">
+        <div
+            className={cn('statusBanner', `statusBanner--${tone}`, className)}
+            role={isError ? 'alert' : 'status'}
+            aria-live={isError ? 'assertive' : 'polite'}
+        >
             {title && <strong className="statusBannerTitle">{title}</strong>}
             <p className="statusBannerMessage">{message}</p>
         </div>
