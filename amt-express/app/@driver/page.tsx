@@ -115,7 +115,7 @@ export default function DriverDashboardPage() {
   if (isLoading) {
     return (
       <div className={errorStyles.homeContainer}>
-        <p>Loading dashboard...</p>
+        <p>{t('dashboard.loading')}</p>
       </div>
     );
   }

@@ -276,5 +276,13 @@
     },
     "statusPieChart": {
         "title": "Répartition des courses par statut"
+    },
+    "dashboard": {
+        "loading": "Chargement du tableau de bord...",
+        "error": {
+            "title": "Erreur du tableau de bord",
+            "subtitle": "Une erreur est survenue lors du chargement de votre vue.",
+            "message": "Erreur lors du chargement"
+        }
     }
 }

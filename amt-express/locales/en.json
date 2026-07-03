@@ -276,5 +276,13 @@
     },
     "statusPieChart": {
         "title": "Rides by Status"
+    },
+    "dashboard": {
+        "loading": "Loading dashboard...",
+        "error": {
+            "title": "Dashboard Error",
+            "subtitle": "Something went wrong while loading your view.",
+            "message": "Error loading dashboard"
+        }
     }
 }
