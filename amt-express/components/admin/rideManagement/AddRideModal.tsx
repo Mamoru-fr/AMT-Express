@@ -89,7 +89,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
     }, [productionId, projects, projectId]);
 
     const selectedProduction = productions.find(production => production.id === productionId) || null;
-    const fallbackReturnTo = returnTo || '/admin/ride-management';
+    const fallbackReturnTo = returnTo || '/ride-management';
 
     const goBack = () => {
         if (mode === 'page') {

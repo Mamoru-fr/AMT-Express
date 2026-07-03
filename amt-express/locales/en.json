@@ -284,5 +284,18 @@
             "subtitle": "Something went wrong while loading your view.",
             "message": "Error loading dashboard"
         }
+    },
+    "customerDashboard": {
+        "title": "My Customer Space",
+        "subtitle": "Track your rides and history",
+        "totalRides": "Total rides",
+        "pendingRides": "Pending",
+        "completedRides": "Completed",
+        "upcomingRides": "Upcoming rides",
+        "completedCount": "Completed rides",
+        "pendingCount": "Pending rides",
+        "uniqueDrivers": "Unique drivers",
+        "myRides": "My rides",
+        "ridesDescription": "View your ride history and track your current bookings"
     }
 }

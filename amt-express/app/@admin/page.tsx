@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
           <div className={adminStyles.actionsRow}>
             <button
               className={adminStyles.primaryAction}
-              onClick={() => router.push(`/admin/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+              onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
             >
               <span className={adminStyles.primaryActionIcon}>+</span>
               <span>{t('adminDashboard.actions.addNewRide')}</span>

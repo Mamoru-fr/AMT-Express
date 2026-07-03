@@ -284,5 +284,18 @@
             "subtitle": "Une erreur est survenue lors du chargement de votre vue.",
             "message": "Erreur lors du chargement"
         }
+    },
+    "customerDashboard": {
+        "title": "Mon Espace Client",
+        "subtitle": "Suivez vos trajets et votre historique",
+        "totalRides": "Total trajets",
+        "pendingRides": "En attente",
+        "completedRides": "Terminés",
+        "upcomingRides": "Trajets à venir",
+        "completedCount": "Trajets complétés",
+        "pendingCount": "En attente",
+        "uniqueDrivers": "Chauffeurs uniques",
+        "myRides": "Mes trajets",
+        "ridesDescription": "Visualisez votre historique de trajets et suivez vos réservations en cours"
     }
 }

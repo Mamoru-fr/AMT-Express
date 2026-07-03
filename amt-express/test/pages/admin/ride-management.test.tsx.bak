@@ -4,7 +4,7 @@ import RideManagementPage from '@/app/@admin/ride-management/page';
 
 // Mock des hooks Next.js Navigation
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/admin/ride-management',
+  usePathname: () => '/ride-management',
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),

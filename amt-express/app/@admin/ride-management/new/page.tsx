@@ -38,7 +38,7 @@ export default function NewRidePage() {
     const {t} = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const returnTo = searchParams.get('returnTo') || '/admin/ride-management';
+    const returnTo = searchParams.get('returnTo') || '/ride-management';
 
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);

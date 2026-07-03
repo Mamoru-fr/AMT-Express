@@ -69,8 +69,8 @@ export async function proxy(request: NextRequest) {
   // =============================================
   const adminPaths = [
     '/admin',
-    '/admin/ride-management',
-    '/admin/ride-management/new',
+    '/ride-management',
+    '/ride-management/new',
   ];
 
   if (adminPaths.some(path => pathname.startsWith(path)) && !isAdmin) {
