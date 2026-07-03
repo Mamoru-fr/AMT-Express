@@ -194,49 +194,12 @@ export function RidesManagementBoard() {
         setFilters(prev => ({...prev, status: 'all', page: 1}));
     };
 
+    // Use server-filtered rides directly
+    // Column filters are now applied on the server side
+    const filteredRides = data?.rides || [];
+    
     // Check if any column filter is active
     const hasActiveColumnFilters = Object.values(columnFilters).some(values => values.length > 0);
-
-    // Check if a ride passes all column filters
-    const passesColumnFilters = (ride: RideWithRelations): boolean => {
-        // If no column filters are active, pass
-        const activeFilters = Object.entries(columnFilters).filter(([_, values]) => values.length > 0);
-        if (activeFilters.length === 0) return true;
-        
-        for (const [column, values] of activeFilters) {
-            switch (column) {
-                case 'status':
-                    if (!values.includes(ride.status)) return false;
-                    break;
-                case 'departure':
-                    if (!values.includes(ride.departure)) return false;
-                    break;
-                case 'destination':
-                    if (!values.includes(ride.destination)) return false;
-                    break;
-                case 'driver':
-                    const driverName = ride.driver?.name || 'Unassigned';
-                    if (!values.includes(driverName)) return false;
-                    break;
-                case 'clients':
-                    const customerNames = ride.customers.map(c => c.name);
-                    const hasMatchingCustomer = values.some(value => customerNames.includes(value));
-                    if (!hasMatchingCustomer) return false;
-                    break;
-                case 'price':
-                    if (!values.includes(ride.price)) return false;
-                    break;
-                case 'departureTime':
-                    const rideDate = new Date(ride.departureTime).toLocaleDateString('fr-FR');
-                    if (!values.includes(rideDate)) return false;
-                    break;
-            }
-        }
-        return true;
-    };
-
-    // Get filtered rides based on column filters
-    const filteredRides = data?.rides.filter(passesColumnFilters) || [];
 
     // Apply multi-column sorting with priority
     const sortedRides = [...filteredRides].sort((a, b) => {
