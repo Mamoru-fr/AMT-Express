@@ -91,7 +91,7 @@ export function buildColumnFiltersWhereClause(columnFilters: ColumnFilter[] = []
       
       switch (column) {
         case 'id':
-          conditions.push(eq(rides.id, Number(Array.isArray(value) ? value[0] : value)));
+          conditions.push(eq(rides.id, Array.isArray(value) ? value[0] : value));
           break;
           
         case 'status':

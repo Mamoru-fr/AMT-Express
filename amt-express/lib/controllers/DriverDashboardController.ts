@@ -95,7 +95,7 @@ export class DriverDashboardController {
      * SÉCURITÉ: Driver only
      * VALIDATION: Zod schema
      */
-    static async requestRideAssignment(rideId: number, message?: string): Promise<ActionResponse<void>> {
+    static async requestRideAssignment(rideId: string, message?: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
             const roleCheck = await verifyRole('driver');

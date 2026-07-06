@@ -6,7 +6,7 @@ import {eq, sql, and, gte} from 'drizzle-orm';
 type MonthlyRidesRow = { month: string; rides: number };
 type MonthlyRevenueRow = { month: string; revenue: number };
 type RecentRideRow = { 
-    id: number; 
+    id: string; 
     departure: string; 
     destination: string; 
     customerId?: string | null; 
@@ -29,7 +29,7 @@ export type AdminDashboardData = {
     monthlyRevenue: Array<{month: string; revenue: number}>;
     statusDistribution: Array<{name: string; value: number}>;
     recentRides: Array<{
-        id: number;
+        id: string;
         departure: string;
         destination: string;
         customerName: string | null;

@@ -537,7 +537,7 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                     driverId: driverIdInteger,
                     projectId: projectId ?? undefined,
                     customerNotes: notes.join(' | ') || null,
-                }).returning({ id: rides.id });
+                }).returning();
 
                 // Associate customers to the ride
                 if (customerIds.length > 0) {

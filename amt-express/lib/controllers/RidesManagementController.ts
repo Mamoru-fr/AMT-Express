@@ -58,7 +58,7 @@ export class RidesManagementController {
      * VALIDATION: Zod schema
      */
     static async updateRideDetails(
-        rideId: number,
+        rideId: string,
         data: {
             departure?: string;
             destination?: string;
@@ -101,7 +101,7 @@ export class RidesManagementController {
      * SÉCURITÉ: Admin only
      * VALIDATION: Zod schema
      */
-    static async assignDriverToRide(rideId: number, driverId: string): Promise<ActionResponse<void>> {
+    static async assignDriverToRide(rideId: string, driverId: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
             const roleCheck = await verifyRole('admin');
@@ -143,7 +143,7 @@ export class RidesManagementController {
      * SÉCURITÉ: Session required
      * VALIDATION: Zod schema
      */
-    static async cancelRide(rideId: number): Promise<ActionResponse<void>> {
+    static async cancelRide(rideId: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
             const authCheck = await verifyAuth();
@@ -177,7 +177,7 @@ export class RidesManagementController {
      * SÉCURITÉ: Admin only
      * VALIDATION: Zod schema
      */
-    static async deleteRide(rideId: number): Promise<ActionResponse<void>> {
+    static async deleteRide(rideId: string): Promise<ActionResponse<void>> {
         try {
             // === SÉCURITÉ ===
             const roleCheck = await verifyRole('admin');

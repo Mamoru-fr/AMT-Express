@@ -5,7 +5,7 @@ import { z } from 'zod';
 // ============================================
 
 export const RideIdSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
 });
 
 // ============================================
@@ -61,7 +61,7 @@ export const CreateRideSchema = z.object({
 // ============================================
 
 export const UpdateRideDetailsSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
   departure: z
     .string()
     .min(3, 'Departure must be at least 3 characters')
@@ -107,7 +107,7 @@ export const UpdateRideDetailsSchema = z.object({
 // ============================================
 
 export const AssignDriverSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
   driverId: z.string().uuid('Invalid driver ID format'),
 });
 
@@ -116,7 +116,7 @@ export const AssignDriverSchema = z.object({
 // ============================================
 
 export const DeleteRideSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
 });
 
 // ============================================
@@ -141,7 +141,7 @@ export const RideFiltersSchema = z.object({
 // ============================================
 
 export const RequestRideAssignmentSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
   message: z.string().max(500, 'Message must be less than 500 characters').optional(),
 });
 
