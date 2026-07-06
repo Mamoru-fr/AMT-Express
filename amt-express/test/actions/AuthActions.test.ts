@@ -189,6 +189,9 @@ vi.mock('@/lib/services/AuditService', () => ({
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { signIn, signUp, signOut } from '@/lib/actions/AuthActions';
+import db from '@/lib/db/drizzle';
+import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 import { ErrorCodes } from '@/lib/types/action-response';
 
 // ============================================================================
@@ -236,9 +239,8 @@ async function createTestUser(email: string, password: string, name: string = 'T
   return result;
 }
 
-// ============================================================================
-// TESTS
-// ============================================================================
+// Drizzle OR helpers
+import { or } from 'drizzle-orm';
 
 describe('AuthActions Integration Tests', () => {
   beforeAll(async () => {
@@ -288,7 +290,6 @@ describe('AuthActions Integration Tests', () => {
       const result2 = await signUp('Test User 2', email, password, password);
       
       expect(result2.success).toBe(false);
-      // The AuthController should return VALIDATION_ERROR for duplicate emails
       expect(result2.code).toBe(ErrorCodes.VALIDATION_ERROR);
     });
 

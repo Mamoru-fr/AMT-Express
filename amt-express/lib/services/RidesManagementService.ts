@@ -332,7 +332,7 @@ export class RidesManagementService {
                 status: status || 'pending',
                 driverId: driverId,
             })
-            .returning({id: rides.id});
+            .returning();
 
         // Associate customers
         if (customerIds.length > 0) {
