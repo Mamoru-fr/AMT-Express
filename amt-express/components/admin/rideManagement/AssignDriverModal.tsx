@@ -17,7 +17,7 @@ type AssignDriverModalProps = {
     ride: RideWithRelations;
     drivers: Array<{ id: string; name: string; email: string }>;
     onClose: () => void;
-    onAssign: (rideId: number, driverId: string) => void;
+    onAssign: (rideId: string, driverId: string) => void;
 };
 
 /**

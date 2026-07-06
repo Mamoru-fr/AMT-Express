@@ -51,7 +51,7 @@ export class AuthController {
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Internal server error';
 
-            if (errorMsg.includes('Invalid credentials')) {
+            if (errorMsg.includes('Invalid credentials') || errorMsg.includes('INVALID_EMAIL_OR_PASSWORD')) {
                 return {
                     success: false,
                     error: 'errors.Invalid credentials',
@@ -110,7 +110,7 @@ export class AuthController {
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Internal server error';
 
-            if (errorMsg.includes('already exists')) {
+            if (errorMsg.includes('already exists') || errorMsg.includes('USER_ALREADY_EXISTS')) {
                 return {
                     success: false,
                     error: 'errors.Email already in use',

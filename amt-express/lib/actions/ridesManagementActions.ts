@@ -87,7 +87,7 @@ export async function fetchRidesForManagement(filters: any = {}): Promise<Action
  * @param data.price - Prix du ride (optionnel, format string ou number, par défaut "0")
  * @param data.status - Statut initial (optionnel, par défaut 'pending')
  * @param csrfToken - Token CSRF pour la protection des formulaires (optionnel)
- * @returns ActionResponse<number> - ID du ride créé en cas de succès
+ * @returns ActionResponse<string> - ID du ride créé en cas de succès
  * 
  * @throws {Error} Si l'utilisateur n'est pas admin
  * @throws {Error} Si le token CSRF est invalide
@@ -116,7 +116,7 @@ export async function createRide(data: {
     driverId?: string;
     price?: string | number;
     status?: RideStatus;
-}, csrfToken?: string): Promise<ActionResponse<number>> {
+}, csrfToken?: string): Promise<ActionResponse<string>> {
   // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
@@ -139,12 +139,8 @@ export async function createRide(data: {
     }
   }
 
-  // Validate input - ensure price is a number for validation
-  const rideData = {
-    ...data,
-    price: data.price !== undefined ? (typeof data.price === 'string' ? parseFloat(data.price) : data.price) : undefined
-  };
-  const validation = validateCreateRide(rideData);
+  // Validate input directly without price conversion
+  const validation = validateCreateRide(data);
   if (!validation.success || !validation.data) {
     return {
       success: false,
@@ -153,13 +149,7 @@ export async function createRide(data: {
     };
   }
 
-  // Convert back to string for controller
-  const validatedData = {
-    ...validation.data,
-    price: validation.data.price?.toString()
-  };
-
-  const result = await RidesManagementController.createRide(validatedData);
+  const result = await RidesManagementController.createRide(validation.data);
   
   // Audit logging for ride creation
   if (result.success && result.data) {
@@ -177,7 +167,7 @@ export async function createRide(data: {
  * @returns ActionResponse
  */
 export async function updateRideDetails(
-    rideId: number,
+    rideId: string,
     data: {
         departure?: string;
         destination?: string;
@@ -220,12 +210,8 @@ export async function updateRideDetails(
     };
   }
 
-  // Validate update data - ensure price is a number for validation
-  const updateData = {
-    ...data,
-    price: data.price !== undefined ? (typeof data.price === 'string' ? parseFloat(data.price) : data.price) : undefined
-  };
-  const validation = validateUpdateRide(updateData);
+  // Validate update data directly
+  const validation = validateUpdateRide(data);
   if (!validation.success || !validation.data) {
     return {
       success: false,
@@ -234,13 +220,7 @@ export async function updateRideDetails(
     };
   }
 
-  // Convert back to string for controller
-  const validatedData = {
-    ...validation.data,
-    price: validation.data.price?.toString()
-  };
-
-  return RidesManagementController.updateRideDetails(rideId, validatedData);
+  return RidesManagementController.updateRideDetails(rideId, validation.data);
 }
 
 /**
@@ -250,7 +230,7 @@ export async function updateRideDetails(
  * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function assignDriverToRide(rideId: number, driverId: string, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function assignDriverToRide(rideId: string, driverId: string, csrfToken?: string): Promise<ActionResponse<void>> {
   // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
@@ -299,7 +279,7 @@ export async function assignDriverToRide(rideId: number, driverId: string, csrfT
  * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function cancelRide(rideId: number, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function cancelRide(rideId: string, csrfToken?: string): Promise<ActionResponse<void>> {
   // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
@@ -348,7 +328,7 @@ export async function cancelRide(rideId: number, csrfToken?: string): Promise<Ac
  * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function deleteRide(rideId: number, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function deleteRide(rideId: string, csrfToken?: string): Promise<ActionResponse<void>> {
   // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {

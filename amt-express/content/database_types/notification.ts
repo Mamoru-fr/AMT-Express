@@ -3,7 +3,7 @@ import { User } from './user';
 // Notification Types
 
 export interface Notification {
-  id: number;
+  id: string;
   userId: string;
   message: string;
   isRead: boolean;
@@ -20,7 +20,7 @@ export interface CreateNotificationInput {
 }
 
 export interface NotificationPreferences {
-  id: number;
+  id: string;
   userId: string;
   email: boolean;
   push: boolean;

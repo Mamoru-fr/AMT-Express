@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const RequestRideAssignmentSchema = z.object({
-  rideId: z.number().int().positive(),
+  rideId: z.string().uuid(),
   message: z.string().optional(),
 });
 

@@ -4,8 +4,8 @@ import { Ride } from './ride';
 // Rating and Review Types
 
 export interface Rating {
-  id: number;
-  rideId: number;
+  id: string;
+  rideId: string;
   customerId: string;
   rating: number; // 1-5
   comment?: string | null;
@@ -18,7 +18,7 @@ export interface RatingWithRelations extends Rating {
 }
 
 export interface CreateRatingInput {
-  rideId: number;
+  rideId: string;
   customerId: string;
   rating: number;
   comment?: string;
@@ -30,7 +30,7 @@ export interface UpdateRatingInput {
 }
 
 export interface RatingFilters {
-  rideId?: number;
+  rideId?: string;
   customerId?: string;
   driverId?: string;
   minRating?: number;

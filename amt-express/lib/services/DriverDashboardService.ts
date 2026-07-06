@@ -17,7 +17,7 @@ export type DriverStats = {
 };
 
 export type SuggestedRide = {
-    id: number;
+    id: string;
     departureTime: Date;
     departure: string;
     destination: string;
@@ -46,7 +46,7 @@ export class DriverDashboardService {
     /**
      * Fetch driver dashboard data including stats, suggested rides, and assigned rides
      */
-    static async getDriverDashboard(driverId: number, available: boolean): Promise<DriverDashboardData> {
+    static async getDriverDashboard(driverId: string, available: boolean): Promise<DriverDashboardData> {
         const stats = await this.getDriverStats(driverId);
         const suggestedRides = await this.getSuggestedRides();
         const assignedRides = await this.getAssignedRides(driverId);
@@ -62,7 +62,7 @@ export class DriverDashboardService {
     /**
      * Get driver statistics
      */
-    private static async getDriverStats(driverId: number): Promise<DriverStats> {
+    private static async getDriverStats(driverId: string): Promise<DriverStats> {
         const allRides = await db.query.rides.findMany({
             where: eq(rides.driverId, driverId)
         });
@@ -130,7 +130,7 @@ export class DriverDashboardService {
     /**
      * Get rides assigned to driver
      */
-    private static async getAssignedRides(driverId: number): Promise<RideWithRelations[]> {
+    private static async getAssignedRides(driverId: string): Promise<RideWithRelations[]> {
         const now = new Date();
         
         const assignedRides = await db.query.rides.findMany({
@@ -166,7 +166,7 @@ export class DriverDashboardService {
     /**
      * Update driver availability status
      */
-    static async updateAvailability(driverId: number, available: boolean): Promise<void> {
+    static async updateAvailability(driverId: string, available: boolean): Promise<void> {
         await db.update(drivers)
             .set({ available })
             .where(eq(drivers.id, driverId));
@@ -175,7 +175,7 @@ export class DriverDashboardService {
     /**
      * Request assignment to a ride
      */
-    static async requestRideAssignment(driverId: number, rideId: number): Promise<void> {
+    static async requestRideAssignment(driverId: string, rideId: string): Promise<void> {
         // Check if driver has reached max pending requests (5)
         const pendingRequestsCount = await db
             .select({count: count()})
@@ -232,7 +232,7 @@ export class DriverDashboardService {
      * Get ride history for driver
      */
     static async getDriverRideHistory(
-        driverId: number,
+        driverId: string,
         page: number = 1,
         limit: number = 20
     ): Promise<{ rides: RideWithRelations[]; total: number; page: number; totalPages: number }> {

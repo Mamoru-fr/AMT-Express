@@ -5,7 +5,7 @@ import { z } from 'zod';
 // ============================================
 
 export const RideIdSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
 });
 
 // ============================================
@@ -30,7 +30,7 @@ export const CreateRideSchema = z.object({
       message: 'Departure time must be in the future',
     }),
   customerIds: z
-    .array(z.string().uuid('Invalid customer ID format'))
+    .array(z.string().uuid('Customer ID must be a valid UUID'))
     .min(1, 'At least one customer is required'),
   departure: z
     .string()
@@ -42,14 +42,14 @@ export const CreateRideSchema = z.object({
     .max(255, 'Destination must be less than 255 characters'),
   driverId: z
     .string()
-    .uuid('Invalid driver ID format')
+    .uuid('Driver ID must be a valid UUID')
     .optional(),
   price: z
     .union([
-      z.string().regex(/^\d+(\.\d{1,2})?$/, 'Price must be a valid number with up to 2 decimal places'),
+      z.string().regex(/^\d+(\.\d{1,2})?( €)?$/, 'Price must be a valid number with up to 2 decimal places'),
       z.number().positive('Price must be a positive number')
     ])
-    .transform((val) => typeof val === 'string' ? parseFloat(val) : val)
+    .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
     .optional(),
   status: z
     .enum(['pending', 'assigned', 'completed', 'cancelled'])
@@ -61,7 +61,7 @@ export const CreateRideSchema = z.object({
 // ============================================
 
 export const UpdateRideDetailsSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
   departure: z
     .string()
     .min(3, 'Departure must be at least 3 characters')
@@ -88,10 +88,10 @@ export const UpdateRideDetailsSchema = z.object({
     .optional(),
   price: z
     .union([
-      z.string().regex(/^\d+(\.\d{1,2})?$/, 'Price must be a valid number with up to 2 decimal places'),
+      z.string().regex(/^\d+(\.\d{1,2})?( €)?$/, 'Price must be a valid number with up to 2 decimal places'),
       z.number().positive('Price must be a positive number')
     ])
-    .transform((val) => typeof val === 'string' ? parseFloat(val) : val)
+    .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
     .optional(),
   status: z
     .enum(['pending', 'assigned', 'completed', 'cancelled'])
@@ -107,8 +107,8 @@ export const UpdateRideDetailsSchema = z.object({
 // ============================================
 
 export const AssignDriverSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
-  driverId: z.string().uuid('Invalid driver ID format'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
+  driverId: z.string().uuid('Driver ID must be a valid UUID'),
 });
 
 // ============================================
@@ -116,7 +116,7 @@ export const AssignDriverSchema = z.object({
 // ============================================
 
 export const DeleteRideSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
 });
 
 // ============================================
@@ -141,7 +141,7 @@ export const RideFiltersSchema = z.object({
 // ============================================
 
 export const RequestRideAssignmentSchema = z.object({
-  rideId: z.number().int().positive('Ride ID must be a positive integer'),
+  rideId: z.string().uuid('Ride ID must be a valid UUID'),
   message: z.string().max(500, 'Message must be less than 500 characters').optional(),
 });
 

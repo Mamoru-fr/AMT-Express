@@ -20,7 +20,7 @@ export class RidesViewService {
     /**
      * Fetches completed and pending rides count for a driver
      */
-    static async fetchDriverRidesCount(driverId: number): Promise<{completed: number, pending: number}> {
+    static async fetchDriverRidesCount(driverId: string): Promise<{completed: number, pending: number}> {
         const countResultCompleted = await db
             .select({count: count()})
             .from(rides)
@@ -46,7 +46,7 @@ export class RidesViewService {
     /**
      * Fetches all completed rides for a specific driver
      */
-    static async fetchDriverCompletedRides(driverId: number): Promise<RideWithRelations[]> {
+    static async fetchDriverCompletedRides(driverId: string): Promise<RideWithRelations[]> {
         const driverRides = await db
             .select({
                 ride: rides,
@@ -91,7 +91,7 @@ export class RidesViewService {
     /**
      * Fetches all rides assigned to the current driver (not completed)
      */
-    static async fetchDriverAssignedRides(driverId: number): Promise<RideWithRelations[]> {
+    static async fetchDriverAssignedRides(driverId: string): Promise<RideWithRelations[]> {
         const driverRides = await db
             .select({
                 ride: rides,

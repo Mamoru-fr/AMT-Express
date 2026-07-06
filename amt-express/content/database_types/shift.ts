@@ -6,7 +6,7 @@ import { Production, Project } from './production';
 export type ShiftStatus = 'planned' | 'active' | 'completed' | 'cancelled';
 
 export interface ShiftPlanning {
-  id: number;
+  id: string;
   driverId: string;
   startTime: Date;
   endTime: Date;

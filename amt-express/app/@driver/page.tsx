@@ -29,7 +29,7 @@ export default function DriverDashboardPage() {
   
   // Driver-specific state
   const [isAvailable, setIsAvailable] = useState(false);
-  const [requestModal, setRequestModal] = useState<{ open: boolean; rideId: number | null }>({
+  const [requestModal, setRequestModal] = useState<{ open: boolean; rideId: string | null }>({
     open: false,
     rideId: null
   });
@@ -106,7 +106,7 @@ export default function DriverDashboardPage() {
   };
 
   // Ride request handler
-  const handleRequestRide = async (rideId: number) => {
+  const handleRequestRide = async (rideId: string) => {
     setLoadingAction(true);
     try {
       await requestRideAssignment(rideId, requestMessage);

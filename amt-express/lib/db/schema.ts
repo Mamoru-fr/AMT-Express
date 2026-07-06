@@ -1,6 +1,7 @@
-import { pgTable, serial, varchar, timestamp, integer, decimal, boolean, text, pgEnum, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, timestamp, integer, decimal, boolean, text, pgEnum, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { USER_ROLES } from "@/content/database_types";
+import { randomUUID } from "crypto";
 
 // ========== ENUMS ==========
 export const userRoleEnum = pgEnum('user_role', USER_ROLES);
@@ -13,7 +14,7 @@ export const invoiceStatusEnum = pgEnum('invoice_status', ['unpaid', 'paid', 'ca
 
 // --- Users
 export const users = pgTable("users", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").default(false).notNull(),
@@ -34,7 +35,7 @@ export const users = pgTable("users", {
 
 // --- Drivers
 export const drivers = pgTable("drivers", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     userId: text("user_id").notNull().unique().references(() => users.id, { onDelete: "set null" }),
     accountingCode: text("accounting_code"),
     vehicleType: text("vehicle_type"),
@@ -50,7 +51,7 @@ export const drivers = pgTable("drivers", {
 
 // --- Productions
 export const productions = pgTable("productions", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     name: text("name").notNull(),
     address: text("address"),
     contactName: text("contact_name"),
@@ -64,7 +65,7 @@ export const productions = pgTable("productions", {
 
 // --- Projects
 export const projects = pgTable("projects", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     name: text("name").notNull(),
     productionId: text("production_id").references(() => productions.id, { onDelete: "set null" }),
     isGeneric: boolean("is_generic").default(false).notNull(),
@@ -79,7 +80,7 @@ export const projects = pgTable("projects", {
 
 // --- Rides
 export const rides = pgTable("rides", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     departure: varchar("departure", { length: 255 }).notNull(),
     destination: varchar("destination", { length: 255 }).notNull(),
     departureTime: timestamp("departure_time").notNull(),
@@ -90,7 +91,7 @@ export const rides = pgTable("rides", {
     photoUrl: text("photo_url"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
-    driverId: integer("driver_id").references(() => drivers.id, { onDelete: "set null" }),
+    driverId: text("driver_id").references(() => drivers.id, { onDelete: "set null" }),
     customerNotes: text("customer_notes"),
     projectId: text("project_id").references(() => projects.id, { onDelete: "set null" }),
     waitingTime: integer("waiting_time").default(0),
@@ -102,8 +103,8 @@ export const rides = pgTable("rides", {
 
 // --- Shift Planning
 export const shiftPlanning = pgTable("shift_planning", {
-    id: serial("id").primaryKey(),
-    driverId: integer("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    driverId: text("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
     startTime: timestamp("start_time").notNull(),
     endTime: timestamp("end_time").notNull(),
     status: shiftStatusEnum("status").default("planned"),
@@ -117,7 +118,7 @@ export const shiftPlanning = pgTable("shift_planning", {
 
 // --- Ride Options
 export const rideOptions = pgTable("ride_options", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     name: text("name").notNull(),
     description: text("description"),
     additionalPrice: decimal("additional_price", { precision: 10, scale: 2 }).default("0").notNull(),
@@ -129,9 +130,9 @@ export const rideOptions = pgTable("ride_options", {
 
 // --- Ride Selected Options
 export const rideSelectedOptions = pgTable("ride_selected_options", {
-    id: serial("id").primaryKey(),
-    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
-    optionId: integer("option_id").references(() => rideOptions.id, { onDelete: "set null" }).notNull(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
+    optionId: text("option_id").references(() => rideOptions.id, { onDelete: "set null" }).notNull(),
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
@@ -141,9 +142,9 @@ export const rideSelectedOptions = pgTable("ride_selected_options", {
 
 // --- Ride Customers
 export const rideCustomers = pgTable("ride_customers", {
-    id: serial("id").primaryKey(),
-    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
-    customerId: text("customer_id").references(() => users.id, { onDelete: "set null" }).notNull(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
+    customerId: text("customer_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     rating: integer("rating"),
     comment: text("comment"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -155,10 +156,10 @@ export const rideCustomers = pgTable("ride_customers", {
 
 // --- Assignment Requests
 export const assignmentRequests = pgTable("assignment_requests", {
-    id: serial("id").primaryKey(),
-    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
-    shiftId: integer("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
-    driverId: integer("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
+    shiftId: text("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
+    driverId: text("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
     status: requestStatusEnum("status").default('pending').notNull(),
     requestedAt: timestamp("requested_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
@@ -169,7 +170,7 @@ export const assignmentRequests = pgTable("assignment_requests", {
 
 // --- Invoices
 export const invoices = pgTable("invoices", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     waitingFee: decimal("waiting_fee", { precision: 10, scale: 2 }).default("0").notNull(),
     subTotal: decimal("sub_total", { precision: 10, scale: 2 }).notNull(),
     tax: decimal("tax", { precision: 10, scale: 2 }).default("0").notNull(),
@@ -190,10 +191,10 @@ export const invoices = pgTable("invoices", {
 
 // --- Invoice Items
 export const invoiceItems = pgTable("invoice_items", {
-    id: serial("id").primaryKey(),
-    invoiceId: integer("invoice_id").references(() => invoices.id, { onDelete: "cascade" }).notNull(),
-    rideId: integer("ride_id").references(() => rides.id, { onDelete: "set null" }),
-    shiftId: integer("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    invoiceId: text("invoice_id").references(() => invoices.id, { onDelete: "cascade" }).notNull(),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "set null" }),
+    shiftId: text("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
     description: text("description"),
     quantity: integer("quantity").default(1).notNull(),
     unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
@@ -210,7 +211,7 @@ export const invoiceItems = pgTable("invoice_items", {
 
 // --- Notifications
 export const notifications = pgTable("notifications", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     userId: text("user_id").references(() => users.id, { onDelete: "set null" }).notNull(),
     message: text("message").notNull(),
     isRead: boolean("is_read").default(false).notNull(),
@@ -223,7 +224,7 @@ export const notifications = pgTable("notifications", {
 
 // --- Notification Preferences
 export const notificationPreferences = pgTable("notification_preferences", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     userId: text("user_id").references(() => users.id, { onDelete: "set null" }).notNull(),
     email: boolean("email").default(true).notNull(),
     push: boolean("push").default(true).notNull(),
@@ -235,7 +236,7 @@ export const notificationPreferences = pgTable("notification_preferences", {
 
 // --- Activity Logs
 export const activityLogs = pgTable("activity_logs", {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     userId: text("user_id").references(() => users.id, { onDelete: "set null" }).notNull(),
     action: varchar("action", { length: 255 }).notNull(),
     details: text("details"),
@@ -247,7 +248,7 @@ export const activityLogs = pgTable("activity_logs", {
 
 // --- Auth Tables
 export const session = pgTable("session", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -263,7 +264,7 @@ export const session = pgTable("session", {
 ]);
 
 export const account = pgTable("account", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: text("user_id").notNull().references(() => users.id, { onDelete: "set null" }),
@@ -281,7 +282,7 @@ export const account = pgTable("account", {
 ]);
 
 export const verification = pgTable("verification", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expires_at").notNull(),

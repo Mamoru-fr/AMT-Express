@@ -1,3 +1,6 @@
+// Set test environment
+process.env.NODE_ENV = 'test';
+
 import { describe, it, expect } from 'vitest';
 import {
     CreateRideSchema,
@@ -11,6 +14,7 @@ import {
     ToggleAvailabilitySchema,
     RideHistorySchema
 } from '../lib/validations/dashboard';
+import { randomUUID } from 'crypto';
 
 describe('Ride Validations - CreateRideSchema', () => {
     it('should validate valid ride creation data', () => {
@@ -21,9 +25,9 @@ describe('Ride Validations - CreateRideSchema', () => {
             departure: 'Paris',
             destination: 'Lyon',
             departureTime: futureDate,
-            customerIds: ['customer-1', 'customer-2'],
+            customerIds: [randomUUID(), randomUUID()],
             price: '100.00 €',
-            driverId: 'driver-1',
+            driverId: randomUUID(),
             status: 'pending' as const
         };
 
@@ -91,6 +95,37 @@ describe('Ride Validations - CreateRideSchema', () => {
         expect(result.success).toBe(false);
     });
 
+    it('should fail for invalid customer UUID', () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 1);
+
+        const invalidData = {
+            departure: 'Paris',
+            destination: 'Lyon',
+            departureTime: futureDate,
+            customerIds: ['invalid-uuid']
+        };
+
+        const result = CreateRideSchema.safeParse(invalidData);
+        expect(result.success).toBe(false);
+    });
+
+    it('should fail for invalid driver UUID', () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 1);
+
+        const invalidData = {
+            departure: 'Paris',
+            destination: 'Lyon',
+            departureTime: futureDate,
+            customerIds: [randomUUID()],
+            driverId: 'invalid-uuid'
+        };
+
+        const result = CreateRideSchema.safeParse(invalidData);
+        expect(result.success).toBe(false);
+    });
+
     it('should accept optional fields as undefined', () => {
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 1);
@@ -99,7 +134,7 @@ describe('Ride Validations - CreateRideSchema', () => {
             departure: 'Paris',
             destination: 'Lyon',
             departureTime: futureDate,
-            customerIds: ['customer-1']
+            customerIds: [randomUUID()]
         };
 
         const result = CreateRideSchema.safeParse(minimalData);
@@ -117,7 +152,7 @@ describe('Ride Validations - CreateRideSchema', () => {
                 departure: 'Paris',
                 destination: 'Lyon',
                 departureTime: futureDate,
-                customerIds: ['customer-1'],
+                customerIds: [randomUUID()],
                 status
             };
             const result = CreateRideSchema.safeParse(data);
@@ -133,7 +168,7 @@ describe('Ride Validations - CreateRideSchema', () => {
             departure: 'Paris',
             destination: 'Lyon',
             departureTime: futureDate,
-            customerIds: ['customer-1'],
+            customerIds: [randomUUID()],
             status: 'invalid-status' as const
         };
 
@@ -148,7 +183,7 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
         futureDate.setDate(futureDate.getDate() + 1);
 
         const validData = {
-            rideId: 123,
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
             departure: 'Paris Updated',
             destination: 'Lyon Updated',
             departureTime: futureDate,
@@ -161,9 +196,9 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
         expect(result.success).toBe(true);
     });
 
-    it('should fail for invalid rideId (not positive integer)', () => {
+    it('should fail for invalid rideId (not a valid UUID)', () => {
         const invalidData = {
-            rideId: -1,
+            rideId: 'invalid-uuid',
             departure: 'Paris'
         };
 
@@ -173,7 +208,7 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
 
     it('should fail for rideId of 0', () => {
         const invalidData = {
-            rideId: 0,
+            rideId: '0',
             departure: 'Paris'
         };
 
@@ -183,7 +218,7 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
 
     it('should accept partial update data', () => {
         const validData = {
-            rideId: 123,
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
             departure: 'Paris Updated'
         };
 
@@ -193,7 +228,7 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
 
     it('should fail for departure with less than 3 characters', () => {
         const invalidData = {
-            rideId: 123,
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
             departure: 'Pa'
         };
 
@@ -205,8 +240,8 @@ describe('Ride Validations - UpdateRideDetailsSchema', () => {
 describe('Ride Validations - AssignDriverSchema', () => {
     it('should validate valid driver assignment', () => {
         const validData = {
-            rideId: 123,
-            driverId: 'driver-123'
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
+            driverId: '550e8400-e29b-41d4-a716-446655440001'
         };
 
         const result = AssignDriverSchema.safeParse(validData);
@@ -215,7 +250,7 @@ describe('Ride Validations - AssignDriverSchema', () => {
 
     it('should fail for empty driverId', () => {
         const invalidData = {
-            rideId: 123,
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
             driverId: ''
         };
 
@@ -225,7 +260,7 @@ describe('Ride Validations - AssignDriverSchema', () => {
 
     it('should fail for invalid rideId', () => {
         const invalidData = {
-            rideId: -1,
+            rideId: 'invalid-uuid',
             driverId: 'driver-123'
         };
 
@@ -235,26 +270,26 @@ describe('Ride Validations - AssignDriverSchema', () => {
 });
 
 describe('Ride Validations - RideIdSchema', () => {
-    it('should validate positive rideId', () => {
-        const validData = { rideId: 123 };
+    it('should validate valid rideId (UUID)', () => {
+        const validData = { rideId: '550e8400-e29b-41d4-a716-446655440000' };
         const result = RideIdSchema.safeParse(validData);
         expect(result.success).toBe(true);
     });
 
-    it('should fail for negative rideId', () => {
-        const invalidData = { rideId: -1 };
+    it('should fail for invalid rideId (not a UUID)', () => {
+        const invalidData = { rideId: 'invalid-uuid' };
         const result = RideIdSchema.safeParse(invalidData);
         expect(result.success).toBe(false);
     });
 
     it('should fail for zero rideId', () => {
-        const invalidData = { rideId: 0 };
+        const invalidData = { rideId: '0' };
         const result = RideIdSchema.safeParse(invalidData);
         expect(result.success).toBe(false);
     });
 
-    it('should fail for non-integer rideId', () => {
-        const invalidData = { rideId: 123.5 };
+    it('should fail for numeric rideId', () => {
+        const invalidData = { rideId: '123.5' };
         const result = RideIdSchema.safeParse(invalidData);
         expect(result.success).toBe(false);
     });
@@ -333,7 +368,7 @@ describe('Ride Validations - RideFiltersSchema', () => {
 describe('Dashboard Validations - RequestRideAssignmentSchema', () => {
     it('should validate ride assignment request', () => {
         const validData = {
-            rideId: 123,
+            rideId: '550e8400-e29b-41d4-a716-446655440000',
             message: 'Please assign me to this ride'
         };
 
@@ -343,7 +378,7 @@ describe('Dashboard Validations - RequestRideAssignmentSchema', () => {
 
     it('should validate ride assignment request without message', () => {
         const validData = {
-            rideId: 123
+            rideId: '550e8400-e29b-41d4-a716-446655440000'
         };
 
         const result = RequestRideAssignmentSchema.safeParse(validData);
@@ -352,7 +387,7 @@ describe('Dashboard Validations - RequestRideAssignmentSchema', () => {
 
     it('should fail for invalid rideId', () => {
         const invalidData = {
-            rideId: -1,
+            rideId: 'invalid-uuid',
             message: 'Test message'
         };
 

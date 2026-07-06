@@ -117,15 +117,15 @@ export async function getRecentAuditLogs(limit: number = 100) {
 export const AuditLogger = {
   // Ride actions
   ride: {
-    create: (rideId: number, userId?: string) => 
+    create: (rideId: string, userId?: string) => 
       logActivity({ action: 'ride.create', details: { rideId }, userId }),
-    update: (rideId: number, changes: Record<string, unknown>, userId?: string) => 
+    update: (rideId: string, changes: Record<string, unknown>, userId?: string) => 
       logActivity({ action: 'ride.update', details: { rideId, ...changes }, userId }),
-    delete: (rideId: number, userId?: string) => 
+    delete: (rideId: string, userId?: string) => 
       logActivity({ action: 'ride.delete', details: { rideId }, userId }),
-    assign: (rideId: number, driverId: string, userId?: string) => 
+    assign: (rideId: string, driverId: string, userId?: string) => 
       logActivity({ action: 'ride.assign', details: { rideId, driverId }, userId }),
-    cancel: (rideId: number, userId?: string) => 
+    cancel: (rideId: string, userId?: string) => 
       logActivity({ action: 'ride.cancel', details: { rideId }, userId }),
   },
   

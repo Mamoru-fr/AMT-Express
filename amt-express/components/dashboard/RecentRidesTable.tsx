@@ -10,7 +10,7 @@ import styles from "./RecentRidesTable.module.css";
 import {useTranslation} from 'react-i18next';
 
 type Ride = {
-    id: number;
+    id: string;
     departure: string;
     destination: string;
     customerName: string | null;
