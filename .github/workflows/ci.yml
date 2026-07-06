@@ -14,6 +14,16 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: amt_express_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
       - name: Checkout repository
@@ -44,6 +54,45 @@ jobs:
         env:
           PNPM_CONFIG_STRICT_PEER_DEPENDENCIES: false
 
+      - name: Configure Drizzle for PostgreSQL (CI)
+        working-directory: ./amt-express
+        run: |
+          # Backup original drizzle.ts
+          cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
+          
+          # Create CI version using postgres-js
+          cat > lib/db/drizzle.ts << 'EOF'
+          import * as dotenv from "dotenv";
+          import * as schema from "@/lib/db/schema";
+          import { drizzle } from "drizzle-orm/postgres-js";
+          import postgres from "postgres";
+          
+          dotenv.config();
+          
+          const connectionString = process.env.DATABASE_URL;
+          if (!connectionString) {
+              throw new Error("DATABASE_URL environment variable is not set");
+          }
+          
+          const sql = postgres(connectionString, {
+              max: 1,
+              idle_timeout: 20,
+              connect_timeout: 10,
+          });
+          
+          const db = drizzle(sql, { schema });
+          
+          console.log('✅ Database connection initialized for CI');
+          
+          export default db;
+          EOF
+
+      - name: Run database migrations
+        working-directory: ./amt-express
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
+        run: pnpm db:generate
+
       # Linting
       - name: Run ESLint
         working-directory: ./amt-express
@@ -53,7 +102,7 @@ jobs:
       - name: Build Next.js application
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
         run: pnpm build
 
@@ -61,9 +110,18 @@ jobs:
       - name: Run tests
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
         run: pnpm test:run
+
+      - name: Restore original drizzle.ts
+        if: always()
+        working-directory: ./amt-express
+        run: |
+          # Restore original file after tests
+          if [ -f lib/db/drizzle.ts.backup ]; then
+            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+          fi
 
   docker-build:
     name: Docker Build
