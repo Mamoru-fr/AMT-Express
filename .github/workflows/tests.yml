@@ -7,8 +7,8 @@ on:
     branches: [ main, development ]
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9.15.4'
+  NODE_VERSION: '22'
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
 
 jobs:
   test:
@@ -26,8 +26,8 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 
-      - name: Install pnpm
-        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install dependencies
         working-directory: ./amt-express
