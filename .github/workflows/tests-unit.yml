@@ -56,8 +56,6 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
-          CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:unit
 
