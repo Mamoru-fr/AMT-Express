@@ -21,7 +21,7 @@ const eslintConfig = defineConfig([
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/exhaustive-deps": "warn",
       "@typescript-eslint/no-unsafe-function-type": "warn",
-      "typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
       "import/no-anonymous-default-export": "warn",
     },
   },
