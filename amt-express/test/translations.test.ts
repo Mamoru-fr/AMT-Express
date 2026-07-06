@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import en from '../locales/en.json';
 import fr from '../locales/fr.json';
 
-describe('Translations', () => {
+describe('Translations [UNIT]', () => {
     describe('Structure validation', () => {
         it('should have the same top-level keys in both languages', () => {
             const enKeys = Object.keys(en).sort();

@@ -14,7 +14,12 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run --filter 'unit'",
+    "test:auth": "vitest run test/actions/AuthActions.test.ts",
+    "test:rides": "vitest run test/actions/RidesManagementActions.test.ts",
+    "test:integration": "vitest run --filter 'integration'",
+    "ci": "pnpm build && pnpm test"
   },
   "dependencies": {
     "i18next": "^25.7.4",

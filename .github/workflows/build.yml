@@ -1,0 +1,69 @@
+name: Build Next.js
+
+on:
+  push:
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/**'
+  pull_request:
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/**'
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24.7.0'
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+
+jobs:
+  build:
+    name: Build & Export
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+
+      - name: Ensure pnpm is available
+        run: corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        working-directory: ./amt-express
+        run: |
+          # Configure pnpm for CI (pnpm v9+ uses pnpm-workspace.yaml)
+          echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
+          echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
+          pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build Next.js
+        working-directory: ./amt-express
+        env:
+          NODE_ENV: production
+          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          CSRF_SECRET: build-secret-placeholder
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+        run: pnpm build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: ./amt-express/.next/
+          retention-days: 7

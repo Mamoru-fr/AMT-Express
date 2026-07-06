@@ -16,7 +16,7 @@ import {
 } from '../lib/validations/dashboard';
 import { randomUUID } from 'crypto';
 
-describe('Ride Validations - CreateRideSchema', () => {
+describe('Ride Validations [UNIT] - CreateRideSchema', () => {
     it('should validate valid ride creation data', () => {
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 1);

@@ -255,7 +255,7 @@ async function createTestUser(email: string, password: string, name: string = 'T
   return result;
 }
 
-describe('AuthActions Integration Tests', () => {
+describe('AuthActions [INTEGRATION]', () => {
   beforeAll(async () => {
     // Clean up before tests
     await cleanupTestUsers();

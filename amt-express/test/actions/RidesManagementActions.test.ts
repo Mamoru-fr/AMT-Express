@@ -129,7 +129,7 @@ async function createTestCustomer() {
   return customer.id;
 }
 
-describe('RidesManagementActions Integration Tests', () => {
+describe('RidesManagementActions [INTEGRATION]', () => {
   let testAdminId: string;
   let testDriverId: string;
   let testCustomer1Id: string;

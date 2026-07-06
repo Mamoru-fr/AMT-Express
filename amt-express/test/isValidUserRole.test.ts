@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { isValidUserRole, getValidatedRole } from '../utils/isValidUserRole';
 import { SessionWithUser } from '@/content/database_types';
 
-describe('isValidUserRole', () => {
+describe('isValidUserRole [UNIT]', () => {
   it('should return true for valid admin role', () => {
     expect(isValidUserRole('admin')).toBe(true);
   });
