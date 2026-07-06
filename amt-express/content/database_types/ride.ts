@@ -7,7 +7,7 @@ import { Project } from './production';
 export type RideStatus = 'pending' | 'assigned' | 'completed' | 'cancelled';
 
 export interface Ride {
-  id: number;
+  id: string;
   departure: string;
   destination: string;
   departureTime: Date;
@@ -17,7 +17,7 @@ export interface Ride {
   status: RideStatus;
   photoUrl?: string | null;
   createdAt: Date;
-  driverId?: number | null;
+  driverId?: string | null;
   customerNotes?: string | null;
   production?: string | null;
   project?: string | null;
@@ -62,8 +62,8 @@ export interface UpdateRideInput {
 }
 
 export interface RideCustomer {
-  id: number;
-  rideId: number;
+  id: string;
+  rideId: string;
   customerId: string;
   createdAt: Date;
 }
@@ -82,22 +82,22 @@ export const OPTIONS = [
 export type Option = typeof OPTIONS[number];
 
 export interface RideOption {
-  id: number;
+  id: string;
   name: Option;
   description?: string | null;
   additionalPrice: string;
 }
 
 export interface RideSelectedOption {
-  id: number;
-  rideId: number;
+  id: string;
+  rideId: string;
   optionName: Option;
   price: string;
 }
 
 export interface AssignmentRequest {
-  id: number;
-  rideId: number;
+  id: string;
+  rideId: string;
   driverId: string;
   status: 'pending' | 'approved' | 'rejected';
   requestedAt: Date;
@@ -109,7 +109,7 @@ export interface AssignmentRequestWithRelations extends AssignmentRequest {
 }
 
 export interface CreateAssignmentRequestInput {
-  rideId: number;
+  rideId: string;
   driverId: string;
 }
 

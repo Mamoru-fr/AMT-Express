@@ -6,14 +6,14 @@ import styles from "./DeleteConfirmModal.module.css";
 
 /**
  * Props for the DeleteConfirmModal component
- * @property {number} rideId - The ID of the ride to be deleted
+ * @property {string} rideId - The ID of the ride to be deleted
  * @property {Function} onClose - Callback function to close the modal without deleting
  * @property {Function} onConfirm - Callback function to confirm and execute the deletion
  */
 type DeleteConfirmModalProps = {
-    rideId: number;
+    rideId: string;
     onClose: () => void;
-    onConfirm: (rideId: number) => void;
+    onConfirm: (rideId: string) => void;
 };
 
 /**

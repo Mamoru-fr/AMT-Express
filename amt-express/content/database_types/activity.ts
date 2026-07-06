@@ -3,7 +3,7 @@ import { User } from './user';
 // Activity Log Types
 
 export interface ActivityLog {
-  id: number;
+  id: string;
   userId: string;
   action: string;
   details?: string | null;

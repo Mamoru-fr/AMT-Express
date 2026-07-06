@@ -477,13 +477,13 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                 // Get or create driver
                 const driverId = await getOrCreateDriver(row.idChauffeur, row.chauffeur);
                 
-                // Get driver record to get drivers.id (integer)
-                let driverIdInteger: number | null = null;
+                // Get driver record to get drivers.id
+                let driverIdString: string | null = null;
                 if (driverId) {
                     const driverRecord = await db.query.drivers.findFirst({
                         where: (drivers, {eq}) => eq(drivers.userId, driverId)
                     });
-                    driverIdInteger = driverRecord?.id ?? null;
+                    driverIdString = driverRecord?.id ?? null;
                 }
                 
                 let productionId: string | null = null;
@@ -534,7 +534,7 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                     departureTime: departureTime,
                     price: finalPrice.toString(),
                     status: 'completed',
-                    driverId: driverIdInteger,
+                    driverId: driverIdString,
                     projectId: projectId ?? undefined,
                     customerNotes: notes.join(' | ') || null,
                 }).returning();

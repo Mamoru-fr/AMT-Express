@@ -131,7 +131,7 @@ export const rideOptions = pgTable("ride_options", {
 // --- Ride Selected Options
 export const rideSelectedOptions = pgTable("ride_selected_options", {
     id: text("id").primaryKey().$defaultFn(() => randomUUID()),
-    rideId: text("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
     optionId: text("option_id").references(() => rideOptions.id, { onDelete: "set null" }).notNull(),
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -143,8 +143,8 @@ export const rideSelectedOptions = pgTable("ride_selected_options", {
 // --- Ride Customers
 export const rideCustomers = pgTable("ride_customers", {
     id: text("id").primaryKey().$defaultFn(() => randomUUID()),
-    rideId: text("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
-    customerId: text("customer_id").references(() => users.id, { onDelete: "set null" }).notNull(),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
+    customerId: text("customer_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     rating: integer("rating"),
     comment: text("comment"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -157,7 +157,7 @@ export const rideCustomers = pgTable("ride_customers", {
 // --- Assignment Requests
 export const assignmentRequests = pgTable("assignment_requests", {
     id: text("id").primaryKey().$defaultFn(() => randomUUID()),
-    rideId: text("ride_id").references(() => rides.id, { onDelete: "set null" }).notNull(),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
     shiftId: text("shift_id").references(() => shiftPlanning.id, { onDelete: "set null" }),
     driverId: text("driver_id").references(() => drivers.id, { onDelete: "set null" }).notNull(),
     status: requestStatusEnum("status").default('pending').notNull(),

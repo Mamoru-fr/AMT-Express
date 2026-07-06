@@ -258,7 +258,7 @@ export function RidesManagementBoard() {
         open: false,
         ride: null // Stores the ride receiving driver assignment
     });
-    const [deleteModal, setDeleteModal] = useState<{open: boolean; rideId: number | null}>({
+    const [deleteModal, setDeleteModal] = useState<{open: boolean; rideId: string | null}>({
         open: false,
         rideId: null // Stores the ID of ride to be deleted
     });
@@ -431,7 +431,7 @@ export function RidesManagementBoard() {
      * Assigns a driver to an unassigned ride
      * Updates ride status to 'assigned' and refreshes the list
      */
-    const handleAssignDriver = async (rideId: number, driverId: string) => {
+    const handleAssignDriver = async (rideId: string, driverId: string) => {
         try {
             await assignDriverToRide(rideId, driverId);
             setAssignModal({open: false, ride: null});
@@ -447,7 +447,7 @@ export function RidesManagementBoard() {
      * Cancels a ride by updating its status
      * Used for rides that need to be cancelled but not deleted
      */
-    const handleCancelRide = async (rideId: number) => {
+    const handleCancelRide = async (rideId: string) => {
         try {
             await cancelRide(rideId);
             loadRides();
@@ -463,7 +463,7 @@ export function RidesManagementBoard() {
      * Requires confirmation via DeleteConfirmModal
      * Refreshes list after successful deletion
      */
-    const handleDeleteRide = async (rideId: number) => {
+    const handleDeleteRide = async (rideId: string) => {
         try {
             await deleteRide(rideId);
             setDeleteModal({open: false, rideId: null});

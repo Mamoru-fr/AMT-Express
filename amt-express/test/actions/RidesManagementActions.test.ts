@@ -104,19 +104,22 @@ describe('RidesManagementActions Integration Tests', () => {
       const departureTime = new Date();
       departureTime.setHours(departureTime.getHours() + 24); // Future date
       
+      const expectedDeparture = `Test Departure ${Date.now()}`;
+      const expectedDestination = `Test Destination ${Date.now()}`;
+      
       const result = await createRide({
         departureTime,
         customerIds: [testCustomer1Id],
-        departure: 'Test Departure',
-        destination: 'Test Destination',
+        departure: expectedDeparture,
+        destination: expectedDestination,
         driverId: testDriverId,
         price: '100.50',
         status: 'pending',
       });
 
       expect(result.success).toBe(true);
-      expect(typeof result.data).toBe('number');
-      expect(result.data).toBeGreaterThan(0);
+      expect(typeof result.data).toBe('string');
+      expect(result.data?.length).toBeGreaterThan(0);
       
       // Verify ride was created
       const ride = await db
@@ -126,8 +129,8 @@ describe('RidesManagementActions Integration Tests', () => {
         .limit(1);
       
       expect(ride.length).toBe(1);
-      expect(ride[0].departure).toBe('Test Departure');
-      expect(ride[0].destination).toBe('Test Destination');
+      expect(ride[0].departure).toBe(expectedDeparture);
+      expect(ride[0].destination).toBe(expectedDestination);
       expect(ride[0].price).toBe('100.50');
     });
 
@@ -151,8 +154,8 @@ describe('RidesManagementActions Integration Tests', () => {
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
         customerIds: [testCustomer1Id],
-        departure: 'Test Departure Assign',
-        destination: 'Test Destination Assign',
+        departure: `Test Departure Assign ${Date.now()}`,
+        destination: `Test Destination Assign ${Date.now()}`,
         price: '150.00',
       });
       
@@ -178,7 +181,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID', async () => {
-      const result = await assignDriverToRide(-1, testDriverId);
+      const result = await assignDriverToRide('invalid-uuid', testDriverId);
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
@@ -191,8 +194,8 @@ describe('RidesManagementActions Integration Tests', () => {
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
         customerIds: [testCustomer1Id],
-        departure: 'Test Departure Cancel',
-        destination: 'Test Destination Cancel',
+        departure: `Test Departure Cancel ${Date.now()}`,
+        destination: `Test Destination Cancel ${Date.now()}`,
         price: '200.00',
       });
       
@@ -217,7 +220,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID for cancellation', async () => {
-      const result = await cancelRide(-1);
+      const result = await cancelRide('invalid-uuid');
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
@@ -230,11 +233,12 @@ describe('RidesManagementActions Integration Tests', () => {
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
         customerIds: [testCustomer1Id],
-        departure: 'Test Departure Delete',
-        destination: 'Test Destination Delete',
+        departure: `Test Departure Delete ${Date.now()}`,
+        destination: `Test Destination Delete ${Date.now()}`,
         price: '300.00',
       });
       
+      console.log('Delete test - createResult:', createResult);
       expect(createResult.success).toBe(true);
       
       const deleteResult = await deleteRide(createResult.data!);
@@ -252,7 +256,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID for deletion', async () => {
-      const result = await deleteRide(-1);
+      const result = await deleteRide('invalid-uuid');
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);

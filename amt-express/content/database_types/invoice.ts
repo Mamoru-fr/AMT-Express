@@ -5,8 +5,8 @@ import { Ride } from './ride';
 export type InvoiceStatus = 'unpaid' | 'paid' | 'cancelled';
 
 export interface Invoice {
-  id: number;
-  rideId: number;
+  id: string;
+  rideId: string;
   waitingFee: string;
   subTotal: string;
   tax: string;
@@ -26,7 +26,7 @@ export interface InvoiceWithRide extends Invoice {
 }
 
 export interface CreateInvoiceInput {
-  rideId: number;
+  rideId: string;
   waitingFee?: string;
   subTotal: string;
   tax?: string;
@@ -42,19 +42,19 @@ export interface UpdateInvoiceInput {
 }
 
 export interface SendInvoiceInput {
-  invoiceId: number;
+  invoiceId: string;
   recipientEmail: string;
   message?: string;
 }
 
 export interface SendReminderInput {
-  invoiceId: number;
+  invoiceId: string;
   message: string;
 }
 
 export interface InvoiceFilters {
   status?: InvoiceStatus;
-  rideId?: number;
+  rideId?: string;
   startDate?: Date;
   endDate?: Date;
   overdue?: boolean;

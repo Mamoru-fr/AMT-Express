@@ -78,7 +78,7 @@ export async function toggleDriverAvailability(available: boolean, csrfToken?: s
  * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function requestRideAssignment(rideId: number, message?: string, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function requestRideAssignment(rideId: string, message?: string, csrfToken?: string): Promise<ActionResponse<void>> {
   // Verify user is a driver
   const roleCheck = await requireRole('driver');
   if (!roleCheck.success) {

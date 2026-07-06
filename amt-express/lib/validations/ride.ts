@@ -30,7 +30,7 @@ export const CreateRideSchema = z.object({
       message: 'Departure time must be in the future',
     }),
   customerIds: z
-    .array(z.string().min(1, 'Customer ID is required'))
+    .array(z.string().uuid('Customer ID must be a valid UUID'))
     .min(1, 'At least one customer is required'),
   departure: z
     .string()
@@ -42,14 +42,14 @@ export const CreateRideSchema = z.object({
     .max(255, 'Destination must be less than 255 characters'),
   driverId: z
     .string()
-    .min(1, 'Driver ID is required')
+    .uuid('Driver ID must be a valid UUID')
     .optional(),
   price: z
     .union([
-      z.string().regex(/^\d+(\.\d{1,2})? €?$/, 'Price must be a valid number with up to 2 decimal places'),
+      z.string().regex(/^\d+(\.\d{1,2})?( €)?$/, 'Price must be a valid number with up to 2 decimal places'),
       z.number().positive('Price must be a positive number')
     ])
-    .transform((val) => typeof val === 'string' ? parseFloat(val.replace(' €', '')) : val)
+    .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
     .optional(),
   status: z
     .enum(['pending', 'assigned', 'completed', 'cancelled'])
@@ -88,10 +88,10 @@ export const UpdateRideDetailsSchema = z.object({
     .optional(),
   price: z
     .union([
-      z.string().regex(/^\d+(\.\d{1,2})? €?$/, 'Price must be a valid number with up to 2 decimal places'),
+      z.string().regex(/^\d+(\.\d{1,2})?( €)?$/, 'Price must be a valid number with up to 2 decimal places'),
       z.number().positive('Price must be a positive number')
     ])
-    .transform((val) => typeof val === 'string' ? parseFloat(val.replace(' €', '')) : val)
+    .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
     .optional(),
   status: z
     .enum(['pending', 'assigned', 'completed', 'cancelled'])
@@ -108,7 +108,7 @@ export const UpdateRideDetailsSchema = z.object({
 
 export const AssignDriverSchema = z.object({
   rideId: z.string().uuid('Ride ID must be a valid UUID'),
-  driverId: z.string().min(1, 'Driver ID is required'),
+  driverId: z.string().uuid('Driver ID must be a valid UUID'),
 });
 
 // ============================================

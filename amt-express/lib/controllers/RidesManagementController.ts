@@ -263,7 +263,7 @@ export class RidesManagementController {
         driverId?: string;
         price?: string;
         status?: RideStatus;
-    }): Promise<ActionResponse<number>> {
+    }): Promise<ActionResponse<string>> {
         try {
             // === SÉCURITÉ ===
             const roleCheck = await verifyRole('admin');

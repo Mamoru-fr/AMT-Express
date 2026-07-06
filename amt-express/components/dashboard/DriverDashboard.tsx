@@ -17,7 +17,7 @@ type Props = {
 export function DriverDashboard({data, onRefresh}: Props) {
     const {t} = useTranslation();
     const [isAvailable, setIsAvailable] = useState(data.isAvailable);
-    const [requestModal, setRequestModal] = useState<{open: boolean; rideId: number | null}>({
+    const [requestModal, setRequestModal] = useState<{open: boolean; rideId: string | null}>({
         open: false,
         rideId: null
     });
@@ -56,7 +56,7 @@ export function DriverDashboard({data, onRefresh}: Props) {
         }
     };
 
-    const handleRequestRide = async (rideId: number) => {
+    const handleRequestRide = async (rideId: string) => {
         setLoading(true);
         try {
             await requestRideAssignment(rideId, requestMessage);

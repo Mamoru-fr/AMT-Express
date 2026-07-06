@@ -158,7 +158,7 @@ export class RidesManagementService {
      * Updates specific fields of a ride
      */
     static async updateRideDetails(
-        rideId: number,
+        rideId: string,
         data: {
             departure?: string;
             destination?: string;
@@ -186,7 +186,7 @@ export class RidesManagementService {
     /**
      * Assigns a driver to a ride and updates its status
      */
-    static async assignDriverToRide(rideId: number, driverUserId: string): Promise<void> {
+    static async assignDriverToRide(rideId: string, driverUserId: string): Promise<void> {
         // Check if ride exists and is available
         const ride = await db.query.rides.findFirst({
             where: (rides, {eq}) => eq(rides.id, rideId),
@@ -221,7 +221,7 @@ export class RidesManagementService {
     /**
      * Cancels a ride by updating its status to 'cancelled'
      */
-    static async cancelRide(rideId: number): Promise<void> {
+    static async cancelRide(rideId: string): Promise<void> {
         await db
             .update(rides)
             .set({ status: 'cancelled' })
@@ -231,7 +231,7 @@ export class RidesManagementService {
     /**
      * Permanently deletes a ride and all associated data
      */
-    static async deleteRide(rideId: number): Promise<void> {
+    static async deleteRide(rideId: string): Promise<void> {
         // Delete associated ride-customer relationships first
         await db
             .delete(rideCustomers)
@@ -310,11 +310,11 @@ export class RidesManagementService {
         driverId?: string;
         price?: string;
         status?: RideStatus;
-    }): Promise<number> {
+    }): Promise<string> {
         const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, status} = data;
 
         // If driverId provided, convert from userId to drivers.id
-        let driverId: number | null = null;
+        let driverId: string | null = null;
         if (driverUserId) {
             const driver = await db.query.drivers.findFirst({
                 where: eq(drivers.userId, driverUserId)

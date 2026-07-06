@@ -279,7 +279,7 @@ export default function RideManagementPage() {
         open: false,
         ride: null
     });
-    const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: number | null }>({
+    const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: string | null }>({
         open: false,
         rideId: null
     });
@@ -398,7 +398,7 @@ export default function RideManagementPage() {
         }
     };
 
-    const handleAssignDriver = async (rideId: number, driverId: string) => {
+    const handleAssignDriver = async (rideId: string, driverId: string) => {
         try {
             await assignDriverToRide(rideId, driverId);
             setAssignModal({ open: false, ride: null });
@@ -410,7 +410,7 @@ export default function RideManagementPage() {
         }
     };
 
-    const handleCancelRide = async (rideId: number) => {
+    const handleCancelRide = async (rideId: string) => {
         try {
             await cancelRide(rideId);
             loadRides();
@@ -421,7 +421,7 @@ export default function RideManagementPage() {
         }
     };
 
-    const handleDeleteRide = async (rideId: number) => {
+    const handleDeleteRide = async (rideId: string) => {
         try {
             await deleteRide(rideId);
             setDeleteModal({ open: false, rideId: null });
