@@ -41,7 +41,10 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
         const error = searchParams.get('error');
         const nextView = normalizeView(searchParams.get('view'));
 
-        setView(nextView);
+        // Only update view if it has changed to avoid unnecessary renders
+        if (view !== nextView) {
+            setView(nextView);
+        }
 
         if (error && error !== 'true') {
             const decodedError = decodeURIComponent(error);
@@ -55,7 +58,7 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
         } else {
             setErrorMessage(null);
         }
-    }, [searchParams, t]);
+    }, [searchParams, t, view]);
 
     const handleForgotPassword = () => {
         setInfoMessage(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));

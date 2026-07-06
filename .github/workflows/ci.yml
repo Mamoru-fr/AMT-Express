@@ -2,24 +2,38 @@ name: CI - Build, Test & Docker
 
 on:
   push:
-    branches: [ main, development, feature/** ]
+    branches: [ main, development, feature/** , feature/github-workflows]
   pull_request:
-    branches: [ main, development ]
+    branches: [ main, development, feature/github-workflows]
 
 env:
   NODE_VERSION: '24.7.0'
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: amt_express_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
 
       # Setup Node.js with pnpm via corepack
       - name: Setup Node.js
@@ -29,12 +43,55 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Ensure pnpm is available
+        run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         working-directory: ./amt-express
-        run: pnpm install --frozen-lockfile
+        run: |
+          # Configure pnpm for CI (pnpm v9+ uses pnpm-workspace.yaml)
+          echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
+          echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
+          pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Configure Drizzle for PostgreSQL (CI)
+        working-directory: ./amt-express
+        run: |
+          # Backup original drizzle.ts
+          cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
+          
+          # Create CI version using postgres-js
+          cat > lib/db/drizzle.ts << 'EOF'
+          import * as dotenv from "dotenv";
+          import * as schema from "@/lib/db/schema";
+          import { drizzle } from "drizzle-orm/postgres-js";
+          import postgres from "postgres";
+          
+          dotenv.config();
+          
+          const connectionString = process.env.DATABASE_URL;
+          if (!connectionString) {
+              throw new Error("DATABASE_URL environment variable is not set");
+          }
+          
+          const sql = postgres(connectionString, {
+              max: 1,
+              idle_timeout: 20,
+              connect_timeout: 10,
+          });
+          
+          const db = drizzle(sql, { schema });
+          
+          console.log('✅ Database connection initialized for CI');
+          
+          export default db;
+          EOF
+
+      - name: Run database migrations
+        working-directory: ./amt-express
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
+        run: pnpm db:generate
 
       # Linting
       - name: Run ESLint
@@ -45,17 +102,28 @@ jobs:
       - name: Build Next.js application
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm build
 
       # Run tests
       - name: Run tests
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:run
+
+      - name: Restore original drizzle.ts
+        if: always()
+        working-directory: ./amt-express
+        run: |
+          # Restore original file after tests
+          if [ -f lib/db/drizzle.ts.backup ]; then
+            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+          fi
 
   docker-build:
     name: Docker Build
@@ -102,3 +170,4 @@ jobs:
           build-args: |
             DATABASE_URL=postgresql://user:pass@localhost:5432/db
             CSRF_SECRET=build-secret-placeholder
+            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}

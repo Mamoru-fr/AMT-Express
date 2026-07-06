@@ -118,7 +118,9 @@ describe('getValidatedRole', () => {
         expiresAt: new Date(),
         token: 'token-123',
       },
-    } as any;
+      // Explicitly type as Partial<SessionWithUser> to indicate missing user property
+      user: undefined,
+    } as Partial<SessionWithUser>;
     
     expect(getValidatedRole(sessionWithoutUser)).toBeNull();
   });
