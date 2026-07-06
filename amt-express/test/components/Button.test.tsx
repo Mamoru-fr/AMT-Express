@@ -7,7 +7,7 @@ vi.mock('@/utils/cn', () => ({
   cn: (...classes: string[]) => classes.join(' '),
 }));
 
-describe('Button Component', () => {
+describe('Button Component [UNIT]', () => {
   // =============================================
   // Tests 1 : Rendering de base
   // =============================================

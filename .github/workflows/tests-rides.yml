@@ -1,4 +1,4 @@
-name: Rides Tests
+name: Integration Tests - Rides
 
 on:
   push:
