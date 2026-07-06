@@ -57,8 +57,11 @@ export function AdminNavigationShell({children}: Props) {
     ];
 
     useEffect(() => {
-        setMobileNavOpen(false);
-    }, [currentUrl]);
+        // Only close mobile nav if it's currently open to avoid unnecessary state updates
+        if (mobileNavOpen) {
+            setMobileNavOpen(false);
+        }
+    }, [currentUrl, mobileNavOpen]);
 
     const closeMobileNav = () => {
         setMobileNavOpen(false);
