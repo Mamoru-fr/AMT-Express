@@ -13,7 +13,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { signIn, signUp, signOut } from '@/lib/actions/AuthActions';
 import db from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import { ErrorCodes } from '@/lib/types/action-response';
 
 // Helper to clean up test data
@@ -40,9 +40,6 @@ async function createTestUser(email: string, password: string, name: string = 'T
   const result = await signUp(name, email, password, password);
   return result;
 }
-
-// Drizzle OR helpers
-import { or } from 'drizzle-orm';
 
 describe('AuthActions Integration Tests', () => {
   beforeAll(async () => {
@@ -92,6 +89,7 @@ describe('AuthActions Integration Tests', () => {
       const result2 = await signUp('Test User 2', email, password, password);
       
       expect(result2.success).toBe(false);
+      // The AuthController returns VALIDATION_ERROR for duplicate emails
       expect(result2.code).toBe(ErrorCodes.VALIDATION_ERROR);
     });
 
@@ -101,7 +99,8 @@ describe('AuthActions Integration Tests', () => {
       // Test weak password (too short)
       const result1 = await signUp('Test User', email, '123', '123');
       expect(result1.success).toBe(false);
-      expect(result1.error).toContain('Password');
+      // Password validation happens first, should fail on length requirement
+      expect(result1.error).toContain('Password must be at least 8 characters');
       
       // Test password mismatch
       const result2 = await signUp('Test User', email, 'Password123!', 'Different123!');

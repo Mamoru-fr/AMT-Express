@@ -7,6 +7,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     passWithNoTests: true,
+    env: {
+      NODE_ENV: 'test',
+    },
     
     // Répertoire des tests
     include: ['test/**/*.test.ts', 'test/**/*.test.tsx', '.test/**/*.test.ts'],

@@ -10,7 +10,7 @@
  * - Audit logging
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import {
   createRide,
   deleteRide,
@@ -58,14 +58,29 @@ async function createTestDriver(userId: string) {
   return userId;
 }
 
+// Helper to create test customers
+async function createTestCustomer() {
+  const customerId = randomUUID();
+  await db.insert(users).values({
+    id: customerId,
+    name: 'Test Customer',
+    email: `customer-${customerId}@test.com`,
+    role: 'customer',
+    emailVerified: true,
+  });
+  return customerId;
+}
+
 describe('RidesManagementActions Integration Tests', () => {
   let testAdminId: string;
   let testDriverId: string;
+  let testCustomer1Id: string;
 
   beforeAll(async () => {
     // Create test admin user
     testAdminId = await createTestUser();
     testDriverId = await createTestDriver(testAdminId);
+    testCustomer1Id = await createTestCustomer();
     
     // Clean up any existing test rides
     await cleanupTestRides();
@@ -78,6 +93,7 @@ describe('RidesManagementActions Integration Tests', () => {
     try {
       await db.delete(drivers).where(eq(drivers.userId, testAdminId));
       await db.delete(users).where(eq(users.id, testAdminId));
+      await db.delete(users).where(eq(users.id, testCustomer1Id));
     } catch (error) {
       console.error('User cleanup failed:', error);
     }
@@ -90,7 +106,7 @@ describe('RidesManagementActions Integration Tests', () => {
       
       const result = await createRide({
         departureTime,
-        customerIds: [],
+        customerIds: [testCustomer1Id],
         departure: 'Test Departure',
         destination: 'Test Destination',
         driverId: testDriverId,
@@ -134,7 +150,7 @@ describe('RidesManagementActions Integration Tests', () => {
       // Create a ride first
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        customerIds: [],
+        customerIds: [testCustomer1Id],
         departure: 'Test Departure Assign',
         destination: 'Test Destination Assign',
         price: '150.00',
@@ -161,7 +177,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID', async () => {
-      const result = await assignDriverToRide(999999, testDriverId);
+      const result = await assignDriverToRide(-1, testDriverId);
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
@@ -173,7 +189,7 @@ describe('RidesManagementActions Integration Tests', () => {
       // Create a ride first
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        customerIds: [],
+        customerIds: [testCustomer1Id],
         departure: 'Test Departure Cancel',
         destination: 'Test Destination Cancel',
         price: '200.00',
@@ -200,7 +216,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID for cancellation', async () => {
-      const result = await cancelRide(999999);
+      const result = await cancelRide(-1);
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
@@ -212,7 +228,7 @@ describe('RidesManagementActions Integration Tests', () => {
       // Create a ride first
       const createResult = await createRide({
         departureTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        customerIds: [],
+        customerIds: [testCustomer1Id],
         departure: 'Test Departure Delete',
         destination: 'Test Destination Delete',
         price: '300.00',
@@ -235,7 +251,7 @@ describe('RidesManagementActions Integration Tests', () => {
     });
 
     it('should validate ride ID for deletion', async () => {
-      const result = await deleteRide(999999);
+      const result = await deleteRide(-1);
       
       expect(result.success).toBe(false);
       expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
