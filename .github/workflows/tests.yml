@@ -9,6 +9,7 @@ on:
 env:
   NODE_VERSION: '24.7.0'
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
   test:
@@ -94,6 +95,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:run
 
       - name: Run tests with coverage
@@ -101,6 +103,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:coverage
 
       - name: Restore original drizzle.ts

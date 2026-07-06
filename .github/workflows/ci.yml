@@ -9,6 +9,7 @@ on:
 env:
   NODE_VERSION: '24.7.0'
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
   build-and-test:
@@ -103,6 +104,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm build
 
       # Run tests
@@ -111,6 +113,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:run
 
       - name: Restore original drizzle.ts
@@ -167,3 +170,4 @@ jobs:
           build-args: |
             DATABASE_URL=postgresql://user:pass@localhost:5432/db
             CSRF_SECRET=build-secret-placeholder
+            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
