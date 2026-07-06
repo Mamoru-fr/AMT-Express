@@ -2,9 +2,9 @@ name: CI - Build, Test & Docker
 
 on:
   push:
-    branches: [ main, development, feature/** ]
+    branches: [ main, development, feature/** , feature/github-workflows]
   pull_request:
-    branches: [ main, development ]
+    branches: [ main, development, feature/github-workflows]
 
 env:
   NODE_VERSION: '24.7.0'
@@ -21,6 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       # Setup Node.js with pnpm via corepack
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,8 +32,8 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Ensure pnpm is available
+        run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         working-directory: ./amt-express
