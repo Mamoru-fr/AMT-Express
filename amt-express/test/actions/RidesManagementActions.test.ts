@@ -75,6 +75,16 @@ import db from '@/lib/db/drizzle';
 import { rides, users, drivers } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { ErrorCodes } from '@/lib/types/action-response';
+import type { ActionResponse } from '@/lib/types/action-response';
+
+// Type guards for ActionResponse types
+function isErrorResponse<T>(response: ActionResponse<T>): response is { success: false; error: string; code?: string; details?: unknown } {
+  return !response.success;
+}
+
+function isSuccessResponse<T>(response: ActionResponse<T>): response is { success: true; data: T } {
+  return response.success;
+}
 
 // Helper to clean up test data
 async function cleanupTestRides() {
@@ -166,20 +176,22 @@ describe('RidesManagementActions Integration Tests', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(typeof result.data).toBe('string');
-      expect(result.data?.length).toBeGreaterThan(0);
-      
-      // Verify ride was created
-      const ride = await db
-        .select()
-        .from(rides)
-        .where(eq(rides.id, result.data!))
-        .limit(1);
-      
-      expect(ride.length).toBe(1);
-      expect(ride[0].departure).toBe(expectedDeparture);
-      expect(ride[0].destination).toBe(expectedDestination);
-      expect(ride[0].price).toBe('100.50');
+      if (isSuccessResponse(result)) {
+        expect(typeof result.data).toBe('string');
+        expect(result.data.length).toBeGreaterThan(0);
+        
+        // Verify ride was created
+        const ride = await db
+          .select()
+          .from(rides)
+          .where(eq(rides.id, result.data))
+          .limit(1);
+        
+        expect(ride.length).toBe(1);
+        expect(ride[0].departure).toBe(expectedDeparture);
+        expect(ride[0].destination).toBe(expectedDestination);
+        expect(ride[0].price).toBe('100.50');
+      }
     });
 
     it('should validate required fields', async () => {
@@ -192,7 +204,9 @@ describe('RidesManagementActions Integration Tests', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
   });
 
@@ -207,9 +221,12 @@ describe('RidesManagementActions Integration Tests', () => {
         price: '150.00',
       });
       
-      expect(createResult.success).toBe(true);
+      if (!isSuccessResponse(createResult)) {
+        expect.fail('Create ride failed');
+        return;
+      }
       
-      const assignResult = await assignDriverToRide(createResult.data!, testDriverId);
+      const assignResult = await assignDriverToRide(createResult.data, testDriverId);
       
       expect(assignResult.success).toBe(true);
       
@@ -217,7 +234,7 @@ describe('RidesManagementActions Integration Tests', () => {
       const ride = await db
         .select()
         .from(rides)
-        .where(eq(rides.id, createResult.data!))
+        .where(eq(rides.id, createResult.data))
         .limit(1);
       
       expect(ride.length).toBe(1);
@@ -225,14 +242,16 @@ describe('RidesManagementActions Integration Tests', () => {
       expect(ride[0].driverId).not.toBeNull();
       
       // Clean up
-      await db.delete(rides).where(eq(rides.id, createResult.data!));
+      await db.delete(rides).where(eq(rides.id, createResult.data));
     });
 
     it('should validate ride ID', async () => {
       const result = await assignDriverToRide('invalid-uuid', testDriverId);
       
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
   });
 
@@ -247,9 +266,12 @@ describe('RidesManagementActions Integration Tests', () => {
         price: '200.00',
       });
       
-      expect(createResult.success).toBe(true);
+      if (!isSuccessResponse(createResult)) {
+        expect.fail('Create ride failed');
+        return;
+      }
       
-      const cancelResult = await cancelRide(createResult.data!);
+      const cancelResult = await cancelRide(createResult.data);
       
       expect(cancelResult.success).toBe(true);
       
@@ -257,21 +279,23 @@ describe('RidesManagementActions Integration Tests', () => {
       const ride = await db
         .select()
         .from(rides)
-        .where(eq(rides.id, createResult.data!))
+        .where(eq(rides.id, createResult.data))
         .limit(1);
       
       expect(ride.length).toBe(1);
       // Note: The actual status change depends on the controller implementation
       
       // Clean up
-      await db.delete(rides).where(eq(rides.id, createResult.data!));
+      await db.delete(rides).where(eq(rides.id, createResult.data));
     });
 
     it('should validate ride ID for cancellation', async () => {
       const result = await cancelRide('invalid-uuid');
       
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
   });
 
@@ -286,10 +310,14 @@ describe('RidesManagementActions Integration Tests', () => {
         price: '300.00',
       });
       
-      console.log('Delete test - createResult:', createResult);
-      expect(createResult.success).toBe(true);
+      if (!isSuccessResponse(createResult)) {
+        expect.fail('Create ride failed');
+        return;
+      }
       
-      const deleteResult = await deleteRide(createResult.data!);
+      console.log('Delete test - createResult:', createResult);
+      
+      const deleteResult = await deleteRide(createResult.data);
       
       expect(deleteResult.success).toBe(true);
       
@@ -297,7 +325,7 @@ describe('RidesManagementActions Integration Tests', () => {
       const ride = await db
         .select()
         .from(rides)
-        .where(eq(rides.id, createResult.data!))
+        .where(eq(rides.id, createResult.data))
         .limit(1);
       
       expect(ride.length).toBe(0);
@@ -307,7 +335,9 @@ describe('RidesManagementActions Integration Tests', () => {
       const result = await deleteRide('invalid-uuid');
       
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
   });
 
@@ -316,18 +346,22 @@ describe('RidesManagementActions Integration Tests', () => {
       const result = await fetchRidesForManagement({ page: 1, limit: 10 });
       
       expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
-      expect(Array.isArray(result.data?.rides)).toBe(true);
-      expect(typeof result.data?.total).toBe('number');
-      expect(typeof result.data?.page).toBe('number');
-      expect(typeof result.data?.totalPages).toBe('number');
+      if (isSuccessResponse(result)) {
+        expect(result.data).toBeDefined();
+        expect(Array.isArray(result.data.rides)).toBe(true);
+        expect(typeof result.data.total).toBe('number');
+        expect(typeof result.data.page).toBe('number');
+        expect(typeof result.data.totalPages).toBe('number');
+      }
     });
 
     it('should respect pagination', async () => {
       const result = await fetchRidesForManagement({ page: 1, limit: 5 });
       
       expect(result.success).toBe(true);
-      expect(result.data?.rides.length).toBeLessThanOrEqual(5);
+      if (isSuccessResponse(result)) {
+        expect(result.data.rides.length).toBeLessThanOrEqual(5);
+      }
     });
 
     it('should filter by status', async () => {
@@ -338,8 +372,10 @@ describe('RidesManagementActions Integration Tests', () => {
       });
       
       expect(result.success).toBe(true);
-      // All returned rides should have completed status
-      expect(result.data?.rides.every(r => r.status === 'completed')).toBe(true);
+      if (isSuccessResponse(result)) {
+        // All returned rides should have completed status
+        expect(result.data.rides.every(r => r.status === 'completed')).toBe(true);
+      }
     });
   });
 });
