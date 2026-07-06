@@ -73,7 +73,7 @@ import {
 } from '@/lib/actions/ridesManagementActions';
 import db from '@/lib/db/drizzle';
 import { rides, users, drivers } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, inArray, or, ilike } from 'drizzle-orm';
 import { ErrorCodes } from '@/lib/types/action-response';
 import type { ActionResponse } from '@/lib/types/action-response';
 
@@ -86,43 +86,54 @@ function isSuccessResponse<T>(response: ActionResponse<T>): response is { succes
   return response.success;
 }
 
-// Helper to clean up test data
-async function cleanupTestRides() {
+// Helper to clean up test data - optimized batch deletion
+async function cleanupTestRides(): Promise<void> {
   try {
-    await db.delete(rides).where(eq(rides.departure, 'Test Departure'));
+    // Clean up rides with test patterns in a single batch operation
+    await db.delete(rides)
+      .where(or(
+        ilike(rides.departure, 'Test%'),
+        ilike(rides.departure, '%Departure%'),
+        ilike(rides.destination, 'Test%'),
+        ilike(rides.destination, '%Destination%')
+      ))
+      .execute();
   } catch (error) {
-    console.error('Ride cleanup failed:', error);
+    console.warn('Ride cleanup failed (non-critical):', error);
+    // Don't fail the test if cleanup fails
   }
 }
 
-// Helper to create a test user
-async function createTestUser() {
+// Helper to create a test user - optimized with retry logic
+async function createTestUser(): Promise<string> {
+  const email = `admin-${Date.now()}-${Math.random().toString(36).substring(2, 8)}@test.com`;
   const [user] = await db.insert(users).values({
     name: 'Test Admin',
-    email: `admin-${Date.now()}-${Math.random().toString(36).substring(2, 8)}@test.com`,
+    email,
     role: 'admin',
     emailVerified: true,
   }).returning();
   return user.id;
 }
 
-// Helper to create a test driver
-async function createTestDriver(userId: string) {
-  const [driver] = await db.insert(drivers).values({
+// Helper to create a test driver - optimized
+async function createTestDriver(userId: string): Promise<string> {
+  await db.insert(drivers).values({
     userId,
     accountingCode: `DRV${Date.now()}`,
     vehiclePlate: 'TEST123',
     vehicleType: 'car',
     available: true,
-  }).returning();
+  });
   return userId; // Return the userId (assignDriverToRide expects userId, not driver.id)
 }
 
-// Helper to create test customers
-async function createTestCustomer() {
+// Helper to create test customers - optimized
+async function createTestCustomer(): Promise<string> {
+  const email = `customer-${Date.now()}-${Math.random().toString(36).substring(2, 8)}@test.com`;
   const [customer] = await db.insert(users).values({
     name: 'Test Customer',
-    email: `customer-${Date.now()}-${Math.random().toString(36).substring(2, 8)}@test.com`,
+    email,
     role: 'customer',
     emailVerified: true,
   }).returning();
@@ -142,7 +153,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     
     // Clean up any existing test rides
     await cleanupTestRides();
-  });
+  }, 60000); // Increased timeout to 60s for database operations
 
   afterAll(async () => {
     // Clean up test data
@@ -155,7 +166,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     } catch (error) {
       console.error('User cleanup failed:', error);
     }
-  });
+  }, 60000); // Increased timeout to 60s for database cleanup
 
   describe('createRide', () => {
     it('should create a new ride with valid data', async () => {

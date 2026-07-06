@@ -124,7 +124,7 @@ vi.mock('next/navigation', () => ({
 // Mock AuthService to throw errors as expected by AuthController
 import db from '@/lib/db/drizzle';
 import { users, account, session } from '@/lib/db/schema';
-import { eq, or, ilike } from 'drizzle-orm';
+import { eq, or, ilike, inArray } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
 vi.mock('@/lib/services/AuthService', () => ({
@@ -215,11 +215,12 @@ function isErrorResponse<T>(response: ActionResponse<T>): response is { success:
 }
 
 // Helper to clean up test data
-async function cleanupTestUsers() {
+// Optimized cleanup function - uses batch operations instead of individual deletions
+async function cleanupTestUsers(): Promise<void> {
   try {
-    // First, find test users
+    // First, find all test users in a single query
     const testUsers = await db
-      .select()
+      .select({ id: users.id })
       .from(users)
       .where(or(
         eq(users.email, 'test-integration@example.com'),
@@ -233,19 +234,29 @@ async function cleanupTestUsers() {
         ilike(users.email, 'customer-%')
       ));
     
-    // First, delete related session and account records to avoid foreign key constraints
-    for (const user of testUsers) {
-      // Delete session records for this user
-      await db.delete(session).where(eq(session.userId, user.id)).catch(() => {});
+    if (testUsers.length === 0) return;
+    
+    // Extract all user IDs
+    const userIds = testUsers.map(u => u.id);
+    
+    // Use batch deletion where possible to avoid FK constraints
+    // Note: Order matters - delete from child tables first
+    await db.delete(session)
+      .where(inArray(session.userId, userIds))
+      .catch(() => {});
+    
+    await db.delete(account)
+      .where(inArray(account.userId, userIds))
+      .catch(() => {});
+    
+    // Finally delete users in batch
+    await db.delete(users)
+      .where(inArray(users.id, userIds))
+      .catch(() => {});
       
-      // Delete account records for this user
-      await db.delete(account).where(eq(account.userId, user.id)).catch(() => {});
-      
-      // Then delete the user
-      await db.delete(users).where(eq(users.id, user.id)).catch(() => {});
-    }
   } catch (error) {
-    console.error('Cleanup failed:', error);
+    console.warn('Cleanup failed (non-critical):', error);
+    // Don't fail the test if cleanup fails
   }
 }
 
@@ -259,12 +270,12 @@ describe('AuthActions [INTEGRATION]', () => {
   beforeAll(async () => {
     // Clean up before tests
     await cleanupTestUsers();
-  });
+  }, 60000); // Increased timeout to 60s for database operations
 
   afterAll(async () => {
     // Clean up after tests
     await cleanupTestUsers();
-  });
+  }, 60000); // Increased timeout to 60s for database cleanup
 
   describe('signUp', () => {
     it('should register a new user with valid credentials', async () => {
