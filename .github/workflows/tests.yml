@@ -34,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./amt-express
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Run tests
         working-directory: ./amt-express

@@ -37,7 +37,12 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./amt-express
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm config set auto-install-peers true
+          pnpm config set strict-peer-dependencies false
+          pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          PNPM_CONFIG_STRICT_PEER_DEPENDENCIES: false
 
       # Linting
       - name: Run ESLint
