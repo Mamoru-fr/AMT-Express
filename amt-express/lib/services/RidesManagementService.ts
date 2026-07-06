@@ -107,7 +107,7 @@ export class RidesManagementService {
             .where(rideIds.length > 0 ? or(...rideIds.map(id => eq(rideCustomers.rideId, id))) : undefined);
 
         // === GROUP CUSTOMERS BY RIDE ID ===
-        const customersByRideId = new Map<number, typeof users.$inferSelect[]>();
+        const customersByRideId = new Map<string, typeof users.$inferSelect[]>();
         customersResult.forEach(row => {
             if (!customersByRideId.has(row.rideId)) {
                 customersByRideId.set(row.rideId, []);

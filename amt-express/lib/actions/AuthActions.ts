@@ -20,6 +20,16 @@ import {validateSignIn, validateSignUp} from '@/lib/validations/auth';
  * @returns ActionResponse with session data or error
  */
 export async function signIn(email: string, password: string, csrfToken?: string): Promise<ActionResponse<void>> {
+  // Validate input first
+  const validation = validateSignIn({ email, password });
+  if (!validation.success || !validation.data) {
+    return {
+      success: false,
+      error: validation.error || 'Invalid input',
+      code: ErrorCodes.VALIDATION_ERROR,
+    };
+  }
+
   // Skip CSRF validation in test environment
   if (process.env.NODE_ENV !== 'test') {
     if (!csrfToken) {
@@ -38,16 +48,6 @@ export async function signIn(email: string, password: string, csrfToken?: string
         code: ErrorCodes.UNAUTHORIZED,
       };
     }
-  }
-
-  // Validate input
-  const validation = validateSignIn({ email, password });
-  if (!validation.success || !validation.data) {
-    return {
-      success: false,
-      error: validation.error || 'Invalid input',
-      code: ErrorCodes.VALIDATION_ERROR,
-    };
   }
 
   return AuthController.signIn(validation.data.email, validation.data.password);
@@ -69,6 +69,16 @@ export async function signUp(
     confirmPassword: string,
     csrfToken?: string
 ): Promise<ActionResponse<void>> {
+  // Validate input first
+  const validation = validateSignUp({ name, email, password, confirmPassword });
+  if (!validation.success || !validation.data) {
+    return {
+      success: false,
+      error: validation.error || 'Invalid input',
+      code: ErrorCodes.VALIDATION_ERROR,
+    };
+  }
+
   // Skip CSRF validation in test environment
   if (process.env.NODE_ENV !== 'test') {
     if (!csrfToken) {
@@ -87,16 +97,6 @@ export async function signUp(
         code: ErrorCodes.UNAUTHORIZED,
       };
     }
-  }
-
-  // Validate input
-  const validation = validateSignUp({ name, email, password, confirmPassword });
-  if (!validation.success || !validation.data) {
-    return {
-      success: false,
-      error: validation.error || 'Invalid input',
-      code: ErrorCodes.VALIDATION_ERROR,
-    };
   }
 
   return AuthController.signUp(

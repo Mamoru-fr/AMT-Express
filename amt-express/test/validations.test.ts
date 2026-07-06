@@ -1,3 +1,6 @@
+// Set test environment
+process.env.NODE_ENV = 'test';
+
 import { describe, it, expect } from 'vitest';
 import {
     CreateRideSchema,

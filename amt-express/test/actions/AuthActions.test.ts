@@ -10,6 +10,12 @@
  */
 
 // ============================================================================
+// ENVIRONMENT SETUP
+// ============================================================================
+// Set NODE_ENV to test mode using vi.stubEnv to avoid read-only property error
+vi.stubEnv('NODE_ENV', 'test');
+
+// ============================================================================
 // MOCKS - MUST BE DEFINED BEFORE ANY IMPORTS THAT USE THEM
 // ============================================================================
 import { vi } from 'vitest';
@@ -115,8 +121,7 @@ vi.mock('next/navigation', () => ({
   useParams: () => ({}),
 }));
 
-// Mock AuthService to bypass Better Auth and use our database directly
-// This is the KEY mock - it allows tests to work without Better Auth conflicts
+// Mock AuthService to throw errors as expected by AuthController
 import db from '@/lib/db/drizzle';
 import { users, account, session } from '@/lib/db/schema';
 import { eq, or, ilike } from 'drizzle-orm';
@@ -133,11 +138,12 @@ vi.mock('@/lib/services/AuthService', () => ({
         .limit(1);
       
       if (existingUsers.length === 0) {
-        // User doesn't exist - this should return UNAUTHORIZED
+        // User doesn't exist - throw error as expected by AuthController
         throw new Error('INVALID_EMAIL_OR_PASSWORD: Invalid email or password');
       }
       
-      return new Response(JSON.stringify({ ok: true, user: existingUsers[0] }), { status: 200 });
+      // User exists - return a mock Response
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }),
     signup: vi.fn().mockImplementation(async (name: string, email: string, password: string) => {
       // Check for duplicates in our users table
@@ -148,6 +154,7 @@ vi.mock('@/lib/services/AuthService', () => ({
         .limit(1);
       
       if (existingUsers.length > 0) {
+        // User already exists - throw error as expected by AuthController
         throw new Error('USER_ALREADY_EXISTS: already exists');
       }
       
@@ -157,15 +164,21 @@ vi.mock('@/lib/services/AuthService', () => ({
         id: userId,
         name,
         email,
-        password: 'hashed-' + password,
         role: 'customer',
         emailVerified: true,
       });
       
-      return new Response(JSON.stringify({ 
-        ok: true, 
-        user: { id: userId, name, email, role: 'customer', emailVerified: true }
-      }), { status: 200 });
+      // Insert account information with password in the account table
+      await db.insert(account).values({
+        id: randomUUID(),
+        userId: userId,
+        accountId: userId,
+        providerId: 'email',
+        password: 'hashed-' + password,
+      });
+      
+      // Return a mock Response
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }),
     signout: vi.fn().mockImplementation(async () => {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
@@ -189,14 +202,17 @@ vi.mock('@/lib/services/AuditService', () => ({
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { signIn, signUp, signOut } from '@/lib/actions/AuthActions';
-import db from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
 import { ErrorCodes } from '@/lib/types/action-response';
+import type { ActionResponse } from '@/lib/types/action-response';
 
 // ============================================================================
 // HELPERS
 // ============================================================================
+
+// Type guard to check if ActionResponse is an error
+function isErrorResponse<T>(response: ActionResponse<T>): response is { success: false; error: string; code?: string } {
+  return !response.success;
+}
 
 // Helper to clean up test data
 async function cleanupTestUsers() {
@@ -235,12 +251,9 @@ async function cleanupTestUsers() {
 
 // Helper to create a test user
 async function createTestUser(email: string, password: string, name: string = 'Test User') {
-  const result = await signUp(name, email, password, password);
+  const result = await signUp(name, email, password, password, undefined);
   return result;
 }
-
-// Drizzle OR helpers
-import { or } from 'drizzle-orm';
 
 describe('AuthActions Integration Tests', () => {
   beforeAll(async () => {
@@ -262,7 +275,8 @@ describe('AuthActions Integration Tests', () => {
         'Test User',
         email,
         password,
-        password
+        password,
+        undefined
       );
 
       expect(result.success).toBe(true);
@@ -284,28 +298,34 @@ describe('AuthActions Integration Tests', () => {
       const password = 'Password123!';
       
       // First registration should succeed
-      await signUp('Test User 1', email, password, password);
+      await signUp('Test User 1', email, password, password, undefined);
       
       // Second registration with same email should fail
-      const result2 = await signUp('Test User 2', email, password, password);
+      const result2 = await signUp('Test User 2', email, password, password, undefined);
       
       expect(result2.success).toBe(false);
-      expect(result2.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result2)) {
+        expect(result2.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
 
     it('should validate password requirements', async () => {
       const email = `test-weak-${Date.now()}-${Math.random().toString(36).substring(2, 8)}@integration.com`;
       
       // Test weak password (too short)
-      const result1 = await signUp('Test User', email, '123', '123');
+      const result1 = await signUp('Test User', email, '123', '123', undefined);
       expect(result1.success).toBe(false);
-      // Password validation happens first, should fail on length requirement
-      expect(result1.error).toContain('Password must be at least 8 characters');
+      if (isErrorResponse(result1)) {
+        // Password validation happens first, should fail on length requirement
+        expect(result1.error).toContain('Password must be at least 8 characters');
+      }
       
       // Test password mismatch
-      const result2 = await signUp('Test User', email, 'Password123!', 'Different123!');
+      const result2 = await signUp('Test User', email, 'Password123!', 'Different123!', undefined);
       expect(result2.success).toBe(false);
-      expect(result2.error).toContain('Passwords do not match');
+      if (isErrorResponse(result2)) {
+        expect(result2.error).toContain('Passwords do not match');
+      }
     });
   });
 
@@ -315,26 +335,30 @@ describe('AuthActions Integration Tests', () => {
       const password = 'Password123!';
       
       // Create user first
-      await signUp('Test User', email, password, password);
+      await signUp('Test User', email, password, password, undefined);
       
       // Then sign in
-      const result = await signIn(email, password);
+      const result = await signIn(email, password, undefined);
       
       expect(result.success).toBe(true);
     });
 
     it('should reject invalid credentials', async () => {
-      const result = await signIn('nonexistent@example.com', 'wrongpassword');
+      const result = await signIn('nonexistent@example.com', 'wrongpassword', undefined);
       
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.UNAUTHORIZED);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.UNAUTHORIZED);
+      }
     });
 
     it('should validate input', async () => {
-      const result = await signIn('', '');
+      const result = await signIn('', '', undefined);
       
       expect(result.success).toBe(false);
-      expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      if (isErrorResponse(result)) {
+        expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);
+      }
     });
   });
 
