@@ -1,6 +1,6 @@
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {getSessionWithRole} from '@/lib/auth/session';
-import type {UserRole} from '@/content/database_types/user';
+import type {UserRole} from '@/content/database_types/roles';
 
 /**
  * Résultat d'une vérification de rôle réussie (compatible avec ActionResponse)
