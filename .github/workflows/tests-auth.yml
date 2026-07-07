@@ -73,6 +73,38 @@ jobs:
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Test database connection
+        working-directory: ./amt-express
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: |
+          echo "=== [DEBUG] Testing database connection ==="
+          cat > test-db-connection.js << 'EOF'
+          const { drizzle } = require('drizzle-orm/postgres-js');
+          const postgres = require('postgres');
+          
+          (async () => {
+            try {
+              const sql = postgres(process.env.DATABASE_URL, { connect_timeout: 5 });
+              const db = drizzle(sql);
+              
+              // Simple SELECT 1 to test connection
+              const result = await sql`SELECT 1 as test`;
+              process.stderr.write('✅ Database connection test: SUCCESS\n');
+              process.stderr.write('📊 Simple query executed successfully\n');
+              process.stderr.write('Result: ' + JSON.stringify(result) + '\n');
+              process.exit(0);
+            } catch (error) {
+              process.stderr.write('❌ Database connection test: FAILED\n');
+              process.stderr.write('Error: ' + error.message + '\n');
+              process.stderr.write('Stack: ' + error.stack + '\n');
+              process.exit(1);
+            }
+          })();
+          EOF
+          node test-db-connection.js
+          rm test-db-connection.js
+
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
         run: |
@@ -86,6 +118,7 @@ jobs:
           dotenv.config();
 
           const connectionString = process.env.DATABASE_URL;
+          process.stderr.write('Drizzle - Connection string: ' + connectionString + '\n');
           if (!connectionString) {
               throw new Error("DATABASE_URL environment variable is not set");
           }
@@ -97,7 +130,7 @@ jobs:
           });
 
           const db = drizzle(sql, { schema });
-          console.log('✅ Database connection initialized for CI');
+          process.stderr.write('✅ Database connection initialized for CI\n');
           export default db;
           EOF
 
@@ -114,7 +147,7 @@ jobs:
           DATABASE_URL: ${{ env.DATABASE_URL }}
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:auth --run --test-timeout=120000
+        run: pnpm test:auth --run --test-timeout=120000 --reporter=verbose --no-coverage
 
       - name: Upload test results
         if: always()
