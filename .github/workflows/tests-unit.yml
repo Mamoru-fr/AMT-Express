@@ -2,12 +2,12 @@ name: Unit Tests
 
 on:
   push:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, development, feature/** ]
     paths:
       - 'amt-express/test/**'
       - 'amt-express/lib/**'
   pull_request:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, development, feature/** ]
     paths:
       - 'amt-express/test/**'
       - 'amt-express/lib/**'
