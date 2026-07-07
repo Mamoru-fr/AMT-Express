@@ -15,10 +15,10 @@
     "test:run": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "test:unit": "vitest run test/actionResponse.test.ts test/isValidUserRole.test.ts test/translations.test.ts test/validations.test.ts test/import-csv.test.ts test/components/Button.test.tsx",
-    "test:auth": "vitest run test/actions/AuthActions.test.ts",
-    "test:rides": "vitest run test/actions/RidesManagementActions.test.ts",
-    "test:integration": "vitest run test/actions/AuthActions.test.ts test/actions/RidesManagementActions.test.ts",
+    "test:unit": "vitest run test/unit/services/actionResponse.test.ts test/unit/services/isValidUserRole.test.ts test/unit/services/translations.test.ts test/unit/services/validations.test.ts test/unit/services/import-csv.test.ts test/unit/components/Button.test.tsx",
+    "test:auth": "vitest run test/integration/actions/AuthActions.test.ts",
+    "test:rides": "vitest run test/integration/actions/RidesManagementActions.test.ts",
+    "test:integration": "vitest run test/integration/actions/AuthActions.test.ts test/integration/actions/RidesManagementActions.test.ts",
     "ci": "pnpm build && pnpm test"
   },
   "dependencies": {

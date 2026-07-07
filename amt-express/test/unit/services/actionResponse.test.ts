@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ActionResponse, ErrorCodes } from '../lib/types/action-response';
+import { ActionResponse, ErrorCodes } from '@/lib/types/action-response';
 
 describe('ActionResponse Type [UNIT]', () => {
     describe('Success Response', () => {

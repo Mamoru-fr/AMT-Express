@@ -1,19 +1,20 @@
-// Set test environment
-process.env.NODE_ENV = 'test';
+import { describe, it, expect, vi } from 'vitest';
 
-import { describe, it, expect } from 'vitest';
+// Set test environment
+vi.stubEnv('NODE_ENV', 'test');
+
 import {
     CreateRideSchema,
     UpdateRideDetailsSchema,
     AssignDriverSchema,
     RideIdSchema,
     RideFiltersSchema
-} from '../lib/validations/ride';
+} from '@/lib/validations/ride';
 import {
     RequestRideAssignmentSchema,
     ToggleAvailabilitySchema,
     RideHistorySchema
-} from '../lib/validations/dashboard';
+} from '@/lib/validations/dashboard';
 import { randomUUID } from 'crypto';
 
 describe('Ride Validations [UNIT] - CreateRideSchema', () => {
