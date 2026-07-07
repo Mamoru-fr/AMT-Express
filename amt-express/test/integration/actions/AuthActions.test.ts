@@ -282,12 +282,12 @@ describe('AuthActions [INTEGRATION]', () => {
   beforeAll(async () => {
     // Clean up before tests
     await cleanupTestUsers();
-  }, 30000); // Increased timeout to 30s for database operations
+  }, 60000); // Increased timeout to 60s for database operations
 
   afterAll(async () => {
     // Clean up after tests
     await cleanupTestUsers();
-  }, 30000); // Increased timeout to 30s for database cleanup
+  }, 60000); // Increased timeout to 60s for database cleanup
 
   describe('signUp', () => {
     it('should register a new user with valid credentials', async () => {
