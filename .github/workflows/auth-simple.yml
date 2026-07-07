@@ -57,11 +57,43 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Configure Drizzle for CI
+        working-directory: ./amt-express
+        run: |
+          cp lib/db/drizzle.ts lib/db/drizzle.ts.backup 2>/dev/null || true
+          cat > lib/db/drizzle.ts << 'EOF'
+          import * as schema from "@/lib/db/schema";
+          import { drizzle } from "drizzle-orm/postgres-js";
+          import postgres from "postgres";
+
+          const connectionString = process.env.DATABASE_URL;
+          if (!connectionString) {
+            throw new Error("DATABASE_URL is not set");
+          }
+
+          const sql = postgres(connectionString, {
+            max: 1,
+            idle_timeout: 20,
+            connect_timeout: 30,
+          });
+
+          const db = drizzle(sql, { schema });
+          export default db;
+          EOF
+
       - name: Run migrations
         working-directory: ./amt-express
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
         run: pnpm db:migrate
+
+      - name: Restore Drizzle configuration
+        if: always()
+        working-directory: ./amt-express
+        run: |
+          if [ -f lib/db/drizzle.ts.backup ]; then
+            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+          fi
 
       - name: Run single auth integration test
         working-directory: ./amt-express
