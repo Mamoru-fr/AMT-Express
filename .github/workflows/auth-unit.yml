@@ -1,0 +1,61 @@
+name: Auth Unit Tests
+
+on:
+  push:
+    branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  unit-tests:
+    name: Auth Unit Tests (No Database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm globally
+        run: npm install -g pnpm@9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        working-directory: ./amt-express
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Run Auth Unit Tests
+        working-directory: ./amt-express
+        env:
+          NODE_ENV: test
+          CSRF_SECRET: test-secret
+        run: pnpm test:auth-unit --run --test-timeout=30000
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-unit-test-results
+          path: ./amt-express/test-results/
+          retention-days: 7

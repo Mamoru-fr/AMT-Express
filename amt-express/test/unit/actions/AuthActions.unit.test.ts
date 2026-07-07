@@ -1,7 +1,11 @@
 /**
- * ULTRA-SIMPLE Integration Test for AuthActions
- * This is a minimal test to verify basic functionality in CI.
- * NO DATABASE CALLS - Pure mock testing to isolate the issue.
+ * Unit tests for AuthActions
+ * 
+ * Pure unit tests with ALL external dependencies mocked:
+ * - No database calls
+ * - No network calls
+ * - Fast execution
+ * - Isolated testing of business logic
  */
 
 // ============================================================================
@@ -98,16 +102,78 @@ vi.mock('@/lib/services/AuditService', () => ({
 // ============================================================================
 // NOW SAFE TO IMPORT - All DB-dependent modules are mocked
 // ============================================================================
-import { describe, it, expect } from 'vitest';
-import { signUp } from '@/lib/actions/AuthActions';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { signIn, signUp, signOut } from '@/lib/actions/AuthActions';
 
-// ============================================================================
-// ULTRA-SIMPLE TEST - No database calls, pure mock validation
-// ============================================================================
-describe('AuthActions [ULTRA-SIMPLE INTEGRATION]', () => {
-  it('should return success for signup with mocked services', async () => {
-    const result = await signUp('Test User', 'test@example.com', 'Password123!', 'Password123!', undefined);
-    expect(result).toBeDefined();
-    expect(result.success).toBe(true);
-  }, 15000); // 15 second timeout
+describe('AuthActions [UNIT]', () => {
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
+  });
+
+  describe('signUp', () => {
+    it('should return success for valid signup with mocked services', async () => {
+      const result = await signUp('Test User', 'test@example.com', 'Password123!', 'Password123!', undefined);
+      expect(result).toBeDefined();
+      expect(result.success).toBe(true);
+    });
+
+    it('should return error for empty name', async () => {
+      const result = await signUp('', 'test@example.com', 'Password123!', 'Password123!', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Name is required');
+    });
+
+    it('should return error for invalid email', async () => {
+      const result = await signUp('Test User', 'invalid-email', 'Password123!', 'Password123!', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid email');
+    });
+
+    it('should return error for short password', async () => {
+      const result = await signUp('Test User', 'test@example.com', '123', '123', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Password must be at least 8 characters');
+    });
+
+    it('should return error for password mismatch', async () => {
+      const result = await signUp('Test User', 'test@example.com', 'Password123!', 'Different123!', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Passwords do not match');
+    });
+  });
+
+  describe('signIn', () => {
+    it('should return success for valid signin with mocked services', async () => {
+      const result = await signIn('test@example.com', 'Password123!', undefined);
+      expect(result).toBeDefined();
+      expect(result.success).toBe(true);
+    });
+
+    it('should return error for empty email', async () => {
+      const result = await signIn('', 'Password123!', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Email is required');
+    });
+
+    it('should return error for empty password', async () => {
+      const result = await signIn('test@example.com', '', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Password is required');
+    });
+
+    it('should return error for invalid email format', async () => {
+      const result = await signIn('invalid-email', 'Password123!', undefined);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid email');
+    });
+  });
+
+  describe('signOut', () => {
+    it('should handle logout with mocked services', async () => {
+      const result = await signOut();
+      expect(result).toBeDefined();
+      expect(result.success).toBe(true);
+    });
+  });
 });

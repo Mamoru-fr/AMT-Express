@@ -23,7 +23,7 @@ env:
 
 jobs:
   integration-tests:
-    name: Authentication Tests
+    name: Authentication Integration Tests (With Database)
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
