@@ -116,9 +116,9 @@ jobs:
           }
 
           const sql = postgres(connectionString, {
-            max: 1,
-            idle_timeout: 20,
-            connect_timeout: 30,
+            max: 5,
+            idle_timeout: 30,
+            connect_timeout: 60,
           });
 
           const db = drizzle(sql, { schema });

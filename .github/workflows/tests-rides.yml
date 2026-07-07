@@ -90,9 +90,9 @@ jobs:
           }
 
           const sql = postgres(connectionString, {
-            max: 1,
-            idle_timeout: 20,
-            connect_timeout: 30,
+            max: 5,
+            idle_timeout: 30,
+            connect_timeout: 60,
           });
 
           const db = drizzle(sql, { schema });
@@ -149,7 +149,7 @@ jobs:
           DATABASE_URL: ${{ env.DATABASE_URL }}
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:rides --run --test-timeout=120000 --hook-timeout=120000 --reporter=verbose --no-coverage
+        run: pnpm test:rides --run --test-timeout=120000 --hook-timeout=180000 --reporter=verbose --no-coverage
 
       - name: Upload test results
         if: always()

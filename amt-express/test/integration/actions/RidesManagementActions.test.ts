@@ -153,7 +153,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     
     // Clean up any existing test rides
     await cleanupTestRides();
-  }, 60000); // Increased timeout to 60s for database operations
+  }, 120000); // Increased timeout to 120s for database operations in CI
 
   afterAll(async () => {
     // Clean up test data
@@ -166,7 +166,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     } catch (error) {
       console.error('User cleanup failed:', error);
     }
-  }, 60000); // Increased timeout to 60s for database cleanup
+  }, 120000); // Increased timeout to 120s for database cleanup in CI
 
   describe('createRide', () => {
     it('should create a new ride with valid data', async () => {
