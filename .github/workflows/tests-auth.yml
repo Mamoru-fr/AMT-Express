@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'  # ✅ Node 22 LTS
+  NODE_VERSION: '22'
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
           until pg_isready -h localhost -p 5432 -U postgres -d amt_express_test; do
             sleep 1
           done
-          echo "✅ PostgreSQL is ready!"
+          echo "PostgreSQL is ready!"
 
       - name: Verify PostgreSQL connection
         run: |
@@ -78,64 +78,58 @@ jobs:
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
-          echo "=== [DEBUG] Testing database connection ==="
-          cat > test-db-connection.js << 'EOF'
+          echo "=== Testing database connection ==="
+          cat > test-db-connection.js << 'ENDOFFILE'
           const { drizzle } = require('drizzle-orm/postgres-js');
           const postgres = require('postgres');
-          
+
           (async () => {
             try {
               const sql = postgres(process.env.DATABASE_URL, { connect_timeout: 5 });
               const db = drizzle(sql);
-              
-              // Simple SELECT 1 to test connection
               const result = await sql`SELECT 1 as test`;
-              process.stderr.write('✅ Database connection test: SUCCESS\n');
-              process.stderr.write('📊 Simple query executed successfully\n');
-              process.stderr.write('Result: ' + JSON.stringify(result) + '\n');
+              console.log('Database connection test: SUCCESS');
+              console.log('Result:', JSON.stringify(result));
               process.exit(0);
             } catch (error) {
-              process.stderr.write('❌ Database connection test: FAILED\n');
-              process.stderr.write('Error: ' + error.message + '\n');
-              process.stderr.write('Stack: ' + error.stack + '\n');
+              console.error('Database connection test: FAILED');
+              console.error('Error:', error.message);
               process.exit(1);
             }
           })();
-          EOF
+          ENDOFFILE
           node test-db-connection.js
-          rm test-db-connection.js
+          rm -f test-db-connection.js
 
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
         run: |
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
-          cat > lib/db/drizzle.ts << 'EOF'
+          cat > lib/db/drizzle.ts << 'ENDOFFILE'
           import * as schema from "@/lib/db/schema";
           import { drizzle } from "drizzle-orm/postgres-js";
           import postgres from "postgres";
 
           const connectionString = process.env.DATABASE_URL;
-          process.stderr.write('Drizzle - Connection string: ' + connectionString + '\n');
           if (!connectionString) {
-              throw new Error("DATABASE_URL environment variable is not set");
+            throw new Error("DATABASE_URL environment variable is not set");
           }
 
           const sql = postgres(connectionString, {
-              max: 1,
-              idle_timeout: 20,
-              connect_timeout: 30,
+            max: 1,
+            idle_timeout: 20,
+            connect_timeout: 30,
           });
 
           const db = drizzle(sql, { schema });
-          process.stderr.write('✅ Database connection initialized for CI\n');
           export default db;
-          EOF
+          ENDOFFILE
 
       - name: Configure better-auth for CI
         working-directory: ./amt-express
         run: |
           cp lib/auth/auth.ts lib/auth/auth.ts.backup
-          cat > lib/auth/auth.ts << 'EOF'
+          cat > lib/auth/auth.ts << 'ENDOFFILE'
           import { betterAuth } from "better-auth";
           import { drizzleAdapter } from "better-auth/adapters/drizzle";
           import db from "@/lib/db/drizzle";
@@ -165,8 +159,8 @@ jobs:
             secret: process.env.BETTER_AUTH_SECRET || "test-secret-fallback",
             url: process.env.BETTER_AUTH_URL || "http://localhost:3000",
           });
-          EOF
-          process.stderr.write('✅ Better-auth configured for CI\n')
+          ENDOFFILE
+          echo "Better-auth configured for CI"
 
       - name: Run database migrations
         working-directory: ./amt-express
@@ -198,9 +192,9 @@ jobs:
           echo "Restoring original configuration files..."
           if [ -f lib/db/drizzle.ts.backup ]; then
             mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-            echo "✅ Restored drizzle.ts"
+            echo "Restored drizzle.ts"
           fi
           if [ -f lib/auth/auth.ts.backup ]; then
             mv lib/auth/auth.ts.backup lib/auth/auth.ts
-            echo "✅ Restored auth.ts"
+            echo "Restored auth.ts"
           fi
