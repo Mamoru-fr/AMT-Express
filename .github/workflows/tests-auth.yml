@@ -110,12 +110,9 @@ jobs:
         run: |
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
           cat > lib/db/drizzle.ts << 'EOF'
-          import * as dotenv from "dotenv";
           import * as schema from "@/lib/db/schema";
           import { drizzle } from "drizzle-orm/postgres-js";
           import postgres from "postgres";
-
-          dotenv.config();
 
           const connectionString = process.env.DATABASE_URL;
           process.stderr.write('Drizzle - Connection string: ' + connectionString + '\n');
@@ -133,6 +130,43 @@ jobs:
           process.stderr.write('✅ Database connection initialized for CI\n');
           export default db;
           EOF
+
+      - name: Configure better-auth for CI
+        working-directory: ./amt-express
+        run: |
+          cp lib/auth/auth.ts lib/auth/auth.ts.backup
+          cat > lib/auth/auth.ts << 'EOF'
+          import { betterAuth } from "better-auth";
+          import { drizzleAdapter } from "better-auth/adapters/drizzle";
+          import db from "@/lib/db/drizzle";
+          import * as schema from "@/lib/db/schema";
+          import { nextCookies } from "better-auth/next-js";
+          import { admin } from "better-auth/plugins";
+
+          export const auth = betterAuth({
+            emailAndPassword: {
+              enabled: true,
+            },
+            database: drizzleAdapter(db, {
+              provider: "pg",
+              schema: {
+                user: schema.users,
+                session: schema.session,
+                account: schema.account,
+                verification: schema.verification,
+              },
+            }),
+            plugins: [
+              nextCookies(),
+              admin({
+                defaultRole: "customer",
+              })
+            ],
+            secret: process.env.BETTER_AUTH_SECRET || "test-secret-fallback",
+            url: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+          });
+          EOF
+          process.stderr.write('✅ Better-auth configured for CI\n')
 
       - name: Run database migrations
         working-directory: ./amt-express
@@ -156,3 +190,17 @@ jobs:
           name: auth-test-results
           path: ./amt-express/test-results/
           retention-days: 7
+
+      - name: Restore original configuration files
+        if: always()
+        working-directory: ./amt-express
+        run: |
+          echo "Restoring original configuration files..."
+          if [ -f lib/db/drizzle.ts.backup ]; then
+            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+            echo "✅ Restored drizzle.ts"
+          fi
+          if [ -f lib/auth/auth.ts.backup ]; then
+            mv lib/auth/auth.ts.backup lib/auth/auth.ts
+            echo "✅ Restored auth.ts"
+          fi
