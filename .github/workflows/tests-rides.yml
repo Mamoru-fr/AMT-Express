@@ -25,7 +25,7 @@ env:
 jobs:
   rides-tests:
     name: Rides Integration Tests
-    runs-on: ubuntu-linux-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     
     services:
