@@ -41,11 +41,35 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     
     steps:
+      - name: Debug - Job started
+        run: |
+          echo "=== [DEBUG] Authentication Tests Job Started ==="
+          echo "Current time: $(date)"
+          echo "Runner OS: ${RUNNER_OS}"
+          echo "Node version env: ${NODE_VERSION}"
+
+      - name: Debug - Check PostgreSQL service
+        run: |
+          echo "=== [DEBUG] Waiting for PostgreSQL service ==="
+          echo "PostgreSQL service name: postgres"
+          echo "Expected connection string: postgresql://postgres:postgres@localhost:5432/amt_express_test"
+          echo "Testing connection in 5 seconds..."
+          sleep 5
+
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug - After checkout
+        run: |
+          echo "=== [DEBUG] After Checkout ==="
+          echo "Current directory: $(pwd)"
+          ls -la
+
       - name: Enable Corepack
         run: corepack enable
+
+      - name: Debug - Corepack enabled
+        run: echo "=== [DEBUG] Corepack enabled ==="
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,20 +78,31 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 
+      - name: Debug - Node.js setup complete
+        run: |
+          echo "=== [DEBUG] Node.js Setup Complete ==="
+          node --version
+          npm --version
+          pnpm --version
+
       - name: Ensure pnpm is available
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         working-directory: ./amt-express
         run: |
+          echo "=== [DEBUG] Installing dependencies ==="
           # Configure pnpm for CI (pnpm v9+ uses pnpm-workspace.yaml)
           echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
+          echo "=== [DEBUG] Dependencies installed ==="
 
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
         run: |
+          echo "=== [DEBUG] Creating CI drizzle.ts ==="
+          echo "Current DATABASE_URL: ${DATABASE_URL:-not set}"
           # Backup original drizzle.ts
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
           
@@ -81,6 +116,7 @@ jobs:
           dotenv.config();
           
           const connectionString = process.env.DATABASE_URL;
+          console.log('🔍 [DEBUG] Connection string:', connectionString);
           if (!connectionString) {
               throw new Error("DATABASE_URL environment variable is not set");
           }
@@ -97,15 +133,35 @@ jobs:
           
           export default db;
           EOF
+          echo "=== [DEBUG] CI drizzle.ts created ==="
+
+      - name: Debug - PostgreSQL service status
+        run: |
+          echo "=== [DEBUG] PostgreSQL Service Status ==="
+          docker ps --all
+          echo ""
+          echo "Testing PostgreSQL connection..."
+          pg_isready -h postgres -p 5432 -U postgres -d amt_express_test || echo "⚠️ PostgreSQL not ready yet"
 
       - name: Run database migrations
         working-directory: ./amt-express
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
-        run: pnpm db:migrate
+        run: |
+          echo "=== [DEBUG] Running database migrations ==="
+          echo "DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test"
+          pnpm db:migrate
+          echo "=== [DEBUG] Database migrations complete ==="
+
+      - name: Test PostgreSQL connection explicitly
+        run: |
+          echo "=== [DEBUG] Testing PostgreSQL connection with psql ==="
+          PGPASSWORD=postgres psql -h postgres -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;" || echo "❌ PostgreSQL connection failed"
 
       - name: Wait for database to be ready
-        run: sleep 10
+        run: |
+          echo "=== [DEBUG] Waiting 10 seconds for database to be fully ready ==="
+          sleep 10
 
       - name: Run Authentication tests
         working-directory: ./amt-express
@@ -114,7 +170,22 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:auth
+        run: |
+          echo "=== [DEBUG] Starting Authentication tests ==="
+          echo "DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test"
+          pnpm test:auth
+          echo "=== [DEBUG] Authentication tests complete ==="
+
+      - name: Debug - Final PostgreSQL check
+        if: always()
+        run: |
+          echo "=== [DEBUG] Final PostgreSQL Check ==="
+          echo "Checking if PostgreSQL is still running..."
+          docker ps --all --filter "name=postgres" --format "{{.Status}}"
+          echo ""
+          echo "=== [DEBUG] Environment Variables ==="
+          echo "DATABASE_URL: ${DATABASE_URL:-not set}"
+          echo "NODE_ENV: ${NODE_ENV:-not set}"
 
       - name: Upload test results
         if: always()
@@ -128,7 +199,12 @@ jobs:
         if: always()
         working-directory: ./amt-express
         run: |
+          echo "=== [DEBUG] Restoring original drizzle.ts ==="
           # Restore original file after tests
           if [ -f lib/db/drizzle.ts.backup ]; then
             mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+            echo "✅ Original drizzle.ts restored"
+          else
+            echo "⚠️ No backup file found (lib/db/drizzle.ts.backup)"
           fi
+          echo "=== [DEBUG] Workflow Complete ==="

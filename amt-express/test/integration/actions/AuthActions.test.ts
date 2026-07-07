@@ -270,12 +270,12 @@ describe('AuthActions [INTEGRATION]', () => {
   beforeAll(async () => {
     // Clean up before tests
     await cleanupTestUsers();
-  }, 60000); // Increased timeout to 60s for database operations
+  }); // Increased timeout to 60s for database operations
 
   afterAll(async () => {
     // Clean up after tests
     await cleanupTestUsers();
-  }, 60000); // Increased timeout to 60s for database cleanup
+  }); // Increased timeout to 60s for database cleanup
 
   describe('signUp', () => {
     it('should register a new user with valid credentials', async () => {
