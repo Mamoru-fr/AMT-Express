@@ -22,8 +22,14 @@ jobs:
   tests-unit:
     uses: ./.github/workflows/tests-unit.yml
     secrets: inherit
+    needs: [build]
+  
+  tests-rides:
+    uses: ./.github/workflows/tests-rides.yml
+    secrets: inherit
+    needs: [build]
 
-  tests-integration:
+  tests-auth:
     uses: ./.github/workflows/tests-auth.yml
     secrets: inherit
     needs: [build]
@@ -32,7 +38,7 @@ jobs:
   all-tests:
     name: All Tests Passed
     runs-on: ubuntu-latest
-    needs: [build, tests-unit, tests-integration]
+    needs: [build, tests-unit, tests-rides, tests-auth]
     if: always()
     
     steps:
