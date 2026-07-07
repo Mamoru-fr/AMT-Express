@@ -41,6 +41,9 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     
     steps:
+      - name: Set DATABASE_URL globally
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/amt_express_test" >> $GITHUB_ENV
       - name: Debug - Job started
         run: |
           echo "=== [DEBUG] Authentication Tests Job Started ==="
@@ -51,7 +54,7 @@ jobs:
       - name: Debug - Check PostgreSQL service
         run: |
           echo "=== [DEBUG] Waiting for PostgreSQL service ==="
-          echo "PostgreSQL service name: postgres"
+          echo "PostgreSQL service accessible via: localhost:5432"
           echo "Expected connection string: postgresql://postgres:postgres@localhost:5432/amt_express_test"
           echo "Testing connection in 5 seconds..."
           sleep 5
@@ -100,13 +103,15 @@ jobs:
 
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
         run: |
           echo "=== [DEBUG] Creating CI drizzle.ts ==="
-          echo "Current DATABASE_URL: ${DATABASE_URL:-not set}"
+          echo "DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test"
           # Backup original drizzle.ts
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
           
-          # Create CI version using postgres-js
+          # Create CI version using postgres-js with explicit localhost connection
           cat > lib/db/drizzle.ts << 'EOF'
           import * as dotenv from "dotenv";
           import * as schema from "@/lib/db/schema";
@@ -115,7 +120,8 @@ jobs:
           
           dotenv.config();
           
-          const connectionString = process.env.DATABASE_URL;
+          // Always use localhost for CI environment
+          const connectionString = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/amt_express_test";
           console.log('🔍 [DEBUG] Connection string:', connectionString);
           if (!connectionString) {
               throw new Error("DATABASE_URL environment variable is not set");
@@ -124,7 +130,8 @@ jobs:
           const sql = postgres(connectionString, {
               max: 1,
               idle_timeout: 20,
-              connect_timeout: 10,
+              connect_timeout: 30, // Increased timeout for CI
+              connection_init_sql: "SET application_name = 'CI-Tests'",
           });
           
           const db = drizzle(sql, { schema });
@@ -141,7 +148,7 @@ jobs:
           docker ps --all
           echo ""
           echo "Testing PostgreSQL connection..."
-          pg_isready -h postgres -p 5432 -U postgres -d amt_express_test || echo "⚠️ PostgreSQL not ready yet"
+          pg_isready -h localhost -p 5432 -U postgres -d amt_express_test || echo "⚠️ PostgreSQL not ready yet"
 
       - name: Run database migrations
         working-directory: ./amt-express
@@ -153,15 +160,28 @@ jobs:
           pnpm db:migrate
           echo "=== [DEBUG] Database migrations complete ==="
 
-      - name: Test PostgreSQL connection explicitly
+      - name: Verify PostgreSQL connection
         run: |
-          echo "=== [DEBUG] Testing PostgreSQL connection with psql ==="
-          PGPASSWORD=postgres psql -h postgres -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;" || echo "❌ PostgreSQL connection failed"
-
-      - name: Wait for database to be ready
-        run: |
-          echo "=== [DEBUG] Waiting 10 seconds for database to be fully ready ==="
-          sleep 10
+          echo "=== [DEBUG] Verifying PostgreSQL connection ==="
+          # Test until PostgreSQL is ready (retry logic)
+          MAX_ATTEMPTS=10
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT: Testing PostgreSQL connection..."
+            if PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;" 2>/dev/null; then
+              echo "✅ PostgreSQL connection successful"
+              break
+            else
+              echo "⏳ PostgreSQL not ready yet, waiting 2 seconds..."
+              sleep 2
+              ATTEMPT=$((ATTEMPT + 1))
+            fi
+          done
+          
+          if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+            echo "❌ PostgreSQL connection failed after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
 
       - name: Run Authentication tests
         working-directory: ./amt-express

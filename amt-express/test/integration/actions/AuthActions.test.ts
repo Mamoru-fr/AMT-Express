@@ -218,6 +218,8 @@ function isErrorResponse<T>(response: ActionResponse<T>): response is { success:
 // Optimized cleanup function - uses batch operations instead of individual deletions
 async function cleanupTestUsers(): Promise<void> {
   try {
+    console.log('🧹 Cleaning up test users...');
+    
     // First, find all test users in a single query
     const testUsers = await db
       .select({ id: users.id })
@@ -234,28 +236,38 @@ async function cleanupTestUsers(): Promise<void> {
         ilike(users.email, 'customer-%')
       ));
     
-    if (testUsers.length === 0) return;
+    if (testUsers.length === 0) {
+      console.log('✅ No test users to clean up');
+      return;
+    }
+    
+    console.log(`📊 Found ${testUsers.length} test users to clean up`);
     
     // Extract all user IDs
     const userIds = testUsers.map(u => u.id);
     
     // Use batch deletion where possible to avoid FK constraints
     // Note: Order matters - delete from child tables first
+    console.log('🗑️  Deleting test sessions...');
     await db.delete(session)
       .where(inArray(session.userId, userIds))
       .catch(() => {});
     
+    console.log('🗑️  Deleting test accounts...');
     await db.delete(account)
       .where(inArray(account.userId, userIds))
       .catch(() => {});
     
+    console.log('🗑️  Deleting test users...');
     // Finally delete users in batch
     await db.delete(users)
       .where(inArray(users.id, userIds))
       .catch(() => {});
       
+    console.log('✅ Test user cleanup completed');
+      
   } catch (error) {
-    console.warn('Cleanup failed (non-critical):', error);
+    console.warn('⚠️  Cleanup failed (non-critical):', error);
     // Don't fail the test if cleanup fails
   }
 }
@@ -270,12 +282,12 @@ describe('AuthActions [INTEGRATION]', () => {
   beforeAll(async () => {
     // Clean up before tests
     await cleanupTestUsers();
-  }); // Increased timeout to 60s for database operations
+  }, 30000); // Increased timeout to 30s for database operations
 
   afterAll(async () => {
     // Clean up after tests
     await cleanupTestUsers();
-  }); // Increased timeout to 60s for database cleanup
+  }, 30000); // Increased timeout to 30s for database cleanup
 
   describe('signUp', () => {
     it('should register a new user with valid credentials', async () => {
