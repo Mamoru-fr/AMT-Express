@@ -218,75 +218,56 @@ function isErrorResponse<T>(response: ActionResponse<T>): response is { success:
 // Optimized cleanup function - uses batch operations instead of individual deletions
 async function cleanupTestUsers(): Promise<void> {
   try {
-    process.stderr.write('🧹 [cleanupTestUsers] Starting cleanup...\n');
+    console.log('🧹 Cleaning up test users...');
     
-    // Timeout de 5 secondes pour éviter de bloquer
-    const queryTimeout = 5000;
-    
-    // Requête optimisée pour éviter les problèmes avec les tables vides
-    // Utilise LIMIT pour empêcher les scans complets sur des tables vides
-    const queryPromise = db
+    // First, find all test users in a single query
+    const testUsers = await db
       .select({ id: users.id })
       .from(users)
       .where(or(
         eq(users.email, 'test-integration@example.com'),
         eq(users.email, 'test-validation@example.com'),
-        and(
-          ilike(users.email, '%@integration.com'),
-          ne(users.email, null)
-        ),
-        and(
-          ilike(users.email, '%@test.com'),
-          ne(users.email, null)
-        )
-      ))
-      .limit(1000); // Sortie de secours : limite à 1000 résultats
-
-    let testUsers;
-    try {
-      testUsers = await Promise.race([
-        queryPromise,
-        new Promise((_, reject) => setTimeout(
-          () => reject(new Error(`Query timeout after ${queryTimeout}ms`)),
-          queryTimeout
-        ))
-      ]);
-    } catch (error) {
-      process.stderr.write('⚠️ [cleanupTestUsers] Query timeout or error: ' + error.message + '\n');
-      process.stderr.write('ℹ️ [cleanupTestUsers] This is expected on empty databases, continuing...\n');
-      // Si la requête timeout ou échoue, c'est probablement parce que la table est vide
-      return;
-    }
-    
-    process.stderr.write(`📊 [cleanupTestUsers] Found ${testUsers.length} test users to clean up\n`);
+        ilike(users.email, '%@integration.com'),
+        ilike(users.email, '%@test.com'),
+        ilike(users.email, 'test-%'),
+        ilike(users.email, 'test-duplicate-%'),
+        ilike(users.email, 'test-weak-%'),
+        ilike(users.email, 'test-login-%'),
+        ilike(users.email, 'customer-%')
+      ));
     
     if (testUsers.length === 0) {
-      process.stderr.write('✅ [cleanupTestUsers] No test users to clean up\n');
+      console.log('✅ No test users to clean up');
       return;
     }
     
+    console.log(`📊 Found ${testUsers.length} test users to clean up`);
+    
+    // Extract all user IDs
     const userIds = testUsers.map(u => u.id);
     
-    process.stderr.write('🗑️ [cleanupTestUsers] Deleting test sessions...\n');
+    // Use batch deletion where possible to avoid FK constraints
+    // Note: Order matters - delete from child tables first
+    console.log('🗑️  Deleting test sessions...');
     await db.delete(session)
       .where(inArray(session.userId, userIds))
       .catch(() => {});
     
-    process.stderr.write('🗑️ [cleanupTestUsers] Deleting test accounts...\n');
+    console.log('🗑️  Deleting test accounts...');
     await db.delete(account)
       .where(inArray(account.userId, userIds))
       .catch(() => {});
     
-    process.stderr.write('🗑️ [cleanupTestUsers] Deleting test users...\n');
+    console.log('🗑️  Deleting test users...');
     // Finally delete users in batch
     await db.delete(users)
       .where(inArray(users.id, userIds))
       .catch(() => {});
       
-    process.stderr.write('✅ [cleanupTestUsers] Cleanup completed\n');
+    console.log('✅ Test user cleanup completed');
       
   } catch (error) {
-    process.stderr.write('⚠️ [cleanupTestUsers] Cleanup failed (non-critical): ' + error.message + '\n');
+    console.warn('⚠️  Cleanup failed (non-critical):', error);
     // Don't fail the test if cleanup fails
   }
 }
