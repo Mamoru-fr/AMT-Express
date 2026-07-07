@@ -200,7 +200,7 @@ vi.mock('@/lib/services/AuditService', () => ({
 // ============================================================================
 // NOW IMPORT THE MODULES AFTER ALL MOCKS ARE SET UP
 // ============================================================================
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { signIn, signUp, signOut } from '@/lib/actions/AuthActions';
 import { ErrorCodes } from '@/lib/types/action-response';
 import type { ActionResponse } from '@/lib/types/action-response';
@@ -284,8 +284,13 @@ describe('AuthActions [INTEGRATION]', () => {
     await cleanupTestUsers();
   }, 60000); // Increased timeout to 60s for database operations
 
+  afterEach(async () => {
+    // Clean up after each test to prevent interference
+    await cleanupTestUsers();
+  }, 30000); // Timeout for cleanup between tests
+
   afterAll(async () => {
-    // Clean up after tests
+    // Final cleanup after all tests
     await cleanupTestUsers();
   }, 60000); // Increased timeout to 60s for database cleanup
 
