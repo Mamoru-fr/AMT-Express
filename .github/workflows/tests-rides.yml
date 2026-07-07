@@ -3,12 +3,8 @@ name: Integration Tests - Rides
 on:
   push:
     branches: [ main, development, feature/** ]
-    paths:
-      - 'amt-express/**'
   pull_request:
     branches: [ main, development, feature/** ]
-    paths:
-      - 'amt-express/**'
   workflow_call:
 
 concurrency:
