@@ -93,7 +93,7 @@ function parseCSVLine(line: string): string[] {
     return parts;
 }
 
-describe('CSV Import - parsePrice', () => {
+describe('CSV Import [UNIT] - parsePrice', () => {
     it('should parse price with euro symbol after number', () => {
         expect(parsePrice('120.00 €')).toBe(120.00);
     });
@@ -135,7 +135,7 @@ describe('CSV Import - parsePrice', () => {
     });
 });
 
-describe('CSV Import - parseDate', () => {
+describe('CSV Import [UNIT] - parseDate', () => {
     it('should parse date with English format', () => {
         const result = parseDate('Monday, December 1, 2025', '');
         expect(result).toBeInstanceOf(Date);
@@ -183,7 +183,7 @@ describe('CSV Import - parseDate', () => {
     });
 });
 
-describe('CSV Import - parseCSVLine', () => {
+describe('CSV Import [UNIT] - parseCSVLine', () => {
     it('should parse simple CSV line', () => {
         const result = parseCSVLine('field1,field2,field3');
         expect(result).toEqual(['field1', 'field2', 'field3']);
@@ -215,7 +215,7 @@ describe('CSV Import - parseCSVLine', () => {
     });
 });
 
-describe('CSV Import - Full CSV Parsing', () => {
+describe('CSV Import [UNIT] - Full CSV Parsing', () => {
     let tempFilePath: string;
 
     beforeEach(() => {
@@ -260,7 +260,7 @@ describe('CSV Import - Full CSV Parsing', () => {
     });
 });
 
-describe('CSV Import - Data Validation', () => {
+describe('CSV Import [UNIT] - Data Validation', () => {
     it('should identify cancelled rides', () => {
         const chauffeur = 'ANNULE';
         expect(chauffeur).toBe('ANNULE');
@@ -304,7 +304,7 @@ describe('CSV Import - Data Validation', () => {
     });
 });
 
-describe('CSV Import - Note Building', () => {
+describe('CSV Import [UNIT] - Note Building', () => {
     it('should build customer notes from multiple fields', () => {
         const row = {
             attente: 'VAN / ATT 30 MIN',
@@ -345,7 +345,7 @@ describe('CSV Import - Note Building', () => {
     });
 });
 
-describe('CSV Import - Driver ID Generation', () => {
+describe('CSV Import [UNIT] - Driver ID Generation', () => {
     it('should handle driver IDs correctly', () => {
         const driverId = 'CFR00132';
         const driverName = 'TOUFIK ROMAINVILLE';
@@ -369,7 +369,7 @@ describe('CSV Import - Driver ID Generation', () => {
     });
 });
 
-describe('CSV Import - Production ID Generation', () => {
+describe('CSV Import [UNIT] - Production ID Generation', () => {
     it('should generate production ID from name', () => {
         const productionName = 'WARNER BROS';
         const productionId = productionName
@@ -408,7 +408,7 @@ describe('CSV Import - Production ID Generation', () => {
     });
 });
 
-describe('CSV Import - Edge Cases', () => {
+describe('CSV Import [UNIT] - Edge Cases', () => {
     it('should handle rides with multiple passengers', () => {
         const nom = 'JOHN DOE + JANE SMITH + BOB JOHNSON';
         expect(nom).toContain('+');

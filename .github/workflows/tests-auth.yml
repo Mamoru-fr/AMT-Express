@@ -1,20 +1,34 @@
-name: CI - Build, Test & Docker
+name: Integration Tests
 
 on:
   push:
-    branches: [ main, development, feature/** , feature/github-workflows]
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/test/actions/*.test.ts'
+      - 'amt-express/lib/actions/*.ts'
+      - 'amt-express/lib/controllers/*.ts'
   pull_request:
-    branches: [ main, development, feature/github-workflows]
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/test/actions/*.test.ts'
+      - 'amt-express/lib/actions/*.ts'
+      - 'amt-express/lib/controllers/*.ts'
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '24.7.0'
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
-  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
-  build-and-test:
-    name: Build and Test
+  integration-tests:
+    name: Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
     services:
       postgres:
         image: postgres:16
@@ -27,15 +41,12 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Enable Corepack
         run: corepack enable
 
-      # Setup Node.js with pnpm via corepack
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -93,28 +104,22 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
         run: pnpm db:generate
 
-      # Linting
-      - name: Run ESLint
-        working-directory: ./amt-express
-        run: pnpm lint
-
-      # Build the application
-      - name: Build Next.js application
+      - name: Run integration tests
         working-directory: ./amt-express
         env:
+          NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm build
+        run: pnpm test:integration
 
-      # Run tests
-      - name: Run tests
-        working-directory: ./amt-express
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
-          CSRF_SECRET: test-secret
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:run
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-test-results
+          path: ./amt-express/test-results/
+          retention-days: 7
 
       - name: Restore original drizzle.ts
         if: always()
@@ -124,50 +129,3 @@ jobs:
           if [ -f lib/db/drizzle.ts.backup ]; then
             mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
           fi
-
-  docker-build:
-    name: Docker Build
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKER_HUB_USERNAME || 'ghcr.io' }}/amt-express
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./amt-express
-          file: ./amt-express/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            DATABASE_URL=postgresql://user:pass@localhost:5432/db
-            CSRF_SECRET=build-secret-placeholder
-            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}

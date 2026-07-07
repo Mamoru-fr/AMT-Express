@@ -1,20 +1,34 @@
-name: Tests
+name: Integration Tests - Rides
 
 on:
   push:
-    branches: [ main, development, feature/** , feature/github-workflows]
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/test/actions/RidesManagementActions.test.ts'
+      - 'amt-express/lib/actions/ridesManagementActions.ts'
+      - 'amt-express/lib/controllers/RidesManagementController.ts'
   pull_request:
-    branches: [ main, development, feature/github-workflows]
+    branches: [ main, develop, feature/** ]
+    paths:
+      - 'amt-express/test/actions/RidesManagementActions.test.ts'
+      - 'amt-express/lib/actions/ridesManagementActions.ts'
+      - 'amt-express/lib/controllers/RidesManagementController.ts'
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '24.7.0'
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
-  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
-  test:
-    name: Run Tests
+  rides-tests:
+    name: Rides Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     services:
       postgres:
         image: postgres:16
@@ -27,7 +41,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Enable Corepack
@@ -90,21 +104,22 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
         run: pnpm db:generate
 
-      - name: Run tests
+      - name: Run rides tests
         working-directory: ./amt-express
         env:
+          NODE_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:run
+        run: pnpm test:rides
 
-      - name: Run tests with coverage
-        working-directory: ./amt-express
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
-          CSRF_SECRET: test-secret
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:coverage
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rides-test-results
+          path: ./amt-express/test-results/
+          retention-days: 7
 
       - name: Restore original drizzle.ts
         if: always()

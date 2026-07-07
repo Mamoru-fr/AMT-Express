@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ActionResponse, ErrorCodes } from '../lib/types/action-response';
 
-describe('ActionResponse Type', () => {
+describe('ActionResponse Type [UNIT]', () => {
     describe('Success Response', () => {
         it('should create a valid success response with data', () => {
             const response: ActionResponse<string> & { error?: undefined; code?: undefined; details?: undefined } = {
