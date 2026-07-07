@@ -101,7 +101,7 @@ jobs:
       - name: Run database migrations
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/amt_express_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
         run: pnpm db:migrate
 
       - name: Wait for database to be ready
@@ -111,7 +111,7 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/amt_express_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:rides
