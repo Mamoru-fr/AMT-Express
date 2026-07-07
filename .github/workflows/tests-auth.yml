@@ -4,15 +4,11 @@ on:
   push:
     branches: [ main, development, feature/** ]
     paths:
-      - 'amt-express/test/integration/actions/*.test.ts'
-      - 'amt-express/lib/actions/*.ts'
-      - 'amt-express/lib/controllers/*.ts'
+      - 'amt-express/**'
   pull_request:
     branches: [ main, development, feature/** ]
     paths:
-      - 'amt-express/test/integration/actions/*.test.ts'
-      - 'amt-express/lib/actions/*.ts'
-      - 'amt-express/lib/controllers/*.ts'
+      - 'amt-express/**'
   workflow_call:
 
 concurrency:
