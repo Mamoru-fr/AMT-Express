@@ -67,4 +67,4 @@ jobs:
           NODE_ENV: test
           DATABASE_URL: ${{ env.DATABASE_URL }}
           CSRF_SECRET: test-secret
-        run: pnpm test:integration:auth-simple --run --test-timeout=60000
+        run: pnpm test:auth-simple --run --test-timeout=60000
