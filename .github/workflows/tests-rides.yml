@@ -2,13 +2,13 @@ name: Integration Tests - Rides
 
 on:
   push:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, development, feature/** ]
     paths:
       - 'amt-express/test/integration/actions/RidesManagementActions.test.ts'
       - 'amt-express/lib/actions/ridesManagementActions.ts'
       - 'amt-express/lib/controllers/RidesManagementController.ts'
   pull_request:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, development, feature/** ]
     paths:
       - 'amt-express/test/integration/actions/RidesManagementActions.test.ts'
       - 'amt-express/lib/actions/ridesManagementActions.ts'
