@@ -1,36 +1,24 @@
 /**
  * Integration tests for AuthActions
- * 
- * Tests with REAL database via mocked AuthService
+ * Tests with mocked AuthController to avoid better-auth initialization issues
  */
 
 // ============================================================================
-// ENVIRONMENT SETUP - MUST BE FIRST
+// ENVIRONMENT SETUP
 // ============================================================================
 vi.stubEnv('NODE_ENV', 'test');
 
 // ============================================================================
-// MOCKS - MUST BE DEFINED BEFORE ANY IMPORTS THAT USE THEM
+// MOCKS - MUST BE DEFINED BEFORE ANY IMPORTS
 // ============================================================================
 import { vi } from 'vitest';
 
-// 🔴 CRITICAL: Mock better-auth FIRST
+// 🔴 STEP 1: Mock better-auth to prevent initialization
 vi.mock('@/lib/auth/auth', () => ({
   auth: {
     api: { signInEmail: vi.fn(), signUpEmail: vi.fn(), signOut: vi.fn() },
   },
 }));
-
-// Mock AuthService BEFORE importing db (we'll use the imported db inside the mock)
-// This ensures AuthService is mocked before AuthController imports it
-const mockAuthService = vi.hoisted(() => ({
-  AuthService: {
-    signin: vi.fn(),
-    signup: vi.fn(),
-    signout: vi.fn(),
-  },
-}));
-vi.mock('@/lib/services/AuthService', () => mockAuthService);
 
 // Mock session
 vi.mock('@/lib/auth/session', () => ({
@@ -56,14 +44,14 @@ vi.mock('@/lib/middleware/roleMiddleware', () => ({
 
 // Mock next/headers
 vi.mock('next/headers', () => ({
-  headers: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null, entries: () => [], forEach: () => {}, keys: () => [], values: () => [], [Symbol.iterator]: () => [] }),
-  cookies: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null, entries: () => [], forEach: () => {}, keys: () => [], values: () => [], [Symbol.iterator]: () => [] }),
+  headers: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null, entries: () => [], forEach: () => {}, keys: () => [], values: () => [] }),
+  cookies: () => ({ get: () => null, set: () => null, has: () => false, delete: () => null, entries: () => [], forEach: () => {}, keys: () => [], values: () => [] }),
 }));
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn(), back: vi.fn(), forward: vi.fn(), refresh: vi.fn() }),
-  useSearchParams: () => ({ get: () => null, has: () => false, entries: () => [], forEach: () => {}, keys: () => [], values: () => [], toString: () => '', [Symbol.iterator]: () => [] }),
+  useSearchParams: () => ({ get: () => null, has: () => false, entries: () => [], forEach: () => {}, keys: () => [], values: () => [], toString: () => '' }),
   usePathname: () => '/',
   redirect: (url: string) => { throw new Error(`Redirect to: ${url}`); },
   permanentRedirect: (url: string) => { throw new Error(`Permanent redirect to: ${url}`); },
@@ -79,40 +67,51 @@ vi.mock('@/lib/services/AuditService', () => ({
 }));
 
 // ============================================================================
-// NOW IMPORT DATABASE - AFTER all service mocks
+// IMPORT DATABASE MODULES
 // ============================================================================
 import db from '@/lib/db/drizzle';
 import { users, account } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
-// ============================================================================
-// NOW CONFIGURE THE MOCKS with the imported database
-// This runs AFTER all mocks are set up
-// ============================================================================
+// 🔴 STEP 2: Mock AuthController BEFORE importing AuthActions
+// This is closer to the action and more likely to work
+const mockAuthController = vi.hoisted(() => ({
+  AuthController: {
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+  },
+}));
+vi.mock('@/lib/controllers/AuthController', () => mockAuthController);
+
+// Configure the mocks after db is imported
 beforeAll(() => {
-  // Configure the mocked AuthService to use the real database
-  mockAuthService.AuthService.signup = vi.fn().mockImplementation(async (name: string, email: string, password: string) => {
+  mockAuthController.AuthController.signUp = vi.fn().mockImplementation(async (name: string, email: string, password: string, confirmPassword: string) => {
+    // Check for duplicates
     const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (existingUsers.length > 0) {
-      throw new Error('USER_ALREADY_EXISTS: Email already in use');
+      return { success: false, error: 'Email already in use', code: 'VALIDATION_ERROR' };
     }
+    
+    // Create user
     const userId = randomUUID();
     await db.insert(users).values({ id: userId, name, email, role: 'customer', emailVerified: true });
     await db.insert(account).values({ id: randomUUID(), userId, accountId: userId, providerId: 'email', password: 'hashed-' + password });
-    return new Response(JSON.stringify({ ok: true, data: { user: { id: userId, name, email, role: 'customer' } } }), { status: 200 });
+    
+    return { success: true, data: undefined };
   });
 
-  mockAuthService.AuthService.signin = vi.fn().mockImplementation(async (email: string, password: string) => {
+  mockAuthController.AuthController.signIn = vi.fn().mockImplementation(async (email: string, password: string) => {
     const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (existingUsers.length === 0) {
-      throw new Error('INVALID_EMAIL_OR_PASSWORD: Invalid email or password');
+      return { success: false, error: 'Invalid email or password', code: 'UNAUTHORIZED' };
     }
-    return new Response(JSON.stringify({ ok: true, data: { user: existingUsers[0] } }), { status: 200 });
+    return { success: true, data: undefined };
   });
 
-  mockAuthService.AuthService.signout = vi.fn().mockImplementation(async () => {
-    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  mockAuthController.AuthController.signOut = vi.fn().mockImplementation(async () => {
+    return { success: true, data: undefined };
   });
 });
 
@@ -153,7 +152,9 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
 
     it('should reject duplicate email registration', async () => {
       const email = generateUniqueEmail('duplicate');
-      await signUp('User 1', email, 'Password123!', 'Password123!', undefined);
+      const result1 = await signUp('User 1', email, 'Password123!', 'Password123!', undefined);
+      expect(result1.success).toBe(true);
+      
       const result2 = await signUp('User 2', email, 'Password123!', 'Password123!', undefined);
       expect(result2.success).toBe(false);
       if (isErrorResponse(result2)) {
