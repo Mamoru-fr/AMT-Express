@@ -83,12 +83,13 @@ jobs:
         working-directory: ./amt-express
         run: |
           echo "=== [DEBUG] Creating CI drizzle.ts ==="
-          echo "DATABASE_URL: ${{ secrets.DATABASE_URL }}"
+          DB_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
+          echo "Constructed DATABASE_URL: $DB_URL"
           # Backup original drizzle.ts
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
           
           # Create CI version with optimized connection pool
-          cat > lib/db/drizzle.ts << 'EOF'
+          cat > lib/db/drizzle.ts << EOF
           import * as dotenv from "dotenv";
           import * as schema from "@/lib/db/schema";
           import { drizzle } from "drizzle-orm/postgres-js";
@@ -96,10 +97,10 @@ jobs:
           
           dotenv.config();
           
-          const connectionString = process.env.DATABASE_URL || "${{ secrets.DATABASE_URL }}";
+          const connectionString = "$DB_URL";
           console.log('[DEBUG] Drizzle - Connection string:', connectionString);
           if (!connectionString) {
-              throw new Error("DATABASE_URL environment variable is not set");
+              throw new Error("DATABASE_URL is not properly constructed");
           }
           
           const sql = postgres(connectionString, {
@@ -122,7 +123,8 @@ jobs:
         working-directory: ./amt-express
         run: |
           echo "=== [DEBUG] Running database migrations ==="
-          echo "DATABASE_URL: ${{ secrets.DATABASE_URL }}"
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
+          echo "DATABASE_URL: $DATABASE_URL"
           pnpm db:migrate
           echo "=== [DEBUG] Database migrations complete ==="
 
@@ -130,12 +132,12 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: |
           echo "=== [DEBUG] Starting Authentication tests ==="
-          echo "DATABASE_URL: ${{ secrets.DATABASE_URL }}"
+          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
+          echo "DATABASE_URL: $DATABASE_URL"
           pnpm test:auth --run --test-timeout=120000
           echo "=== [DEBUG] Authentication tests complete ==="
 
