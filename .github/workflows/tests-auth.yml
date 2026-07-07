@@ -18,36 +18,32 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '24.7.0'
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
-  NODE_ENV: test
+  NODE_VERSION: '22'  # ✅ Node 22 LTS
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
 
 jobs:
   integration-tests:
     name: Authentication Tests
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    
+
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          PGUSER: ${{ secrets.POSTGRES_USER }}
-          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST_AUTH_METHOD: ${{ secrets.POSTGRES_HOST_AUTH_METHOD }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: amt_express_test
+          PGUSER: postgres
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 15
-    
-    steps:
 
+    steps:
       - name: Wait for PostgreSQL to be ready
         run: |
           echo "=== Waiting for PostgreSQL ==="
-          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }}; do
+          until pg_isready -h localhost -p 5432 -U postgres -d amt_express_test; do
             sleep 1
           done
           echo "✅ PostgreSQL is ready!"
@@ -55,7 +51,7 @@ jobs:
       - name: Verify PostgreSQL connection
         run: |
           echo "=== Verifying PostgreSQL connection ==="
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -c "SELECT 1 as test;"
+          PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,84 +69,52 @@ jobs:
       - name: Install dependencies
         working-directory: ./amt-express
         run: |
-          echo "=== [DEBUG] Installing dependencies ==="
           echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
-          echo "=== [DEBUG] Dependencies installed ==="
 
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
         run: |
-          echo "=== [DEBUG] Creating CI drizzle.ts ==="
-          DB_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
-          echo "Constructed DATABASE_URL: $DB_URL"
-          # Backup original drizzle.ts
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
-          
-          # Create CI version with optimized connection pool
-          cat > lib/db/drizzle.ts << EOF
+          cat > lib/db/drizzle.ts << 'EOF'
           import * as dotenv from "dotenv";
           import * as schema from "@/lib/db/schema";
           import { drizzle } from "drizzle-orm/postgres-js";
           import postgres from "postgres";
-          
+
           dotenv.config();
-          
-          const connectionString = "$DB_URL";
-          console.log('[DEBUG] Drizzle - Connection string:', connectionString);
+
+          const connectionString = process.env.DATABASE_URL;
           if (!connectionString) {
-              throw new Error("DATABASE_URL is not properly constructed");
+              throw new Error("DATABASE_URL environment variable is not set");
           }
-          
+
           const sql = postgres(connectionString, {
-              max: 10,                  // Increased connection pool size
-              idle_timeout: 60,         // Longer idle timeout
-              connect_timeout: 10,      // Connection timeout in seconds
-              debug: true,             // Enable debug logging
-              onnotice: (notice) => console.log('[DEBUG] PostgreSQL notice:', notice),
-              onparameter: (params) => console.log('[DEBUG] PostgreSQL params:', params),
+              max: 1,
+              idle_timeout: 20,
+              connect_timeout: 30,
           });
-          
+
           const db = drizzle(sql, { schema });
-          console.log('[DEBUG] Drizzle - Database connection initialized for CI');
-          
+          console.log('✅ Database connection initialized for CI');
           export default db;
           EOF
-          echo "=== [DEBUG] CI drizzle.ts created ==="
 
       - name: Run database migrations
         working-directory: ./amt-express
-        run: |
-          echo "=== [DEBUG] Running database migrations ==="
-          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
-          echo "DATABASE_URL: $DATABASE_URL"
-          pnpm db:migrate
-          echo "=== [DEBUG] Database migrations complete ==="
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: pnpm db:migrate
 
       - name: Run Authentication tests
         working-directory: ./amt-express
         env:
           NODE_ENV: test
+          DATABASE_URL: ${{ env.DATABASE_URL }}
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: |
-          echo "=== [DEBUG] Starting Authentication tests ==="
-          export DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable"
-          echo "DATABASE_URL: $DATABASE_URL"
-          pnpm test:auth --run --test-timeout=120000
-          echo "=== [DEBUG] Authentication tests complete ==="
-
-      - name: Debug - Final PostgreSQL check
-        if: always()
-        run: |
-          echo "=== [DEBUG] Final PostgreSQL Check ==="
-          echo "Checking if PostgreSQL is still running..."
-          docker ps --all --filter "name=postgres" --format "{{.Status}}"
-          echo ""
-          echo "=== [DEBUG] Environment Variables ==="
-          echo "DATABASE_URL: ${DATABASE_URL:-not set}"
-          echo "NODE_ENV: ${NODE_ENV:-not set}"
+        run: pnpm test:auth --run --test-timeout=120000
 
       - name: Upload test results
         if: always()
@@ -164,12 +128,6 @@ jobs:
         if: always()
         working-directory: ./amt-express
         run: |
-          echo "=== [DEBUG] Restoring original drizzle.ts ==="
-          # Restore original file after tests
           if [ -f lib/db/drizzle.ts.backup ]; then
             mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-            echo "✅ Original drizzle.ts restored"
-          else
-            echo "⚠️ No backup file found (lib/db/drizzle.ts.backup)"
           fi
-          echo "=== [DEBUG] Workflow Complete ==="
