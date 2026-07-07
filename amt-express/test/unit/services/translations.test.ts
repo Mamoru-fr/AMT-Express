@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import en from '../locales/en.json';
-import fr from '../locales/fr.json';
+import en from '@/locales/en.json';
+import fr from '@/locales/fr.json';
 
 describe('Translations [UNIT]', () => {
     describe('Structure validation', () => {

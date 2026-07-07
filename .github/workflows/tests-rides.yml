@@ -4,13 +4,13 @@ on:
   push:
     branches: [ main, develop, feature/** ]
     paths:
-      - 'amt-express/test/actions/RidesManagementActions.test.ts'
+      - 'amt-express/test/integration/actions/RidesManagementActions.test.ts'
       - 'amt-express/lib/actions/ridesManagementActions.ts'
       - 'amt-express/lib/controllers/RidesManagementController.ts'
   pull_request:
     branches: [ main, develop, feature/** ]
     paths:
-      - 'amt-express/test/actions/RidesManagementActions.test.ts'
+      - 'amt-express/test/integration/actions/RidesManagementActions.test.ts'
       - 'amt-express/lib/actions/ridesManagementActions.ts'
       - 'amt-express/lib/controllers/RidesManagementController.ts'
   workflow_call:

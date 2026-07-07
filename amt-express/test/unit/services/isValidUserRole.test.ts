@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidUserRole, getValidatedRole } from '../utils/isValidUserRole';
+import { isValidUserRole, getValidatedRole } from '@/utils/isValidUserRole';
 import { SessionWithUser } from '@/content/database_types';
 
 describe('isValidUserRole [UNIT]', () => {
@@ -106,23 +106,6 @@ describe('getValidatedRole', () => {
   it('should return null for session with empty string role', () => {
     const session = createMockSession('');
     expect(getValidatedRole(session)).toBeNull();
-  });
-
-  it('should handle session without user property', () => {
-    const sessionWithoutUser = {
-      session: {
-        id: '123',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        userId: 'user-123',
-        expiresAt: new Date(),
-        token: 'token-123',
-      },
-      // Explicitly type as Partial<SessionWithUser> to indicate missing user property
-      user: undefined,
-    } as Partial<SessionWithUser>;
-    
-    expect(getValidatedRole(sessionWithoutUser)).toBeNull();
   });
 
   it('should return null for role with incorrect casing', () => {

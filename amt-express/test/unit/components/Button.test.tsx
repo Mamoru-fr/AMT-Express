@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Button } from '@/components/classicComponents/Button';
+import '@testing-library/jest-dom';
 
 // Mock de cn pour les tests
 vi.mock('@/utils/cn', () => ({
@@ -61,25 +62,25 @@ describe('Button Component [UNIT]', () => {
 
     it('should default to button type', () => {
       render(<Button content="Default Type" />);
-      const button = screen.getByRole('button', { name: /Default Type/i });
+      const button = screen.getByRole('button', { name: /Default Type/i }) as HTMLButtonElement;
       expect(button.type).toBe('button');
     });
 
     it('should accept custom type', () => {
       render(<Button content="Submit" type="submit" />);
-      const button = screen.getByRole('button', { name: /Submit/i });
+      const button = screen.getByRole('button', { name: /Submit/i }) as HTMLButtonElement;
       expect(button.type).toBe('submit');
     });
 
     it('should default to not disabled', () => {
       render(<Button content="Enabled" />);
-      const button = screen.getByRole('button', { name: /Enabled/i });
+      const button = screen.getByRole('button', { name: /Enabled/i }) as HTMLButtonElement;
       expect(button.disabled).toBe(false);
     });
 
     it('should accept disabled prop', () => {
       render(<Button content="Disabled" disabled={true} />);
-      const button = screen.getByRole('button', { name: /Disabled/i });
+      const button = screen.getByRole('button', { name: /Disabled/i }) as HTMLButtonElement;
       expect(button.disabled).toBe(true);
     });
   });
