@@ -3,8 +3,14 @@ name: Integration Tests - Rides
 on:
   push:
     branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
   workflow_call:
 
 concurrency:
@@ -28,6 +34,8 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: amt_express_test
+          PGUSER: postgres
+          PGPASSWORD: postgres
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10

@@ -3,8 +3,14 @@ name: Build Next.js
 on:
   push:
     branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
   workflow_call:
 
 concurrency:
