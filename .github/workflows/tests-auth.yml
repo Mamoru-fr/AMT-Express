@@ -156,11 +156,3 @@ jobs:
           name: auth-test-results
           path: ./amt-express/test-results/
           retention-days: 7
-
-      - name: Restore original drizzle.ts
-        if: always()
-        working-directory: ./amt-express
-        run: |
-          if [ -f lib/db/drizzle.ts.backup ]; then
-            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-          fi
