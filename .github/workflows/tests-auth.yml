@@ -141,7 +141,7 @@ jobs:
         run: |
           echo "=== [DEBUG] Starting Authentication tests ==="
           echo "DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test"
-          corepack pnpm test:auth --run --timeout=120000
+          corepack pnpm test:auth --run --test-timeout=120000
           echo "=== [DEBUG] Authentication tests complete ==="
 
       - name: Debug - Final PostgreSQL check
