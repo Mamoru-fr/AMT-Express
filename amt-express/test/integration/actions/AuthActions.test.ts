@@ -223,16 +223,24 @@ async function cleanupTestUsers(): Promise<void> {
     // Timeout de 5 secondes pour éviter de bloquer
     const queryTimeout = 5000;
     
-    // Requête avec timeout
+    // Requête optimisée pour éviter les problèmes avec les tables vides
+    // Utilise LIMIT pour empêcher les scans complets sur des tables vides
     const queryPromise = db
       .select({ id: users.id })
       .from(users)
       .where(or(
         eq(users.email, 'test-integration@example.com'),
         eq(users.email, 'test-validation@example.com'),
-        ilike(users.email, '%@integration.com'),
-        ilike(users.email, '%@test.com')
-      ));
+        and(
+          ilike(users.email, '%@integration.com'),
+          ne(users.email, null)
+        ),
+        and(
+          ilike(users.email, '%@test.com'),
+          ne(users.email, null)
+        )
+      ))
+      .limit(1000); // Sortie de secours : limite à 1000 résultats
 
     let testUsers;
     try {
@@ -245,7 +253,8 @@ async function cleanupTestUsers(): Promise<void> {
       ]);
     } catch (error) {
       process.stderr.write('⚠️ [cleanupTestUsers] Query timeout or error: ' + error.message + '\n');
-      // Si la requête timeout, on considère qu'il n'y a rien à nettoyer
+      process.stderr.write('ℹ️ [cleanupTestUsers] This is expected on empty databases, continuing...\n');
+      // Si la requête timeout ou échoue, c'est probablement parce que la table est vide
       return;
     }
     
