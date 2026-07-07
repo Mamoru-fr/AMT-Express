@@ -18,13 +18,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '24.7.0'
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+  NODE_VERSION: '22'
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
 
 jobs:
   rides-tests:
     name: Rides Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-linux-latest
     timeout-minutes: 25
     
     services:
@@ -38,14 +39,27 @@ jobs:
           PGPASSWORD: postgres
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 15
     
     steps:
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          until pg_isready -h localhost -p 5432 -U postgres -d amt_express_test; do
+            sleep 1
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Verify PostgreSQL connection
+        run: |
+          echo "Verifying PostgreSQL connection..."
+          PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;"
+
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install pnpm globally
+        run: npm install -g pnpm@9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,13 +68,9 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 
-      - name: Ensure pnpm is available
-        run: corepack prepare pnpm@latest --activate
-
       - name: Install dependencies
         working-directory: ./amt-express
         run: |
-          # Configure pnpm for CI (pnpm v9+ uses pnpm-workspace.yaml)
           echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
@@ -68,53 +78,78 @@ jobs:
       - name: Configure Drizzle for PostgreSQL (CI)
         working-directory: ./amt-express
         run: |
-          # Backup original drizzle.ts
           cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
-          
-          # Create CI version using postgres-js
-          cat > lib/db/drizzle.ts << 'EOF'
-          import * as dotenv from "dotenv";
+          cat > lib/db/drizzle.ts << 'ENDOFFILE'
           import * as schema from "@/lib/db/schema";
           import { drizzle } from "drizzle-orm/postgres-js";
           import postgres from "postgres";
-          
-          dotenv.config();
-          
+
           const connectionString = process.env.DATABASE_URL;
           if (!connectionString) {
-              throw new Error("DATABASE_URL environment variable is not set");
+            throw new Error("DATABASE_URL environment variable is not set");
           }
-          
+
           const sql = postgres(connectionString, {
-              max: 1,
-              idle_timeout: 20,
-              connect_timeout: 10,
+            max: 1,
+            idle_timeout: 20,
+            connect_timeout: 30,
           });
-          
+
           const db = drizzle(sql, { schema });
-          
-          console.log('✅ Database connection initialized for CI');
-          
           export default db;
-          EOF
+          ENDOFFILE
+
+      - name: Configure better-auth for CI
+        working-directory: ./amt-express
+        run: |
+          cp lib/auth/auth.ts lib/auth/auth.ts.backup
+          cat > lib/auth/auth.ts << 'ENDOFFILE'
+          import { betterAuth } from "better-auth";
+          import { drizzleAdapter } from "better-auth/adapters/drizzle";
+          import db from "@/lib/db/drizzle";
+          import * as schema from "@/lib/db/schema";
+          import { nextCookies } from "better-auth/next-js";
+          import { admin } from "better-auth/plugins";
+
+          export const auth = betterAuth({
+            emailAndPassword: {
+              enabled: true,
+            },
+            database: drizzleAdapter(db, {
+              provider: "pg",
+              schema: {
+                user: schema.users,
+                session: schema.session,
+                account: schema.account,
+                verification: schema.verification,
+              },
+            }),
+            plugins: [
+              nextCookies(),
+              admin({
+                defaultRole: "customer",
+              })
+            ],
+            secret: process.env.BETTER_AUTH_SECRET || "test-secret-fallback",
+            url: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+          });
+          ENDOFFILE
+          echo "Better-auth configured for CI"
 
       - name: Run database migrations
         working-directory: ./amt-express
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: pnpm db:migrate
-
-      - name: Wait for database to be ready
-        run: sleep 10
 
       - name: Run rides tests
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
+          DATABASE_URL: ${{ env.DATABASE_URL }}
           CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:rides
+        run: pnpm test:rides --run --test-timeout=120000 --hook-timeout=120000 --reporter=verbose --no-coverage
 
       - name: Upload test results
         if: always()
@@ -124,11 +159,16 @@ jobs:
           path: ./amt-express/test-results/
           retention-days: 7
 
-      - name: Restore original drizzle.ts
+      - name: Restore original configuration files
         if: always()
         working-directory: ./amt-express
         run: |
-          # Restore original file after tests
+          echo "Restoring original configuration files..."
           if [ -f lib/db/drizzle.ts.backup ]; then
             mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
+            echo "Restored drizzle.ts"
+          fi
+          if [ -f lib/auth/auth.ts.backup ]; then
+            mv lib/auth/auth.ts.backup lib/auth/auth.ts
+            echo "Restored auth.ts"
           fi

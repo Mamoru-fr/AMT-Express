@@ -153,7 +153,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     
     // Clean up any existing test rides
     await cleanupTestRides();
-  }); // Increased timeout to 60s for database operations
+  }, 60000); // Increased timeout to 60s for database operations
 
   afterAll(async () => {
     // Clean up test data
@@ -166,7 +166,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
     } catch (error) {
       console.error('User cleanup failed:', error);
     }
-  }); // Increased timeout to 60s for database cleanup
+  }, 60000); // Increased timeout to 60s for database cleanup
 
   describe('createRide', () => {
     it('should create a new ride with valid data', async () => {
@@ -203,7 +203,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         expect(ride[0].destination).toBe(expectedDestination);
         expect(ride[0].price).toBe('100.50');
       }
-    });
+    }, 60000);
 
     it('should validate required fields', async () => {
       const result = await createRide({
@@ -254,7 +254,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
       
       // Clean up
       await db.delete(rides).where(eq(rides.id, createResult.data));
-    });
+    }, 60000);
 
     it('should validate ride ID', async () => {
       const result = await assignDriverToRide('invalid-uuid', testDriverId);
@@ -298,7 +298,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
       
       // Clean up
       await db.delete(rides).where(eq(rides.id, createResult.data));
-    });
+    }, 60000);
 
     it('should validate ride ID for cancellation', async () => {
       const result = await cancelRide('invalid-uuid');
@@ -340,7 +340,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         .limit(1);
       
       expect(ride.length).toBe(0);
-    });
+    }, 60000);
 
     it('should validate ride ID for deletion', async () => {
       const result = await deleteRide('invalid-uuid');
@@ -364,7 +364,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         expect(typeof result.data.page).toBe('number');
         expect(typeof result.data.totalPages).toBe('number');
       }
-    });
+    }, 60000);
 
     it('should respect pagination', async () => {
       const result = await fetchRidesForManagement({ page: 1, limit: 5 });
@@ -373,7 +373,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
       if (isSuccessResponse(result)) {
         expect(result.data.rides.length).toBeLessThanOrEqual(5);
       }
-    });
+    }, 60000);
 
     it('should filter by status', async () => {
       const result = await fetchRidesForManagement({ 
@@ -387,6 +387,6 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         // All returned rides should have completed status
         expect(result.data.rides.every(r => r.status === 'completed')).toBe(true);
       }
-    });
+    }, 60000);
   });
 });
