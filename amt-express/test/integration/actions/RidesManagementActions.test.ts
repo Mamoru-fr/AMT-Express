@@ -46,11 +46,6 @@ vi.mock('@/lib/middleware/roleMiddleware', () => ({
   }),
 }));
 
-// Mock CSRF validation to always pass in test environment
-vi.mock('@/lib/middleware/csrfMiddleware', () => ({
-  validateCsrfToken: vi.fn().mockResolvedValue({ success: true, data: {} }),
-}));
-
 // Mock AuditService to prevent audit failures
 vi.mock('@/lib/services/AuditService', () => ({
   AuditLogger: {

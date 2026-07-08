@@ -2,15 +2,13 @@
 
 import {DriverDashboardController} from '@/lib/controllers/DriverDashboardController';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
-import {validateCsrfToken} from '@/lib/middleware/csrfMiddleware';
 import {requireRole} from '@/lib/middleware/roleMiddleware';
 import {validateRideId, validateToggleDriverAvailability} from '@/lib/validations/ride';
-import type {DriverDashboardData, DriverStats, SuggestedRide} from '@/lib/services/DriverDashboardService';
+import type {DriverDashboardData} from '@/lib/services/DriverDashboardService';
 
 /**
  * Driver Dashboard Actions - Server Actions sécurisées
  * - Valide les inputs avec Zod
- * - Vérifie le token CSRF
  * - Vérifie les rôles utilisateur
  * - Délègue au DriverDashboardController
  */
@@ -32,10 +30,9 @@ export async function fetchDriverDashboard(): Promise<ActionResponse<DriverDashb
 /**
  * Toggle driver availability status
  * @param available - Availability status
- * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function toggleDriverAvailability(available: boolean, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function toggleDriverAvailability(available: boolean): Promise<ActionResponse<void>> {
   // Verify user is a driver
   const roleCheck = await requireRole('driver');
   if (!roleCheck.success) {
@@ -44,18 +41,6 @@ export async function toggleDriverAvailability(available: boolean, csrfToken?: s
       error: roleCheck.error || 'Unauthorized access',
       code: ErrorCodes.UNAUTHORIZED,
     };
-  }
-
-  // Validate CSRF token if provided
-  if (csrfToken) {
-    const csrfCheck = await validateCsrfToken(csrfToken);
-    if (!csrfCheck.success) {
-      return {
-        success: false,
-        error: csrfCheck.error || 'Invalid CSRF token',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
   }
 
   // Validate input
@@ -75,10 +60,9 @@ export async function toggleDriverAvailability(available: boolean, csrfToken?: s
  * Request assignment to a ride
  * @param rideId - Ride ID to request
  * @param message - Optional message for the request
- * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse
  */
-export async function requestRideAssignment(rideId: string, message?: string, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function requestRideAssignment(rideId: string, message?: string): Promise<ActionResponse<void>> {
   // Verify user is a driver
   const roleCheck = await requireRole('driver');
   if (!roleCheck.success) {
@@ -87,18 +71,6 @@ export async function requestRideAssignment(rideId: string, message?: string, cs
       error: roleCheck.error || 'Unauthorized access',
       code: ErrorCodes.UNAUTHORIZED,
     };
-  }
-
-  // Validate CSRF token if provided
-  if (csrfToken) {
-    const csrfCheck = await validateCsrfToken(csrfToken);
-    if (!csrfCheck.success) {
-      return {
-        success: false,
-        error: csrfCheck.error || 'Invalid CSRF token',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
   }
 
   // Validate input

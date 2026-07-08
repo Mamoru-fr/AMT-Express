@@ -29,11 +29,6 @@ vi.mock('@/lib/auth/session', () => ({
   }),
 }));
 
-// Mock CSRF
-vi.mock('@/lib/middleware/csrfMiddleware', () => ({
-  validateCsrfToken: vi.fn().mockResolvedValue({ success: true, data: {} }),
-}));
-
 // Mock role middleware
 vi.mock('@/lib/middleware/roleMiddleware', () => ({
   requireRole: vi.fn().mockResolvedValue({ success: true, data: { user: { id: 'test-user', role: 'customer' }, session: {} } }),
@@ -141,7 +136,7 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
   describe('signUp', () => {
     it('should register a new user with valid credentials', async () => {
       const email = generateUniqueEmail('signup');
-      const result = await signUp('Test User', email, 'Password123!', 'Password123!', undefined);
+      const result = await signUp('Test User', email, 'Password123!', 'Password123!');
       expect(result.success).toBe(true);
       
       const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
@@ -152,10 +147,10 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
 
     it('should reject duplicate email registration', async () => {
       const email = generateUniqueEmail('duplicate');
-      const result1 = await signUp('User 1', email, 'Password123!', 'Password123!', undefined);
+      const result1 = await signUp('User 1', email, 'Password123!', 'Password123!');
       expect(result1.success).toBe(true);
       
-      const result2 = await signUp('User 2', email, 'Password123!', 'Password123!', undefined);
+      const result2 = await signUp('User 2', email, 'Password123!', 'Password123!');
       expect(result2.success).toBe(false);
       if (isErrorResponse(result2)) {
         expect(result2.code).toBe(ErrorCodes.VALIDATION_ERROR);
@@ -164,14 +159,14 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
 
     it('should validate password requirements', async () => {
       const email1 = generateUniqueEmail('weak');
-      const result1 = await signUp('Test User', email1, '123', '123', undefined);
+      const result1 = await signUp('Test User', email1, '123', '123');
       expect(result1.success).toBe(false);
       if (isErrorResponse(result1)) {
         expect(result1.error).toContain('Password must be at least 8 characters');
       }
       
       const email2 = generateUniqueEmail('mismatch');
-      const result2 = await signUp('Test User', email2, 'Password123!', 'Different123!', undefined);
+      const result2 = await signUp('Test User', email2, 'Password123!', 'Different123!');
       expect(result2.success).toBe(false);
       if (isErrorResponse(result2)) {
         expect(result2.error).toContain('Passwords do not match');
@@ -182,13 +177,13 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
   describe('signIn', () => {
     it('should authenticate with valid credentials', async () => {
       const email = generateUniqueEmail('login');
-      await signUp('Test User', email, 'Password123!', 'Password123!', undefined);
-      const result = await signIn(email, 'Password123!', undefined);
+      await signUp('Test User', email, 'Password123!', 'Password123!');
+      const result = await signIn(email, 'Password123!');
       expect(result.success).toBe(true);
     }, 30000);
 
     it('should reject invalid credentials', async () => {
-      const result = await signIn('nonexistent@example.com', 'wrongpassword', undefined);
+      const result = await signIn('nonexistent@example.com', 'wrongpassword');
       expect(result.success).toBe(false);
       if (isErrorResponse(result)) {
         expect(result.code).toBe(ErrorCodes.UNAUTHORIZED);
@@ -196,7 +191,7 @@ describe('AuthActions [INTEGRATION - REAL DATABASE]', () => {
     }, 30000);
 
     it('should validate input', async () => {
-      const result = await signIn('', '', undefined);
+      const result = await signIn('', '');
       expect(result.success).toBe(false);
       if (isErrorResponse(result)) {
         expect(result.code).toBe(ErrorCodes.VALIDATION_ERROR);

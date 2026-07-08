@@ -49,7 +49,6 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          CSRF_SECRET: test-secret
         run: pnpm test:auth-unit --run --test-timeout=30000
 
       - name: Upload test results

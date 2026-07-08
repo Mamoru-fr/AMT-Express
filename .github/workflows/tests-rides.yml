@@ -147,7 +147,6 @@ jobs:
         env:
           NODE_ENV: test
           DATABASE_URL: ${{ env.DATABASE_URL }}
-          CSRF_SECRET: test-secret
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: pnpm test:rides --run --test-timeout=120000 --hook-timeout=180000 --reporter=verbose --no-coverage
 

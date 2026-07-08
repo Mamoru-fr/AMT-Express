@@ -12,10 +12,6 @@ import { AlertTriangle, Car } from "lucide-react";
 
 type View = 'signin' | 'signup';
 
-type ConnectionsPageClientProps = {
-    csrfToken: string;
-};
-
 function isView(value: string | null): value is View {
     return value === 'signin' || value === 'signup';
 }
@@ -30,7 +26,7 @@ function SubmitButton({ content }: { content: string }) {
     return <Button content={content} variant="primary" type="submit" disabled={pending} />;
 }
 
-export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClientProps) {
+export default function ConnectionsPageClient() {
     const { t } = useTranslation();
     const searchParams = useSearchParams();
     const [view, setView] = useState<View>(() => normalizeView(searchParams.get('view')));
@@ -100,7 +96,6 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
                         action={signin}
                         className={`connections-form ${view === 'signin' ? '' : 'hidden'}`}
                     >
-                        <input type="hidden" name="csrfToken" value={csrfToken} />
                         <Input
                             placeholder={t('Authentication.EmailPlaceholder')}
                             type='email'
@@ -129,7 +124,6 @@ export default function ConnectionsPageClient({ csrfToken }: ConnectionsPageClie
                         action={signup}
                         className={`connections-form ${view === 'signup' ? '' : 'hidden'}`}
                     >
-                        <input type="hidden" name="csrfToken" value={csrfToken} />
                         <Input
                             placeholder={t('Authentication.NamePlaceholder')}
                             type='text'
