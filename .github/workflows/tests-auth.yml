@@ -34,8 +34,8 @@ jobs:
   create_neon_branch:
     name: Create Neon Branch
     outputs:
-      db_url: ${{ steps.create_neon_branch_encode.outputs.db_url }}
-      db_url_with_pooler: ${{ steps.create_neon_branch_encode.outputs.db_url_with_pooler }}
+      db_url: ${{ steps.create_neon_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +50,11 @@ jobs:
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
+      - name: Debug - Show Neon Branch URL
+        run: |
+          echo "DEBUG: Neon branch created"
+          echo "db_url: ${{ steps.create_neon_branch.outputs.db_url }}"
+          echo "db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
 
   integration-tests:
     name: Authentication Integration Tests (With Database)
@@ -60,6 +65,11 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      - name: Debug - Show DATABASE_URL at start
+        run: |
+          echo "DEBUG: DATABASE_URL in integration-tests job env:"
+          echo "DATABASE_URL = ${{ env.DATABASE_URL }}"
+          echo "DATABASE_URL length = ${#DATABASE_URL}"
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -112,7 +122,11 @@ jobs:
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
+          echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
+          echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
           echo "DATABASE_URL=${DATABASE_URL}" > .env
+          echo "DEBUG [migrate]: .env file created"
+          cat .env | head -1
           pnpm db:migrate
 
       - name: Run Authentication tests
@@ -121,7 +135,11 @@ jobs:
           NODE_ENV: test
           DATABASE_URL: ${{ env.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:auth
+        run: |
+          echo "DEBUG [test]: DATABASE_URL = ${DATABASE_URL}"
+          echo "DEBUG [test]: DATABASE_URL length = ${#DATABASE_URL}"
+          echo "DEBUG [test]: NODE_ENV = ${NODE_ENV}"
+          pnpm test:auth
 
       - name: Upload test results
         if: always()
