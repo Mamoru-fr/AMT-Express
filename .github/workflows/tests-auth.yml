@@ -120,7 +120,7 @@ jobs:
       - name: Run database migrations
         working-directory: ./amt-express
         env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
         run: |
           echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
           echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
@@ -133,7 +133,7 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: |
           echo "DEBUG [test]: DATABASE_URL = ${DATABASE_URL}"
