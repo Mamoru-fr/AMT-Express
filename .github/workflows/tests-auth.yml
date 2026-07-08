@@ -80,32 +80,32 @@ jobs:
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Verify Neon DB connection
-        working-directory: ./amt-express
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-        run: |
-          echo "=== [DEBUG] Testing Neon DB connection ==="
-          cat > test-db-connection.mjs << 'EOF'
-          import { neon } from '@neondatabase/serverless';
-          (async () => {
-            try {
-              console.error('Testing Neon connection...');
-              const sql = neon(process.env.DATABASE_URL);
-              const result = await sql`SELECT 1 as test`;
-              console.error('✅ Neon DB connection test: SUCCESS');
-              console.error('Query result:', result);
-              process.exit(0);
-            } catch (error) {
-              console.error('❌ Neon DB connection test: FAILED');
-              console.error('Error:', error.message);
-              console.error('Stack:', error.stack);
-              process.exit(1);
-            }
-          })();
-          EOF
-          node test-db-connection.mjs
-          rm -f test-db-connection.mjs
+      # - name: Verify Neon DB connection
+      #   working-directory: ./amt-express
+      #   env:
+      #     DATABASE_URL: ${{ env.DATABASE_URL }}
+      #   run: |
+      #     echo "=== [DEBUG] Testing Neon DB connection ==="
+      #     cat > test-db-connection.mjs << 'EOF'
+      #     import { neon } from '@neondatabase/serverless';
+      #     (async () => {
+      #       try {
+      #         console.error('Testing Neon connection...');
+      #         const sql = neon(process.env.DATABASE_URL);
+      #         const result = await sql`SELECT 1 as test`;
+      #         console.error('✅ Neon DB connection test: SUCCESS');
+      #         console.error('Query result:', result);
+      #         process.exit(0);
+      #       } catch (error) {
+      #         console.error('❌ Neon DB connection test: FAILED');
+      #         console.error('Error:', error.message);
+      #         console.error('Stack:', error.stack);
+      #         process.exit(1);
+      #       }
+      #     })();
+      #     EOF
+      #     node test-db-connection.mjs
+      #     rm -f test-db-connection.mjs
 
       - name: Run database migrations
         working-directory: ./amt-express
