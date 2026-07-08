@@ -19,42 +19,80 @@ concurrency:
 
 env:
   NODE_VERSION: '22'
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
-  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/amt_express_test
 
 jobs:
-  rides-tests:
-    name: Rides Integration Tests
+  setup:
+    name: Setup
+    outputs:
+      branch: ${{ steps.branch_name.outputs.current_branch }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch_name
+        uses: tj-actions/branch-names@v8
+  
+  create_neon_branch:
+    name: Create Neon Branch
+    outputs:
+      db_url: ${{ steps.create_neon_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch expiration date as an env variable (2 weeks from now)
+        id: get_expiration_date
+        run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      - name: Create Neon Branch
+        id: create_neon_branch
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/test:rides-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ env.EXPIRES_AT }}
+      - name: Debug - Show Neon Branch URL
+        run: |
+          echo "DEBUG: Neon branch created"
+          echo "db_url: ${{ steps.create_neon_branch.outputs.db_url }}"
+          echo "db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
+        
+      - name: Save DB URL to file
+        run: |
+          echo "${{ steps.create_neon_branch.outputs.db_url }}" > db_url.txt
+          echo "DEBUG: Saved db_url to db_url.txt"
+
+      - name: Upload DB URL as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db_url_artifact
+          path: db_url.txt
+          retention-days: 1
+
+  integration-tests:
+    name: Rides Integration Tests (With Database)
+    needs: [setup, create_neon_branch]
+    env:
+      DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: amt_express_test
-          PGUSER: postgres
-          PGPASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 15
-    
+
     steps:
-      - name: Wait for PostgreSQL to be ready
+      - name: Download DB URL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: db_url_artifact
+      
+      - name: Set DATABASE_URL from file
         run: |
-          echo "Waiting for PostgreSQL..."
-          until pg_isready -h localhost -p 5432 -U postgres -d amt_express_test; do
-            sleep 1
-          done
-          echo "PostgreSQL is ready!"
+          DB_URL=$(cat db_url.txt)
+          echo "DATABASE_URL=$DB_URL" >> $GITHUB_ENV
+          echo "DEBUG: DATABASE_URL set to $DB_URL"
 
-      - name: Verify PostgreSQL connection
+      - name: Debug - Show DATABASE_URL at start
         run: |
-          echo "Verifying PostgreSQL connection..."
-          PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d amt_express_test -c "SELECT 1 as test;"
-
+          echo "DEBUG: DATABASE_URL in integration-tests job env:"
+          echo "DATABASE_URL = ${{ env.DATABASE_URL }}"
+          echo "DATABASE_URL length = ${#DATABASE_URL}"
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -75,99 +113,40 @@ jobs:
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Configure Drizzle for PostgreSQL (CI)
-        working-directory: ./amt-express
-        run: |
-          cp lib/db/drizzle.ts lib/db/drizzle.ts.backup
-          cat > lib/db/drizzle.ts << 'ENDOFFILE'
-          import * as schema from "@/lib/db/schema";
-          import { drizzle } from "drizzle-orm/postgres-js";
-          import postgres from "postgres";
-
-          const connectionString = process.env.DATABASE_URL;
-          if (!connectionString) {
-            throw new Error("DATABASE_URL environment variable is not set");
-          }
-
-          const sql = postgres(connectionString, {
-            max: 5,
-            idle_timeout: 30,
-            connect_timeout: 60,
-          });
-
-          const db = drizzle(sql, { schema });
-          export default db;
-          ENDOFFILE
-
-      - name: Configure better-auth for CI
-        working-directory: ./amt-express
-        run: |
-          cp lib/auth/auth.ts lib/auth/auth.ts.backup
-          cat > lib/auth/auth.ts << 'ENDOFFILE'
-          import { betterAuth } from "better-auth";
-          import { drizzleAdapter } from "better-auth/adapters/drizzle";
-          import db from "@/lib/db/drizzle";
-          import * as schema from "@/lib/db/schema";
-          import { nextCookies } from "better-auth/next-js";
-          import { admin } from "better-auth/plugins";
-
-          export const auth = betterAuth({
-            emailAndPassword: {
-              enabled: true,
-            },
-            database: drizzleAdapter(db, {
-              provider: "pg",
-              schema: {
-                user: schema.users,
-                session: schema.session,
-                account: schema.account,
-                verification: schema.verification,
-              },
-            }),
-            plugins: [
-              nextCookies(),
-              admin({
-                defaultRole: "customer",
-              })
-            ],
-            secret: process.env.BETTER_AUTH_SECRET || "test-secret-fallback",
-            url: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-          });
-          ENDOFFILE
-          echo "Better-auth configured for CI"
-
-      - name: Run database migrations
-        working-directory: ./amt-express
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-        run: pnpm db:migrate
-
-      - name: Run rides tests
+      - name: Run Rides tests
         working-directory: ./amt-express
         env:
           NODE_ENV: test
           DATABASE_URL: ${{ env.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-        run: pnpm test:rides --run --test-timeout=120000 --hook-timeout=180000 --reporter=verbose --no-coverage
+        run: |
+          echo "DEBUG [test]: DATABASE_URL = ${DATABASE_URL}"
+          echo "DEBUG [test]: DATABASE_URL length = ${#DATABASE_URL}"
+          echo "DEBUG [test]: NODE_ENV = ${NODE_ENV}"
+          pnpm test:rides
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rides-test-results
+          name: auth-test-results
           path: ./amt-express/test-results/
           retention-days: 7
 
-      - name: Restore original configuration files
-        if: always()
-        working-directory: ./amt-express
-        run: |
-          echo "Restoring original configuration files..."
-          if [ -f lib/db/drizzle.ts.backup ]; then
-            mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-            echo "Restored drizzle.ts"
-          fi
-          if [ -f lib/auth/auth.ts.backup ]; then
-            mv lib/auth/auth.ts.backup lib/auth/auth.ts
-            echo "Restored auth.ts"
-          fi
+  delete_neon_branch:
+    name: Delete Neon Branch
+    needs: [setup, create_neon_branch, integration-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon Branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/test:auth-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Delete DB URL artifact
+        uses: actions/delete-artifact@v4
+        with:
+          name: db_url_artifact

@@ -47,7 +47,7 @@ jobs:
         uses: neondatabase/create-branch-action@v6
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          branch_name: preview/test:auth-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
       - name: Debug - Show Neon Branch URL
@@ -113,45 +113,6 @@ jobs:
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
 
-      # - name: Verify Neon DB connection
-      #   working-directory: ./amt-express
-      #   env:
-      #     DATABASE_URL: ${{ env.DATABASE_URL }}
-      #   run: |
-      #     echo "=== [DEBUG] Testing Neon DB connection ==="
-      #     cat > test-db-connection.mjs << 'EOF'
-      #     import { neon } from '@neondatabase/serverless';
-      #     (async () => {
-      #       try {
-      #         console.error('Testing Neon connection...');
-      #         const sql = neon(process.env.DATABASE_URL);
-      #         const result = await sql`SELECT 1 as test`;
-      #         console.error('✅ Neon DB connection test: SUCCESS');
-      #         console.error('Query result:', result);
-      #         process.exit(0);
-      #       } catch (error) {
-      #         console.error('❌ Neon DB connection test: FAILED');
-      #         console.error('Error:', error.message);
-      #         console.error('Stack:', error.stack);
-      #         process.exit(1);
-      #       }
-      #     })();
-      #     EOF
-      #     node test-db-connection.mjs
-      #     rm -f test-db-connection.mjs
-
-      # - name: Run database migrations
-      #   working-directory: ./amt-express
-      #   env:
-      #     DATABASE_URL: ${{ env.DATABASE_URL }}
-      #   run: |
-      #     echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
-      #     echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
-      #     echo "DATABASE_URL=${DATABASE_URL}" > .env
-      #     echo "DEBUG [migrate]: .env file created"
-      #     cat .env | head -1
-      #     pnpm db:migrate
-
       - name: Run Authentication tests
         working-directory: ./amt-express
         env:
@@ -172,27 +133,20 @@ jobs:
           path: ./amt-express/test-results/
           retention-days: 7
 
-      # - name: Restore original configuration files
-      #   if: always()
-      #   working-directory: ./amt-express
-      #   run: |
-      #     echo "Restoring original configuration files..."
-      #     if [ -f lib/db/drizzle.ts.backup ]; then
-      #       mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-      #       echo "Restored drizzle.ts"
-      #     fi
-      #     if [ -f lib/auth/auth.ts.backup ]; then
-      #       mv lib/auth/auth.ts.backup lib/auth/auth.ts
-      #       echo "Restored auth.ts"
-      #     fi
   delete_neon_branch:
     name: Delete Neon Branch
     needs: [setup, create_neon_branch, integration-tests]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Delete Neon Branch
         uses: neondatabase/delete-branch-action@v3
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          branch: preview/test:auth-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Delete DB URL artifact
+        uses: actions/delete-artifact@v4
+        with:
+          name: db_url_artifact
