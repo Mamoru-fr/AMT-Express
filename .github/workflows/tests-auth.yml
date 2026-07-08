@@ -55,6 +55,18 @@ jobs:
           echo "DEBUG: Neon branch created"
           echo "db_url: ${{ steps.create_neon_branch.outputs.db_url }}"
           echo "db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
+        
+      - name: Save DB URL to file
+        run: |
+          echo "${{ steps.create_neon_branch.outputs.db_url }}" > db_url.txt
+          echo "DEBUG: Saved db_url to db_url.txt"
+
+      - name: Upload DB URL as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db_url_artifact
+          path: db_url.txt
+          retention-days: 1
 
   integration-tests:
     name: Authentication Integration Tests (With Database)
@@ -65,6 +77,17 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      - name: Download DB URL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: db_url_artifact
+      
+      - name: Set DATABASE_URL from file
+        run: |
+          DB_URL=$(cat db_url.txt)
+          echo "DATABASE_URL=$DB_URL" >> $GITHUB_ENV
+          echo "DEBUG: DATABASE_URL set to $DB_URL"
+          
       - name: Debug - Show DATABASE_URL at start
         run: |
           echo "DEBUG: DATABASE_URL in integration-tests job env:"
