@@ -140,17 +140,17 @@ jobs:
       #     node test-db-connection.mjs
       #     rm -f test-db-connection.mjs
 
-      - name: Run database migrations
-        working-directory: ./amt-express
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-        run: |
-          echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
-          echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
-          echo "DATABASE_URL=${DATABASE_URL}" > .env
-          echo "DEBUG [migrate]: .env file created"
-          cat .env | head -1
-          pnpm db:migrate
+      # - name: Run database migrations
+      #   working-directory: ./amt-express
+      #   env:
+      #     DATABASE_URL: ${{ env.DATABASE_URL }}
+      #   run: |
+      #     echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
+      #     echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
+      #     echo "DATABASE_URL=${DATABASE_URL}" > .env
+      #     echo "DEBUG [migrate]: .env file created"
+      #     cat .env | head -1
+      #     pnpm db:migrate
 
       - name: Run Authentication tests
         working-directory: ./amt-express
