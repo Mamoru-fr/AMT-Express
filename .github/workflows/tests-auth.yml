@@ -141,7 +141,7 @@ jobs:
       #     fi
   delete_neon_branch:
     name: Delete Neon Branch
-    needs: [setup, create_neon_branch]
+    needs: [setup, create_neon_branch, integration-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Delete Neon Branch
