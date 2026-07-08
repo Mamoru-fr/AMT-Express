@@ -86,23 +86,26 @@ jobs:
           DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
           echo "=== [DEBUG] Testing Neon DB connection ==="
-          cat > test-db-connection.js << 'EOF'
-          const postgres = require('postgres');
+          cat > test-db-connection.mjs << 'EOF'
+          import { neon } from '@neondatabase/serverless';
           (async () => {
             try {
-              const sql = postgres(process.env.DATABASE_URL, { connect_timeout: 5 });
+              console.error('Testing Neon connection...');
+              const sql = neon(process.env.DATABASE_URL);
               const result = await sql`SELECT 1 as test`;
-              process.stderr.write('✅ Neon DB connection test: SUCCESS\n');
+              console.error('✅ Neon DB connection test: SUCCESS');
+              console.error('Query result:', result);
               process.exit(0);
             } catch (error) {
-              process.stderr.write('❌ Neon DB connection test: FAILED\n');
-              process.stderr.write('Error: ' + error.message + '\n');
+              console.error('❌ Neon DB connection test: FAILED');
+              console.error('Error:', error.message);
+              console.error('Stack:', error.stack);
               process.exit(1);
             }
           })();
           EOF
-          node test-db-connection.js
-          rm test-db-connection.js
+          node test-db-connection.mjs
+          rm -f test-db-connection.mjs
 
       - name: Run database migrations
         working-directory: ./amt-express
@@ -126,19 +129,6 @@ jobs:
           path: ./amt-express/test-results/
           retention-days: 7
 
-      # - name: Restore original configuration files
-      #   if: always()
-      #   working-directory: ./amt-express
-      #   run: |
-      #     echo "Restoring original configuration files..."
-      #     if [ -f lib/db/drizzle.ts.backup ]; then
-      #       mv lib/db/drizzle.ts.backup lib/db/drizzle.ts
-      #       echo "Restored drizzle.ts"
-      #     fi
-      #     if [ -f lib/auth/auth.ts.backup ]; then
-      #       mv lib/auth/auth.ts.backup lib/auth/auth.ts
-      #       echo "Restored auth.ts"
-      #     fi
   delete_neon_branch:
     name: Delete Neon Branch
     needs: [setup, create_neon_branch, integration-tests]
