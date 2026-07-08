@@ -87,7 +87,7 @@ jobs:
           DB_URL=$(cat db_url.txt)
           echo "DATABASE_URL=$DB_URL" >> $GITHUB_ENV
           echo "DEBUG: DATABASE_URL set to $DB_URL"
-          
+
       - name: Debug - Show DATABASE_URL at start
         run: |
           echo "DEBUG: DATABASE_URL in integration-tests job env:"
@@ -143,7 +143,7 @@ jobs:
       - name: Run database migrations
         working-directory: ./amt-express
         env:
-          DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
           echo "DEBUG [migrate]: DATABASE_URL = ${DATABASE_URL}"
           echo "DEBUG [migrate]: DATABASE_URL length = ${#DATABASE_URL}"
@@ -156,7 +156,7 @@ jobs:
         working-directory: ./amt-express
         env:
           NODE_ENV: test
-          DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
         run: |
           echo "DEBUG [test]: DATABASE_URL = ${DATABASE_URL}"
