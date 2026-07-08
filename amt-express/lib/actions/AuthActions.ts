@@ -2,13 +2,11 @@
 
 import {AuthController} from '@/lib/controllers/AuthController';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
-import {validateCsrfToken} from '@/lib/middleware/csrfMiddleware';
 import {validateSignIn, validateSignUp} from '@/lib/validations/auth';
 
 /**
  * Auth Actions - Server Actions sécurisées
  * - Valide les inputs avec Zod
- * - Vérifie le token CSRF
  * - Délègue au AuthController
  */
 
@@ -16,10 +14,9 @@ import {validateSignIn, validateSignUp} from '@/lib/validations/auth';
  * Sign in a user with email and password
  * @param email - User email
  * @param password - User password
- * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse with session data or error
  */
-export async function signIn(email: string, password: string, csrfToken?: string): Promise<ActionResponse<void>> {
+export async function signIn(email: string, password: string): Promise<ActionResponse<void>> {
   // Validate input first
   const validation = validateSignIn({ email, password });
   if (!validation.success || !validation.data) {
@@ -28,26 +25,6 @@ export async function signIn(email: string, password: string, csrfToken?: string
       error: validation.error || 'Invalid input',
       code: ErrorCodes.VALIDATION_ERROR,
     };
-  }
-
-  // Skip CSRF validation in test environment
-  if (process.env.NODE_ENV !== 'test') {
-    if (!csrfToken) {
-      return {
-        success: false,
-        error: 'CSRF token is required',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
-
-    const csrfCheck = await validateCsrfToken(csrfToken);
-    if (!csrfCheck.success) {
-      return {
-        success: false,
-        error: csrfCheck.error || 'Invalid CSRF token',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
   }
 
   return AuthController.signIn(validation.data.email, validation.data.password);
@@ -59,7 +36,6 @@ export async function signIn(email: string, password: string, csrfToken?: string
  * @param email - User email
  * @param password - User password
  * @param confirmPassword - Password confirmation
- * @param csrfToken - CSRF token for form protection
  * @returns ActionResponse with new user data or error
  */
 export async function signUp(
@@ -67,7 +43,6 @@ export async function signUp(
     email: string,
     password: string,
     confirmPassword: string,
-    csrfToken?: string
 ): Promise<ActionResponse<void>> {
   // Validate input first
   const validation = validateSignUp({ name, email, password, confirmPassword });
@@ -77,26 +52,6 @@ export async function signUp(
       error: validation.error || 'Invalid input',
       code: ErrorCodes.VALIDATION_ERROR,
     };
-  }
-
-  // Skip CSRF validation in test environment
-  if (process.env.NODE_ENV !== 'test') {
-    if (!csrfToken) {
-      return {
-        success: false,
-        error: 'CSRF token is required',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
-
-    const csrfCheck = await validateCsrfToken(csrfToken);
-    if (!csrfCheck.success) {
-      return {
-        success: false,
-        error: csrfCheck.error || 'Invalid CSRF token',
-        code: ErrorCodes.UNAUTHORIZED,
-      };
-    }
   }
 
   return AuthController.signUp(

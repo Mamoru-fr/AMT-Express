@@ -70,7 +70,6 @@
         "Custom validation failed": "Échec de la validation. Vérifiez vos informations",
         "Too many attempts": "Trop de tentatives échouées. Réessayez plus tard",
         "Try again later": "Compte temporairement verrouillé. Réessayez plus tard",
-        "CSRF token mismatch": "Échec de la validation de sécurité. Actualisez et réessayez",
         "Invalid request": "Requête invalide. Veuillez réessayer",
         "Method not allowed": "Méthode de requête non autorisée",
         "Invalid request body": "Données de requête invalides",

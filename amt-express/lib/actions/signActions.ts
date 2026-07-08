@@ -6,19 +6,17 @@ import {redirect} from 'next/navigation';
 /**
  * Sign Actions - Server Actions pour les formulaires
  * Appellent les fonctions de AuthActions qui délèguent au Controller
- * Extrait le token CSRF du formulaire pour la validation
  */
 
 export async function signin(formData: FormData): Promise<void> {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const csrfToken = formData.get("csrfToken") as string | undefined;
 
     if (!email || !password) {
         redirect("/connections?view=signin&error=" + encodeURIComponent("errors.emailPasswordRequired"));
     }
 
-    const result = await signIn(email, password, csrfToken);
+    const result = await signIn(email, password);
     if (!result.success) {
         const errorMessage = result.error || 'errors.invalidCredentials';
         redirect(`/connections?view=signin&error=${encodeURIComponent(errorMessage)}`);
@@ -32,13 +30,12 @@ export async function signup(formData: FormData): Promise<void> {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
-    const csrfToken = formData.get("csrfToken") as string | undefined;
 
     if (!name || !email || !password || !confirmPassword) {
         redirect("/connections?view=signup&error=" + encodeURIComponent("errors.allFieldsRequired"));
     }
 
-    const result = await signUp(name, email, password, confirmPassword, csrfToken);
+    const result = await signUp(name, email, password, confirmPassword);
     if (!result.success) {
         const errorMessage = result.error || 'errors.signupFailed';
         redirect(`/connections?view=signup&error=${encodeURIComponent(errorMessage)}`);

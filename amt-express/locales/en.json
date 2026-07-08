@@ -70,7 +70,6 @@
         "Custom validation failed": "Validation failed. Please check your information",
         "Too many attempts": "Too many failed attempts. Please try again later",
         "Try again later": "Account temporarily locked. Please try again later",
-        "CSRF token mismatch": "Security validation failed. Please refresh and try again",
         "Invalid request": "Invalid request. Please try again",
         "Method not allowed": "Request method not allowed",
         "Invalid request body": "Invalid request data",
