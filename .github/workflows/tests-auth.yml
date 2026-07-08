@@ -147,6 +147,6 @@ jobs:
           api_key: ${{ secrets.NEON_API_KEY }}
 
       - name: Delete DB URL artifact
-        uses: actions/delete-artifact@v4
+        uses: geekyeggo/delete-artifact@v6
         with:
           name: db_url_artifact
