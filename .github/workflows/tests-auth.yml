@@ -39,13 +39,17 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Get branch expiration date as an env variable (2 weeks from now)
+        id: get_expiration_date
+        run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
       - name: Create Neon Branch
         id: create_neon_branch
-        uses: neondatabase/create-branch-action@v5
+        uses: neondatabase/create-branch-action@v6
         with:
-          project_id: ${{ secrets.NEON_PROJECT_ID }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ env.EXPIRES_AT }}
 
   integration-tests:
     name: Authentication Integration Tests (With Database)
@@ -137,12 +141,12 @@ jobs:
       #     fi
   delete_neon_branch:
     name: Delete Neon Branch
-    needs: [setup, create_neon_branch, integration-tests]
+    needs: [setup, create_neon_branch]
     runs-on: ubuntu-latest
     steps:
       - name: Delete Neon Branch
         uses: neondatabase/delete-branch-action@v3
         with:
-          project_id: ${{ secrets.NEON_PROJECT_ID }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
