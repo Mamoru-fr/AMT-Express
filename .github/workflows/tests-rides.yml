@@ -143,7 +143,7 @@ jobs:
         uses: neondatabase/delete-branch-action@v3
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch: preview/test:auth-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          branch: preview/test:rides-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
 
       - name: Delete DB URL artifact
