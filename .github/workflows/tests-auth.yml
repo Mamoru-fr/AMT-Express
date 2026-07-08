@@ -111,7 +111,9 @@ jobs:
         working-directory: ./amt-express
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
-        run: pnpm db:migrate
+        run: |
+          echo "DATABASE_URL=${DATABASE_URL}" > .env
+          pnpm db:migrate
 
       - name: Run Authentication tests
         working-directory: ./amt-express
