@@ -262,6 +262,7 @@ export class RidesManagementController {
         destination: string;
         driverId?: string;
         price?: string;
+        driverPrice?: string;
         status?: RideStatus;
     }): Promise<ActionResponse<string>> {
         try {

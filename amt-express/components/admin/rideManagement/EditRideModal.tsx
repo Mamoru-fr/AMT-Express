@@ -111,7 +111,7 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                         <input
                             type="number"
                             step="0.01"
-                            value={formData.price}
+                            value={formData.price || ''}
                             onChange={(e) => setFormData({...formData, price: e.target.value})}
                             className={styles.formInput}
                             required

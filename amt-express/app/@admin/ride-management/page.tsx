@@ -143,7 +143,8 @@ export default function RideManagementPage() {
             case 'price':
                 const priceCounts: Record<string, number> = {};
                 currentRides.forEach(ride => {
-                    priceCounts[ride.price] = (priceCounts[ride.price] || 0) + 1;
+                    const price = ride.price || '0';
+                    priceCounts[price] = (priceCounts[price] || 0) + 1;
                 });
                 return Object.entries(priceCounts).map(([value, count]) => ({
                     value,
@@ -217,7 +218,7 @@ export default function RideManagementPage() {
                     if (!hasMatchingCustomer) return false;
                     break;
                 case 'price':
-                    if (!values.includes(ride.price)) return false;
+                    if (!values.includes(ride.price || '0')) return false;
                     break;
                 case 'departureTime':
                     const rideDate = new Date(ride.departureTime).toLocaleDateString('fr-FR');

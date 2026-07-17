@@ -8,11 +8,12 @@
  */
 
 import db from './drizzle';
-import { rides, rideCustomers, users, productions, projects, drivers } from './schema';
+import { rides, rideCustomers, rideManagers, users, productions, projects, drivers } from './schema';
 import { readFileSync } from 'fs';
 import { randomUUID } from 'crypto';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { maskSensitive, safeLog, safeError, safeWarn } from '../utils/logger';
+import { auth } from '../auth/auth';
 import 'dotenv/config';
 
 interface CSVRow {
@@ -44,24 +45,37 @@ interface ImportSummary {
 
 /**
  * Parse a price string and convert to number
- * Handles formats like: "120.00 €", "€ 139.20", "-� 139.20", etc.
+ * Handles formats like: "120.00 €", "€ 139.20", "-� 139.20", " -   € ", etc.
  */
 function parsePrice(priceStr: string): number {
     if (!priceStr || priceStr.trim() === '') {
         return 0;
     }
     
-    // Remove currency symbols, spaces, and extract number
+    // Nettoyer la chaîne : supprimer tous les caractères non numériques sauf . et ,
     const cleaned = priceStr
-        .replace(/€/g, '')
-        .replace(/�/g, '')
-        .replace(/-/g, '')  // Also remove negative signs
-        .replace(/\s/g, '')
-        .replace(/,/g, '.')
+        .replace(/[^0-9.,-]/g, '')  // Garde seulement chiffres, . , et -
+        .replace(/,/g, '.')      // Remplace les virgules par des points
         .trim();
     
+    // Si la chaîne est vide ou invalide, retourner 0
+    if (cleaned === '' || cleaned === '-' || cleaned === '.') {
+        return 0;
+    }
+    
     const number = parseFloat(cleaned);
-    return isNaN(number) ? 0 : number;
+    return isNaN(number) ? 0 : Math.abs(number); // Math.abs pour éviter les négatifs
+}
+
+/**
+ * Calcule le prix facturé : tarifChauffeur * 1.16 + arrondi
+ * - Si décimale >= 0.5 → arrondi supérieur
+ * - Sinon → arrondi inférieur
+ */
+function calculateBilledPrice(driverPrice: number): number {
+    if (driverPrice === 0) return 0;
+    const priceWithTax = driverPrice * 1.16;
+    return Math.floor(priceWithTax + 0.5); // Arrondi standard
 }
 
 /**
@@ -94,6 +108,118 @@ function parseDate(dateStr: string, timeStr: string): Date | null {
         safeError(`Error parsing date: ${maskSensitive(dateStr)}`, e);
         return null;
     }
+}
+
+/**
+ * Crée ou récupère un utilisateur via Better-Auth
+ * - Vérifie d'abord si l'utilisateur existe déjà (par email ou nom)
+ * - Si non, crée un nouvel utilisateur avec un mot de passe temporaire
+ * - Rôle par défaut : 'customer' (peut être écrasé)
+ */
+async function getOrCreateUserWithAuth(
+    name: string,
+    email: string,
+    role: 'driver' | 'customer' = 'customer'
+): Promise<string | null> {
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    
+    // 1. Vérifier si un utilisateur existe déjà avec cet email
+    const existingUserByEmail = await db.select()
+        .from(users)
+        .where(eq(users.email, cleanEmail))
+        .limit(1);
+    
+    if (existingUserByEmail.length > 0) {
+        // Mettre à jour le rôle si nécessaire
+        if (existingUserByEmail[0].role !== role) {
+            await db.update(users)
+                .set({ role: role })
+                .where(eq(users.id, existingUserByEmail[0].id));
+            safeLog(`  🔄 Updated user role: ${maskSensitive(cleanName)} (${maskSensitive(cleanEmail)}) -> ${role}`);
+        }
+        return existingUserByEmail[0].id;
+    }
+    
+    // 2. Vérifier si un utilisateur existe déjà avec ce nom (même email différent)
+    const existingUserByName = await db.select()
+        .from(users)
+        .where(eq(users.name, cleanName))
+        .limit(1);
+    
+    if (existingUserByName.length > 0) {
+        // Mettre à jour l'email et le rôle si nécessaire
+        if (existingUserByName[0].email !== cleanEmail) {
+            await db.update(users)
+                .set({ email: cleanEmail })
+                .where(eq(users.id, existingUserByName[0].id));
+        }
+        if (existingUserByName[0].role !== role) {
+            await db.update(users)
+                .set({ role: role })
+                .where(eq(users.id, existingUserByName[0].id));
+            safeLog(`  🔄 Updated user: ${maskSensitive(cleanName)} with new email/role`);
+        }
+        return existingUserByName[0].id;
+    }
+    
+    // 3. Créer un nouvel utilisateur via Better-Auth
+    try {
+        // Générer un mot de passe temporaire complexe (8+ chars, maj, min, chiffre, symbole)
+        const tempPassword = randomUUID().substring(0, 8) + 'Ab1!';
+        
+        // Utiliser l'API Better-Auth pour créer l'utilisateur
+        const response = await auth.api.signUpEmail({
+            body: {
+                name: cleanName,
+                email: cleanEmail,
+                password: tempPassword,
+            },
+            asResponse: true,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            safeError(`Failed to create user ${maskSensitive(cleanName)}: ${errorData.error}`);
+            return null;
+        }
+
+        // Récupérer l'ID de l'utilisateur créé
+        const userData = await response.json();
+        const userId = userData.user?.id;
+
+        if (!userId) {
+            safeError(`No user ID returned for ${maskSensitive(cleanName)}`);
+            return null;
+        }
+
+        // Mettre à jour le rôle si nécessaire (Better-Auth gère les rôles via l'adapter)
+        if (role !== 'customer') { // 'customer' est le rôle par défaut dans auth.ts
+            await db.update(users)
+                .set({ role: role })
+                .where(eq(users.id, userId));
+        }
+
+        safeLog(`  ➕ Created ${role} user via Better-Auth: ${maskSensitive(cleanName)} (${maskSensitive(cleanEmail)})`);
+        return userId;
+    } catch (error) {
+        safeError(`Error creating user ${maskSensitive(cleanName)}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Formate les codes d'arrondissement de Paris (PXX → Paris XX)
+ */
+function formatParisDistrict(location: string): string {
+    if (!location) return location;
+    
+    // Regex pour matcher P suivi de 1 ou 2 chiffres (P0-P99)
+    const parisDistrictRegex = /\bP(\d{1,2})\b/gi;
+    
+    return location.replace(parisDistrictRegex, (match, districtNumber) => {
+        return `Paris ${districtNumber}`;
+    });
 }
 
 /**
@@ -137,6 +263,15 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
         }
         parts.push(current.trim()); // Add last field
         
+        // Debug: Log parsed parts for KHOJANDI line
+        if (parts.some(p => p.includes('KHOJANDI') || p.includes('GUERARD'))) {
+            console.log(`\n🔍 DEBUG Row ${i + 1} (KHOJANDI):`);
+            console.log(`   Parsed parts (${parts.length} columns):`);
+            parts.forEach((part, idx) => {
+                console.log(`     [${idx}]: "${part}"`);
+            });
+        }
+        
         // Expected 16 columns (forfait column was removed in newer CSV format)
         if (parts.length < 16) {
             safeWarn(`Skipping row ${i + 1}: Not enough columns (${parts.length}/16)`);
@@ -169,40 +304,49 @@ async function parseCSV(filepath: string): Promise<CSVRow[]> {
 
 /**
  * Get or create a driver by ID and name
+ * - Vérifie d'abord si le driver existe déjà (par accountingCode)
+ * - Sinon, vérifie si un user avec ce nom existe déjà (et crée le profil driver)
+ * - Sinon, crée un nouvel utilisateur + profil driver
  */
-async function getOrCreateDriver(accountingCode: string, driverName: string) {
+async function getOrCreateDriver(accountingCode: string, driverName: string): Promise<string | null> {
     if (!accountingCode || driverName === 'ANNULE') {
         return null;
     }
 
-    // Rechercher par accountingCode
+    const cleanDriverName = driverName.trim();
+
+    // 1. Rechercher par accountingCode (le plus fiable)
     const existingDriver = await db.select().from(drivers).where(eq(drivers.accountingCode, accountingCode)).limit(1);
 
     if (existingDriver.length > 0) {
         return existingDriver[0].userId;
     }
 
-    // Rechercher par nom de chauffeur (au cas où l'accountingCode aurait changé mais le nom est le même)
+    // 2. Rechercher par nom de chauffeur (au cas où l'accountingCode aurait changé)
     const existingDriverByName = await db.select()
         .from(users)
-        .where(and(eq(users.name, driverName), eq(users.role, 'driver')))
+        .where(and(eq(users.name, cleanDriverName), eq(users.role, 'driver')))
         .limit(1);
 
-
     if (existingDriverByName.length > 0) {
-        // Rechercher si un drivers existe déjà pour ce userId
+        // Rechercher si un profil driver existe déjà pour ce userId
         const existingDriverForUser = await db.select().from(drivers).where(eq(drivers.userId, existingDriverByName[0].id)).limit(1);
+        
         if (existingDriverForUser.length > 0) {
-            // Mettre à jour le driver existant avec le nouveau code comptable
-            await db.update(drivers)
-                .set({ accountingCode: accountingCode })
-                .where(eq(drivers.id, existingDriverForUser[0].id));
-            
-            safeLog(`  🔄 Updated driver: ${maskSensitive(driverName)} with new accounting code ${maskSensitive(accountingCode)}`);
+            // Mettre à jour le accountingCode si nécessaire
+            if (existingDriverForUser[0].accountingCode !== accountingCode) {
+                await db.update(drivers)
+                    .set({ accountingCode: accountingCode })
+                    .where(eq(drivers.id, existingDriverForUser[0].id));
+                safeLog(`  🔄 Updated driver accounting code: ${maskSensitive(cleanDriverName)} -> ${maskSensitive(accountingCode)}`);
+            }
             return existingDriverByName[0].id;
         }
 
+        // Créer le profil driver pour cet utilisateur existant
+        const driverId = randomUUID();
         await db.insert(drivers).values({
+            id: driverId,
             userId: existingDriverByName[0].id,
             accountingCode: accountingCode,
             vehiclePlate: `PENDING-${accountingCode}`,
@@ -210,33 +354,42 @@ async function getOrCreateDriver(accountingCode: string, driverName: string) {
             available: true,
         });
 
-        safeLog(`  ➕ Created driver profile for existing user: ${maskSensitive(driverName)} (${maskSensitive(accountingCode)})`);
+        safeLog(`  ➕ Created driver profile for existing user: ${maskSensitive(cleanDriverName)} (${maskSensitive(accountingCode)})`);
         return existingDriverByName[0].id;
     }
 
-    // Créer un nouveau chauffeur avec un GUID partagé entre users et drivers
-    const userId = randomUUID();
-    const email = `${accountingCode.toLowerCase()}@amt-express.com`;
+    // 3. Créer un nouvel utilisateur + driver via Better-Auth
+    const email = `${accountingCode.toLowerCase()}@drivers-temp.com`;
+    const userId = await getOrCreateUserWithAuth(cleanDriverName, email, 'driver');
+    
+    if (!userId) {
+        return null;
+    }
 
-    await db.transaction(async (tx) => {
-        await tx.insert(users).values({
-            id: userId,
-            name: driverName,
-            email: email,
-            role: 'driver',
-            emailVerified: false,
-        });
-        
-        await tx.insert(drivers).values({
-            userId: userId,
-            accountingCode: accountingCode,
-            vehiclePlate: `PENDING-${accountingCode}`,
-            vehicleType: 'unknown',
-            available: true,
-        });
+    // Vérifier une dernière fois si un profil driver existe déjà pour cet utilisateur
+    const existingDriverCheck = await db.select().from(drivers).where(eq(drivers.userId, userId)).limit(1);
+    if (existingDriverCheck.length > 0) {
+        // Mettre à jour le accountingCode si nécessaire
+        if (existingDriverCheck[0].accountingCode !== accountingCode) {
+            await db.update(drivers)
+                .set({ accountingCode: accountingCode })
+                .where(eq(drivers.id, existingDriverCheck[0].id));
+        }
+        return userId;
+    }
+
+    // Créer le profil driver
+    const driverId = randomUUID();
+    await db.insert(drivers).values({
+        id: driverId,
+        userId: userId,
+        accountingCode: accountingCode,
+        vehiclePlate: `PENDING-${accountingCode}`,
+        vehicleType: 'unknown',
+        available: true,
     });
 
-    safeLog(`  ➕ Created driver: ${maskSensitive(driverName)} (${maskSensitive(accountingCode)})`);
+    safeLog(`  ➕ Created driver: ${maskSensitive(cleanDriverName)} (${maskSensitive(accountingCode)})`);
     return userId;
 }
 
@@ -248,40 +401,185 @@ async function getOrCreateProduction(productionName: string) {
         return null;
     }
 
-    const productionId = productionName
+    let productionId = productionName
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
 
+    // Vérifier si la production existe déjà (par id)
     const existingProduction = await db.select().from(productions).where(eq(productions.id, productionId)).limit(1);
 
     if (existingProduction.length > 0) {
+        // Vérifier si le projet générique existe pour cette production
+        const genericProjectId = `${productionId}-general`;
+        const existingGenericProject = await db.select()
+            .from(projects)
+            .where(and(
+                eq(projects.id, genericProjectId),
+                eq(projects.productionId, productionId)
+            ))
+            .limit(1);
+        
+        if (existingGenericProject.length === 0) {
+            // Le projet générique n'existe pas encore, le créer
+            try {
+                await db.insert(projects).values({
+                    id: genericProjectId,
+                    name: `${productionName} - Générique`,
+                    productionId: productionId,
+                    isGeneric: true,
+                    startDate: new Date(),
+                    endDate: new Date(),
+                });
+                safeLog(`  ➕ Created generic project for existing production: ${maskSensitive(productionName)}`);
+            } catch (error) {
+                safeError(`Failed to create generic project for production ${maskSensitive(productionName)}:`, error);
+                // Ce n'est pas bloquant, on peut continuer
+            }
+        }
         return existingProduction[0].id;
     }
 
-    // Créer un projet générique pour la production
+    // Vérifier si la production existe par nom (au cas où l'id aurait été modifié)
+    const existingProductionByName = await db.select().from(productions)
+        .where(eq(productions.name, productionName))
+        .limit(1);
+    
+    if (existingProductionByName.length > 0) {
+        productionId = existingProductionByName[0].id;
+        // Vérifier si le projet générique existe
+        const genericProjectId = `${productionId}-general`;
+        const existingGenericProject = await db.select()
+            .from(projects)
+            .where(and(
+                eq(projects.id, genericProjectId),
+                eq(projects.productionId, productionId)
+            ))
+            .limit(1);
+        
+        if (existingGenericProject.length === 0) {
+            // Créer le projet générique
+            try {
+                await db.insert(projects).values({
+                    id: genericProjectId,
+                    name: `${productionName} - Générique`,
+                    productionId: productionId,
+                    isGeneric: true,
+                    startDate: new Date(),
+                    endDate: new Date(),
+                });
+                safeLog(`  ➕ Created generic project for existing production (by name): ${maskSensitive(productionName)}`);
+            } catch (error) {
+                safeError(`Failed to create generic project for production ${maskSensitive(productionName)}:`, error);
+            }
+        }
+        return productionId;
+    }
+
+    // Créer la production + projet générique dans une transaction
     const genericProjectId = `${productionId}-general`;
-    await db.insert(projects).values({
-        id: genericProjectId,
-        name: `${productionName} - General`,
-        productionId: productionId,
-        isGeneric: true,
-        startDate: new Date(),
-        endDate: new Date(),
-    });
+    try {
+        await db.transaction(async (tx) => {
+            // Créer la production
+            await tx.insert(productions).values({
+                id: productionId,
+                name: productionName,
+                contactEmail: `${productionId}@production.com`,
+            });
 
-    // Créer la production
-    const email = `${productionId}@production.com`;
-    await db.insert(productions).values({
-        id: productionId,
-        name: productionName,
-        contactEmail: email,
-    });
+            // Créer le projet générique
+            await tx.insert(projects).values({
+                id: genericProjectId,
+                name: `${productionName} - Générique`,
+                productionId: productionId,
+                isGeneric: true,
+                startDate: new Date(),
+                endDate: new Date(),
+            });
+        });
 
-    safeLog(`  ➕ Created production: ${maskSensitive(productionName)} with generic project`);
-    return productionId;
+        safeLog(`  ➕ Created production: ${maskSensitive(productionName)} with generic project`);
+        return productionId;
+    } catch (error) {
+        safeError(`Failed to create production ${maskSensitive(productionName)}:`, error);
+        return null;
+    }
 }
 
+/**
+ * Gère btBc qui peut être un projet ou des responsables
+ */
+async function getOrCreateProjectOrManager(
+    btBc: string,
+    productionId: string | null
+): Promise<{ projectId: string | null; managerNames: string[] }> {
+    if (!btBc || btBc.trim() === '' || btBc.toUpperCase() === 'PAYE') {
+        return { projectId: null, managerNames: [] };
+    }
+
+    const cleanBtBc = btBc.trim();
+
+    // Si pas de production, on ne peut pas créer de projet
+    // Tout ce qui est dans btBc sera traité comme des responsables
+    if (!productionId) {
+        if (cleanBtBc.includes('/')) {
+            // Split par / et traiter tout comme des responsables
+            const parts = cleanBtBc.split('/').map(p => p.trim()).filter(Boolean);
+            return { projectId: null, managerNames: parts };
+        }
+        // btBc est un seul nom → responsable
+        return { projectId: null, managerNames: [cleanBtBc] };
+    }
+
+    // Cas 1 : btBc contient "/" → format "PROJET/RESPONSABLE1/RESPONSABLE2..."
+    if (cleanBtBc.includes('/')) {
+        const parts = cleanBtBc.split('/').map(p => p.trim()).filter(Boolean);
+        const projectName = parts[0];
+        const managerNames = parts.slice(1); // Le reste = responsables
+
+        let projectId: string | null = null;
+        if (projectName) {
+            // Vérifier si le projet existe déjà
+            const existingProject = await db.select()
+                .from(projects)
+                .where(and(
+                    eq(projects.name, projectName),
+                    eq(projects.productionId, productionId)
+                ))
+                .limit(1);
+
+            if (existingProject.length > 0) {
+                projectId = existingProject[0].id;
+            } else {
+                // Créer le projet
+                const projectSlug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                try {
+                    await db.insert(projects).values({
+                        id: projectSlug,
+                        name: projectName,
+                        productionId: productionId,
+                        isGeneric: false,
+                        startDate: new Date(),
+                        endDate: new Date(),
+                    });
+                    projectId = projectSlug;
+                    safeLog(`  ➕ Created project: ${maskSensitive(projectName)}`);
+                } catch (error) {
+                    safeError(`Failed to create project ${maskSensitive(projectName)}:`, error);
+                    // Continuer sans le projet
+                }
+            }
+        }
+        return { projectId, managerNames };
+    }
+
+    // Cas 2 : btBc = "SALOME V" → uniquement un responsable
+    return { projectId: null, managerNames: [cleanBtBc] };
+}
+
+/**
+ * Get or create a project by name and production ID
+ */
 async function getOrCreateProject(projectName: string, productionId: string) {
     if (!projectName || projectName.trim() === '' || projectName.toUpperCase() === 'PAYE') {
         return null;
@@ -311,35 +609,63 @@ async function getOrCreateProject(projectName: string, productionId: string) {
     return projectId;
 }
 
-async function getOrCreateCustomer(customerName: string) {
+/**
+ * Get or create a customer by name
+ */
+async function getOrCreateCustomer(customerName: string): Promise<string | null> {
     if (!customerName || customerName.trim() === '') {
         return null;
     }
 
-    // Extraire le nom principal (ex: "ROBIC - 4P" → "ROBIC")
-    const mainName = customerName.split(' - ')[0].trim();
+    const cleanName = customerName.trim();
 
-    // Rechercher le client
-    const existingCustomer = await db.select().from(users).where(eq(users.name, mainName)).limit(1);
+    // Rechercher le client (rôle customer)
+    const existingCustomer = await db.select()
+        .from(users)
+        .where(and(
+            eq(users.name, cleanName),
+            eq(users.role, 'customer')
+        ))
+        .limit(1);
 
     if (existingCustomer.length > 0) {
         return existingCustomer[0].id;
     }
 
-    // Créer un nouveau client
-    const customerId = randomUUID();
-    const email = `${mainName.toLowerCase()}@customer.com`;
+    // Créer un email unique
+    const emailBase = cleanName.toLowerCase().replace(/\s+/g, '');
+    const email = `${emailBase}@customers-temp.com`;
 
-    await db.insert(users).values({
-        id: customerId,
-        name: mainName,
-        email: email,
-        role: 'customer',
-        emailVerified: false,
-    });
+    // Récupérer ou créer via Better-Auth
+    return getOrCreateUserWithAuth(cleanName, email, 'customer');
+}
 
-    safeLog(`  ➕ Created customer: ${maskSensitive(mainName)}`);
-    return customerId;
+/**
+ * Get or create a manager by name (rôle = customer pour l'instant)
+ */
+async function getOrCreateManager(managerName: string): Promise<string | null> {
+    if (!managerName || managerName.trim() === '') {
+        return null;
+    }
+
+    const cleanName = managerName.trim();
+
+    // Vérifier si un manager existe déjà (peu importe le rôle pour l'instant)
+    const existingManager = await db.select()
+        .from(users)
+        .where(eq(users.name, cleanName))
+        .limit(1);
+
+    if (existingManager.length > 0) {
+        return existingManager[0].id;
+    }
+
+    // Créer un email unique
+    const emailBase = cleanName.toLowerCase().replace(/\s+/g, '');
+    const email = `${emailBase}@managers-temp.com`;
+
+    // Récupérer ou créer via Better-Auth (rôle = customer pour l'instant)
+    return getOrCreateUserWithAuth(cleanName, email, 'customer');
 }
 
 async function importCSV(csvPath: string): Promise<ImportSummary> {
@@ -375,15 +701,36 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
         const existingRides = await db.select().from(rides);
         console.log(`✅ Found ${existingRides.length} existing ride(s) in database\n`);
         
-        // Create a Set of existing ride hashes for fast lookup
+        // Create a Set of existing ride hashes for fast lookup (normalized timestamp)
         const existingRideHashes = new Set<string>();
+        
+        // First, create a map of driverId to accountingCode for existing drivers
+        const driverAccountingCodes = new Map<string, string>();
+        const driversList = await db.select().from(drivers);
+        driversList.forEach(driver => {
+            driverAccountingCodes.set(driver.id, driver.accountingCode ?? '');
+        });
+        
         existingRides.forEach(ride => {
+            const normalizedDate = new Date(ride.departureTime).toISOString().slice(0, 16); // Precision to minutes
+            
+            // Récupérer l'accountingCode du driver pour le hash
+            let driverIdentifier = '';
+            if (ride.driverId) {
+                // Essayer de récupérer depuis la map (driverId -> accountingCode)
+                driverIdentifier = driverAccountingCodes.get(ride.driverId) ?? '';
+            }
+            // Si toujours vide, utiliser driverId ou une chaîne vide
+            if (!driverIdentifier) {
+                driverIdentifier = ride.driverId ?? '';
+            }
+            
             const rideHash = JSON.stringify({
-                date: new Date(ride.departureTime).toISOString(),
+                date: normalizedDate,
                 depart: ride.departure,
                 arrivee: ride.destination,
-                driver: ride.driverId,
-                price: parseFloat(ride.price),
+                driver: driverIdentifier || 'unknown',
+                price: parseFloat(ride.price ?? '0'),
             });
             existingRideHashes.add(rideHash);
         });
@@ -404,15 +751,6 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
             safeLog(`\n[${i + 1}/${rows.length}] Processing ride: ${maskSensitive(row.nom || 'Unnamed')}`);
             
             try {
-                // // Skip cancelled rides
-                // if (row.chauffeur === 'ANNULE' || row.nom === 'ANNULE') {
-                //     const reason = 'Cancelled ride';
-                //     console.log(`  ⏭️  Skipped: ${reason}`);
-                //     skippedRides.push({row: i + 1, name: row.nom || 'Unnamed', reason});
-                //     skipCount++;
-                //     continue;
-                // }
-                
                 // Skip rows without required data
                 if (!row.depart || !row.arrivee || !row.jour) {
                     const reason = 'Missing required fields (departure, arrival, or date)';
@@ -421,6 +759,10 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                     skipCount++;
                     continue;
                 }
+                
+                // Formater les arrondissements de Paris (PXX → Paris XX)
+                const formattedDepart = formatParisDistrict(row.depart);
+                const formattedArrivee = formatParisDistrict(row.arrivee);
                 
                 // Parse date and time
                 const departureTime = parseDate(row.jour, row.heure);
@@ -434,25 +776,30 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                 
                 // Parse prices
                 const driverPrice = parsePrice(row.tarifChauffeur);
-                const plannedPrice = parsePrice(row.tarifAgenda);
                 const clientPrice = parsePrice(row.tarifClient);
-                const finalPrice = driverPrice > 0 ? driverPrice : (plannedPrice > 0 ? plannedPrice : clientPrice);
-                
+
+                // Si tarifClient est présent dans le CSV, on l'utilise directement
+                let finalPrice = clientPrice > 0 ? clientPrice : 0;
+
+                // Sinon, on le calcule à partir de tarifChauffeur
+                if (finalPrice === 0 && driverPrice > 0) {
+                    finalPrice = calculateBilledPrice(driverPrice);
+                    safeLog(`  💰 Calculated billed price: €${driverPrice} + 16% = €${finalPrice}`);
+                }
+
+                // Si le prix est toujours 0, c'est que les deux colonnes sont vides/mal formatées
+                // On accepte 0 comme prix (comme demandé)
                 if (finalPrice === 0) {
-                    const reason = 'No valid price found';
-                    console.log(`  ⚠️  Warning: ${reason}`);
-                    // console.log(`  ⏭️  Skipped: ${reason}`);
-                    // skippedRides.push({row: i + 1, name: row.nom || 'Unnamed', reason});
-                    // skipCount++;
-                    continue;
+                    safeLog(`  ℹ️  No valid price found, setting price to 0 for ${maskSensitive(row.nom || 'Unnamed')}`);
                 }
                 
-                // Check for duplicates - create hash of all ride data
+                // Check for duplicates - create hash of all ride data (normalized timestamp)
+                const normalizedDepartureTime = departureTime.toISOString().slice(0, 16); // Precision to minutes
                 const rideHash = JSON.stringify({
-                    date: departureTime.toISOString(),
-                    depart: row.depart,
-                    arrivee: row.arrivee,
-                    driver: row.idChauffeur,
+                    date: normalizedDepartureTime,
+                    depart: formattedDepart,
+                    arrivee: formattedArrivee,
+                    driver: row.idChauffeur || 'unknown', // Use accountingCode from CSV for consistency
                     price: finalPrice,
                 });
                 
@@ -474,72 +821,98 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                     continue;
                 }
                 
-                // Get or create driver
-                const driverId = await getOrCreateDriver(row.idChauffeur, row.chauffeur);
-                
-                // Get driver record to get drivers.id
-                let driverIdString: string | null = null;
-                if (driverId) {
-                    const driverRecord = await db.query.drivers.findFirst({
-                        where: (drivers, {eq}) => eq(drivers.userId, driverId)
-                    });
-                    driverIdString = driverRecord?.id ?? null;
-                }
-                
+                // 1. Gérer la production
                 let productionId: string | null = null;
-                let projectId: string | null = null;
-
-                // Get or create production and project
                 if (row.facturation && row.facturation.toUpperCase() !== 'PAYE') {
                     productionId = await getOrCreateProduction(row.facturation);
-
-                    if (productionId) {
-                        if (row.btBc && row.btBc.toUpperCase() !== 'PAYE') {
-                            projectId = await getOrCreateProject(row.btBc, productionId);
-                        } else {
-                            const genericProject = await db.select().from(projects).where(eq(projects.productionId, productionId)).limit(1);
-                            projectId = genericProject[0]?.id ?? null;
-                        }
+                    if (!productionId) {
+                        safeWarn(`  ⚠️ Production already exists or failed to create: ${maskSensitive(row.facturation)}`);
                     }
                 }
 
-                // Get or create customers
-                const customerNames = row.nom
-                    ? row.nom.split('/').map(name => name.trim()).filter(Boolean)
-                    : [];
+                // 2. Gérer btBc (projet + responsables)
+                let projectId: string | null = null;
+                const managerNames: string[] = [];
+                if (row.btBc) {
+                    const { projectId: resolvedProjectId, managerNames: resolvedManagerNames } =
+                        await getOrCreateProjectOrManager(row.btBc, productionId);
+                    projectId = resolvedProjectId;
+                    managerNames.push(...resolvedManagerNames);
+                }
+
+                // 3. Si pas de projet spécifique, utiliser le projet générique de la production
+                if (!projectId && productionId) {
+                    const genericProject = await db.select()
+                        .from(projects)
+                        .where(and(
+                            eq(projects.productionId, productionId),
+                            eq(projects.isGeneric, true)
+                        ))
+                        .limit(1);
+                    projectId = genericProject[0]?.id ?? null;
+                }
+
+                // 4. Créer les responsables (managers) s'ils n'existent pas
+                const managerIds: string[] = [];
+                for (const name of managerNames) {
+                    const managerId = await getOrCreateManager(name);
+                    if (managerId) managerIds.push(managerId);
+                }
+
+                // 5. Gérer les clients (split par /)
                 const customerIds: string[] = [];
-
-                for (const customerName of customerNames) {
-                    const customerId = await getOrCreateCustomer(customerName);
-                    if (customerId) {
-                        customerIds.push(customerId);
+                if (row.nom) {
+                    const customerNames = row.nom.split('/').map(name => name.trim()).filter(Boolean);
+                    for (const name of customerNames) {
+                        const customerId = await getOrCreateCustomer(name);
+                        if (customerId) customerIds.push(customerId);
                     }
                 }
                 
-                // Build customer notes
-                const notes: string[] = [];
-                if (row.attente) notes.push(`Wait/Options: ${row.attente}`);
-                if (row.courseEnvoye && row.courseEnvoye !== row.chauffeur) {
-                    notes.push(`Dispatched to: ${row.courseEnvoye}`);
+                // 6. Gérer le chauffeur
+                const driverUserId = await getOrCreateDriver(row.idChauffeur, row.chauffeur);
+                let driverIdString: string | null = null;
+                if (driverUserId) {
+                    // Chercher d'abord par accountingCode (plus fiable)
+                    const driverByAccountingCode = await db.select()
+                        .from(drivers)
+                        .where(eq(drivers.accountingCode, row.idChauffeur))
+                        .limit(1);
+                    
+                    if (driverByAccountingCode.length > 0) {
+                        driverIdString = driverByAccountingCode[0].id;
+                    } else {
+                        // Sinon, chercher par userId
+                        const driverRecord = await db.select()
+                            .from(drivers)
+                            .where(eq(drivers.userId, driverUserId))
+                            .limit(1);
+                        driverIdString = driverRecord[0]?.id ?? null;
+                    }
                 }
-                if (row.forfait) notes.push(`Flat rate: ${row.forfait}`);
-                if (row.attentionMention) notes.push(`Note: ${row.attentionMention}`);
-                if (driverPrice > 0) notes.push(`Driver price: €${driverPrice.toFixed(2)}`);
-                if (plannedPrice > 0) notes.push(`Planned price: €${plannedPrice.toFixed(2)}`);
                 
-                // Insert ride
+                // 7. Notes (attente, courseEnvoye, etc.)
+                const notes: string[] = [];
+                if (row.attente) notes.push(`attente: ${row.attente}`);
+                if (row.courseEnvoye && row.courseEnvoye !== row.chauffeur) {
+                    notes.push(`dispatched to: ${row.courseEnvoye}`);
+                }
+                if (driverPrice > 0) notes.push(`Prix chauffeur: €${driverPrice.toFixed(2)}`);
+                
+                // 8. Insérer la course
                 const [ride] = await db.insert(rides).values({
-                    departure: row.depart,
-                    destination: row.arrivee,
+                    departure: formattedDepart,
+                    destination: formattedArrivee,
                     departureTime: departureTime,
                     price: finalPrice.toString(),
+                    driverPrice: driverPrice.toString(),
                     status: 'completed',
                     driverId: driverIdString,
                     projectId: projectId ?? undefined,
-                    customerNotes: notes.join(' | ') || null,
+                    customerNotes: notes.length > 0 ? notes.join(' | ') : null,
                 }).returning();
 
-                // Associate customers to the ride
+                // 9. Lier les clients (rideCustomers)
                 if (customerIds.length > 0) {
                     await db.insert(rideCustomers).values(
                         customerIds.map(customerId => ({
@@ -548,11 +921,21 @@ async function importCSV(csvPath: string): Promise<ImportSummary> {
                         }))
                     );
                 }
-                
+
+                // 10. Lier les responsables (rideManagers)
+                if (managerIds.length > 0) {
+                    await db.insert(rideManagers).values(
+                        managerIds.map(managerId => ({
+                            rideId: ride.id,
+                            managerId,
+                        }))
+                    );
+                }
+
                 // Mark this ride as imported (add to duplicate check set)
                 importedRides.add(rideHash);
                 
-                safeLog(`  ✅ Imported: ${maskSensitive(row.depart)} → ${maskSensitive(row.arrivee)} (€${finalPrice.toFixed(2)})`);
+                safeLog(`  ✅ Imported: ${maskSensitive(formattedDepart)} → ${maskSensitive(formattedArrivee)} (€${finalPrice.toFixed(2)})`);
                 successCount++;
                 
             } catch (error) {

@@ -15,7 +15,7 @@ type Ride = {
     destination: string;
     customerName: string | null;
     driverName: string | null;
-    price: string;
+    price: string | null;
     status: 'pending' | 'assigned' | 'completed' | 'cancelled';
     departureTime: Date;
 };

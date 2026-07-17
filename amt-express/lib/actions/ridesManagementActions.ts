@@ -110,6 +110,7 @@ export async function createRide(data: {
     destination: string;
     driverId?: string;
     price?: string | number;
+    driverPrice?: string | number;
     status?: RideStatus;
 }): Promise<ActionResponse<string>> {
   // Verify user is an admin
