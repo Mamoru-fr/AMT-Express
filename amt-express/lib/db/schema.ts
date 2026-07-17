@@ -86,7 +86,8 @@ export const rides = pgTable("rides", {
     departureTime: timestamp("departure_time").notNull(),
     arrivalTime: timestamp("arrival_time"),
     distanceKm: decimal("distance_km", { precision: 6, scale: 2 }),
-    price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+    price: decimal("price", { precision: 10, scale: 2 }),
+    driverPrice: decimal("driver_price", { precision: 10, scale: 2 }),
     status: rideStatusEnum("status").default('pending').notNull(),
     photoUrl: text("photo_url"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -152,6 +153,17 @@ export const rideCustomers = pgTable("ride_customers", {
 }, (table) => [
     index("rideCustomers_rideId_idx").on(table.rideId),
     index("rideCustomers_customerId_idx").on(table.customerId),
+]);
+
+// --- Ride Managers
+export const rideManagers = pgTable("ride_managers", {
+    id: text("id").primaryKey().$defaultFn(() => randomUUID()),
+    rideId: text("ride_id").references(() => rides.id, { onDelete: "cascade" }).notNull(),
+    managerId: text("manager_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+    index("rideManagers_rideId_idx").on(table.rideId),
+    index("rideManagers_managerId_idx").on(table.managerId),
 ]);
 
 // --- Assignment Requests

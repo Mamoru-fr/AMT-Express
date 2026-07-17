@@ -49,6 +49,7 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: preview/test:auth-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          parent_branch: uat
           expires_at: ${{ env.EXPIRES_AT }}
       - name: Debug - Show Neon Branch URL
         run: |

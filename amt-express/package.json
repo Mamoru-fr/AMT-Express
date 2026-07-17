@@ -9,7 +9,7 @@
     "lint": "eslint",
     "db:backup": "tsx scripts/backup-db.ts",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
-    "db:generate": "drizzle-kit generate && drizzle-kit push",
+    "db:push": "drizzle-kit generate && drizzle-kit push",
     "db:import-csv": "pnpm db:backup && tsx lib/db/import-csv.ts",
     "test": "vitest",
     "test:run": "vitest run",
