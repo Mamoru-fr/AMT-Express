@@ -121,7 +121,7 @@ export class RidesManagementService {
             driver: row.driver || null,
             customers: customersByRideId.get(row.ride.id) || [],
             selectedOptions: [],
-            price: row.ride.price.toString(),
+            price: row.ride.price?.toString() || '0',
             distanceKm: row.ride.distanceKm?.toString() || null,
             waitingTime: row.ride.waitingTime ?? 0,
             options: [],
@@ -309,9 +309,10 @@ export class RidesManagementService {
         destination: string;
         driverId?: string;
         price?: string;
+        driverPrice?: string;
         status?: RideStatus;
     }): Promise<string> {
-        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, status} = data;
+        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, driverPrice, status} = data;
 
         // If driverId provided, convert from userId to drivers.id
         let driverId: string | null = null;
@@ -329,6 +330,7 @@ export class RidesManagementService {
                 destination,
                 departureTime,
                 price: price || '0',
+                driverPrice: driverPrice || '0',
                 status: status || 'pending',
                 driverId: driverId,
             })

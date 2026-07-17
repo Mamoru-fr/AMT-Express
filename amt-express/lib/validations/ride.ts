@@ -51,6 +51,13 @@ export const CreateRideSchema = z.object({
     ])
     .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
     .optional(),
+  driverPrice: z
+    .union([
+      z.string().regex(/^\d+(\.\d{1,2})?( €)?$/, 'Driver price must be a valid number with up to 2 decimal places'),
+      z.number().positive('Driver price must be a positive number')
+    ])
+    .transform((val) => typeof val === 'string' ? val.replace(' €', '').trim() : val.toString())
+    .optional(),
   status: z
     .enum(['pending', 'assigned', 'completed', 'cancelled'])
     .default('pending'),

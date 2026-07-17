@@ -13,7 +13,8 @@ export interface Ride {
   departureTime: Date;
   arrivalTime?: Date | null;
   distanceKm?: string | null;
-  price: string;
+  price: string | null;
+  driverPrice?: string | null;
   status: RideStatus;
   photoUrl?: string | null;
   createdAt: Date;

@@ -178,6 +178,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         destination: expectedDestination,
         driverId: testDriverId,
         price: '100.50',
+        driverPrice: '85.00',
         status: 'pending',
       });
 
@@ -197,6 +198,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         expect(ride[0].departure).toBe(expectedDeparture);
         expect(ride[0].destination).toBe(expectedDestination);
         expect(ride[0].price).toBe('100.50');
+        expect(ride[0].driverPrice).toBe('85.00');
       }
     }, 60000);
 
@@ -207,6 +209,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         departure: '',
         destination: '',
         price: '100',
+        driverPrice: '85',
       });
 
       expect(result.success).toBe(false);
@@ -225,6 +228,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         departure: `Test Departure Assign ${Date.now()}`,
         destination: `Test Destination Assign ${Date.now()}`,
         price: '150.00',
+        driverPrice: '125.00',
       });
       
       if (!isSuccessResponse(createResult)) {
@@ -270,6 +274,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         departure: `Test Departure Cancel ${Date.now()}`,
         destination: `Test Destination Cancel ${Date.now()}`,
         price: '200.00',
+        driverPrice: '170.00',
       });
       
       if (!isSuccessResponse(createResult)) {
@@ -314,6 +319,7 @@ describe('RidesManagementActions [INTEGRATION]', () => {
         departure: `Test Departure Delete ${Date.now()}`,
         destination: `Test Destination Delete ${Date.now()}`,
         price: '300.00',
+        driverPrice: '250.00',
       });
       
       if (!isSuccessResponse(createResult)) {

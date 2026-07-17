@@ -144,7 +144,8 @@ export function RidesManagementBoard() {
             case 'price':
                 const priceCounts: Record<string, number> = {};
                 currentRides.forEach(ride => {
-                    priceCounts[ride.price] = (priceCounts[ride.price] || 0) + 1;
+                    const price = ride.price || '0';
+                    priceCounts[price] = (priceCounts[price] || 0) + 1;
                 });
                 return Object.entries(priceCounts).map(([value, count]) => ({
                     value,
