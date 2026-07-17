@@ -114,6 +114,12 @@ jobs:
           echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
           pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Run database migrations
+        working-directory: ./amt-express
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: pnpm db:push
+
       - name: Run Authentication tests
         working-directory: ./amt-express
         env:
