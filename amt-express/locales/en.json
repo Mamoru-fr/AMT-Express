@@ -301,11 +301,17 @@
     "uniqueDrivers": "Unique drivers",
     "myRides": "My rides",
     "ridesDescription": "View your ride history and track your current bookings",
-    "recentlyCompleted": "Recently Completed"
+    "recentlyCompleted": "Recently Completed",
+    "customer": "Customer",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "customerNavigation": {
     "dashboard": "Dashboard",
     "dashboardDescription": "Your customer dashboard",
+    "bookRide": "Book a Ride",
+    "bookRideDescription": "Search and book a new ride",
     "myRides": "My Rides",
     "myRidesDescription": "View and manage your bookings",
     "history": "History",
@@ -326,5 +332,45 @@
     "profileMenu": "Profile menu",
     "signOut": "Sign Out",
     "unknownUser": "Unknown User"
+  },
+  "rides": {
+    "departure": "Departure",
+    "destination": "Destination",
+    "date": "Date",
+    "duration": "Duration",
+    "estimatedDuration": "Estimated",
+    "driver": "Driver",
+    "price": "Price",
+    "bookRide": "Book Ride",
+    "searchButton": "Search",
+    "clearButton": "Clear",
+    "advancedFilters": "Advanced",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "departurePlaceholder": "Enter departure location",
+    "destinationPlaceholder": "Enter destination",
+    "notAssigned": "Not assigned",
+    "loadingRides": "Loading rides...",
+    "noRidesFound": "No rides found",
+    "tryDifferentSearch": "Try a different search",
+    "noAvailableRides": "No available rides at the moment",
+    "searchError": "Error searching for rides",
+    "bookingError": "Error booking ride",
+    "status": "Status"
+  },
+  "booking": {
+    "title": "Book a Ride",
+    "subtitle": "Search and book your next journey"
+  },
+  "settings": {
+    "profile": "Profile",
+    "profileDescription": "Manage your personal information",
+    "notifications": "Notifications",
+    "notificationsDescription": "Configure your notification preferences",
+    "notificationsComingSoon": "Notification settings coming soon",
+    "language": "Language",
+    "languageDescription": "Change your preferred language",
+    "name": "Name",
+    "email": "Email"
   }
 }

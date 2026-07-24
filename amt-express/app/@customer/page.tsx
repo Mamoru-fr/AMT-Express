@@ -3,9 +3,10 @@
 // React and Hooks
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 
 // Icons
-import { Car, Calendar, Clock, CheckCircle, User, LayoutDashboard } from 'lucide-react';
+import { Car, Calendar, Clock, CheckCircle, User, LayoutDashboard, PlusCircle } from 'lucide-react';
 
 // Components
 import CustomerRidesView from '@/components/customer/CustomerRidesView';
@@ -128,6 +129,14 @@ export default function CustomerDashboardPage() {
               icon={User}
               iconColor="purple"
             />
+          </div>
+
+          {/* Actions Row */}
+          <div className={styles.actionsRow}>
+            <Link href="/rides/booking" className={styles.primaryAction}>
+              <PlusCircle className={styles.primaryActionIcon} />
+              <span>{t('customerNavigation.bookRide')}</span>
+            </Link>
           </div>
 
           {/* Customer Rides View */}

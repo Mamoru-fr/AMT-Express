@@ -1,0 +1,48 @@
+'use client';
+
+import { useTranslation } from 'react-i18next';
+import { History } from 'lucide-react';
+
+// Components
+import CustomerRidesView from '@/components/customer/CustomerRidesView';
+import { CustomerSidebar } from '@/components/customer/navigation/CustomerSidebar';
+
+// Styles
+import styles from '@/components/dashboard/CustomerDashboard.module.css';
+
+export default function HistoryPage() {
+    const { t } = useTranslation();
+
+    return (
+        <CustomerSidebar>
+            <div className={styles.customerDashboard}>
+                <div className={styles.customerInner}>
+                    {/* Header */}
+                    <div className={styles.headerBlock}>
+                        <div className={styles.titleRow}>
+                            <div className={styles.titleIcon}>
+                                <History />
+                            </div>
+                            <h1 className={styles.title}>{t('customerNavigation.history')}</h1>
+                        </div>
+                        <p className={styles.subtitle}>{t('customerNavigation.historyDescription')}</p>
+                    </div>
+
+                    {/* History Content - Using CustomerRidesView in completed mode */}
+                    <div className={styles.ridesSection}>
+                        <div className={styles.sectionHeader}>
+                            <History className={styles.sectionIcon} />
+                            <div className={styles.sectionText}>
+                                <h2 className={styles.sectionTitle}>{t('customerNavigation.history')}</h2>
+                                <p className={styles.sectionDescription}>{t('customerNavigation.historyDescription')}</p>
+                            </div>
+                        </div>
+                        
+                        {/* CustomerRidesView with default behavior (shows both tabs) */}
+                        <CustomerRidesView />
+                    </div>
+                </div>
+            </div>
+        </CustomerSidebar>
+    );
+}

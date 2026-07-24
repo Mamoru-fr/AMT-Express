@@ -301,11 +301,17 @@
     "uniqueDrivers": "Chauffeurs uniques",
     "myRides": "Mes trajets",
     "ridesDescription": "Visualisez votre historique de trajets et suivez vos réservations en cours",
-    "recentlyCompleted": "Récemment complétés"
+    "recentlyCompleted": "Récemment complétés",
+    "customer": "Client",
+    "edit": "Modifier",
+    "save": "Sauvegarder",
+    "cancel": "Annuler"
   },
   "customerNavigation": {
     "dashboard": "Tableau de bord",
     "dashboardDescription": "Votre espace client",
+    "bookRide": "Réserver un trajet",
+    "bookRideDescription": "Rechercher et réserver un nouveau trajet",
     "myRides": "Mes trajets",
     "myRidesDescription": "Voir et gérer vos réservations",
     "history": "Historique",
@@ -326,5 +332,45 @@
     "profileMenu": "Menu du profil",
     "signOut": "Déconnexion",
     "unknownUser": "Utilisateur inconnu"
+  },
+  "rides": {
+    "departure": "Départ",
+    "destination": "Destination",
+    "date": "Date",
+    "duration": "Durée",
+    "estimatedDuration": "Estimée",
+    "driver": "Chauffeur",
+    "price": "Prix",
+    "bookRide": "Réserver",
+    "searchButton": "Rechercher",
+    "clearButton": "Effacer",
+    "advancedFilters": "Filtres avancés",
+    "minPrice": "Prix min",
+    "maxPrice": "Prix max",
+    "departurePlaceholder": "Entrez le lieu de départ",
+    "destinationPlaceholder": "Entrez la destination",
+    "notAssigned": "Non assigné",
+    "loadingRides": "Chargement des trajets...",
+    "noRidesFound": "Aucun trajet trouvé",
+    "tryDifferentSearch": "Essayez une autre recherche",
+    "noAvailableRides": "Aucun trajet disponible pour le moment",
+    "searchError": "Erreur lors de la recherche",
+    "bookingError": "Erreur lors de la réservation",
+    "status": "Statut"
+  },
+  "booking": {
+    "title": "Réserver un trajet",
+    "subtitle": "Recherchez et réservez votre prochain voyage"
+  },
+  "settings": {
+    "profile": "Profil",
+    "profileDescription": "Gérez vos informations personnelles",
+    "notifications": "Notifications",
+    "notificationsDescription": "Configurez vos préférences de notification",
+    "notificationsComingSoon": "Les paramètres de notification Arrivent bientôt",
+    "language": "Langue",
+    "languageDescription": "Changez votre langue préférée",
+    "name": "Nom",
+    "email": "Email"
   }
 }

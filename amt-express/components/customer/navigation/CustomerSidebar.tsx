@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, History, User, HelpCircle, Settings, Sparkles} from 'lucide-react';
+import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, History, User, HelpCircle, Settings, Sparkles, PlusCircle} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
@@ -46,6 +46,14 @@ export function CustomerSidebar({children}: Props) {
             icon: LayoutDashboard,
             match: (url) => url === '/',
             matchMode: 'exact',
+        },
+        {
+            href: '/rides/booking',
+            label: t('customerNavigation.bookRide'),
+            description: t('customerNavigation.bookRideDescription'),
+            icon: PlusCircle,
+            match: (url) => url.startsWith('/rides/booking'),
+            matchMode: 'ancestor',
         },
         {
             href: '/rides',
