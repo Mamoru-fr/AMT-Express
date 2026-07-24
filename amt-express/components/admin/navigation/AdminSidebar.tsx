@@ -30,7 +30,7 @@ export function AdminSidebar({children}: Props) {
     const [collapsed, setCollapsed] = useState(false);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [profilePopupOpen, setProfilePopupOpen] = useState(false);
-    const profileButtonRef = useRef<HTMLButtonElement>(null);
+    const profileButtonRef = useRef<HTMLDivElement>(null);
     const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
     
     const {session} = useSessionWithRole();
@@ -80,12 +80,18 @@ export function AdminSidebar({children}: Props) {
         };
         
         if (profilePopupOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
+            // Small delay to allow popup to render before adding listener
+            const timer = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 50);
+            
+            return () => {
+                clearTimeout(timer);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
         
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+        return () => {};
     }, [profilePopupOpen]);
 
     const closeMobileNav = () => {
@@ -198,9 +204,8 @@ export function AdminSidebar({children}: Props) {
                         </span>
                     </Link>
 
-                    <div className={styles.profileButton}>
+                    <div className={styles.profileButton} ref={profileButtonRef}>
                         <button
-                            ref={profileButtonRef}
                             type="button"
                             className={styles.utilityItem}
                             onClick={() => {
@@ -214,7 +219,6 @@ export function AdminSidebar({children}: Props) {
                             </div>
                             <span className={styles.navText}>
                                 <span className={styles.navLabel}>{userName}</span>
-                                <span className={styles.navDescription}>{t('adminNavigation.profileDescription')}</span>
                             </span>
                         </button>
                         
