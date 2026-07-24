@@ -41,10 +41,10 @@ export default function CustomerDashboardPage() {
           setData(response.data);
           setError(null);
         } else {
-          setError(response.error || 'Failed to load dashboard');
+          setError(response.error || t('dashboard.error.message'));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+        setError(err instanceof Error ? err.message : t('dashboard.error.message'));
       } finally {
         setIsLoading(false);
       }

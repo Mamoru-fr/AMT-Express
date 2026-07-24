@@ -15,12 +15,13 @@ interface SearchParams {
 
 interface Props {
     onSearch: (params: SearchParams) => void;
+    onClear?: () => void;
     isLoading?: boolean;
 }
 
 export type { SearchParams };
 
-export function RideSearchForm({ onSearch, isLoading = false }: Props) {
+export function RideSearchForm({ onSearch, onClear, isLoading = false }: Props) {
     const { t } = useTranslation();
     const [formData, setFormData] = useState<SearchParams>({
         departure: '',
@@ -132,7 +133,10 @@ export function RideSearchForm({ onSearch, isLoading = false }: Props) {
                 <button
                     type="button"
                     className={styles.clearButton}
-                    onClick={handleClear}
+                    onClick={() => {
+                        handleClear();
+                        if (onClear) onClear();
+                    }}
                 >
                     <X className={styles.clearIcon} />
                     {t('rides.clearButton')}

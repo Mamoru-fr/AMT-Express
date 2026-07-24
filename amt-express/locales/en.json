@@ -312,8 +312,8 @@
     "dashboardDescription": "Your customer dashboard",
     "bookRide": "Book a Ride",
     "bookRideDescription": "Search and book a new ride",
-    "myRides": "My Rides",
-    "myRidesDescription": "View and manage your bookings",
+    "myBookings": "My Bookings",
+    "myBookingsDescription": "View and manage your bookings",
     "history": "History",
     "historyDescription": "Your ride history",
     "navigation": "Navigation",
@@ -356,6 +356,8 @@
     "noAvailableRides": "No available rides at the moment",
     "searchError": "Error searching for rides",
     "bookingError": "Error booking ride",
+    "bookingSuccess": "Ride booked successfully!",
+    "confirmBooking": "Are you sure you want to book this ride?",
     "status": "Status"
   },
   "booking": {
@@ -363,14 +365,40 @@
     "subtitle": "Search and book your next journey"
   },
   "settings": {
-    "profile": "Profile",
-    "profileDescription": "Manage your personal information",
     "notifications": "Notifications",
     "notificationsDescription": "Configure your notification preferences",
-    "notificationsComingSoon": "Notification settings coming soon",
-    "language": "Language",
-    "languageDescription": "Change your preferred language",
-    "name": "Name",
-    "email": "Email"
+    "notificationsComingSoon": "Notification settings coming soon"
+  },
+  "customerRides": {
+    "title": "My Bookings",
+    "description": "View your ride history and track pending rides",
+    "tabs": {
+      "pending": "Pending Rides",
+      "completed": "Completed Rides"
+    },
+    "loading": "Loading rides...",
+    "retry": "Retry",
+    "empty": {
+      "pending": "You have no pending rides",
+      "completed": "You have no completed rides yet"
+    },
+    "table": {
+      "rideId": "Ride ID",
+      "route": "Route",
+      "departureTime": "Departure Time",
+      "driver": "Driver",
+      "price": "Price",
+      "status": "Status",
+      "notAssigned": "Not assigned"
+    },
+    "summary": {
+      "pendingRides": "Pending Rides",
+      "completedRides": "Completed Rides"
+    },
+    "errors": {
+      "failedToLoadCompletedRides": "Failed to load completed rides",
+      "failedToLoadPendingRides": "Failed to load pending rides",
+      "unexpectedError": "An unexpected error occurred"
+    }
   }
 }

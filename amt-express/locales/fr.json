@@ -312,8 +312,8 @@
     "dashboardDescription": "Votre espace client",
     "bookRide": "Réserver un trajet",
     "bookRideDescription": "Rechercher et réserver un nouveau trajet",
-    "myRides": "Mes trajets",
-    "myRidesDescription": "Voir et gérer vos réservations",
+    "myBookings": "Mes réservations",
+    "myBookingsDescription": "Voir et gérer vos réservations",
     "history": "Historique",
     "historyDescription": "Votre historique de trajets",
     "navigation": "Navigation",
@@ -356,6 +356,8 @@
     "noAvailableRides": "Aucun trajet disponible pour le moment",
     "searchError": "Erreur lors de la recherche",
     "bookingError": "Erreur lors de la réservation",
+    "bookingSuccess": "Trajet réservé avec succès !",
+    "confirmBooking": "Êtes-vous sûr de vouloir réserver ce trajet ?",
     "status": "Statut"
   },
   "booking": {
@@ -363,14 +365,40 @@
     "subtitle": "Recherchez et réservez votre prochain voyage"
   },
   "settings": {
-    "profile": "Profil",
-    "profileDescription": "Gérez vos informations personnelles",
     "notifications": "Notifications",
     "notificationsDescription": "Configurez vos préférences de notification",
-    "notificationsComingSoon": "Les paramètres de notification Arrivent bientôt",
-    "language": "Langue",
-    "languageDescription": "Changez votre langue préférée",
-    "name": "Nom",
-    "email": "Email"
+    "notificationsComingSoon": "Les paramètres de notification Arrivent bientôt"
+  },
+  "customerRides": {
+    "title": "Mes réservations",
+    "description": "Visualisez votre historique de trajets et suivez vos réservations en cours",
+    "tabs": {
+      "pending": "Réservations en attente",
+      "completed": "Réservations terminées"
+    },
+    "loading": "Chargement des trajets...",
+    "retry": "Réessayer",
+    "empty": {
+      "pending": "Vous n'avez aucune réservation en attente",
+      "completed": "Vous n'avez aucune réservation terminée pour le moment"
+    },
+    "table": {
+      "rideId": "ID Trajet",
+      "route": "Itinéraire",
+      "departureTime": "Heure de départ",
+      "driver": "Chauffeur",
+      "price": "Prix",
+      "status": "Statut",
+      "notAssigned": "Non assigné"
+    },
+    "summary": {
+      "pendingRides": "Réservations en attente",
+      "completedRides": "Réservations terminées"
+    },
+    "errors": {
+      "failedToLoadCompletedRides": "Échec du chargement des trajets terminés",
+      "failedToLoadPendingRides": "Échec du chargement des trajets en attente",
+      "unexpectedError": "Une erreur inattendue s'est produite"
+    }
   }
 }

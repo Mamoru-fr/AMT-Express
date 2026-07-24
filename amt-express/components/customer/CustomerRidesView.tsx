@@ -46,18 +46,18 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                 if (result.success) {
                     setCompletedRides(result.data);
                 } else {
-                    setError(result.error || "Failed to load completed rides");
+                    setError(result.error || t('customerRides.errors.failedToLoadCompletedRides'));
                 }
             } else {
                 const result = await fetchCustomerRequestedRides();
                 if (result.success) {
                     setPendingRides(result.data);
                 } else {
-                    setError(result.error || "Failed to load pending rides");
+                    setError(result.error || t('customerRides.errors.failedToLoadPendingRides'));
                 }
             }
         } catch (err) {
-            setError("An unexpected error occurred");
+            setError(t('customerRides.errors.unexpectedError'));
             console.error("Error loading rides:", err);
         } finally {
             setLoading(false);
@@ -70,7 +70,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
 
     function formatDate(date: Date | string | null) {
         if (!date) return "-";
-        return new Date(date).toLocaleDateString("en-US", {
+        return new Date(date).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
             year: "numeric",
@@ -88,12 +88,22 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
         cancelled: styles.statusCancelled,
     };
 
+    function getStatusTranslation(status: string): string {
+        const statusTranslations: Record<string, string> = {
+            pending: t('ridesManagement.pending'),
+            assigned: t('ridesManagement.assigned'),
+            completed: t('ridesManagement.completed'),
+            cancelled: t('ridesManagement.cancelled'),
+        };
+        return statusTranslations[status] || status;
+    }
+
     return (
         <div className={styles.container}>
             {!hideHeader && (
                 <div className={styles.header}>
-                    <h1 className={styles.headerTitle}>My Rides</h1>
-                    <p className={styles.headerDescription}>View your ride history and track pending rides</p>
+                    <h1 className={styles.headerTitle}>{t('customerRides.title')}</h1>
+                    <p className={styles.headerDescription}>{t('customerRides.description')}</p>
                 </div>
             )}
 
@@ -104,7 +114,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                         onClick={() => setActiveView("pending")}
                         className={`${styles.tabButton} ${activeView === "pending" ? styles.tabButtonActive : ''}`}
                     >
-                        Pending Rides
+                        {t('customerRides.tabs.pending')}
                         {pendingRides.length > 0 && (
                             <span className={`${styles.tabBadge} ${styles.tabBadgePending}`}>
                                 {pendingRides.length}
@@ -115,7 +125,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                         onClick={() => setActiveView("completed")}
                         className={`${styles.tabButton} ${activeView === "completed" ? styles.tabButtonActive : ''}`}
                     >
-                        Completed Rides
+                        {t('customerRides.tabs.completed')}
                         {completedRides.length > 0 && (
                             <span className={`${styles.tabBadge} ${styles.tabBadgeCompleted}`}>
                                 {completedRides.length}
@@ -130,7 +140,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                 {loading ? (
                     <div className={styles.loadingContainer}>
                         <div className={styles.loadingSpinner}></div>
-                        <p className={styles.loadingText}>Loading rides...</p>
+                        <p className={styles.loadingText}>{t('customerRides.loading')}</p>
                     </div>
                 ) : error ? (
                     <div className={styles.errorContainer}>
@@ -139,15 +149,15 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                             onClick={loadRides}
                             className={styles.errorButton}
                         >
-                            Retry
+                            {t('customerRides.retry')}
                         </button>
                     </div>
                 ) : rides.length === 0 ? (
                     <div className={styles.emptyContainer}>
                         <p className={styles.emptyText}>
                             {activeView === "pending" 
-                                ? "You have no pending rides" 
-                                : "You have no completed rides yet"}
+                                ? t('customerRides.empty.pending') 
+                                : t('customerRides.empty.completed')}
                         </p>
                     </div>
                 ) : (
@@ -155,12 +165,12 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                         <table className={styles.table}>
                             <thead className={styles.tableHeader}>
                                 <tr className={styles.headerRow}>
-                                    <th className={styles.headerCell}>Ride ID</th>
-                                    <th className={styles.headerCell}>Route</th>
-                                    <th className={styles.headerCell}>Departure Time</th>
-                                    <th className={styles.headerCell}>Driver</th>
-                                    <th className={styles.headerCell}>Price</th>
-                                    <th className={styles.headerCell}>Status</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.rideId')}</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.route')}</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.departureTime')}</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.driver')}</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.price')}</th>
+                                    <th className={styles.headerCell}>{t('customerRides.table.status')}</th>
                                 </tr>
                             </thead>
                             <tbody className={styles.tableBody}>
@@ -194,7 +204,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                                                     <span className={styles.driverName}>{ride.driver.name}</span>
                                                 </div>
                                             ) : (
-                                                <span className={styles.driverNotAssigned}>Not assigned</span>
+                                                <span className={styles.driverNotAssigned}>{t('customerRides.table.notAssigned')}</span>
                                             )}
                                         </td>
                                         <td className={styles.tableCell}>
@@ -205,7 +215,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                                         </td>
                                         <td className={styles.tableCell}>
                                             <span className={`${styles.statusBadge} ${statusClassByValue[ride.status as keyof typeof statusClassByValue] || styles.statusPending}`}>
-                                                {ride.status.charAt(0).toUpperCase() + ride.status.slice(1)}
+                                                {getStatusTranslation(ride.status)}
                                             </span>
                                         </td>
                                     </tr>
@@ -221,14 +231,14 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                 <div className={styles.summaryContainer}>
                     <div className={styles.summaryCard}>
                         <div className={styles.summaryContent}>
-                            <p className={styles.summaryLabel}>Pending Rides</p>
+                            <p className={styles.summaryLabel}>{t('customerRides.summary.pendingRides')}</p>
                             <p className={styles.summaryValue}>{pendingRides.length}</p>
                         </div>
                         <Clock className={`${styles.summaryIcon} ${styles.summaryIconPending}`} />
                     </div>
                     <div className={styles.summaryCard}>
                         <div className={styles.summaryContent}>
-                            <p className={styles.summaryLabel}>Completed Rides</p>
+                            <p className={styles.summaryLabel}>{t('customerRides.summary.completedRides')}</p>
                             <p className={styles.summaryValue}>{completedRides.length}</p>
                         </div>
                         <CheckCircle className={`${styles.summaryIcon} ${styles.summaryIconCompleted}`} />

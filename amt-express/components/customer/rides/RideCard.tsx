@@ -33,7 +33,7 @@ export function RideCard({ ride, onBook, showBookButton = true, isBooking = fals
 
     function formatDate(date: Date | string | null) {
         if (!date) return "-";
-        return new Date(date).toLocaleDateString('fr-FR', {
+        return new Date(date).toLocaleDateString(undefined, {
             weekday: 'long',
             day: 'numeric',
             month: 'long',
@@ -46,6 +46,16 @@ export function RideCard({ ride, onBook, showBookButton = true, isBooking = fals
     function formatPrice(price: string | number | null) {
         if (!price) return "-";
         return `€${parseFloat(price.toString()).toFixed(2)}`;
+    }
+
+    function getStatusTranslation(status: string): string {
+        const statusTranslations: Record<string, string> = {
+            pending: t('ridesManagement.pending'),
+            assigned: t('ridesManagement.assigned'),
+            completed: t('ridesManagement.completed'),
+            cancelled: t('ridesManagement.cancelled'),
+        };
+        return statusTranslations[status] || status;
     }
 
     const statusClassMap: Record<string, string> = {
@@ -65,7 +75,7 @@ export function RideCard({ ride, onBook, showBookButton = true, isBooking = fals
                 </div>
                 <div className={styles.statusBadge}>
                     <span className={`${styles.statusPill} ${statusClass}`}>
-                        {ride.status}
+                        {getStatusTranslation(ride.status)}
                     </span>
                 </div>
             </div>

@@ -23,9 +23,9 @@ export default function MyRidesPage() {
                             <div className={styles.titleIcon}>
                                 <Calendar />
                             </div>
-                            <h1 className={styles.title}>{t('customerNavigation.myRides')}</h1>
+                            <h1 className={styles.title}>{t('customerNavigation.myBookings')}</h1>
                         </div>
-                        <p className={styles.subtitle}>{t('customerNavigation.myRidesDescription')}</p>
+                        <p className={styles.subtitle}>{t('customerNavigation.myBookingsDescription')}</p>
                     </div>
 
                     {/* Rides Content */}
@@ -33,8 +33,8 @@ export default function MyRidesPage() {
                         <div className={styles.sectionHeader}>
                             <Calendar className={styles.sectionIcon} />
                             <div className={styles.sectionText}>
-                                <h2 className={styles.sectionTitle}>{t('customerNavigation.myRides')}</h2>
-                                <p className={styles.sectionDescription}>{t('customerNavigation.myRidesDescription')}</p>
+                                <h2 className={styles.sectionTitle}>{t('customerNavigation.myBookings')}</h2>
+                                <p className={styles.sectionDescription}>{t('customerNavigation.myBookingsDescription')}</p>
                             </div>
                         </div>
                         

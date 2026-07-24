@@ -57,18 +57,10 @@ export function CustomerSidebar({children}: Props) {
         },
         {
             href: '/rides',
-            label: t('customerNavigation.myRides'),
-            description: t('customerNavigation.myRidesDescription'),
+            label: t('customerNavigation.myBookings'),
+            description: t('customerNavigation.myBookingsDescription'),
             icon: Calendar,
             match: (url) => url.startsWith('/rides'),
-            matchMode: 'ancestor',
-        },
-        {
-            href: '/history',
-            label: t('customerNavigation.history'),
-            description: t('customerNavigation.historyDescription'),
-            icon: History,
-            match: (url) => url.startsWith('/history'),
             matchMode: 'ancestor',
         },
     ];

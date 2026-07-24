@@ -40,7 +40,7 @@ export default async function RootLayout({
           : null;
 
   return (
-    <html lang="fr">
+    <html lang="en" suppressHydrationWarning>
       <body className={`antialiased`}>
         <I18nProvider>
           <SessionProvider session={session}>

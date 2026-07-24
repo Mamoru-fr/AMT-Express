@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { History } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 // Components
 import CustomerRidesView from '@/components/customer/CustomerRidesView';
@@ -10,7 +10,7 @@ import { CustomerSidebar } from '@/components/customer/navigation/CustomerSideba
 // Styles
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
 
-export default function HistoryPage() {
+export default function MyBookingsPage() {
     const { t } = useTranslation();
 
     return (
@@ -21,20 +21,20 @@ export default function HistoryPage() {
                     <div className={styles.headerBlock}>
                         <div className={styles.titleRow}>
                             <div className={styles.titleIcon}>
-                                <History />
+                                <Calendar />
                             </div>
-                            <h1 className={styles.title}>{t('customerNavigation.history')}</h1>
+                            <h1 className={styles.title}>{t('customerNavigation.myBookings')}</h1>
                         </div>
-                        <p className={styles.subtitle}>{t('customerNavigation.historyDescription')}</p>
+                        <p className={styles.subtitle}>{t('customerNavigation.myBookingsDescription')}</p>
                     </div>
 
-                    {/* History Content */}
+                    {/* Bookings Content */}
                     <div className={styles.ridesSection}>
                         <div className={styles.sectionHeader}>
-                            <History className={styles.sectionIcon} />
+                            <Calendar className={styles.sectionIcon} />
                             <div className={styles.sectionText}>
-                                <h2 className={styles.sectionTitle}>{t('customerNavigation.history')}</h2>
-                                <p className={styles.sectionDescription}>{t('customerNavigation.historyDescription')}</p>
+                                <h2 className={styles.sectionTitle}>{t('customerNavigation.myBookings')}</h2>
+                                <p className={styles.sectionDescription}>{t('customerNavigation.myBookingsDescription')}</p>
                             </div>
                         </div>
                         

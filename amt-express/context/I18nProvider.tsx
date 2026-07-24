@@ -21,6 +21,24 @@ export function I18nProvider({ children }: Props) {
         if (!i18next.isInitialized) {
             i18next.init();
         }
+        
+        // Update html lang attribute when language changes
+        const handleLanguageChange = () => {
+            const htmlElement = document.documentElement;
+            if (htmlElement) {
+                htmlElement.lang = i18next.language;
+            }
+        };
+        
+        // Initial update
+        handleLanguageChange();
+        
+        // Listen for language changes
+        i18next.on('languageChanged', handleLanguageChange);
+        
+        return () => {
+            i18next.off('languageChanged', handleLanguageChange);
+        };
     }, []);
 
     return <I18nextProvider i18n={i18next}>{children}</I18nextProvider>;
