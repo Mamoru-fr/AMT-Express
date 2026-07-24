@@ -300,6 +300,31 @@
     "pendingCount": "Pending rides",
     "uniqueDrivers": "Unique drivers",
     "myRides": "My rides",
-    "ridesDescription": "View your ride history and track your current bookings"
+    "ridesDescription": "View your ride history and track your current bookings",
+    "recentlyCompleted": "Recently Completed"
+  },
+  "customerNavigation": {
+    "dashboard": "Dashboard",
+    "dashboardDescription": "Your customer dashboard",
+    "myRides": "My Rides",
+    "myRidesDescription": "View and manage your bookings",
+    "history": "History",
+    "historyDescription": "Your ride history",
+    "navigation": "Navigation",
+    "settings": "Settings",
+    "settingsDescription": "Account settings",
+    "help": "Help",
+    "helpDescription": "Get support",
+    "brandTitle": "AMT Express",
+    "brandSubtitle": "Customer Space",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation",
+    "collapseNavigation": "Collapse navigation",
+    "expandNavigation": "Expand navigation",
+    "profile": "Profile",
+    "profileDescription": "Your profile",
+    "profileMenu": "Profile menu",
+    "signOut": "Sign Out",
+    "unknownUser": "Unknown User"
   }
 }
