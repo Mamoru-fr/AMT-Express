@@ -13,7 +13,7 @@ import languageList from '@/services/languageList.json';
 
 type Props = {
     className?: string;
-    variant?: 'floating' | 'sidebar';
+    variant?: 'floating' | 'sidebar' | 'popup';
 };
 
 export function LanguageDropdown({className, variant = 'floating'}: Props) {
@@ -31,7 +31,7 @@ export function LanguageDropdown({className, variant = 'floating'}: Props) {
 
     return (
         <div className={[styles.root, styles[variant], className].filter(Boolean).join(' ')}>
-            {variant === 'sidebar' && <div className={styles.label}>{t('languageDropdown.language', 'Language')}</div>}
+            {(variant === 'sidebar' || variant === 'popup') && <div className={styles.label}>{t('languageDropdown.language', 'Language')}</div>}
 
             <div className={styles.control}>
                 <select

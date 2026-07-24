@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings2, HelpCircle} from 'lucide-react';
-import {useEffect, useState} from 'react';
+import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings, User} from 'lucide-react';
+import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
-import styles from './AdminNavigationShell.module.css';
+import {signOut} from '@/lib/actions/AuthActions';
+import {useSessionWithRole} from '@/context/SessionContext';
+import styles from './AdminSidebar.module.css';
 
 type NavItem = {
     href: string;
@@ -21,13 +23,20 @@ type Props = {
     children: React.ReactNode;
 };
 
-export function AdminNavigationShell({children}: Props) {
+export function AdminSidebar({children}: Props) {
     const {t} = useTranslation();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
+    const [profilePopupOpen, setProfilePopupOpen] = useState(false);
+    const profileButtonRef = useRef<HTMLDivElement>(null);
     const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    
+    const {session} = useSessionWithRole();
+    const user = session?.user;
+    const userInitial = user?.name?.charAt(0).toUpperCase() || 'U';
+    const userName = user?.name || t('adminNavigation.unknownUser');
 
     const navItems: NavItem[] = [
         {
@@ -63,8 +72,39 @@ export function AdminNavigationShell({children}: Props) {
         }
     }, [currentUrl, mobileNavOpen]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileButtonRef.current && !profileButtonRef.current.contains(event.target as Node)) {
+                setProfilePopupOpen(false);
+            }
+        };
+        
+        if (profilePopupOpen) {
+            // Small delay to allow popup to render before adding listener
+            const timer = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 50);
+            
+            return () => {
+                clearTimeout(timer);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+        
+        return () => {};
+    }, [profilePopupOpen]);
+
     const closeMobileNav = () => {
         setMobileNavOpen(false);
+    };
+
+    const handleProfileClick = () => {
+        setProfilePopupOpen(prev => !prev);
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+        setProfilePopupOpen(false);
     };
 
     return (
@@ -156,23 +196,59 @@ export function AdminNavigationShell({children}: Props) {
                 </nav>
 
                 <div className={styles.bottomSection}>
-                    <LanguageDropdown variant="sidebar" className={styles.languageBlock} />
-
                     <Link href="/connections" className={styles.utilityItem} onClick={closeMobileNav}>
-                        <Settings2 className={styles.utilityIcon} />
+                        <Settings className={styles.utilityIcon} />
                         <span className={styles.navText}>
                             <span className={styles.navLabel}>{t('adminNavigation.settings')}</span>
                             <span className={styles.navDescription}>{t('adminNavigation.settingsDescription')}</span>
                         </span>
                     </Link>
 
-                    <Link href="/connections" className={styles.utilityItem} onClick={closeMobileNav}>
-                        <HelpCircle className={styles.utilityIcon} />
-                        <span className={styles.navText}>
-                            <span className={styles.navLabel}>{t('adminNavigation.help')}</span>
-                            <span className={styles.navDescription}>{t('adminNavigation.helpDescription')}</span>
-                        </span>
-                    </Link>
+                    <div className={styles.profileButton} ref={profileButtonRef}>
+                        <button
+                            type="button"
+                            className={styles.utilityItem}
+                            onClick={() => {
+                                handleProfileClick();
+                                closeMobileNav();
+                            }}
+                            aria-label={t('adminNavigation.profile')}
+                        >
+                            <div className={styles.profileAvatar}>
+                                <span className={styles.profileInitial}>{userInitial}</span>
+                            </div>
+                            <span className={styles.navText}>
+                                <span className={styles.navLabel}>{userName}</span>
+                            </span>
+                        </button>
+                        
+                        {profilePopupOpen && (
+                            <div className={styles.profilePopup} role="menu" aria-label={t('adminNavigation.profileMenu')}>
+                                <Link
+                                    href="/profile"
+                                    className={styles.profilePopupItem}
+                                    onClick={() => setProfilePopupOpen(false)}
+                                    role="menuitem"
+                                >
+                                    <User className={styles.profilePopupIcon} />
+                                    <span>{t('adminNavigation.profile')}</span>
+                                </Link>
+                                <div className={styles.profilePopupDivider} />
+                                <div className={styles.profilePopupLanguage}>
+                                    <LanguageDropdown variant="popup" />
+                                </div>
+                                <div className={styles.profilePopupDivider} />
+                                <button
+                                    type="button"
+                                    className={styles.profilePopupItem}
+                                    onClick={handleSignOut}
+                                    role="menuitem"
+                                >
+                                    <span>{t('adminNavigation.signOut')}</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <button

@@ -31,7 +31,7 @@ import { DeleteConfirmModal } from "@/components/admin/rideManagement/DeleteConf
 import { AddRideModal } from "@/components/admin/rideManagement/AddRideModal";
 import { ColumnFilter } from "@/components/admin/rideManagement/ColumnFilter";
 import { AdvancedSortModal } from "@/components/admin/rideManagement/AdvancedSortModal";
-import { AdminNavigationShell } from "@/components/admin/navigation/AdminNavigationShell";
+import { AdminSidebar } from "@/components/admin/navigation/AdminSidebar";
 import styles from "@/components/admin/rideManagement/RidesManagementBoard.module.css";
 
 /**
@@ -455,7 +455,7 @@ export default function RideManagementPage() {
 
     if (loading && !data) {
         return (
-            <AdminNavigationShell>
+            <AdminSidebar>
                 <div className={styles.pageShell}>
                     <div className={styles.pageInner}>
                         <div className={styles.hero}>
@@ -463,12 +463,12 @@ export default function RideManagementPage() {
                         </div>
                     </div>
                 </div>
-            </AdminNavigationShell>
+            </AdminSidebar>
         );
     }
 
     return (
-        <AdminNavigationShell>
+        <AdminSidebar>
             <div className={styles.pageShell}>
                 <div className={styles.pageInner}>
                     {feedback && (
@@ -790,7 +790,7 @@ export default function RideManagementPage() {
                     )}
                 </div>
             </div>
-        </AdminNavigationShell>
+        </AdminSidebar>
     );
 }
 

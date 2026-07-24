@@ -25,7 +25,7 @@ import {DeleteConfirmModal} from "./DeleteConfirmModal";
 import {AddRideModal} from "./AddRideModal";
 import {ColumnFilter} from "./ColumnFilter";
 import {AdvancedSortModal} from "./AdvancedSortModal";
-import {AdminNavigationShell} from "@/components/admin/navigation/AdminNavigationShell";
+import {AdminSidebar} from "@/components/admin/navigation/AdminSidebar";
 import styles from './RidesManagementBoard.module.css';
 
 /**
@@ -521,7 +521,7 @@ export function RidesManagementBoard() {
     }
 
     return (
-        <AdminNavigationShell>
+        <AdminSidebar>
             <div className={styles.pageShell}>
             <div className={styles.pageInner}>
                     {feedback && (
@@ -842,6 +842,6 @@ export function RidesManagementBoard() {
                 )}
             </div>
             </div>
-        </AdminNavigationShell>
+        </AdminSidebar>
     );
 }
