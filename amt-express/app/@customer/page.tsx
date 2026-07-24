@@ -130,37 +130,17 @@ export default function CustomerDashboardPage() {
             />
           </div>
 
-          {/* Quick Stats - Customer specific */}
-          <div className={styles.statsRow}>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>{t('customerDashboard.upcomingRides')}</span>
-              <span className={styles.statValue}>{pendingRides.filter(r => r.status === 'assigned').length}</span>
-            </div>
-            <div className={styles.statDivider} />
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>{t('customerDashboard.recentlyCompleted')}</span>
-              <span className={styles.statValue}>
-                {completedRides.filter(r => {
-                  const rideDate = new Date(r.departureTime);
-                  const now = new Date();
-                  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                  return rideDate >= thirtyDaysAgo;
-                }).length}
-              </span>
-            </div>
-          </div>
-
           {/* Customer Rides View */}
           <div className={styles.ridesSection}>
-            <h2 className={styles.sectionTitle}>
+            <div className={styles.sectionHeader}>
               <Calendar className={styles.sectionIcon} />
-              {t('customerDashboard.myRides')}
-            </h2>
-            <p className={styles.sectionDescription}>{t('customerDashboard.ridesDescription')}</p>
-            
-            <div className={styles.ridesContent}>
-              <CustomerRidesView />
+              <div className={styles.sectionText}>
+                <h2 className={styles.sectionTitle}>{t('customerDashboard.myRides')}</h2>
+                <p className={styles.sectionDescription}>{t('customerDashboard.ridesDescription')}</p>
+              </div>
             </div>
+            
+            <CustomerRidesView hideHeader={true} />
           </div>
         </div>
       </div>
