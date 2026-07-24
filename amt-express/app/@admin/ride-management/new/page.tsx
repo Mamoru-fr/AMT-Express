@@ -14,7 +14,7 @@ import {
 } from '@/lib/actions/ridesManagementActions';
 import {RideStatus} from '@/content/database_types/ride';
 import {SearchableSelect} from '@/components/classicComponents/SearchableSelect';
-import {AdminNavigationShell} from '@/components/admin/navigation/AdminNavigationShell';
+import {AdminSidebar} from '@/components/admin/navigation/AdminSidebar';
 import styles from '@/components/admin/rideManagement/AddRideModal.module.css';
 
 type DropdownOption = {
@@ -172,7 +172,7 @@ export default function NewRidePage() {
     };
 
     return (
-        <AdminNavigationShell>
+        <AdminSidebar>
             <div className={styles.pageShell}>
                 <div className={styles.pageContainer}>
                 <div className={styles.pageHeader}>
@@ -449,6 +449,6 @@ export default function NewRidePage() {
                 </div>
             </div>
             </div>
-        </AdminNavigationShell>
+        </AdminSidebar>
     );
 }

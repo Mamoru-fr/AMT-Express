@@ -14,7 +14,7 @@ import { MonthlyRidesChart } from '@/components/dashboard/MonthlyRidesChart';
 import { MonthlyRevenueChart } from '@/components/dashboard/MonthlyRevenueChart';
 import { StatusPieChart } from '@/components/dashboard/StatusPieChart';
 import { RecentRidesTable } from '@/components/dashboard/RecentRidesTable';
-import { AdminNavigationShell } from '@/components/admin/navigation/AdminNavigationShell';
+import { AdminSidebar } from '@/components/admin/navigation/AdminSidebar';
 import { useTranslation } from 'react-i18next';
 
 /* Actions & Types */
@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
   const { kpis, monthlyRides, monthlyRevenue, statusDistribution, recentRides } = data;
 
   return (
-    <AdminNavigationShell>
+    <AdminSidebar>
       <div className={adminStyles.adminDashboard}>
         <div className={adminStyles.adminInner}>
           {/* Dashboard Header */}
@@ -166,6 +166,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
-    </AdminNavigationShell>
+    </AdminSidebar>
   );
 }
