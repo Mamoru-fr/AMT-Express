@@ -30,15 +30,7 @@ export default function MyRidesPage() {
 
                     {/* Rides Content */}
                     <div className={styles.ridesSection}>
-                        <div className={styles.sectionHeader}>
-                            <Calendar className={styles.sectionIcon} />
-                            <div className={styles.sectionText}>
-                                <h2 className={styles.sectionTitle}>{t('customerNavigation.myBookings')}</h2>
-                                <p className={styles.sectionDescription}>{t('customerNavigation.myBookingsDescription')}</p>
-                            </div>
-                        </div>
-                        
-                        <CustomerRidesView />
+                        <CustomerRidesView hideHeader={true} />
                     </div>
                 </div>
             </div>

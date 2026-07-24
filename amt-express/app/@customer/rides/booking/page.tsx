@@ -62,7 +62,7 @@ export default function BookingPage() {
             const response = await bookRide(rideId);
             if (response.success) {
                 // Booking successful, redirect to my rides with success param
-                router.push('/rides?bookingSuccess=true');
+                router.push('/@customer/rides?bookingSuccess=true');
             } else {
                 setError(response.error || t('rides.bookingError'));
             }
