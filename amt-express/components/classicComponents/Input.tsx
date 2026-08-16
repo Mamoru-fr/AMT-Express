@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EyeButton } from "../EyeButton";
+import { EyeButton } from "../eyeButton/EyeButton";
 import styles from './input.module.css';
 
 type Props = {

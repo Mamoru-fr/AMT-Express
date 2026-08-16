@@ -20,6 +20,12 @@ export async function proxy(request: NextRequest) {
     '/api',
     '/favicon.ico',
     '/public',
+    '/manifest.webmanifest',
+    '/sw.js',
+    '/icon_192_192.png',
+    '/icon_512_512.png',
+    '/apple-touch-icon.png',
+    '/screenshots',
   ];
 
   if (staticPaths.some(path => pathname.startsWith(path))) {
