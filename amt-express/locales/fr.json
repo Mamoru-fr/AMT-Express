@@ -300,6 +300,105 @@
     "pendingCount": "En attente",
     "uniqueDrivers": "Chauffeurs uniques",
     "myRides": "Mes trajets",
-    "ridesDescription": "Visualisez votre historique de trajets et suivez vos réservations en cours"
+    "ridesDescription": "Visualisez votre historique de trajets et suivez vos réservations en cours",
+    "recentlyCompleted": "Récemment complétés",
+    "customer": "Client",
+    "edit": "Modifier",
+    "save": "Sauvegarder",
+    "cancel": "Annuler"
+  },
+  "customerNavigation": {
+    "dashboard": "Tableau de bord",
+    "dashboardDescription": "Votre espace client",
+    "bookRide": "Réserver un trajet",
+    "bookRideDescription": "Rechercher et réserver un nouveau trajet",
+    "myBookings": "Mes réservations",
+    "myBookingsDescription": "Voir et gérer vos réservations",
+    "history": "Historique",
+    "historyDescription": "Votre historique de trajets",
+    "navigation": "Navigation",
+    "settings": "Paramètres",
+    "settingsDescription": "Paramètres du compte",
+    "help": "Aide",
+    "helpDescription": "Obtenir de l'aide",
+    "brandTitle": "AMT Express",
+    "brandSubtitle": "Espace Client",
+    "openNavigation": "Ouvrir la navigation",
+    "closeNavigation": "Fermer la navigation",
+    "collapseNavigation": "Réduire la navigation",
+    "expandNavigation": "Étendre la navigation",
+    "profile": "Profil",
+    "profileDescription": "Votre profil",
+    "profileMenu": "Menu du profil",
+    "signOut": "Déconnexion",
+    "unknownUser": "Utilisateur inconnu"
+  },
+  "rides": {
+    "departure": "Départ",
+    "destination": "Destination",
+    "date": "Date",
+    "duration": "Durée",
+    "estimatedDuration": "Estimée",
+    "driver": "Chauffeur",
+    "price": "Prix",
+    "bookRide": "Réserver",
+    "searchButton": "Rechercher",
+    "clearButton": "Effacer",
+    "advancedFilters": "Filtres avancés",
+    "minPrice": "Prix min",
+    "maxPrice": "Prix max",
+    "departurePlaceholder": "Entrez le lieu de départ",
+    "destinationPlaceholder": "Entrez la destination",
+    "notAssigned": "Non assigné",
+    "loadingRides": "Chargement des trajets...",
+    "noRidesFound": "Aucun trajet trouvé",
+    "tryDifferentSearch": "Essayez une autre recherche",
+    "noAvailableRides": "Aucun trajet disponible pour le moment",
+    "searchError": "Erreur lors de la recherche",
+    "bookingError": "Erreur lors de la réservation",
+    "bookingSuccess": "Trajet réservé avec succès !",
+    "confirmBooking": "Êtes-vous sûr de vouloir réserver ce trajet ?",
+    "status": "Statut"
+  },
+  "booking": {
+    "title": "Réserver un trajet",
+    "subtitle": "Recherchez et réservez votre prochain voyage"
+  },
+  "settings": {
+    "notifications": "Notifications",
+    "notificationsDescription": "Configurez vos préférences de notification",
+    "notificationsComingSoon": "Les paramètres de notification Arrivent bientôt"
+  },
+  "customerRides": {
+    "title": "Mes réservations",
+    "description": "Visualisez votre historique de trajets et suivez vos réservations en cours",
+    "tabs": {
+      "pending": "Réservations en attente",
+      "completed": "Réservations terminées"
+    },
+    "loading": "Chargement des trajets...",
+    "retry": "Réessayer",
+    "empty": {
+      "pending": "Vous n'avez aucune réservation en attente",
+      "completed": "Vous n'avez aucune réservation terminée pour le moment"
+    },
+    "table": {
+      "rideId": "ID Trajet",
+      "route": "Itinéraire",
+      "departureTime": "Heure de départ",
+      "driver": "Chauffeur",
+      "price": "Prix",
+      "status": "Statut",
+      "notAssigned": "Non assigné"
+    },
+    "summary": {
+      "pendingRides": "Réservations en attente",
+      "completedRides": "Réservations terminées"
+    },
+    "errors": {
+      "failedToLoadCompletedRides": "Échec du chargement des trajets terminés",
+      "failedToLoadPendingRides": "Échec du chargement des trajets en attente",
+      "unexpectedError": "Une erreur inattendue s'est produite"
+    }
   }
 }

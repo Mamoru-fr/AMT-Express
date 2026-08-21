@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {ChevronDown} from 'lucide-react';
 
 // Hooks Imports
@@ -19,9 +19,19 @@ type Props = {
 export function LanguageDropdown({className, variant = 'floating'}: Props) {
     const {t, i18n} = useTranslation();
 
+    // Initialize language from localStorage on first load
+    // Use a flag to prevent multiple initializations
+    const initializedRef = useRef(false);
+    
     useEffect(() => {
-        i18n.changeLanguage(localStorage.getItem('preferredLanguage') || 'en');
-    }, []);
+        if (!initializedRef.current) {
+            initializedRef.current = true;
+            const savedLanguage = localStorage.getItem('preferredLanguage');
+            if (savedLanguage) {
+                i18n.changeLanguage(savedLanguage);
+            }
+        }
+    }, [i18n]);
 
     const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const languageCode = e.target.value;

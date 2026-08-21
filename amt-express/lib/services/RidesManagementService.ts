@@ -219,6 +219,61 @@ export class RidesManagementService {
     }
 
     /**
+     * Assigns a customer to a ride and updates its status
+     * Used when a customer books an available ride
+     */
+    static async assignCustomerToRide(rideId: string, customerId: string): Promise<void> {
+        // Check if ride exists and is available for booking
+        const ride = await db.query.rides.findFirst({
+            where: (rides, {eq}) => eq(rides.id, rideId),
+        });
+
+        if (!ride) {
+            throw new Error('Ride not found');
+        }
+
+        if (ride.status !== 'pending') {
+            throw new Error('Ride is not available for booking');
+        }
+        
+        // Check if customer already exists
+        const customer = await db.query.users.findFirst({
+            where: eq(users.id, customerId)
+        });
+        
+        if (!customer) {
+            throw new Error('Customer not found');
+        }
+
+        // Check if customer is already assigned to this ride
+        const existingAssignment = await db.query.rideCustomers.findFirst({
+            where: and(
+                eq(rideCustomers.rideId, rideId),
+                eq(rideCustomers.customerId, customerId)
+            )
+        });
+        
+        if (existingAssignment) {
+            throw new Error('Customer already assigned to this ride');
+        }
+
+        // Start transaction
+        // First, assign customer to the ride
+        await db.insert(rideCustomers).values({
+            rideId,
+            customerId
+        });
+
+        // Then update the ride status to assigned
+        await db
+            .update(rides)
+            .set({
+                status: 'assigned'
+            })
+            .where(eq(rides.id, rideId));
+    }
+
+    /**
      * Cancels a ride by updating its status to 'cancelled'
      */
     static async cancelRide(rideId: string): Promise<void> {
