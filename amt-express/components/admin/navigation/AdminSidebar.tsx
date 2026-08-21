@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings, User} from 'lucide-react';
+import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, PlusCircle, Route, Sparkles, Settings, User, Calendar} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
@@ -62,6 +62,22 @@ export function AdminSidebar({children}: Props) {
             icon: PlusCircle,
             match: (url) => url.startsWith('/ride-management/new'),
             matchMode: 'exact',
+        },
+        {
+            href: '/rides/booking',
+            label: t('adminNavigation.bookRide'),
+            description: t('adminNavigation.bookRideDescription'),
+            icon: PlusCircle,
+            match: (url) => url.startsWith('/rides/booking'),
+            matchMode: 'ancestor',
+        },
+        {
+            href: '/rides',
+            label: t('adminNavigation.myRides'),
+            description: t('adminNavigation.myRidesDescription'),
+            icon: Calendar,
+            match: (url) => url.startsWith('/rides') && !url.startsWith('/rides/booking'),
+            matchMode: 'ancestor',
         },
     ];
 

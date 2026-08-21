@@ -24,6 +24,9 @@
 
 /* Tabs */
 .tabsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-radius: 0.75rem;
     border: 1px solid var(--app-surface-border);
     box-shadow: var(--app-surface-shadow);
@@ -409,6 +412,62 @@
 
 .summaryIconCompleted {
     color: var(--app-success);
+}
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    color: var(--app-muted-color);
+    cursor: pointer;
+    border-radius: 0.375rem;
+    margin-right: 0.75rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+    color: var(--app-primary);
+    background: var(--app-surface-subtle);
+}
+
+.refreshButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.refreshIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.refreshSpin {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.detailLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--app-muted-color);
+    transition: color 0.2s ease;
+}
+
+.detailLink:hover {
+    color: var(--app-primary);
+}
+
+.detailIcon {
+    width: 0.875rem;
+    height: 0.875rem;
 }
 
 @media (max-width: 640px) {

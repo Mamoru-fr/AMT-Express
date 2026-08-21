@@ -133,7 +133,7 @@ export default function CustomerDashboardPage() {
 
           {/* Actions Row */}
           <div className={styles.actionsRow}>
-            <Link href="/@customer/rides/booking" className={styles.primaryAction}>
+            <Link href="/rides/booking" className={styles.primaryAction}>
               <PlusCircle className={styles.primaryActionIcon} />
               <span>{t('customerNavigation.bookRide')}</span>
             </Link>

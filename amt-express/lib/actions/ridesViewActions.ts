@@ -73,9 +73,9 @@ export async function fetchCustomerRides(): Promise<ActionResponse<RideWithRelat
 
 // Aliases for backward compatibility
 export async function fetchCustomerCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-  return fetchCustomerRides();
+  return RidesViewController.fetchCustomerCompletedRides();
 }
 
 export async function fetchCustomerRequestedRides(): Promise<ActionResponse<RideWithRelations[]>> {
-    return fetchCustomerRides();
+    return RidesViewController.fetchCustomerPendingRides();
 }

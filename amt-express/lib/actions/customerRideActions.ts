@@ -3,8 +3,58 @@
 import { ActionResponse, ErrorCodes } from '@/lib/types/action-response';
 import { RidesViewController } from '@/lib/controllers/RidesViewController';
 import { CustomerRideController } from '@/lib/controllers/CustomerRideController';
+import { RidesViewService } from '@/lib/services/RidesViewService';
+import { RidesManagementService } from '@/lib/services/RidesManagementService';
 import { getSessionWithRole } from '@/lib/auth/session';
 import { RideWithRelations } from '@/content/database_types/ride';
+
+/**
+ * Customer submits a new ride request (no driver assigned yet)
+ */
+export async function createRideRequest(formData: FormData): Promise<ActionResponse<{ rideId: string }>> {
+    try {
+        const { isAuthenticated, user } = await getSessionWithRole();
+
+        if (!isAuthenticated || !user) {
+            return { success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+        }
+
+        const departure = (formData.get('departure') as string)?.trim();
+        const destination = (formData.get('destination') as string)?.trim();
+        const departureDate = (formData.get('departureDate') as string)?.trim();
+        const departureTime = (formData.get('departureTime') as string)?.trim();
+        const notes = (formData.get('notes') as string)?.trim() || undefined;
+
+        if (!departure || !destination || !departureDate || !departureTime) {
+            return { success: false, error: 'All required fields must be filled', code: ErrorCodes.VALIDATION_ERROR };
+        }
+
+        const departureDateTime = new Date(`${departureDate}T${departureTime}`);
+        if (isNaN(departureDateTime.getTime())) {
+            return { success: false, error: 'Invalid date or time', code: ErrorCodes.VALIDATION_ERROR };
+        }
+        if (departureDateTime <= new Date()) {
+            return { success: false, error: 'Departure time must be in the future', code: ErrorCodes.VALIDATION_ERROR };
+        }
+
+        const rideId = await RidesManagementService.createRide({
+            departure,
+            destination,
+            departureTime: departureDateTime,
+            customerIds: [user.id],
+            status: 'pending',
+            customerNotes: notes,
+        });
+
+        return { success: true, data: { rideId } };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to create ride request',
+            code: ErrorCodes.DATABASE_ERROR,
+        };
+    }
+}
 
 /**
  * Search for available rides based on customer criteria
@@ -26,7 +76,7 @@ export async function searchAvailableRides(
 ): Promise<ActionResponse<RideWithRelations[]>> {
     try {
         // Get authenticated customer
-        const { isAuthenticated, isCustomer } = await getSessionWithRole();
+        const { isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
@@ -36,31 +86,17 @@ export async function searchAvailableRides(
             };
         }
 
-        if (!isCustomer) {
+        // Bypass the driver-role controller and call the service directly
+        let rides = await RidesViewService.fetchPendingRides();
+
+        if (!rides) {
             return {
                 success: false,
-                error: 'Forbidden: Only customers can search for rides',
-                code: ErrorCodes.FORBIDDEN,
+                error: 'Failed to fetch pending rides',
+                code: ErrorCodes.DATABASE_ERROR,
             };
         }
 
-        // Get pending rides (available for booking) from controller
-        // These are rides that haven't been assigned to any customer yet
-        const pendingResponse = await RidesViewController.fetchPendingRides();
-        
-        if (!pendingResponse.success) {
-            return {
-                success: false,
-                error: pendingResponse.error || 'Failed to fetch pending rides',
-                code: pendingResponse.code,
-            };
-        }
-
-        let rides = pendingResponse.data || [];
-
-        // Apply client-side filtering if needed
-        // In a production app, you'd want to do this filtering at the database level
-        // But for simplicity, we'll filter here
         if (params.departure) {
             rides = rides.filter(ride => 
                 ride.departure.toLowerCase().includes(params.departure!.toLowerCase())
@@ -117,21 +153,13 @@ export async function searchAvailableRides(
 export async function bookRide(rideId: string): Promise<ActionResponse<RideWithRelations>> {
     try {
         // Get authenticated customer
-        const { user, isCustomer, isAuthenticated } = await getSessionWithRole();
+        const { user, isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
                 success: false,
                 error: 'Unauthorized: Please log in to book a ride',
                 code: ErrorCodes.UNAUTHORIZED,
-            };
-        }
-
-        if (!isCustomer) {
-            return {
-                success: false,
-                error: 'Forbidden: Only customers can book rides',
-                code: ErrorCodes.FORBIDDEN,
             };
         }
 
@@ -173,21 +201,13 @@ export async function bookRide(rideId: string): Promise<ActionResponse<RideWithR
 export async function cancelBooking(rideId: string): Promise<ActionResponse<void>> {
     try {
         // Get authenticated customer
-        const { user, isCustomer, isAuthenticated } = await getSessionWithRole();
+        const { user, isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
                 success: false,
                 error: 'Unauthorized: Please log in to cancel booking',
                 code: ErrorCodes.UNAUTHORIZED,
-            };
-        }
-
-        if (!isCustomer) {
-            return {
-                success: false,
-                error: 'Forbidden: Only customers can cancel bookings',
-                code: ErrorCodes.FORBIDDEN,
             };
         }
 
@@ -247,6 +267,34 @@ export async function getMyRides(): Promise<ActionResponse<RideWithRelations[]>>
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Failed to fetch rides',
+            code: ErrorCodes.INTERNAL_ERROR,
+        };
+    }
+}
+
+export async function getCustomerRideDetail(rideId: string): Promise<ActionResponse<RideWithRelations>> {
+    try {
+        const { isAuthenticated, user } = await getSessionWithRole();
+        if (!isAuthenticated || !user?.id) {
+            return { success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+        }
+
+        const ride = await RidesViewService.getRideById(rideId);
+        if (!ride) {
+            return { success: false, error: 'Ride not found', code: ErrorCodes.RIDE_NOT_FOUND };
+        }
+
+        // Ensure the customer is actually part of this ride
+        const isOwner = ride.customers.some(c => c.id === user.id);
+        if (!isOwner) {
+            return { success: false, error: 'Access denied', code: ErrorCodes.FORBIDDEN };
+        }
+
+        return { success: true, data: ride };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to fetch ride',
             code: ErrorCodes.INTERNAL_ERROR,
         };
     }

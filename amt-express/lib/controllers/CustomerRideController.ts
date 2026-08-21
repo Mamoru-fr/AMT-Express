@@ -1,6 +1,6 @@
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RidesManagementService} from '@/lib/services/RidesManagementService';
-import {RidesViewController} from '@/lib/controllers/RidesViewController';
+import {RidesViewService} from '@/lib/services/RidesViewService';
 import {getSessionWithRole} from '@/lib/auth/session';
 import {RideWithRelations} from '@/content/database_types/ride';
 import type {SessionWithUser} from '@/content/database_types/auth';
@@ -26,7 +26,7 @@ export class CustomerRideController {
     static async bookRide(rideId: string, customerId: string): Promise<ActionResponse<RideWithRelations>> {
         try {
             // === SÉCURITÉ ===
-            const { isAuthenticated, isCustomer, user } = await getSessionWithRole() as SessionInfo;
+            const { isAuthenticated, user } = await getSessionWithRole() as SessionInfo;
             
             if (!isAuthenticated) {
                 return {
@@ -36,13 +36,6 @@ export class CustomerRideController {
                 };
             }
 
-            if (!isCustomer) {
-                return {
-                    success: false,
-                    error: 'Forbidden: Only customers can book rides',
-                    code: ErrorCodes.FORBIDDEN,
-                };
-            }
             
             // Vérifier que le customerId correspond à l'utilisateur authentifié
             if (user?.id !== customerId) {
@@ -54,17 +47,7 @@ export class CustomerRideController {
             }
 
             // Vérifier que la course existe et est disponible
-            const pendingResponse = await RidesViewController.fetchPendingRides();
-            
-            if (!pendingResponse.success) {
-                return {
-                    success: false,
-                    error: pendingResponse.error || 'Failed to fetch pending rides',
-                    code: pendingResponse.code,
-                };
-            }
-            
-            const availableRides = pendingResponse.data || [];
+            const availableRides = await RidesViewService.fetchPendingRides();
             const rideToBook = availableRides.find(r => r.id === rideId);
             
             if (!rideToBook) {
@@ -86,11 +69,8 @@ export class CustomerRideController {
             // === APPEL AU SERVICE ===
             await RidesManagementService.assignCustomerToRide(rideId, customerId);
             
-            // Re-fetch the ride with updated data
-            const updatedRides = await RidesViewController.fetchPendingRides();
-            const updatedRide = updatedRides.success 
-                ? updatedRides.data?.find(r => r.id === rideId)
-                : null;
+            // Re-fetch the updated ride directly by ID
+            const updatedRide = await RidesViewService.getRideById(rideId);
             
             if (!updatedRide) {
                 // If we can't fetch the updated ride, just return the original ride
@@ -168,18 +148,7 @@ export class CustomerRideController {
             }
 
             // Vérifier que le client est bien assigné à cette course
-            const customerRidesResponse = await RidesViewController.fetchCustomerRides();
-            
-            if (!customerRidesResponse.success) {
-                return {
-                    success: false,
-                    error: customerRidesResponse.error || 'Failed to fetch your rides',
-                    code: customerRidesResponse.code,
-                };
-            }
-            
-            const customerRides = customerRidesResponse.data || [];
-            const rideToCancel = customerRides.find(r => r.id === rideId);
+            const rideToCancel = await RidesViewService.getRideById(rideId);
             
             if (!rideToCancel) {
                 return {
@@ -188,11 +157,32 @@ export class CustomerRideController {
                     code: ErrorCodes.RIDE_NOT_FOUND,
                 };
             }
-            
-            if (rideToCancel.status !== 'assigned') {
+
+            const isOwner = rideToCancel.customers.some(c => c.id === customerId);
+            if (!isOwner) {
                 return {
                     success: false,
-                    error: 'Cannot cancel a ride that is not assigned to you',
+                    error: 'Forbidden: You can only cancel your own bookings',
+                    code: ErrorCodes.FORBIDDEN,
+                };
+            }
+            
+            if (rideToCancel.status === 'completed' || rideToCancel.status === 'cancelled') {
+                return {
+                    success: false,
+                    error: 'Cannot cancel a ride that is already completed or cancelled',
+                    code: ErrorCodes.RIDE_NOT_AVAILABLE,
+                };
+            }
+
+            // Règle : annulation possible jusqu'à 1h avant le départ
+            const ONE_HOUR_MS = 60 * 60 * 1000;
+            const now = Date.now();
+            const departure = new Date(rideToCancel.departureTime).getTime();
+            if (departure - now < ONE_HOUR_MS) {
+                return {
+                    success: false,
+                    error: 'Cancellation is only allowed up to 1 hour before departure',
                     code: ErrorCodes.RIDE_NOT_AVAILABLE,
                 };
             }
@@ -249,20 +239,8 @@ export class CustomerRideController {
             }
 
             // === APPEL AU SERVICE ===
-            const response = await RidesViewController.fetchCustomerRides();
-            
-            if (!response.success) {
-                return {
-                    success: false,
-                    error: response.error || 'Failed to fetch your rides',
-                    code: response.code,
-                };
-            }
-            
-            return {
-                success: true,
-                data: response.data || []
-            };
+            const rides = await RidesViewService.fetchCustomerRides(user!.id);
+            return { success: true, data: rides };
         } catch (error) {
             console.error('Error fetching customer rides:', error);
             return {

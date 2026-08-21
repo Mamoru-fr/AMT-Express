@@ -187,4 +187,89 @@ export class RidesViewService {
 
         return ridesWithCustomers;
     }
+
+    /**
+     * Fetches completed/cancelled rides for a customer
+     */
+    static async fetchCustomerCompletedRides(customerId: string): Promise<RideWithRelations[]> {
+        const customerRides = await db
+            .select({ ride: rides, driver: users })
+            .from(rideCustomers)
+            .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(
+                and(
+                    eq(rideCustomers.customerId, customerId),
+                    inArray(rides.status, ['completed', 'cancelled'])
+                )
+            )
+            .orderBy(desc(rides.departureTime));
+
+        return customerRides.map(({ ride, driver }) => ({
+            ...ride,
+            waitingTime: ride.waitingTime || 0,
+            options: [],
+            driver: driver || undefined,
+            customers: [],
+            selectedOptions: [],
+        }));
+    }
+
+    /**
+     * Fetches pending/assigned rides for a customer
+     */
+    static async fetchCustomerPendingRides(customerId: string): Promise<RideWithRelations[]> {
+        const customerRides = await db
+            .select({ ride: rides, driver: users })
+            .from(rideCustomers)
+            .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(
+                and(
+                    eq(rideCustomers.customerId, customerId),
+                    inArray(rides.status, ['pending', 'assigned'])
+                )
+            )
+            .orderBy(desc(rides.departureTime));
+
+        return customerRides.map(({ ride, driver }) => ({
+            ...ride,
+            waitingTime: ride.waitingTime || 0,
+            options: [],
+            driver: driver || undefined,
+            customers: [],
+            selectedOptions: [],
+        }));
+    }
+
+    static async getRideById(rideId: string): Promise<RideWithRelations | null> {
+        const result = await db
+            .select({ ride: rides, driver: users })
+            .from(rides)
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(eq(rides.id, rideId))
+            .limit(1);
+
+        if (!result[0]) return null;
+        const { ride, driver } = result[0];
+
+        const customerRows = await db
+            .select({ customer: users })
+            .from(rideCustomers)
+            .innerJoin(users, eq(rideCustomers.customerId, users.id))
+            .where(eq(rideCustomers.rideId, rideId));
+
+        return {
+            ...ride,
+            waitingTime: ride.waitingTime || 0,
+            options: [],
+            driver: driver || undefined,
+            customers: customerRows.map(r => ({ id: r.customer.id, name: r.customer.name, email: r.customer.email })),
+            selectedOptions: [],
+        } as unknown as RideWithRelations;
+    }
 }
+

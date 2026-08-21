@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import "./globals.css";
 import "@/css/main.css";
-import { auth } from "@/lib/auth/auth";
-import { headers } from "next/headers";
 import { getSessionWithRole } from "@/lib/auth/session";
 import { SessionProvider } from "@/context/SessionContext";
 import { I18nProvider } from "@/context/I18nProvider";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister/ServiceWorkerRegister";
+import { SlotRenderer } from "@/components/shared/SlotRenderer";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
@@ -51,8 +51,9 @@ export default async function RootLayout({
   customer?: ReactNode;
   auth?: ReactNode;
 }>) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const { isAuthenticated, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
+  const { session, isAuthenticated, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('preferredLanguage')?.value ?? 'en';
 
   const activeSlot = !isAuthenticated
     ? authSlot
@@ -65,13 +66,13 @@ export default async function RootLayout({
           : null;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={`antialiased`}>
         <ServiceWorkerRegister />
-          <I18nProvider>
+          <I18nProvider initialLanguage={lang}>
             <SessionProvider session={session}>
               {children}
-              {activeSlot}
+              <SlotRenderer slot={activeSlot} />
             </SessionProvider>
           </I18nProvider>
       </body>

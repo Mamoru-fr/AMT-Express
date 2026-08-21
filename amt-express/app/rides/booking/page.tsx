@@ -1,13 +1,13 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { User } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 
 import { RoleSidebar } from '@/components/shared/RoleSidebar';
-import { ProfileSection } from '@/components/customer/settings/ProfileSection';
+import { BookingForm } from '@/components/shared/BookingForm';
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
 
-export default function ProfilePage() {
+export default function BookingPage() {
     const { t } = useTranslation();
 
     return (
@@ -16,12 +16,12 @@ export default function ProfilePage() {
                 <div className={styles.customerInner}>
                     <div className={styles.headerBlock}>
                         <div className={styles.titleRow}>
-                            <div className={styles.titleIcon}><User /></div>
-                            <h1 className={styles.title}>{t('customerNavigation.profile')}</h1>
+                            <div className={styles.titleIcon}><PlusCircle /></div>
+                            <h1 className={styles.title}>{t('customerNavigation.bookRide')}</h1>
                         </div>
-                        <p className={styles.subtitle}>{t('customerNavigation.profileDescription')}</p>
+                        <p className={styles.subtitle}>{t('customerNavigation.bookRideDescription')}</p>
                     </div>
-                    <ProfileSection showTitle={false} />
+                    <BookingForm />
                 </div>
             </div>
         </RoleSidebar>

@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, History, User, HelpCircle, Settings, Sparkles, PlusCircle} from 'lucide-react';
+import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, PlusCircle, Sparkles, Settings, User} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
 import {signOut} from '@/lib/actions/AuthActions';
 import {useSessionWithRole} from '@/context/SessionContext';
-import styles from './CustomerSidebar.module.css';
+// Reuses identical CSS from AdminSidebar
+import styles from '@/components/admin/navigation/AdminSidebar.module.css';
 
 type NavItem = {
     href: string;
@@ -23,7 +24,7 @@ type Props = {
     children: React.ReactNode;
 };
 
-export function CustomerSidebar({children}: Props) {
+export function DriverSidebar({children}: Props) {
     const {t} = useTranslation();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -32,33 +33,33 @@ export function CustomerSidebar({children}: Props) {
     const [profilePopupOpen, setProfilePopupOpen] = useState(false);
     const profileButtonRef = useRef<HTMLDivElement>(null);
     const currentUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
-    
+
     const {session} = useSessionWithRole();
     const user = session?.user;
     const userInitial = user?.name?.charAt(0).toUpperCase() || 'U';
-    const userName = user?.name || t('customerNavigation.unknownUser');
+    const userName = user?.name || t('driverNavigation.unknownUser');
 
     const navItems: NavItem[] = [
         {
             href: '/',
-            label: t('customerNavigation.dashboard'),
-            description: t('customerNavigation.dashboardDescription'),
+            label: t('driverNavigation.dashboard'),
+            description: t('driverNavigation.dashboardDescription'),
             icon: LayoutDashboard,
             match: (url) => url === '/',
             matchMode: 'exact',
         },
         {
             href: '/rides/booking',
-            label: t('customerNavigation.bookRide'),
-            description: t('customerNavigation.bookRideDescription'),
+            label: t('driverNavigation.bookRide'),
+            description: t('driverNavigation.bookRideDescription'),
             icon: PlusCircle,
             match: (url) => url.startsWith('/rides/booking'),
             matchMode: 'ancestor',
         },
         {
             href: '/rides',
-            label: t('customerNavigation.myBookings'),
-            description: t('customerNavigation.myBookingsDescription'),
+            label: t('driverNavigation.myRides'),
+            description: t('driverNavigation.myRidesDescription'),
             icon: Calendar,
             match: (url) => url.startsWith('/rides') && !url.startsWith('/rides/booking'),
             matchMode: 'ancestor',
@@ -66,7 +67,6 @@ export function CustomerSidebar({children}: Props) {
     ];
 
     useEffect(() => {
-        // Only close mobile nav if it's currently open to avoid unnecessary state updates
         if (mobileNavOpen) {
             setMobileNavOpen(false);
         }
@@ -78,30 +78,23 @@ export function CustomerSidebar({children}: Props) {
                 setProfilePopupOpen(false);
             }
         };
-        
+
         if (profilePopupOpen) {
-            // Small delay to allow popup to render before adding listener
             const timer = setTimeout(() => {
                 document.addEventListener('mousedown', handleClickOutside);
             }, 50);
-            
+
             return () => {
                 clearTimeout(timer);
                 document.removeEventListener('mousedown', handleClickOutside);
             };
         }
-        
+
         return () => {};
     }, [profilePopupOpen]);
 
-    const closeMobileNav = () => {
-        setMobileNavOpen(false);
-    };
-
-    const handleProfileClick = () => {
-        setProfilePopupOpen(prev => !prev);
-    };
-
+    const closeMobileNav = () => setMobileNavOpen(false);
+    const handleProfileClick = () => setProfilePopupOpen(prev => !prev);
     const handleSignOut = async () => {
         await signOut();
         setProfilePopupOpen(false);
@@ -121,7 +114,7 @@ export function CustomerSidebar({children}: Props) {
                 type="button"
                 className={styles.mobileLauncher}
                 onClick={() => setMobileNavOpen(previous => !previous)}
-                aria-label={mobileNavOpen ? t('customerNavigation.closeNavigation') : t('customerNavigation.openNavigation')}
+                aria-label={mobileNavOpen ? t('driverNavigation.closeNavigation') : t('driverNavigation.openNavigation')}
                 aria-expanded={mobileNavOpen}
             >
                 <Sparkles className={styles.mobileLauncherIcon} />
@@ -130,7 +123,7 @@ export function CustomerSidebar({children}: Props) {
             <button
                 type="button"
                 className={styles.mobileBackdrop}
-                aria-label={t('customerNavigation.closeNavigation')}
+                aria-label={t('driverNavigation.closeNavigation')}
                 onClick={closeMobileNav}
             />
 
@@ -143,10 +136,15 @@ export function CustomerSidebar({children}: Props) {
                             setMobileNavOpen(previous => !previous);
                             return;
                         }
-
                         setCollapsed(previous => !previous);
                     }}
-                    aria-label={mobileNavOpen ? t('customerNavigation.closeNavigation') : collapsed ? t('customerNavigation.expandNavigation') : t('customerNavigation.collapseNavigation')}
+                    aria-label={
+                        mobileNavOpen
+                            ? t('driverNavigation.closeNavigation')
+                            : collapsed
+                            ? t('driverNavigation.expandNavigation')
+                            : t('driverNavigation.collapseNavigation')
+                    }
                 >
                     <div className={styles.brandRow}>
                         <div className={styles.brandMark}>
@@ -155,16 +153,16 @@ export function CustomerSidebar({children}: Props) {
                                 {collapsed ? <ChevronRight className={styles.overlayChevron} /> : <ChevronLeft className={styles.overlayChevron} />}
                             </span>
                         </div>
-                    <div className={styles.brandText}>
-                        <div className={styles.brandTitle}>{t('customerNavigation.brandTitle')}</div>
-                        <div className={styles.brandSubtitle}>{t('customerNavigation.brandSubtitle')}</div>
-                    </div>
+                        <div className={styles.brandText}>
+                            <div className={styles.brandTitle}>{t('driverNavigation.brandTitle')}</div>
+                            <div className={styles.brandSubtitle}>{t('driverNavigation.brandSubtitle')}</div>
+                        </div>
                     </div>
                 </button>
 
-                <div className={styles.sectionLabel}>{t('customerNavigation.navigation')}</div>
+                <div className={styles.sectionLabel}>{t('driverNavigation.navigation')}</div>
 
-                <nav className={styles.nav} aria-label={t('customerNavigation.navigation')}>
+                <nav className={styles.nav} aria-label={t('driverNavigation.navigation')}>
                     {navItems.map((item) => {
                         const active = item.match(currentUrl);
                         const Icon = item.icon;
@@ -199,8 +197,8 @@ export function CustomerSidebar({children}: Props) {
                     <Link href="/settings" className={styles.utilityItem} onClick={closeMobileNav}>
                         <Settings className={styles.utilityIcon} />
                         <span className={styles.navText}>
-                            <span className={styles.navLabel}>{t('customerNavigation.settings')}</span>
-                            <span className={styles.navDescription}>{t('customerNavigation.settingsDescription')}</span>
+                            <span className={styles.navLabel}>{t('driverNavigation.settings')}</span>
+                            <span className={styles.navDescription}>{t('driverNavigation.settingsDescription')}</span>
                         </span>
                     </Link>
 
@@ -212,7 +210,7 @@ export function CustomerSidebar({children}: Props) {
                                 handleProfileClick();
                                 closeMobileNav();
                             }}
-                            aria-label={t('customerNavigation.profile')}
+                            aria-label={t('driverNavigation.profile')}
                         >
                             <div className={styles.profileAvatar}>
                                 <span className={styles.profileInitial}>{userInitial}</span>
@@ -221,9 +219,9 @@ export function CustomerSidebar({children}: Props) {
                                 <span className={styles.navLabel}>{userName}</span>
                             </span>
                         </button>
-                        
+
                         {profilePopupOpen && (
-                            <div className={styles.profilePopup} role="menu" aria-label={t('customerNavigation.profileMenu')}>
+                            <div className={styles.profilePopup} role="menu" aria-label={t('driverNavigation.profileMenu')}>
                                 <Link
                                     href="/profile"
                                     className={styles.profilePopupItem}
@@ -231,7 +229,7 @@ export function CustomerSidebar({children}: Props) {
                                     role="menuitem"
                                 >
                                     <User className={styles.profilePopupIcon} />
-                                    <span>{t('customerNavigation.profile')}</span>
+                                    <span>{t('driverNavigation.profile')}</span>
                                 </Link>
                                 <div className={styles.profilePopupDivider} />
                                 <div className={styles.profilePopupLanguage}>
@@ -244,7 +242,7 @@ export function CustomerSidebar({children}: Props) {
                                     onClick={handleSignOut}
                                     role="menuitem"
                                 >
-                                    <span>{t('customerNavigation.signOut')}</span>
+                                    <span>{t('driverNavigation.signOut')}</span>
                                 </button>
                             </div>
                         )}
@@ -257,7 +255,7 @@ export function CustomerSidebar({children}: Props) {
                     onClick={() => setMobileNavOpen(previous => !previous)}
                 >
                     <Menu className={styles.mobileToggleIcon} />
-                    <span>{collapsed ? t('customerNavigation.openNavigation') : t('customerNavigation.collapseNavigation')}</span>
+                    <span>{collapsed ? t('driverNavigation.openNavigation') : t('driverNavigation.collapseNavigation')}</span>
                 </button>
             </aside>
 

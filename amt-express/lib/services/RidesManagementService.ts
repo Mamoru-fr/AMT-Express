@@ -366,8 +366,9 @@ export class RidesManagementService {
         price?: string;
         driverPrice?: string;
         status?: RideStatus;
+        customerNotes?: string;
     }): Promise<string> {
-        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, driverPrice, status} = data;
+        const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, driverPrice, status, customerNotes} = data;
 
         // If driverId provided, convert from userId to drivers.id
         let driverId: string | null = null;
@@ -388,6 +389,7 @@ export class RidesManagementService {
                 driverPrice: driverPrice || '0',
                 status: status || 'pending',
                 driverId: driverId,
+                customerNotes: customerNotes || null,
             })
             .returning();
 
