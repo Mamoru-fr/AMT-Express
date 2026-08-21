@@ -1,158 +1,132 @@
-# **Docker PostgreSQL: The Complete Interaction Guide**
-*For Developers Who Love Clarity and Precision*
+# Docker — Guide PostgreSQL AMT Express
+
+> Commandes essentielles pour gérer la base de données PostgreSQL dans Docker.
 
 ---
 
-## **1. Prerequisites**
-- Docker installed and running.
-- At least one PostgreSQL container (or know how to start one).
+## Demarrage rapide
 
----
-
-## **2. Listing Your PostgreSQL Containers**
-
-### **List All Running Containers**
 ```bash
-docker ps
+# Depuis amt-express/
+docker compose up -d --build    # Démarrer (build inclus)
+docker compose logs -f app      # Suivre les logs de l'app
+docker compose logs -f db       # Suivre les logs PostgreSQL
+docker compose down             # Arrêter et supprimer les conteneurs
+docker compose down -v          # Arrêter + supprimer les volumes (reset DB)
 ```
-- **Tip**: To see **all containers** (including stopped ones), add `-a`:
-  ```bash
-  docker ps -a
-  ```
-- **Filter for PostgreSQL only**:
-  ```bash
-  docker ps -a --filter "name=postgres"
-  ```
 
 ---
 
-## **3. Accessing the SQL Terminal**
+## Conteneurs
 
-### **Open the SQL Terminal**
 ```bash
-docker exec -it <container_name_or_id> psql -U <username>
-```
-- Replace `<container_name_or_id>` with your container’s name or ID.
-- Replace `<username>` with your PostgreSQL username (default: `postgres`).
+docker ps                                  # Conteneurs en cours d'exécution
+docker ps -a                               # Tous les conteneurs (y compris arrêtés)
+docker ps -a --filter "name=amt"           # Filtrer par nom
 
-**Example:**
+docker start <nom_ou_id>
+docker stop <nom_ou_id>
+docker restart <nom_ou_id>
+docker logs <nom_ou_id>                    # Logs
+docker logs -f <nom_ou_id>                 # Logs en temps réel
+```
+
+---
+
+## Acceder a PostgreSQL
+
+### Via psql dans le conteneur
+
 ```bash
-docker exec -it amt-express-db-1 psql -U MYdevUser -d amt_express
+docker exec -it amt-express-db-1 psql -U amt_user -d amt_express
 ```
-- **Tip**: If you get `could not connect to server`, ensure your container is running (`docker start <container_name_or_id>`).
 
----
+> Si le nom du conteneur est différent, vérifier avec `docker ps`.
 
-## **4. Basic Docker Commands for PostgreSQL**
+### Exécuter une requête sans entrer dans le terminal
 
-| Task                | Command                                 | Notes                                 |
-| ------------------- | --------------------------------------- | ------------------------------------- |
-| Start a container   | `docker start <container_name_or_id>`   | Useful if your container is stopped.  |
-| Stop a container    | `docker stop <container_name_or_id>`    | Graceful shutdown.                    |
-| Restart a container | `docker restart <container_name_or_id>` | Quick reset.                          |
-| Remove a container  | `docker rm <container_name_or_id>`      | Add `-f` to force remove if running.  |
-| View logs           | `docker logs <container_name_or_id>`    | Add `-f` to follow logs in real-time. |
-
----
-
-## **5. Inside the SQL Terminal: Essential Commands**
-
-Once you’re in the `psql` terminal, **always end your SQL commands with a semicolon (`;`)**.
-
-### **Navigation and Info**
-| Command              | Description                              | Example          |
-| -------------------- | ---------------------------------------- | ---------------- |
-| `\l`                 | List all databases.                      | `\l`             |
-| `\c <database_name>` | Connect to a database.                   | `\c my_database` |
-| `\dt`                | List all tables in the current database. | `\dt`            |
-| `\du`                | List all users and their roles.          | `\du`            |
-| `\q`                 | Quit the SQL terminal.                   | `\q`             |
-
-### **Running Queries**
-- **Always end with `;`**:
-  ```sql
-  SELECT * FROM users;
-  ```
-- **Check PostgreSQL version**:
-  ```sql
-  SELECT version();
-  ```
-
-### **Common SQL Commands**
-| Command           | Example                                                          |
-| ----------------- | ---------------------------------------------------------------- |
-| Create a database | `CREATE DATABASE my_new_db;`                                     |
-| Create a table    | `CREATE TABLE users (id SERIAL PRIMARY KEY, name VARCHAR(100));` |
-| Insert data       | `INSERT INTO users (name) VALUES ('Alexis');`                    |
-| Select data       | `SELECT * FROM users;`                                           |
-| Update data       | `UPDATE users SET name = 'Alex' WHERE id = 1;`                   |
-| Delete data       | `DELETE FROM users WHERE id = 1;`                                |
-
----
-
-## **6. Example Workflow**
-
-1. **List your PostgreSQL containers**:
-   ```bash
-   docker ps -a --filter "name=postgres"
-   ```
-   Example output:
-   ```
-   CONTAINER ID   IMAGE         COMMAND                  CREATED      STATUS      PORTS                    NAMES
-   abc12345678    postgres:14   "docker-entrypoint.s…"   2 days ago   Up 2 days   0.0.0.0:5432->5432/tcp   my_postgres_container
-   ```
-
-2. **Access the SQL terminal**:
-   ```bash
-   docker exec -it my_postgres_container psql -U postgres
-   ```
-
-3. **Run a query** (note the `;`):
-   ```sql
-   SELECT * FROM users;
-   ```
-
-4. **Exit the terminal**:
-   ```sql
-   \q
-   ```
-
----
-
-## **7. Pro Tips**
-
-- **Forgot the semicolon?** `psql` will wait for it. Just type `;` and press Enter.
-- **Stuck in a query?** Press `Ctrl+C` to cancel.
-- **Want to run a query without entering the terminal?**
-  ```bash
-  docker exec my_postgres_container psql -U postgres -c "SELECT * FROM users;"
-  ```
-
----
-
-## **8. Bonus: Create a PostgreSQL Container**
 ```bash
-docker run --name my_postgres_container -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres:14
+docker exec amt-express-db-1 psql -U amt_user -d amt_express -c "SELECT COUNT(*) FROM rides;"
 ```
-- Replace `mysecretpassword` and `14` with your password and PostgreSQL version.
 
 ---
 
-## **9. Troubleshooting**
+## Commandes psql
 
-| Issue                         | Solution                                         |
-| ----------------------------- | ------------------------------------------------ |
-| `could not connect to server` | Check if the container is running (`docker ps`). |
-| `permission denied for table` | Ensure you’re using the correct user (`\du`).    |
-| `syntax error`                | Did you forget the `;` at the end?               |
+Une fois connecté au terminal `psql` :
+
+| Commande | Description |
+|----------|-------------|
+| `\l` | Lister les bases de données |
+| `\c <nom_db>` | Se connecter à une base |
+| `\dt` | Lister les tables |
+| `\du` | Lister les utilisateurs et leurs rôles |
+| `\d <table>` | Décrire la structure d'une table |
+| `\q` | Quitter |
+
+> Toutes les requêtes SQL doivent se terminer par `;`.
+
+### Exemples utiles
+
+```sql
+-- Compter les courses par statut
+SELECT status, COUNT(*) FROM rides GROUP BY status;
+
+-- Lister les utilisateurs
+SELECT id, name, email, role FROM users;
+
+-- Vérifier les sessions actives
+SELECT id, user_id, expires_at FROM session WHERE expires_at > NOW();
+```
 
 ---
 
-## **10. Cheat Sheet**
+## Backup et restauration
 
-| Task                       | Command                                                            |
-| -------------------------- | ------------------------------------------------------------------ |
-| List PostgreSQL containers | `docker ps -a --filter "name=postgres"`                            |
-| Access SQL terminal        | `docker exec -it <container> psql -U <user>`                       |
-| Run a query                | `SELECT * FROM users;` (inside `psql`)                             |
-| Run a query from outside   | `docker exec <container> psql -U <user> -c "SELECT * FROM users;"` |
+### Backup manuel
+
+```bash
+# Via le script du projet
+cd amt-express && pnpm db:backup
+
+# Via pg_dump dans le conteneur
+docker exec amt-express-db-1 pg_dump -U amt_user amt_express > backup_$(date +%Y%m%d).sql
+```
+
+### Restauration
+
+```bash
+docker exec -i amt-express-db-1 psql -U amt_user -d amt_express < backup_20260101.sql
+```
+
+---
+
+## Depannage
+
+| Problème | Cause probable | Solution |
+|----------|---------------|----------|
+| `could not connect to server` | Conteneur arrêté | `docker start amt-express-db-1` |
+| `permission denied for table` | Mauvais utilisateur | Utiliser `-U amt_user` |
+| `FATAL: database does not exist` | DB non créée | `docker compose up -d --build` |
+| `env_file not found` | `.env.example` absent | Créer le fichier (voir README) |
+| Port 5432 déjà utilisé | PostgreSQL local actif | `brew services stop postgresql` ou changer le port dans `docker-compose.yml` |
+
+---
+
+## Créer un conteneur PostgreSQL standalone
+
+```bash
+docker run \
+  --name amt-postgres \
+  -e POSTGRES_DB=amt_express \
+  -e POSTGRES_USER=amt_user \
+  -e POSTGRES_PASSWORD=amt_password \
+  -p 5432:5432 \
+  -d \
+  postgres:16-alpine
+```
+
+Puis connecter avec :
+```
+DATABASE_URL="postgresql://amt_user:amt_password@localhost:5432/amt_express?sslmode=disable"
+```

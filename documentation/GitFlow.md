@@ -1,116 +1,92 @@
-# Git Flow : Guide Pratique pour Alexis
+# Git Flow — AMT Express
+
+> Modèle de gestion de branches pour un cycle de release structuré.
 
 ---
 
-## 📌 Concepts Clés
-Git Flow est un modèle de gestion de branches pour Git, idéal pour les projets avec des cycles de release structurés.
+## Branches
 
-### Branches Principales
-| Branche    | Rôle                                                                 |
-|------------|----------------------------------------------------------------------|
-| `main`     | Code en production. **Jamais** modifié directement.                 |
-| `develop`  | Branche d’intégration pour les nouvelles fonctionnalités.           |
-
-### Branches de Support
-| Type        | Préfixe      | Rôle                                                                 |
-|-------------|--------------|----------------------------------------------------------------------|
-| Feature     | `feature/*`  | Développement de nouvelles fonctionnalités.                         |
-| Release     | `release/*`  | Préparation d’une nouvelle version (tests, corrections mineures).   |
-| Hotfix      | `hotfix/*`   | Corrections urgentes en production.                                 |
+| Branche | Role |
+|---------|------|
+| `main` | Code en production — jamais modifié directement |
+| `develop` | Intégration des features — branche de travail principale |
+| `feature/*` | Nouvelles fonctionnalités |
+| `release/*` | Préparation d'une release (tests, corrections mineures) |
+| `hotfix/*` | Corrections urgentes en production |
 
 ---
 
-## 🛠️ Commandes Essentielles
+## Workflow standard
 
-### 1. Initialisation (à faire une seule fois)
+### 1. Démarrer une feature
+
 ```bash
-git flow init
-# Suivre les instructions pour configurer les branches principales.
+git checkout develop
+git checkout -b feature/ma-fonctionnalite
+
+# ... développement, commits ...
+
+# Terminer la feature
+git checkout develop
+git merge feature/ma-fonctionnalite
+git branch -d feature/ma-fonctionnalite
 ```
 
-### 2. Démarrer une Nouvelle Feature
+Ou avec git-flow :
 ```bash
-git flow feature start nom-de-la-feature
-# Exemple :
-git flow feature start ajout-panier
-```
-- Travaille sur ta feature, puis :
-```bash
-git flow feature finish nom-de-la-feature
-# Cela merge automatiquement dans `develop`.
+git flow feature start ma-fonctionnalite
+git flow feature finish ma-fonctionnalite  # merge auto dans develop
 ```
 
-### 3. Préparer une Release
+### 2. Préparer une release
+
 ```bash
 git flow release start 1.2.0
-# Corrige les bugs si nécessaire, puis finalise :
+# Corrections mineures, mise à jour du numéro de version
 git flow release finish 1.2.0
-# Cela :
-# - Merge la release dans `main` et `develop`.
-# - Tag la version.
-# - Supprime la branche de release.
+# → merge dans main ET develop, tag v1.2.0 créé automatiquement
 ```
 
-### 4. Corriger un Bug en Production (Hotfix)
+### 3. Corriger un bug en production (hotfix)
+
 ```bash
-git flow hotfix start nom-du-hotfix
-# Exemple :
-git flow hotfix start bug-paiement
-# Après correction :
-git flow hotfix finish nom-du-hotfix
-# Cela merge automatiquement dans `main` et `develop`.
+git flow hotfix start bug-critique
+# Correction du bug
+git flow hotfix finish bug-critique
+# → merge dans main ET develop
 ```
 
 ---
 
-## 📊 Workflow Visuel (ASCII)
+## Workflow visuel
+
 ```
-┌───────────────────────────────────────────────────────┐
-│                      main                             │
-└───────────────────────┬───────────────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────────────┐
-│                     develop                           │
-└───────────────────────┬───────────────────────────────┘
-                        │
-        ┌───────────────┴───────────────┐
-        │                               │
-        ▼                               ▼
-┌─────────────┐                   ┌─────────────────┐
-│ feature/*   │                   │ release/*       │
-└─────────────┘                   └─────────────────┘
-        │                               │
-        ▼                               ▼
-┌───────────────────────────────────────────────────────┐
-│             (merge dans develop)                      │
-└───────────────────────────────────────┘               │
-                                                        ▼
-┌───────────────────────────────────────────────────────┐
-│                     main (tag v1.2.0)                 │
-└───────────────────────────────────────────────────────┘
-        ▲                               ▲
-        │                               │
-┌─────────────┐                   ┌─────────────────┐
-│ hotfix/*    │                   │ (merge depuis   │
-└─────────────┘                   │  develop)       │
-        │                           ┌─────────────────┐
-        └───────────────┬───────────│   release/*     │
-                    ┌───┴───┐       └─────────────────┘
-                    │ main  │
-                    └───────┘
+main       ────────────────────────────────────────────── (tag v1.2.0)
+                                                 ↑
+develop    ──────────┬──────────────────────┬────┘
+                     │                      │
+feature/*            └── feature/... ───────┘
+                                            │
+release/*                              release/1.2.0 ──┘
+                                                        ↑
+hotfix/*                           hotfix/bug ──────────┘
 ```
 
 ---
 
-## 💡 Bonnes Pratiques
-- **Nomme tes branches clairement** : `feature/ajout-panier`, `hotfix/bug-paiement`.
-- **Ne laisse pas traîner les branches** : Une feature finie ? Merge ou supprime.
-- **Tag tes releases** : `git tag -a v1.2.0 -m "Release 1.2.0"`.
-- **Utilise des Pull Requests** pour les merges dans `develop` ou `main`.
+## Bonnes pratiques
+
+- **Nommer les branches clairement** : `feature/csv-import`, `hotfix/auth-redirect`
+- **Ne pas laisser traîner les branches** : merger ou supprimer dès que terminé
+- **Tagger les releases** : `git tag -a v1.2.0 -m "Release 1.2.0"`
+- **Passer par une Pull Request** pour tout merge dans `develop` ou `main`
+- **`pnpm ci` doit passer** avant d'ouvrir une PR
 
 ---
 
-## ⚠️ Quand Ne Pas Utiliser Git Flow ?
-- Projets **très petits** ou **solo** : Un simple `main` + `feature/` suffit.
-- Équipes qui préfèrent **GitHub Flow** (branches courtes, merges fréquents dans `main`).
+## Initialisation (une seule fois)
+
+```bash
+git flow init
+# Accepter les valeurs par défaut (main / develop)
+```
