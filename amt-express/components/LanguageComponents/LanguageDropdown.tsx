@@ -37,6 +37,8 @@ export function LanguageDropdown({className, variant = 'floating'}: Props) {
         const languageCode = e.target.value;
         i18n.changeLanguage(languageCode);
         localStorage.setItem('preferredLanguage', languageCode);
+        // Cookie allows the server to SSR with the correct language
+        document.cookie = `preferredLanguage=${languageCode};path=/;max-age=31536000;SameSite=Lax`;
     };
 
     return (

@@ -3,29 +3,27 @@
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 import CustomerRidesView from '@/components/customer/CustomerRidesView';
-import { AdminSidebar } from '@/components/admin/navigation/AdminSidebar';
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
 
-export default function AdminMyRidesPage() {
+export default function RidesPage() {
     const { t } = useTranslation();
 
     return (
-        <AdminSidebar>
+        <RoleSidebar>
             <div className={styles.customerDashboard}>
                 <div className={styles.customerInner}>
                     <div className={styles.headerBlock}>
                         <div className={styles.titleRow}>
                             <div className={styles.titleIcon}><Calendar /></div>
-                            <h1 className={styles.title}>{t('adminNavigation.myRides')}</h1>
+                            <h1 className={styles.title}>{t('customerNavigation.myBookings')}</h1>
                         </div>
-                        <p className={styles.subtitle}>{t('adminNavigation.myRidesDescription')}</p>
+                        <p className={styles.subtitle}>{t('customerNavigation.myBookingsDescription')}</p>
                     </div>
-                    <div className={styles.ridesSection}>
-                        <CustomerRidesView hideHeader={true} />
-                    </div>
+                    <CustomerRidesView hideHeader={true} />
                 </div>
             </div>
-        </AdminSidebar>
+        </RoleSidebar>
     );
 }
