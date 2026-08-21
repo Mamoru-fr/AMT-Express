@@ -1,86 +1,85 @@
-# CSV Import Tool for AMT Express
+# Import CSV — AMT Express
 
-This tool imports ride data from CSV files into the AMT Express database.
+> Outil d'import en masse de courses depuis un fichier CSV. Un backup automatique de la base est effectué avant chaque import.
 
-## CSV Format
+---
 
-The CSV file should have the following columns (in order):
+## Prérequis
 
-| Column            | Meaning                       | Example                    |
-| ----------------- | ----------------------------- | -------------------------- |
-| JOUR              | Date                          | "Monday, December 1, 2025" |
-| HEURE             | Time/Hour to pick up          | "7.30"                     |
-| FACTURATION       | Billing/Production company    | "WARNER"                   |
-| BT/BC             | Project reference             | "THE EXPEDITION"           |
-| NOM               | Client name(s)                | "ESTELLE MOSELY"           |
-| DEPART            | Departure location            | "CDG"                      |
-| ARRIVEE           | Arrival location              | "P18+CHAMPIGNY"            |
-| ID CHAUFFEUR      | Driver ID                     | "CFR00132"                 |
-| CHAUFFEUR         | Driver name                   | "TOUFIK ROMAINVILLE"       |
-| COURSE ENVOYE     | Driver dispatched to          | "VAN / VIP / MISE A DISPO" |
-| ATTENTE           | Notes (waiting time, options) | "VAN / VIP"                |
-| TARIF CHAUFFEUR   | Driver price (with options)   | "120.00 €"                 |
-| TARIF AGENDA      | Planned price                 | "€ 120.00"                 |
-| TARIF CLIENT      | Final invoice price           | "€ 139.20"                 |
-| FACT CHAUFFEUR    | Driver makes own invoice      | "FACT"                     |
-| FORFAIT           | Flat rate price               | ""                         |
-| ATTENTION MENTION | Additional notes              | "FACT AVOIR"               |
+- Base de données PostgreSQL configurée et migrations appliquées (`pnpm db:migrate`)
+- Fichier `.env` avec une `DATABASE_URL` valide
 
-## Usage
+---
 
-### Prerequisites
-
-1. Ensure you have a PostgreSQL database running
-2. Configure your database connection in `.env`
-3. Run migrations: `npm run db:push` or `pnpm db:push`
-
-### Running the Import
+## Utilisation
 
 ```bash
-# Using ts-node (recommended)
-pnpm db:import-csv /path/to/your/file.csv
+pnpm db:import-csv /chemin/vers/fichier.csv
 ```
 
-### Example
-
+**Exemple :**
 ```bash
 pnpm db:import-csv ~/Downloads/AGENDA-2025-DECEMBRE.csv
 ```
 
-## What the Script Does
+Le script effectue d'abord un backup (`pnpm db:backup`), puis importe les données.
 
-1. **Parses CSV** - Reads and parses the CSV file with proper handling of quoted fields
-2. **Creates Drivers** - Automatically creates driver accounts if they don't exist
-3. **Creates Productions** - Automatically creates production companies if they don't exist
-4. **Imports Rides** - Creates ride records with:
-   - Departure and arrival locations
-   - Date and time
-   - Driver assignment
-   - Production company linkage
-   - Final price (prioritizes: client price → planned price → driver price)
-   - Customer notes including:
-     - Wait time/options
-     - Dispatched driver info
-     - Flat rate info
-     - Additional notes
-     - Price breakdown
+---
 
-## Features
+## Format du fichier CSV
 
-- **Smart Price Parsing**: Handles various currency formats (€, �, with/without spaces)
-- **Date Parsing**: Supports French date format ("Monday, December 1, 2025")
-- **Time Parsing**: Converts 24-hour time format (e.g., "7.30" = 07:30)
-- **Skip Logic**: Automatically skips:
-  - Cancelled rides (ANNULE)
-  - Rides without required fields
-  - Rides with invalid dates
-  - Rides without valid prices
-- **Auto-create**: Creates drivers and productions automatically if they don't exist
-- **Detailed Logging**: Shows progress and summary of import
+Les colonnes doivent être dans cet ordre :
 
-## Output
+| Colonne | Description | Exemple |
+|---------|-------------|---------|
+| `JOUR` | Date | `"Monday, December 1, 2025"` |
+| `HEURE` | Heure de prise en charge | `"7.30"` |
+| `FACTURATION` | Société de production | `"WARNER"` |
+| `BT/BC` | Référence projet | `"THE EXPEDITION"` |
+| `NOM` | Nom du ou des clients | `"ESTELLE MOSELY"` |
+| `DEPART` | Lieu de départ | `"CDG"` |
+| `ARRIVEE` | Lieu d'arrivée | `"P18+CHAMPIGNY"` |
+| `ID CHAUFFEUR` | Identifiant chauffeur | `"CFR00132"` |
+| `CHAUFFEUR` | Nom du chauffeur | `"TOUFIK ROMAINVILLE"` |
+| `COURSE ENVOYE` | Type de véhicule dispatché | `"VAN / VIP / MISE A DISPO"` |
+| `ATTENTE` | Notes (temps d'attente, options) | `"VAN / VIP"` |
+| `TARIF CHAUFFEUR` | Prix chauffeur (avec options) | `"120.00 €"` |
+| `TARIF AGENDA` | Prix planifié | `"€ 120.00"` |
+| `TARIF CLIENT` | Prix final facturé | `"€ 139.20"` |
+| `FACT CHAUFFEUR` | Chauffeur facture lui-même | `"FACT"` |
+| `FORFAIT` | Prix forfaitaire | `` |
+| `ATTENTION MENTION` | Notes additionnelles | `"FACT AVOIR"` |
 
-The script provides detailed output:
+---
+
+## Ce que fait le script
+
+1. **Lecture et parsing** du CSV (gestion des champs entre guillemets)
+2. **Création automatique** des chauffeurs absents de la base
+3. **Création automatique** des productions absentes de la base
+4. **Import des courses** avec :
+   - Départ, arrivée, date et heure
+   - Affectation chauffeur
+   - Lien production/projet
+   - Prix final (priorité : prix client → prix planifié → prix chauffeur)
+   - Notes chauffeur (attente, options, forfait, mentions)
+
+### Logique de prix
+
+```
+prix retenu = prix client → sinon prix planifié → sinon prix chauffeur
+```
+
+### Courses ignorées automatiquement
+
+- Courses annulées (`ANNULE` dans les champs)
+- Lignes sans champs obligatoires (départ, arrivée, date)
+- Lignes avec date invalide
+- Lignes sans prix valide
+
+---
+
+## Sortie du script
 
 ```
 📂 CSV Ride Import Script
@@ -106,38 +105,31 @@ The script provides detailed output:
 ==================================================
 ```
 
-## Database Impact
+---
 
-The import creates/updates:
-- **users** table: New driver records with role='driver'
-- **productions** table: New production companies
-- **rides** table: New ride records with status='completed'
+## Impact sur la base de données
 
-## Troubleshooting
+| Table | Action |
+|-------|--------|
+| `users` | Création des nouveaux chauffeurs (`role='driver'`) |
+| `productions` | Création des nouvelles sociétés de production |
+| `rides` | Création des courses avec `status='completed'` |
 
-### Error: "Please provide a CSV file path"
-Make sure to pass the CSV file path as an argument.
+**Génération automatique des emails :**
+- Chauffeur : `{driverId}@amt-express.com`
+- Production : `{production-slug}@production.com`
 
-### Error: "No valid rides found in CSV"
-Check that your CSV has the correct column structure and data.
+Les doublons (même `driverId` ou même nom de production) sont détectés et ignorés.
 
-### Error: Database connection issues
-Verify your `.env` file has correct database credentials:
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/amt_express"
-```
+---
 
-### Skipped rides
-Check the console output to see why rides were skipped:
-- Cancelled rides (ANNULE keyword)
-- Missing required fields
-- Invalid date formats
-- No valid prices
+## Depannage
 
-## Notes
+| Erreur | Cause | Solution |
+|--------|-------|----------|
+| `Please provide a CSV file path` | Chemin manquant | Passer le chemin en argument |
+| `No valid rides found in CSV` | Structure CSV incorrecte | Vérifier l'ordre des colonnes |
+| Erreur de connexion DB | `DATABASE_URL` incorrecte | Vérifier `.env` |
+| Courses ignorées | Voir la sortie console | Vérifier les champs `ANNULE`, dates et prix |
 
-- The script sets all imported rides as `status='completed'`
-- Drivers are created with auto-generated email: `{driverId}@amt-express.com`
-- Production emails are auto-generated: `{production-id}@production.com`
-- Duplicate driver/production checks prevent duplicates
-- All prices are stored as decimals in the database
+Pour diagnostiquer les lignes ignorées, lire la sortie console — chaque ligne skippée indique la raison.

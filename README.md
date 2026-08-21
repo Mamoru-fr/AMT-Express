@@ -5,395 +5,420 @@
 </p>
 
 <p align="center">
-  <strong>Plateforme de gestion de transport intelligent pour professionnels</strong>
+  <strong>Plateforme web de gestion de courses de taxi pour entreprises de transport et clients professionnels</strong>
 </p>
 
 <p align="center">
-  <a href="#fonctionnalit%C3%A9s">Fonctionnalités</a> •
-  <a href="#architecture">Architecture</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#configuration">Configuration</a> •
-  <a href="#tests">Tests</a> •
-  <a href="#contribution">Contribution</a>
+  <img src="https://img.shields.io/badge/Next.js-16.1.1-black?logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/licence-MIT-green" alt="MIT Licence" />
+</p>
+
+<p align="center">
+  <a href="#-avertissements">⚠️ Avertissements</a> •
+  <a href="#-apercu">Aperçu</a> •
+  <a href="#-fonctionnalites">Fonctionnalités</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-tests">Tests</a> •
+  <a href="#-contribution">Contribution</a>
 </p>
 
 ---
 
-## 📋 À propos du projet
+## ⚠️ Avertissements
 
-**AMT Express** est une plateforme web moderne de gestion de courses de taxi, conçue pour les entreprises de transport et leurs clients professionnels. L'application permet une gestion complète des trajets, des chauffeurs et de la facturation, avec une approche axée sur l'efficacité opérationnelle et l'expérience utilisateur.
+> **A lire avant tout clone ou fork**
 
-### 🎯 Objectif principal
-
-Fournir une solution tout-en-un pour :
-- **Cataloguer** les courses de taxi
-- **Distribuer** les courses parmi les chauffeurs via un planning dynamique
-- **Générer** des factures à partir des courses (individuelles ou groupées)
-- **Suggérer** des courses aux chauffeurs avecolicitation d'assignation
-- **Importer** des données de courses via formulaire, texte, schéma ou photo (OCR)
-
-### 📊 Statut du projet
-
-| État | Fonctionnalité |
-|------|----------------|
-| ✅ **Terminé** | Gestion complète des courses (CRUD) |
-| ✅ **Terminé** | Tableaux de bord Admin & Chauffeur avec KPI |
-| ✅ **Terminé** | Système d'authentification avec rôles |
-| ✅ **Terminé** | Base de données et schémas |
-| ✅ **Terminé** | Internationalisation (i18n) Français/Anglais |
-| ✅ **Terminé** | Import CSV des données |
-| ✅ **Terminé** | Validation côté serveur avec Zod |
-| 🚧 **En cours** | Suivi GPS en temps réel |
-| 🚧 **En cours** | Intégration OCR pour scanning de tickets |
-| 🚧 **En cours** | Intégration de paiement (Stripe/PayPal) |
-| 🚧 **En cours** | Système de chat interne |
-| 📋 **Prévu** | Notifications push en temps réel |
-| 📋 **Prévu** | Application mobile réactive |
+- Le fichier `amt-express/.env` contient des **secrets réels** (URL Neon, clé Better Auth). Il ne doit **jamais** être poussé sur un dépôt public. Vérifiez qu'il est dans `.gitignore` et **révoquez immédiatement** les credentials s'ils ont été exposés.
+- Il n'existe **pas** de fichier `.env.example`. Créez-en un manuellement à partir du template de la section [Variables d'environnement](#️-variables-denvironnement).
+- Le `docker-compose.yml` référence `.env.example` comme `env_file` — il ne fonctionnera pas sans ce fichier.
+- Le Dockerfile cible **Node.js 20** (`node:20.12.2-alpine`). Utilisez cette version pour des builds reproductibles.
+- Le projet est en **développement actif**. Plusieurs fonctionnalités (GPS, OCR, paiements, chat) sont partiellement ou non implémentées.
 
 ---
 
-## 🎨 Fonctionnalités
+## 📋 A propos
 
-### 👥 Gestion des utilisateurs
+**AMT Express** est une application web full-stack pour les entreprises de transport VTC/taxi. Elle centralise la gestion des courses, des chauffeurs, des clients professionnels (productions cinéma, événementiel…) et de la facturation.
 
-- **Inscription/Connexion** : Rôles distincts (Admin, Chauffeur, Client) avec authentification sécurisée
-- **Récupération de mot de passe** : Lien de réinitialisation valide 24h
-- **Validation des comptes chauffeurs** : Vérification manuelle par les administrateurs
-- **Modification du profil** : Mise à jour des informations personnelles
-- **Désactivation de compte** : Archivage des données conformément au RGPD
+| Objectif | Description |
+|----------|-------------|
+| **Cataloguer** | Enregistrer et historiser toutes les courses avec leurs détails |
+| **Distribuer** | Affecter les courses aux chauffeurs via un planning dynamique |
+| **Facturer** | Générer des factures individuelles ou groupées |
+| **Importer** | Intégrer des données par formulaire, CSV ou OCR |
+| **Notifier** | Alerter les parties prenantes sur les événements critiques |
 
-### 🚗 Gestion des courses
+### Statut
 
-- **Ajout manuel** : Formulaire complet pour saisir tous les détails (date, heure, lieu, prix)
-- **Import via texte/photo** : Extraction automatique des données via OCR
-- **Suggestions de courses** : Algorithme de mise en correspondance basé sur la disponibilité et la localisation
-- **Demande d'assignation** : Les chauffeurs peuvent demander à être assignés à une course
-- **Historique des courses** : Consultation des trajets passés avec filtres avancés
-- **Annulation de course** : Avec justification obligatoire (max 2h avant le départ)
-- **Notation des chauffeurs** : Système de notation (1-5 étoiles) avec commentaires
+| État | Fonctionnalité |
+|------|----------------|
+| ✅ | Authentification et gestion des rôles (Admin, Chauffeur, Client) |
+| ✅ | Gestion complète des courses (CRUD, statuts, options) |
+| ✅ | Tableaux de bord avec KPI |
+| ✅ | Import CSV avec sauvegarde automatique |
+| ✅ | Schéma de base de données (19 tables) |
+| ✅ | Internationalisation Français / Anglais |
+| ✅ | Validation côté serveur avec Zod |
+| ✅ | PWA avec Service Worker |
+| 🚧 | Suivi GPS en temps réel |
+| 🚧 | OCR pour scanning de tickets |
+| 🚧 | Intégration de paiement (Stripe / PayPal) |
+| 🚧 | Chat interne |
+| 📋 | Notifications push |
+| 📋 | Synchronisation calendrier |
 
-### 📊 Vue Admin (Style Excel)
+---
 
-- **Tableau dynamique** : Filtres avancés, tri multi-colonnes, export de données
-- **Export personnalisé** : Génération de fichiers CSV/PDF avec données filtrées (limite : 10 000 lignes)
-- **Statistiques de courses** : Graphiques et indicateurs clés (nombre, revenus, etc.)
-- **Rafraîchissement automatique** : Mise à jour quotidienne des données
+## 🖼️ Apercu
 
-### 💰 Facturation
+<p align="center">
+  <img src="amt-express/public/screenshots/desktop-wide.png" alt="Vue desktop" width="800" />
+</p>
+<p align="center">
+  <img src="amt-express/public/screenshots/mobile-narrow.png" alt="Vue mobile" width="300" />
+</p>
 
-- **Création de factures** : Sélection des courses, numérotation automatique
-- **Facturation groupée** : Regroupement par client ou par période
-- **Rappels automatiques** : Envoi automatique de rappels (J+7, J+14, J+30)
-- **Remise exceptionnelle** : Application de réductions avec justification requise
-- **Envoi par application** : Envoi immédiat avec historique préservé
-- **Gestion manuelle des rappels** : Messages personnalisés (max 3 rappels configurables)
+---
 
-### 🔔 Notifications
+## 🎨 Fonctionnalites
 
-- **Alertes en temps réel** : Nouvelles courses, affectations, factures
-- **Personnalisation des canaux** : Choix entre email et notifications in-app
-- **Notifications urgentes** : Alertes push + email pour les événements critiques
+### Utilisateurs
 
-### 🗺️ Fonctionnalités supplémentaires
+- Inscription / Connexion par email + mot de passe (Better Auth)
+- Trois rôles : `admin`, `driver`, `customer` — défaut : `customer`
+- Activation manuelle des comptes chauffeurs par un admin
+- Bannissement temporaire ou permanent avec motif
+- Journal d'activité tracé en base (`activity_logs`)
 
-- **Géolocalisation des trajets** : Intégration avec Mapbox/Google Maps
-- **Chat en temps réel** : Communication entre chauffeurs et clients
-- **Suivi GPS en direct** : Position du chauffeur visible par le client
-- **Paiement partiel** : Minimum 30% du montant total
-- **Intégration calendrier** : Synchronisation bidirectionnelle avec Google Calendar/Outlook
+### Courses
+
+- Formulaire complet : départ, destination, horaire, prix client/chauffeur, options, temps d'attente
+- Cycle de statuts : `pending` → `assigned` → `completed` / `cancelled`
+- Options tarifaires configurables (nuit, aéroport, véhicule large…)
+- Demandes d'assignation : les chauffeurs postulent, l'admin valide
+- Notation des trajets (1–5 étoiles + commentaire)
+- Import CSV en masse avec backup automatique
+
+### Admin
+
+- Tableau de toutes les courses, filtres avancés, tri multi-colonnes
+- KPI : nombre de courses, revenus, taux d'assignation
+- Graphiques via Recharts
+- Export CSV / PDF (jusqu'à 10 000 lignes)
+- Gestion des productions et projets
+
+### Chauffeur
+
+- Courses disponibles et assignées
+- Planning des shifts
+- Historique et statistiques personnels
+
+### Facturation
+
+- Génération de factures à partir de courses sélectionnées
+- Facturation groupée par client ou par période
+- Statuts : `unpaid`, `paid`, `cancelled`
+- Rappels automatiques (J+7, J+14, J+30)
+- Remises exceptionnelles avec justification
 
 ---
 
 ## 🏗️ Architecture
 
-### Stack Technique
+### Stack technique
 
-| Catégorie | Technologie | Version | Justification |
-|-----------|-------------|---------|---------------|
-| **Framework Frontend** | Next.js | 16.1.1 | Server Components, App Router, Server Actions |
-| **Langage** | TypeScript | 5.x | Typage fort, meilleure maintenabilité |
-| **UI Library** | React | 19.2.3 | Composants réutilisables |
-| **Base de données** | PostgreSQL | 18 | Research SQL, conformité ACID |
-| **Database Provider** | Neon | - | Serverless, branching, free tier généreux |
-| **ORM** | Drizzle ORM | 0.45.1 | TypeScript-first, léger, SQL-like |
-| **Authentification** | Better Auth | 1.4.10 | Typage TypeScript, architecture moderne |
-| **Validation** | Zod | 4.3.5 | Validation des données côté serveur |
-| **Tests** | Vitest | 4.0.16 | Tests rapides et efficaces |
-| **Internationalisation** | i18next | 25.7.4 | Support multi-langues complet |
-| **Graphiques** | Recharts | 3.6.0 | Visualisation de données interactive |
-| **Icônes** | Lucide React | 0.562.0 | Icônes modernes et légères |
+| Catégorie | Technologie | Version |
+|-----------|-------------|---------|
+| Framework | Next.js App Router | 16.1.1 |
+| Langage | TypeScript | ^5 |
+| UI | React | 19.2.3 |
+| Base de données | PostgreSQL (Neon) | 16 |
+| ORM | Drizzle ORM | ^0.45.1 |
+| Auth | Better Auth | ^1.4.10 |
+| Validation | Zod | ^4.3.5 |
+| Tests | Vitest + Testing Library | ^4.0.16 |
+| i18n | i18next + react-i18next | ^25.7.4 |
+| Graphiques | Recharts | ^3.6.0 |
+| Package manager | pnpm | 9.15.4 |
 
-### Architecture Logicielle
+### Structure des dossiers
 
-```bash
+```
 amt-express/
-├── app/                              # Pages et layouts (App Router)
-│   ├── @admin/                       # Espace administrateur
-│   ├── @auth/                        # Pages d'authentification
-│   ├── @customer/                    # Espace client
-│   ├── @driver/                      # Espace chauffeur
-│   └── connections/                  # Connexion/Inscription
-├── components/                       # Composants React
-│   ├── admin/                       # Composants admin
-│   ├── classicComponents/           # Composants génériques
-│   ├── customer/                     # Composants client
-│   ├── dashboard/                    # Composants tableau de bord
-│   └── specificCards/                # Cartes spécialisées
-├── lib/                              # Logique métier
-│   ├── actions/                      # Server Actions
-│   ├── controllers/                  # Contrôleurs
-│   ├── services/                     # Services métier
-│   ├── validations/                  # Validations Zod
-│   └── db/                           # Configuration DB & Schéma
-├── context/                          # Contextes React
-├── content/                          # Types et constantes
-├── locales/                          # Traductions (fr.json, en.json)
-├── test/                             # Tests Vitest
-│   ├── unit/                         # Tests unitaires
-│   └── integration/                  # Tests d'intégration
-└── scripts/                          # Scripts utilitaires
+├── app/
+│   ├── @admin/             # Espace administrateur (parallel route)
+│   ├── @auth/              # Pages connexion / inscription
+│   ├── @customer/          # Espace client (history, profile, rides)
+│   ├── @driver/            # Espace chauffeur
+│   └── connections/        # Layout connexion
+├── components/             # Composants React (admin, customer, driver, dashboard…)
+├── lib/
+│   ├── actions/            # Server Actions (auth, rides, dashboard…)
+│   ├── auth/               # Config Better Auth + session helpers
+│   ├── controllers/        # Couche entre actions et services
+│   ├── db/                 # Client Drizzle + schema.ts
+│   ├── middleware/         # roleMiddleware.ts
+│   ├── services/           # Logique metier
+│   ├── types/              # ActionResponse, ErrorCodes…
+│   └── validations/        # Schemas Zod
+├── locales/                # fr.json, en.json
+├── test/
+│   ├── unit/               # Tests unitaires (services, composants, actions)
+│   └── integration/        # Tests avec base de donnees
+├── Dockerfile
+├── docker-compose.yml
+└── drizzle.config.ts
 ```
 
-### Diagramme de Flux de Données
+### Flux de donnees
 
-```mermaid
-flowchart TD
-    %% ===== GROUPES =====
-    subgraph Utilisateurs["👥 Utilisateurs"]
-        Client[👤 Client]
-        Chauffeur[🚗 Chauffeur]
-        Admin[👔 Admin]
-    end
-
-    subgraph Application["💻 Application Next.js"]
-        Next["Next.js - App Router"]
-        Actions["Server Actions"]
-        Controllers["Controllers"]
-        Services["Services Métier"]
-    end
-
-    subgraph BaseDeDonnees["🗃️ Base de Données"]
-        Drizzle["Drizzle ORM"]
-        Postgres["PostgreSQL Neon"]
-    end
-
-    subgraph Resultats["📤 Résultats"]
-        Retours["Retours API"]
-        Notifs["Notifications"]
-    end
-
-    %% ===== FLUX PRINCIPAL =====
-    Client -->|Requêtes HTTP| Next
-    Chauffeur -->|Requêtes HTTP| Next
-    Admin -->|Requêtes HTTP| Next
-
-    Next -->|Appelle| Actions
-    Actions -->|Valide & Appelle| Controllers
-    Controllers -->|Vérifie rôles| Services
-    Services -->|Requêtes SQL| Drizzle
-    Drizzle -->|Exécute| Postgres
-
-    %% ===== RETOUR DES DONNÉES =====
-    Postgres -->|Données| Drizzle
-    Drizzle -->|Structurées| Services
-    Services -->|Réponses| Controllers
-    Controllers -->|Validées| Actions
-    Actions -->|JSON| Retours
-    Actions -->|Événements| Notifs
-
-    %% ===== STYLES =====
-    style Utilisateurs fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
-    style Application fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    style BaseDeDonnees fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style Resultats fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+```
+Client / Chauffeur / Admin
+        |
+    App Router  (Next.js)
+        |
+   Server Actions  ← validation Zod
+        |
+    Controllers
+        |
+  Role Middleware  ← verifyRole()
+        |
+     Services
+        |
+   Drizzle ORM
+        |
+    PostgreSQL
 ```
 
+### Authentification
 
-### Système d'Authentification
+- Sessions sécurisées avec cookies HTTP-only via `nextCookies()`
+- Plugin `admin` de Better Auth pour les rôles et bannissements
+- `verifyRole()` appelé dans chaque Server Action — bypasse en `NODE_ENV=test`
+- Rôle par défaut : `customer`
 
-L'application utilise **Better Auth** avec :
-- **Rôles** : admin, driver, customer
-- **Middleware de rôles** : Vérification des permissions
-- **Gestion des sessions** : Sessions sécurisées
-- **Bannissement** : Possibilité de bannir des utilisateurs
+---
 
-### Schéma de la Base de Données
+## 🗄️ Base de donnees
 
-**18 tables** principales : utilisateurs, chauffeurs, courses, projets, factures, notifications, etc.
+Schema : [amt-express/lib/db/schema.ts](amt-express/lib/db/schema.ts)
 
-Voir [lib/db/schema.ts](amt-express/lib/db/schema.ts) pour le schéma complet.
+| Table | Description |
+|-------|-------------|
+| `users` | Tous les utilisateurs — géolocalisation + bannissement |
+| `drivers` | Profil chauffeur (plaque, véhicule, code comptable) |
+| `productions` | Sociétés clientes (production, événementiel) |
+| `projects` | Projets rattachés à une production |
+| `rides` | Courses : lieux, horaires, prix, statut, chauffeur |
+| `ride_options` | Suppléments tarifaires configurables |
+| `ride_selected_options` | Options choisies par course |
+| `ride_customers` | Association course ↔ client + note |
+| `ride_managers` | Association course ↔ admin |
+| `shift_planning` | Planning des shifts par chauffeur |
+| `assignment_requests` | Demandes d'assignation chauffeur → course |
+| `invoices` | Factures (totaux, TVA, statut, rappels) |
+| `invoice_items` | Lignes de facturation |
+| `notifications` | Notifications in-app |
+| `notification_preferences` | Préférences email / push |
+| `activity_logs` | Journal d'audit |
+| `session` / `account` / `verification` | Tables Better Auth |
+
+**Enums :** `ride_status` (`pending`, `assigned`, `completed`, `cancelled`) — `invoice_status` (`unpaid`, `paid`, `cancelled`) — `user_role` (`admin`, `driver`, `customer`)
 
 ---
 
 ## 🚀 Installation
 
-### Prérequis
+### Prerequis
 
-- Node.js v24.7.0+
-- npm / pnpm (recommandé)
-- Docker (optionnel)
-- PostgreSQL (Neon recommandé)
+| Outil | Version | Notes |
+|-------|---------|-------|
+| Node.js | 20.x | Version du Dockerfile |
+| pnpm | 9.x | `npm install -g pnpm` |
+| PostgreSQL | 16+ | Neon (cloud) ou Docker (local) |
 
-### Installation locale
+### Developpement local
 
-1. Cloner le dépôt :
 ```bash
 git clone https://github.com/Mamoru-fr/AMT-Express.git
 cd AMT-Express/amt-express
-```
 
-2. Installer les dépendances :
-```bash
 pnpm install
-```
 
-3. Configurer l'environnement :
-```bash
-cp .env.example .env.local
-# Éditer .env.local avec vos informations
-```
+# Créer le fichier d'env (voir section Variables d'environnement)
+# et remplir avec vos propres credentials
+cp .env .env.local
 
-4. Configurer la base de données :
-```bash
 pnpm db:migrate
-```
-
-5. Démarrer l'application :
-```bash
 pnpm dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000)
+→ [http://localhost:3000](http://localhost:3000)
 
-### Développement avec Docker
+### Docker Compose (PostgreSQL local inclus)
 
-1. Configurer .env :
 ```bash
-cp .env.example .env.local
-```
+cd amt-express
 
-2. Démarrer le stack :
-```bash
+# Créer .env.example à partir du template ci-dessous
+nano .env.example
+
 docker compose up -d --build
-```
-
-3. Accéder à [http://localhost:3000](http://localhost:3000)
-
-4. Arrêter :
-```bash
+docker compose logs -f app   # suivre les logs
 docker compose down
 ```
 
+> La `DATABASE_URL` est automatiquement configurée pour pointer vers le conteneur PostgreSQL interne — pas besoin de Neon.
+
 ### Production
 
-Build l'image :
 ```bash
-docker build -t amt-express:latest .
-```
+docker build \
+  --build-arg DATABASE_URL="postgresql://user:pass@host:5432/db" \
+  --build-arg CSRF_SECRET="votre-csrf-secret" \
+  -t amt-express:latest .
 
-Exécuter :
-```bash
-docker run -p 3000:3000 --env-file .env.local amt-express:latest
+docker run -p 3000:3000 \
+  -e DATABASE_URL="..." \
+  -e BETTER_AUTH_SECRET="..." \
+  -e BETTER_AUTH_URL="https://votre-domaine.com" \
+  -e NODE_ENV="production" \
+  amt-express:latest
 ```
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ Variables d'environnement
 
-### Variables d'Environnement
+```bash
+# Base de données
+# Neon : sslmode=require&channel_binding=require
+# Docker : sslmode=disable
+DATABASE_URL="postgresql://<user>:<password>@<host>/<db>?sslmode=require"
 
-| Variable | Description | Requise |
-|----------|-------------|---------|
-| DATABASE_URL | URL PostgreSQL | ✅ |
-| AUTH_SECRET | Clé secrète Better Auth | ✅ |
-| NEXT_PUBLIC_APP_URL | URL de l'application | ✅ |
-| DB_DRIVER | Driver de base de données | ❌ |
+# Optionnel — "postgres-js" pour TCP classique, vide pour Neon HTTP
+# DB_DRIVER="postgres-js"
 
-### Configuration de la Base de Données
+# Better Auth — générer avec : openssl rand -base64 32
+BETTER_AUTH_SECRET="votre-secret-32-chars-minimum"
+BETTER_AUTH_URL="http://localhost:3000"
 
-- **Neon HTTP** : Pour connexions serverless (recommandé)
-- **Postgres.js** : Pour connexions classiques
+# Next.js
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
-### Configuration des Rôles
+# NODE_ENV="production"  # décommenter en production
+```
 
-Les rôles sont définis dans [content/database_types/roles.ts](amt-express/content/database_types/roles.ts).
-
-Rôle par défaut : `customer` (configurable dans [lib/auth/auth.ts](amt-express/lib/auth/auth.ts)).
+| Variable | Requise | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | ✅ | URL PostgreSQL |
+| `BETTER_AUTH_SECRET` | ✅ | Clé de chiffrement des sessions (min. 32 caractères) |
+| `BETTER_AUTH_URL` | ✅ | URL publique — utilisée par Better Auth pour les redirections |
+| `NEXT_PUBLIC_APP_URL` | ✅ | URL de base pour les métadonnées |
+| `DB_DRIVER` | ❌ | `"postgres-js"` pour TCP ; omis pour Neon HTTP |
 
 ---
 
 ## 🧪 Tests
 
-### Commandes
-
 ```bash
-pnpm test              # Tous les tests
-pnpm test:unit         # Tests unitaires
-pnpm test:auth         # Tests auth
-pnpm test:rides        # Tests gestion courses
-pnpm test:integration  # Tests d'intégration
-pnpm test:watch        # Mode surveillance
-pnpm test:coverage     # Avec coverage
-pnpm ci                # CI - Build + Tests
+pnpm test:unit         # Unitaires (services, validations, composants)
+pnpm test:auth         # Intégration — authentification
+pnpm test:rides        # Intégration — gestion des courses
+pnpm test:integration  # Tous les tests d'intégration
+pnpm test:coverage     # Rapport de couverture (lib/ et utils/)
+pnpm ci                # Build + tous les tests (pipeline CI)
 ```
 
-### GitHub Actions
+```
+test/
+├── unit/
+│   ├── actions/AuthActions.unit.test.ts
+│   ├── components/Button.test.tsx
+│   └── services/
+│       ├── actionResponse.test.ts
+│       ├── import-csv.test.ts
+│       ├── isValidUserRole.test.ts
+│       ├── translations.test.ts
+│       └── validations.test.ts
+└── integration/
+    └── actions/
+        ├── AuthActions.test.ts
+        └── RidesManagementActions.test.ts
+```
 
-- `build.yml` : Build de l'application
-- `tests-*.yml` : Tests spécifiques
-- `ci-full.yml` : Pipeline complet
-
----
-
-## 📁 Structure du Projet
-
-Voir la section **Architecture Logicielle** pour la structure complète.
-
----
-
-## 🌍 Internationalisation
-
-Supporte **Français** et **Anglais** via i18next.
-
-- Fichiers : `locales/fr.json`, `locales/en.json`
-- Fournisseur : `context/I18nProvider.tsx`
+> Les tests d'intégration nécessitent une `DATABASE_URL` valide. `verifyRole()` est bypasse automatiquement en `NODE_ENV=test`.
 
 ---
 
-## 🔒 Sécurité
+## 🔧 Depannage
 
-- ✅ Validation des entrées (Zod)
-- ✅ Authentification sécurisée (Better Auth)
-- ✅ Protection des routes (Middleware)
-- ✅ Journal d'audit
-- ✅ Gestion des sessions
-- ✅ Protection CSRF
-- ✅ Chiffrement
+| Problème | Cause probable | Solution |
+|----------|---------------|----------|
+| `Cannot connect to database` | `DATABASE_URL` manquante ou incorrecte | Vérifier `.env.local`, tester la connexion avec `psql` |
+| `Migration failed` | Schema et DB désynchronisés | `pnpm db:push` en développement, `pnpm db:migrate` sinon |
+| Docker : `env_file not found` | `.env.example` absent | Créer le fichier (voir section Variables) |
+| `BETTER_AUTH_URL` mismatch | URL différente de celle en production | Mettre l'URL publique exacte, sans slash final |
+| Build Docker échoue | `DATABASE_URL` non passé en `--build-arg` | Ajouter `--build-arg DATABASE_URL=...` au `docker build` |
+| Tests d'intégration échouent | `DATABASE_URL` de test pointe sur la prod | Utiliser une DB de test dédiée |
+
+---
+
+## 🛠️ Scripts
+
+```bash
+pnpm db:backup       # Sauvegarde complète de la base
+pnpm db:migrate      # Génère et applique les migrations
+pnpm db:push         # Pousse le schema sans migration (dev uniquement)
+pnpm db:import-csv   # Backup + import CSV
+pnpm lint            # ESLint
+```
 
 ---
 
 ## 🤝 Contribution
 
-1. Forker le projet
-2. Créer une branche (`git checkout -b feature/ma-fonctionnalite`)
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
+Le projet suit **Git Flow** :
 
-### Règles
+| Branche | Role |
+|---------|------|
+| `main` | Production — jamais modifiée directement |
+| `develop` | Intégration des features |
+| `feature/*` | Nouvelles fonctionnalités |
+| `hotfix/*` | Corrections urgentes en production |
 
-- Respecter la structure
-- Ajouter des tests
-- Documenter les changements
-- Messages de commit clairs
-- Conventions de nommage (PascalCase, camelCase, UPPER_CASE)
+```bash
+# Démarrer une feature
+git checkout develop
+git checkout -b feature/ma-fonctionnalite
+
+# Terminer
+git checkout develop
+git merge feature/ma-fonctionnalite
+```
+
+**Avant d'ouvrir une PR :**
+1. `pnpm ci` doit passer sans erreur
+2. Ajouter un test unitaire pour tout nouveau service ou action
+3. Message de commit clair et conventionnel
+
+**Conventions de nommage :** `PascalCase` composants/types — `camelCase` fonctions/variables — `UPPER_CASE` constantes
 
 ---
 
-## 📄 Documentation
+## 📄 Documentation complementaire
 
-- [Architecture Technique](documentation/TECHNICAL_ARCHITECTURE.md)
-- [Spécifications Fonctionnelles](Instructions/Functional%20Requierement%20Moonshot.md)
+| Document | Description |
+|----------|-------------|
+| [TECHNICAL_ARCHITECTURE.md](documentation/TECHNICAL_ARCHITECTURE.md) | Architecture technique détaillée |
+| [SESSION_USAGE_GUIDE.md](documentation/SESSION_USAGE_GUIDE.md) | Utilisation des sessions |
+| [CSV_IMPORT_README.md](documentation/CSV_Import/CSV_IMPORT_README.md) | Import CSV |
+| [DOCKER_COMMANDS.md](documentation/Docker/DOCKER_COMMANDS.md) | Commandes Docker |
+| [GitFlow.md](documentation/GitFlow.md) | Guide Git Flow complet |
+| [Cahier des charges](Instructions/Functional%20Requierement%20Moonshot.md) | Spécifications fonctionnelles |
 
 ---
 
