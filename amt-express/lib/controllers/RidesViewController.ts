@@ -153,4 +153,48 @@ export class RidesViewController {
             };
         }
     }
+
+    /**
+     * SÉCURITÉ: Customer only — trajets terminés ou annulés
+     */
+    static async fetchCustomerCompletedRides(): Promise<ActionResponse<RideWithRelations[]>> {
+        try {
+            const roleCheck = await verifyRole('customer');
+            if (!roleCheck.success) return roleCheck;
+            const {user} = roleCheck.data!;
+
+            const data = await RidesViewService.fetchCustomerCompletedRides(user.id);
+
+            return {success: true, data};
+        } catch (error) {
+            console.error('Error fetching customer completed rides:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch completed rides',
+                code: ErrorCodes.DATABASE_ERROR
+            };
+        }
+    }
+
+    /**
+     * SÉCURITÉ: Customer only — trajets en attente ou assignés
+     */
+    static async fetchCustomerPendingRides(): Promise<ActionResponse<RideWithRelations[]>> {
+        try {
+            const roleCheck = await verifyRole('customer');
+            if (!roleCheck.success) return roleCheck;
+            const {user} = roleCheck.data!;
+
+            const data = await RidesViewService.fetchCustomerPendingRides(user.id);
+
+            return {success: true, data};
+        } catch (error) {
+            console.error('Error fetching customer pending rides:', error);
+            return {
+                success: false,
+                error: 'Failed to fetch pending rides',
+                code: ErrorCodes.DATABASE_ERROR
+            };
+        }
+    }
 }
