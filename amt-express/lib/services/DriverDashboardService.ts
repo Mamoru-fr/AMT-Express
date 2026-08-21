@@ -38,9 +38,16 @@ export class DriverDashboardService {
      * Get driver record for a user
      */
     static async getDriverForUser(userId: string) {
-        return db.query.drivers.findFirst({
+        const existing = await db.query.drivers.findFirst({
             where: eq(drivers.userId, userId)
         });
+        if (existing) return existing;
+
+        // Auto-create a minimal profile when the user has role=driver but no drivers record
+        const [created] = await db.insert(drivers)
+            .values({ userId, vehiclePlate: '' })
+            .returning();
+        return created;
     }
 
     /**

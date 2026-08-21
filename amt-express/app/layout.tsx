@@ -43,7 +43,6 @@ export default async function RootLayout({
   admin,
   driver,
   customer,
-  auth: authSlot,
 }: Readonly<{
   children: ReactNode;
   admin?: ReactNode;
@@ -51,13 +50,11 @@ export default async function RootLayout({
   customer?: ReactNode;
   auth?: ReactNode;
 }>) {
-  const { session, isAuthenticated, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
+  const { session, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
   const cookieStore = await cookies();
   const lang = cookieStore.get('preferredLanguage')?.value ?? 'en';
 
-  const activeSlot = !isAuthenticated
-    ? authSlot
-    : isAdmin
+  const activeSlot = isAdmin
       ? admin
       : isDriver
         ? driver

@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
   // =============================================
   const publicPaths = [
     '/connections',
-    '/', // Page d'accueil (redirige vers /connections si non authentifié)
+    // '/' is intentionally excluded: unauthenticated users are redirected to /connections below
   ];
   const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
 
