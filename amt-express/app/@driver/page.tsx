@@ -10,6 +10,7 @@ import { Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X, 
 // Components
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
 import { StatusBanner } from '@/components/classicComponents/StatusBanner';
+import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
 
 // Actions & Types
 import { toggleDriverAvailability, requestRideAssignment, fetchDriverDashboard } from '@/lib/actions/driverDashboardActions';
@@ -169,6 +170,7 @@ export default function DriverDashboardPage() {
   if (!data) return null;
 
   return (
+    <DriverSidebar>
     <div className={styles.driverDashboard}>
       <div className={styles.driverInner}>
         {feedback && (
@@ -432,6 +434,7 @@ export default function DriverDashboardPage() {
         )}
       </div>
     </div>
+    </DriverSidebar>
   );
 }
 

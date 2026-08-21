@@ -76,21 +76,13 @@ export async function searchAvailableRides(
 ): Promise<ActionResponse<RideWithRelations[]>> {
     try {
         // Get authenticated customer
-        const { isAuthenticated, isCustomer } = await getSessionWithRole();
+        const { isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
                 success: false,
                 error: 'Unauthorized: Please log in to search for rides',
                 code: ErrorCodes.UNAUTHORIZED,
-            };
-        }
-
-        if (!isCustomer) {
-            return {
-                success: false,
-                error: 'Forbidden: Only customers can search for rides',
-                code: ErrorCodes.FORBIDDEN,
             };
         }
 
@@ -161,21 +153,13 @@ export async function searchAvailableRides(
 export async function bookRide(rideId: string): Promise<ActionResponse<RideWithRelations>> {
     try {
         // Get authenticated customer
-        const { user, isCustomer, isAuthenticated } = await getSessionWithRole();
+        const { user, isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
                 success: false,
                 error: 'Unauthorized: Please log in to book a ride',
                 code: ErrorCodes.UNAUTHORIZED,
-            };
-        }
-
-        if (!isCustomer) {
-            return {
-                success: false,
-                error: 'Forbidden: Only customers can book rides',
-                code: ErrorCodes.FORBIDDEN,
             };
         }
 
@@ -217,21 +201,13 @@ export async function bookRide(rideId: string): Promise<ActionResponse<RideWithR
 export async function cancelBooking(rideId: string): Promise<ActionResponse<void>> {
     try {
         // Get authenticated customer
-        const { user, isCustomer, isAuthenticated } = await getSessionWithRole();
+        const { user, isAuthenticated } = await getSessionWithRole();
         
         if (!isAuthenticated) {
             return {
                 success: false,
                 error: 'Unauthorized: Please log in to cancel booking',
                 code: ErrorCodes.UNAUTHORIZED,
-            };
-        }
-
-        if (!isCustomer) {
-            return {
-                success: false,
-                error: 'Forbidden: Only customers can cancel bookings',
-                code: ErrorCodes.FORBIDDEN,
             };
         }
 

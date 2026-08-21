@@ -43,13 +43,13 @@ export async function verifyRole(
         };
     }
 
-    const roleMap = {
-        admin: isAdmin,
-        driver: isDriver,
-        customer: isCustomer
-    };
+    // Hierarchy: admin ≥ driver ≥ customer
+    const hasAccess =
+        requiredRole === 'customer' ? (isCustomer || isDriver || isAdmin) :
+        requiredRole === 'driver'   ? isDriver :
+        requiredRole === 'admin'    ? isAdmin : false;
 
-    if (!roleMap[requiredRole]) {
+    if (!hasAccess) {
         return {
             success: false,
             error: `Unauthorized: ${requiredRole.charAt(0).toUpperCase() + requiredRole.slice(1)} access only`,
