@@ -187,4 +187,33 @@ export class RidesViewService {
 
         return ridesWithCustomers;
     }
+
+    static async getRideById(rideId: string): Promise<RideWithRelations | null> {
+        const result = await db
+            .select({ ride: rides, driver: users })
+            .from(rides)
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(eq(rides.id, rideId))
+            .limit(1);
+
+        if (!result[0]) return null;
+        const { ride, driver } = result[0];
+
+        const customerRows = await db
+            .select({ customer: users })
+            .from(rideCustomers)
+            .innerJoin(users, eq(rideCustomers.customerId, users.id))
+            .where(eq(rideCustomers.rideId, rideId));
+
+        return {
+            ...ride,
+            waitingTime: ride.waitingTime || 0,
+            options: [],
+            driver: driver || undefined,
+            customers: customerRows.map(r => ({ id: r.customer.id, name: r.customer.name, email: r.customer.email })),
+            selectedOptions: [],
+        } as unknown as RideWithRelations;
+    }
 }
+

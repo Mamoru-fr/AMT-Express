@@ -4,10 +4,33 @@ import db from "@/lib/db/drizzle";
 import * as schema from "@/lib/db/schema";
 import {nextCookies} from "better-auth/next-js";
 import {admin} from "better-auth/plugins";
+import {
+    sendVerificationEmail,
+    sendChangeEmailVerification,
+    sendPasswordResetEmail,
+} from "@/lib/utils/email";
 
 export const auth = betterAuth({
     emailAndPassword: {
-        enabled: true, // Activate email and password authentication
+        enabled: true,
+        sendResetPassword: async ({ user, url }) => {
+            await sendPasswordResetEmail(user.email, url);
+        },
+    },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            await sendVerificationEmail(user.email, url);
+        },
+        sendOnSignUp: true,
+        expiresIn: 86400, // 24h
+    },
+    user: {
+        changeEmail: {
+            enabled: true,
+            sendChangeEmailVerification: async ({ user, newEmail, url }) => {
+                await sendChangeEmailVerification(newEmail, url);
+            },
+        },
     },
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -19,11 +42,9 @@ export const auth = betterAuth({
         },
     }),
     plugins: [
-        nextCookies(),  // Allows saving better-auth cookies in the next.js app
+        nextCookies(),
         admin({
-            defaultRole: "customer", // Set default role for new users
-        })  // Admin plugin to manage user roles and bans
+            defaultRole: "customer",
+        }),
     ],
-    // TODO: Add single session limit when better-auth plugin is available
-    // singleSession: true,
 });

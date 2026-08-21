@@ -60,7 +60,7 @@ export function CustomerSidebar({children}: Props) {
             label: t('customerNavigation.myBookings'),
             description: t('customerNavigation.myBookingsDescription'),
             icon: Calendar,
-            match: (url) => url.startsWith('/rides'),
+            match: (url) => url.startsWith('/rides') && !url.startsWith('/rides/booking'),
             matchMode: 'ancestor',
         },
     ];

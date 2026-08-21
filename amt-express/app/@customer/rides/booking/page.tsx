@@ -1,149 +1,155 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/navigation';
-import { Calendar, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { PlusCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
-// Components
 import { CustomerSidebar } from '@/components/customer/navigation/CustomerSidebar';
-import { RideSearchForm } from '@/components/customer/rides/RideSearchForm';
-import { RideCard } from '@/components/customer/rides/RideCard';
-
-// Actions
-import { searchAvailableRides, bookRide } from '@/lib/actions/customerRideActions';
-
-// Styles
+import { createRideRequest } from '@/lib/actions/customerRideActions';
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
+import formStyles from './booking.module.css';
 
 export default function BookingPage() {
     const { t } = useTranslation();
-    const router = useRouter();
-    
-    const [rides, setRides] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isBooking, setIsBooking] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
-    const [searchParams, setSearchParams] = useState({
-        departure: '',
-        destination: '',
-        date: ''
-    });
+    const [submittedRideId, setSubmittedRideId] = useState<string | null>(null);
 
-    // Load rides on page mount
-    useEffect(() => {
-        loadRides();
-    }, []);
-
-    const loadRides = useCallback(async (params: any = {}) => {
-        setIsLoading(true);
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
         setError(null);
-        
-        try {
-            const response = await searchAvailableRides(params);
-            if (response.success) {
-                setRides(response.data || []);
-                setSearchParams(params);
-            } else {
-                setError(response.error || t('rides.searchError'));
-                setRides([]);
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : t('rides.searchError'));
-            setRides([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [t]);
+        const formData = new FormData(e.currentTarget);
 
-    const handleBook = useCallback(async (rideId: string) => {
-        setIsBooking(rideId);
-        try {
-            const response = await bookRide(rideId);
-            if (response.success) {
-                // Booking successful, redirect to my rides with success param
-                router.push('/@customer/rides?bookingSuccess=true');
-            } else {
-                setError(response.error || t('rides.bookingError'));
+        startTransition(async () => {
+            const result = await createRideRequest(formData);
+            if (result.success && result.data) {
+                setSubmittedRideId(result.data.rideId);
+            } else if (!result.success) {
+                setError(result.error || t('rideRequest.submitError'));
             }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : t('rides.bookingError'));
-        } finally {
-            setIsBooking(null);
-        }
-    }, [router, t]);
-
-    const handleSearch = useCallback((params: any) => {
-        loadRides(params);
-    }, [loadRides]);
+        });
+    }
 
     return (
         <CustomerSidebar>
             <div className={styles.customerDashboard}>
                 <div className={styles.customerInner}>
-                    {/* Header */}
                     <div className={styles.headerBlock}>
                         <div className={styles.titleRow}>
-                            <div className={styles.titleIcon}>
-                                <Calendar />
-                            </div>
-                            <h1 className={styles.title}>{t('booking.title')}</h1>
+                            <div className={styles.titleIcon}><PlusCircle /></div>
+                            <h1 className={styles.title}>{t('customerNavigation.bookRide')}</h1>
                         </div>
-                        <p className={styles.subtitle}>{t('booking.subtitle')}</p>
+                        <p className={styles.subtitle}>{t('customerNavigation.bookRideDescription')}</p>
                     </div>
 
-                    {/* Search Form */}
-                    <div className={styles.searchSection}>
-                        <RideSearchForm 
-                            onSearch={handleSearch} 
-                            isLoading={isLoading}
-                        />
-                    </div>
-
-                    {/* Results */}
-                    <div className={styles.resultsSection}>
-                        {error && (
-                            <div className={styles.errorBlock}>
-                                <AlertCircle className={styles.errorIcon} />
-                                <p className={styles.errorText}>{error}</p>
+                    {submittedRideId ? (
+                        <div className={formStyles.successCard}>
+                            <CheckCircle className={formStyles.successIcon} />
+                            <h2 className={formStyles.successTitle}>{t('rideRequest.successTitle')}</h2>
+                            <p className={formStyles.successDesc}>{t('rideRequest.successDesc')}</p>
+                            <div className={formStyles.successActions}>
+                                <Link href="/rides" className={formStyles.primaryLink}>
+                                    {t('rideRequest.viewBookings')} <ArrowRight size={16} />
+                                </Link>
+                                <button
+                                    type="button"
+                                    className={formStyles.ghostLink}
+                                    onClick={() => { setSubmittedRideId(null); setError(null); }}
+                                >
+                                    {t('rideRequest.newRequest')}
+                                </button>
                             </div>
-                        )}
-
-                        {isLoading && rides.length === 0 ? (
-                            <div className={styles.loadingBlock}>
-                                <div className={styles.loadingSpinner}></div>
-                                <p>{t('rides.loadingRides')}</p>
-                            </div>
-                        ) : rides.length === 0 ? (
-                            <div className={styles.emptyBlock}>
-                                <Calendar className={styles.emptyIcon} />
-                                <p className={styles.emptyText}>{t('rides.noRidesFound')}</p>
-                                {searchParams.departure || searchParams.destination || searchParams.date ? (
-                                    <p className={styles.emptySubtext}>
-                                        {t('rides.tryDifferentSearch')}
-                                    </p>
-                                ) : (
-                                    <p className={styles.emptySubtext}>
-                                        {t('rides.noAvailableRides')}
-                                    </p>
-                                )}
-                            </div>
-                        ) : (
-                            <div className={styles.ridesGrid}>
-                                {rides.map((ride) => (
-                                    <RideCard
-                                        key={ride.id}
-                                        ride={ride}
-                                        onBook={handleBook}
-                                        showBookButton={true}
-                                        isBooking={isBooking === ride.id}
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className={formStyles.card}>
+                            <div className={formStyles.twoCol}>
+                                <div className={formStyles.fieldGroup}>
+                                    <label className={formStyles.label} htmlFor="departure">
+                                        {t('rideRequest.departure')}
+                                    </label>
+                                    <input
+                                        id="departure"
+                                        name="departure"
+                                        type="text"
+                                        className={formStyles.input}
+                                        placeholder={t('rideRequest.departurePlaceholder')}
+                                        required
+                                        disabled={isPending}
                                     />
-                                ))}
+                                </div>
+                                <div className={formStyles.fieldGroup}>
+                                    <label className={formStyles.label} htmlFor="destination">
+                                        {t('rideRequest.destination')}
+                                    </label>
+                                    <input
+                                        id="destination"
+                                        name="destination"
+                                        type="text"
+                                        className={formStyles.input}
+                                        placeholder={t('rideRequest.destinationPlaceholder')}
+                                        required
+                                        disabled={isPending}
+                                    />
+                                </div>
                             </div>
-                        )}
-                    </div>
+
+                            <div className={formStyles.twoCol}>
+                                <div className={formStyles.fieldGroup}>
+                                    <label className={formStyles.label} htmlFor="departureDate">
+                                        {t('rideRequest.departureDate')}
+                                    </label>
+                                    <input
+                                        id="departureDate"
+                                        name="departureDate"
+                                        type="date"
+                                        className={formStyles.input}
+                                        required
+                                        disabled={isPending}
+                                    />
+                                </div>
+                                <div className={formStyles.fieldGroup}>
+                                    <label className={formStyles.label} htmlFor="departureTime">
+                                        {t('rideRequest.departureTime')}
+                                    </label>
+                                    <input
+                                        id="departureTime"
+                                        name="departureTime"
+                                        type="time"
+                                        className={formStyles.input}
+                                        required
+                                        disabled={isPending}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className={formStyles.fieldGroup}>
+                                <label className={formStyles.label} htmlFor="notes">
+                                    {t('rideRequest.notes')}
+                                </label>
+                                <textarea
+                                    id="notes"
+                                    name="notes"
+                                    className={formStyles.textarea}
+                                    placeholder={t('rideRequest.notesPlaceholder')}
+                                    disabled={isPending}
+                                    rows={3}
+                                />
+                            </div>
+
+                            {error && <p className={formStyles.feedbackError}>{error}</p>}
+
+                            <div className={formStyles.formActions}>
+                                <button type="submit" className={formStyles.submitButton} disabled={isPending}>
+                                    {isPending ? t('rideRequest.submitting') : t('rideRequest.submit')}
+                                    {!isPending && <ArrowRight size={16} />}
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </div>
             </div>
         </CustomerSidebar>
     );
 }
+
