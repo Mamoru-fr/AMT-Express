@@ -5,6 +5,7 @@ import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {requireRole} from '@/lib/middleware/roleMiddleware';
 import {validateRideId, validateToggleDriverAvailability} from '@/lib/validations/ride';
 import type {DriverDashboardData} from '@/lib/services/DriverDashboardService';
+import type {RideWithRelations} from '@/content/database_types/ride';
 
 /**
  * Driver Dashboard Actions - Server Actions sécurisées
@@ -98,4 +99,18 @@ export async function getDriverRideHistory(page: number = 1, limit: number = 10)
   }
 
   return DriverDashboardController.getDriverRideHistory(page, limit);
+}
+
+export async function getDriverRideDetail(rideId: string): Promise<ActionResponse<RideWithRelations>> {
+  const roleCheck = await requireRole('driver');
+  if (!roleCheck.success) {
+    return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+  }
+
+  const validation = validateRideId({ rideId });
+  if (!validation.success || !validation.data) {
+    return { success: false, error: validation.error || 'Invalid ride ID', code: ErrorCodes.VALIDATION_ERROR };
+  }
+
+  return DriverDashboardController.getDriverRideDetail(validation.data.rideId);
 }

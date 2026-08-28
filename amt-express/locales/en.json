@@ -82,6 +82,8 @@
     "bookRideDescription": "Create a ride request for yourself",
     "myRides": "My Bookings",
     "myRidesDescription": "View your bookings as a passenger",
+    "myCourses": "My Courses",
+    "myCoursesDescription": "Track your assigned and completed rides",
     "navigation": "Navigation",
     "settings": "Settings",
     "settingsDescription": "Account settings",

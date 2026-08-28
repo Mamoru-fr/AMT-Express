@@ -23,6 +23,7 @@ export interface Ride {
   production?: string | null;
   project?: string | null;
   waitingTime: number; // in minutes
+  driverNotes?: string | null;
   options: Option[];
 }
 

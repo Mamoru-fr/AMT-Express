@@ -96,6 +96,7 @@ export const rides = pgTable("rides", {
     customerNotes: text("customer_notes"),
     projectId: text("project_id").references(() => projects.id, { onDelete: "set null" }),
     waitingTime: integer("waiting_time").default(0),
+    driverNotes: text("driver_notes"),
 }, (table) => [
     index("rides_driverId_idx").on(table.driverId),
     index("rides_projectId_idx").on(table.projectId),

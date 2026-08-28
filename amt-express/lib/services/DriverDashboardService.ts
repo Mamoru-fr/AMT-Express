@@ -280,4 +280,36 @@ export class DriverDashboardService {
             totalPages: Math.ceil(total / limit)
         };
     }
+
+    static async updateRideProgress(
+        driverId: string,
+        rideId: string,
+        data: { waitingTime?: number; driverNotes?: string },
+    ): Promise<void> {
+        const ride = await db.query.rides.findFirst({ where: eq(rides.id, rideId) });
+        if (!ride) throw new Error('Ride not found');
+        if (ride.driverId !== driverId) throw new Error('This ride is not assigned to you');
+
+        const update: Record<string, unknown> = {};
+        if (data.waitingTime !== undefined) update.waitingTime = data.waitingTime;
+        if (data.driverNotes !== undefined) update.driverNotes = data.driverNotes;
+
+        await db.update(rides).set(update).where(eq(rides.id, rideId));
+    }
+
+    static async completeRide(
+        driverId: string,
+        rideId: string,
+        driverPrice: string,
+    ): Promise<void> {
+        const ride = await db.query.rides.findFirst({ where: eq(rides.id, rideId) });
+        if (!ride) throw new Error('Ride not found');
+        if (ride.driverId !== driverId) throw new Error('This ride is not assigned to you');
+
+        await db.update(rides).set({
+            status: 'completed',
+            driverPrice,
+            arrivalTime: new Date(),
+        }).where(eq(rides.id, rideId));
+    }
 }

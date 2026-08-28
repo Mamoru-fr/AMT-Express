@@ -142,6 +142,8 @@
     "bookRideDescription": "Créer une demande de trajet pour vous-même",
     "myRides": "Mes réservations",
     "myRidesDescription": "Voir vos réservations en tant que passager",
+    "myCourses": "Mes courses",
+    "myCoursesDescription": "Suivre vos courses assignées et terminées",
     "navigation": "Navigation",
     "settings": "Paramètres",
     "settingsDescription": "Paramètres du compte",

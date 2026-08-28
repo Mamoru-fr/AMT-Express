@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, PlusCircle, Sparkles, Settings, User} from 'lucide-react';
+import {ChevronLeft, ChevronRight, LayoutDashboard, Menu, Calendar, PlusCircle, Sparkles, Settings, User, ClipboardList} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LanguageDropdown} from '@/components/LanguageComponents/LanguageDropdown';
@@ -62,6 +62,14 @@ export function DriverSidebar({children}: Props) {
             description: t('driverNavigation.myRidesDescription'),
             icon: Calendar,
             match: (url) => url.startsWith('/rides') && !url.startsWith('/rides/booking'),
+            matchMode: 'ancestor',
+        },
+        {
+            href: '/driver-rides',
+            label: t('driverNavigation.myCourses'),
+            description: t('driverNavigation.myCoursesDescription'),
+            icon: ClipboardList,
+            match: (url) => url.startsWith('/driver-rides'),
             matchMode: 'ancestor',
         },
     ];
