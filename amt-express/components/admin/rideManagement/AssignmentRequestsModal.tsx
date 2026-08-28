@@ -9,6 +9,7 @@ import {
     approveAssignmentRequest,
     rejectAssignmentRequest,
 } from "@/lib/actions/ridesManagementActions";
+import { Button } from "@/components/classicComponents/Button";
 import styles from "./AssignmentRequestsModal.module.css";
 
 type Props = {
@@ -130,9 +131,9 @@ export function AssignmentRequestsModal({ ride, onClose, onApproved }: Props) {
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button className={styles.closeModalBtn} onClick={onClose}>
+                    <Button variant="secondary" onClick={onClose}>
                         Fermer
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

@@ -6,6 +6,7 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {AlertTriangle, Building, CheckSquare, Clock, DollarSign, FileText, FolderOpen, MapPin, Users, X} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {useSessionWithRole} from '@/context/SessionContext';
+import { Button } from '@/components/classicComponents/Button';
 import {
     createRide,
     fetchAllCustomers,
@@ -438,22 +439,21 @@ export default function NewRidePage() {
                 </form>
 
                 <div className={styles.pageFooter}>
-                    <button
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={handleCancel}
                         disabled={loading}
-                        className={`${styles.buttonBase} ${styles.buttonCancel}`}
                     >
                         {t('common.cancel', 'Cancel')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
-                        onClick={handleSubmit}
-                        disabled={loading || loadingData}
-                        className={styles.buttonCreate}
+                        isPending={loading || loadingData}
+                        pendingText={t('common.creating', 'Creating...')}
                     >
-                        {loading ? t('common.creating', 'Creating...') : t('ridesManagement.createRide')}
-                    </button>
+                        {t('ridesManagement.createRide')}
+                    </Button>
                 </div>
             </div>
             </div>

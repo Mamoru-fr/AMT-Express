@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, MapPin, Calendar, Clock, X, Filter } from 'lucide-react';
+import { Button } from '@/components/classicComponents/Button';
 import styles from './RideSearchForm.module.css';
 
 interface SearchParams {
@@ -112,35 +113,31 @@ export function RideSearchForm({ onSearch, onClear, isLoading = false }: Props) 
                 </div>
 
                 {/* Search Button */}
-                <button
+                <Button
                     type="submit"
-                    className={styles.searchButton}
+                    full
                     disabled={isLoading}
+                    isPending={isLoading}
+                    pendingText={t('rides.searching', 'Searching...')}
+                    icon={<Search size={16} />}
                 >
-                    {isLoading ? (
-                        <span className={styles.loadingSpinner} />
-                    ) : (
-                        <>
-                            <Search className={styles.searchIcon} />
-                            {t('rides.searchButton')}
-                        </>
-                    )}
-                </button>
+                    {t('rides.searchButton')}
+                </Button>
             </div>
 
             {/* Clear Button */}
             <div className={styles.clearRow}>
-                <button
+                <Button
+                    variant="secondary"
                     type="button"
-                    className={styles.clearButton}
+                    icon={<X size={14} />}
                     onClick={() => {
                         handleClear();
                         if (onClear) onClear();
                     }}
                 >
-                    <X className={styles.clearIcon} />
                     {t('rides.clearButton')}
-                </button>
+                </Button>
 
                 {/* Advanced Filters Toggle */}
                 <button

@@ -4,6 +4,7 @@ import {useState} from "react";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
 import {useTranslation} from "react-i18next";
+import { Button } from "@/components/classicComponents/Button";
 import styles from "./EditRideModal.module.css";
 
 /**
@@ -143,19 +144,12 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
                     </div>
 
                     <div className={styles.modalFooter}>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className={styles.cancelButton}
-                        >
+                        <Button variant="secondary" type="button" onClick={onClose}>
                             {t('common.cancel')}
-                        </button>
-                        <button
-                            type="submit"
-                            className={styles.saveButton}
-                        >
+                        </Button>
+                        <Button type="submit">
                             {t('rideModals.editRide.saveButton')}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

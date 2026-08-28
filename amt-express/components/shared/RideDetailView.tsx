@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, MapPin, Clock, User, DollarSign, Car, AlertTriangle, CheckCircle, XCircle, Loader2, Ban } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/classicComponents/Button';
 
 import { getCustomerRideDetail, cancelBooking } from '@/lib/actions/customerRideActions';
 import { RideWithRelations } from '@/content/database_types/ride';
@@ -208,23 +209,22 @@ export function RideDetailView() {
                                 </div>
                             </div>
                             {!showConfirm ? (
-                                <button
+                                <Button
+                                    variant="danger"
                                     onClick={() => { setShowConfirm(true); setCancelError(null); }}
-                                    className={styles.cancelButton}
                                 >
                                     {t('rideDetail.cancelRide')}
-                                </button>
+                                </Button>
                             ) : (
                                 <div className={styles.confirmBlock}>
                                     <p className={styles.confirmText}>{t('rideDetail.cancelConfirm')}</p>
                                     <div className={styles.confirmActions}>
-                                        <button onClick={() => setShowConfirm(false)} className={styles.confirmNo} disabled={cancelPending}>
+                                        <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={cancelPending}>
                                             {t('customerDashboard.cancel')}
-                                        </button>
-                                        <button onClick={handleCancel} className={styles.confirmYes} disabled={cancelPending}>
-                                            {cancelPending ? <Loader2 className={styles.btnSpinner} /> : null}
+                                        </Button>
+                                        <Button variant="danger" onClick={handleCancel} disabled={cancelPending} isPending={cancelPending} pendingText={t('rideDetail.confirmCancel')}>
                                             {t('rideDetail.confirmCancel')}
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             )}

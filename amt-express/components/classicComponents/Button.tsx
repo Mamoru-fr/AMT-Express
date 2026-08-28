@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { cn } from '@/utils/cn';
 import styles from './button.module.css';
 
 type Props = {
@@ -8,6 +7,7 @@ type Props = {
     content?: string;
     className?: string;
     variant?: 'primary' | 'secondary' | 'danger';
+    full?: boolean;
     icon?: ReactNode;
     isPending?: boolean;
     pendingText?: string;
@@ -22,6 +22,7 @@ export function Button({
     content,
     className,
     variant = 'primary',
+    full = false,
     icon,
     isPending = false,
     pendingText,
@@ -39,7 +40,7 @@ export function Button({
         <button
             type={type}
             disabled={disabled || isPending}
-            className={cn(styles.button, variantClass, className)}
+            className={[styles.button, variantClass, full && styles.buttonFull, className].filter(Boolean).join(' ')}
             onClick={onClick}
             aria-label={ariaLabel}
         >

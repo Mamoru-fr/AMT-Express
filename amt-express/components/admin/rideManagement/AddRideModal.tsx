@@ -4,6 +4,7 @@ import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {X, MapPin, Clock, Users, DollarSign, FileText, Building, FolderOpen, CheckSquare, AlertTriangle} from "lucide-react";
 import {useTranslation} from "react-i18next";
+import { Button } from "@/components/classicComponents/Button";
 import {
     createRide,
     fetchAllCustomers,
@@ -511,30 +512,23 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                 </form>
 
                 <div className={isPageMode ? styles.pageFooter : styles.modalFooter}>
-                    <button
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={handleClose}
                         disabled={loading}
-                        className={styles.buttonCancel}
                     >
                         {t('common.cancel', 'Cancel')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
                         onClick={handleSubmit}
                         disabled={loading || loadingData}
-                        className={styles.buttonCreate}
+                        isPending={loading}
+                        pendingText={t('common.creating', 'Creating...')}
                     >
-                        {loading ? (
-                            <>
-                                {t('common.creating', 'Creating...')}
-                            </>
-                        ) : (
-                            <>
-                                {t('ridesManagement.createRide', 'Create Ride')}
-                            </>
-                        )}
-                    </button>
+                        {t('ridesManagement.createRide', 'Create Ride')}
+                    </Button>
                 </div>
             </div>
         </div>

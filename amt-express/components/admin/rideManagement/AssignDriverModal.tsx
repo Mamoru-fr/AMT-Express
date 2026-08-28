@@ -4,6 +4,7 @@ import {useState} from "react";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
 import {useTranslation} from "react-i18next";
+import { Button } from "@/components/classicComponents/Button";
 import styles from "./AssignDriverModal.module.css";
 
 /**
@@ -84,20 +85,12 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
                     </div>
 
                     <div className={styles.modalFooter}>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className={styles.cancelButton}
-                        >
+                        <Button variant="secondary" type="button" onClick={onClose}>
                             {t('common.cancel')}
-                        </button>
-                        <button
-                            type="submit"
-                            className={styles.assignButton}
-                            disabled={!selectedDriver}
-                        >
+                        </Button>
+                        <Button type="submit" disabled={!selectedDriver}>
                             {t('rideModals.assignDriver.assignButton')}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

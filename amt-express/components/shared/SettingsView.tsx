@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Lock, Globe, Eye, EyeOff } from 'lucide-react';
+import { Button } from '@/components/classicComponents/Button';
 
 import { LanguageDropdown } from '@/components/LanguageComponents/LanguageDropdown';
 import { changePassword } from '@/lib/actions/customerProfileActions';
@@ -101,9 +102,9 @@ export function SettingsView() {
                         </p>
                     )}
                     <div className={styles.formActions}>
-                        <button type="submit" className={styles.submitButton} disabled={pwPending || !currentPassword || !newPassword || !confirmPassword}>
-                            {pwPending ? t('profile.sending') : t('settings.updatePassword')}
-                        </button>
+                        <Button type="submit" full disabled={pwPending || !currentPassword || !newPassword || !confirmPassword} isPending={pwPending} pendingText={t('profile.sending')}>
+                            {t('settings.updatePassword')}
+                        </Button>
                     </div>
                 </form>
             </section>

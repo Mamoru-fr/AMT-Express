@@ -6,7 +6,7 @@ import {useState, useEffect} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 // Icons imports from lucide-react
-import {Car, Users, FileText, Euro, LayoutDashboard} from "lucide-react";
+import {Car, Users, FileText, Euro, LayoutDashboard, Plus} from "lucide-react";
 
 // Actions imports from the admin dashboard library
 import type {AdminDashboardData} from "@/lib/services/AdminDashboardService";
@@ -18,6 +18,7 @@ import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
 import {AdminSidebar} from "@/components/admin/navigation/AdminSidebar";
+import { Button } from "@/components/classicComponents/Button";
 import {useTranslation} from "react-i18next";
 import styles from "./AdminDashboard.module.css";
 
@@ -104,14 +105,13 @@ export function AdminDashboard({data}: Props) {
                 {/* ========== Quick Actions ========== */}
                 {/* Primary action: Create new ride */}
                 <div className={styles.actionsRow}>
-                    {/* Button text adapts to screen size: "Add Ride" on mobile, "Add New Ride" on larger screens */}
-                    <button
-                        className={styles.primaryAction}
+                    <Button
+                        icon={<Plus size={16} />}
                         onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                        className={styles.primaryAction}
                     >
-                        <span className={styles.primaryActionIcon}>+</span>
-                        <span>{t('adminDashboard.actions.addNewRide')}</span>
-                    </button>
+                        {t('adminDashboard.actions.addNewRide')}
+                    </Button>
                 </div>
 
                 {/* ========== Analytics Charts ========== */}
