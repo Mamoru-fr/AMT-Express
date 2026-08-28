@@ -1,14 +1,25 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { ClipboardList } from 'lucide-react';
 
+import { useSessionWithRole } from '@/context/SessionContext';
 import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
 import DriverRidesView from '@/components/driver/DriverRidesView';
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
 
 export default function DriverCoursesPage() {
     const { t } = useTranslation();
+    const { isDriver, isAuthenticated } = useSessionWithRole();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isAuthenticated && !isDriver) router.replace('/');
+    }, [isAuthenticated, isDriver, router]);
+
+    if (!isDriver) return null;
 
     return (
         <DriverSidebar>

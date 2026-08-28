@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     ArrowLeft, MapPin, Clock, Users, DollarSign, Car,
     AlertTriangle, CheckCircle, XCircle, Loader2, Send,
 } from 'lucide-react';
 
+import { useSessionWithRole } from '@/context/SessionContext';
 import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
 import { LivingRide } from '@/components/driver/LivingRide';
 import { getDriverRideDetail, requestRideAssignment } from '@/lib/actions/driverDashboardActions';
@@ -26,6 +27,8 @@ const STATUS_ICONS: Record<string, React.ElementType> = {
 export default function DriverRideDetailPage() {
     const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
+    const { isDriver, isAuthenticated } = useSessionWithRole();
+    const router = useRouter();
 
     const [ride, setRide] = useState<RideWithRelations | null>(null);
     const [loading, setLoading] = useState(true);
@@ -33,6 +36,10 @@ export default function DriverRideDetailPage() {
     const [requestPending, startRequestTransition] = useTransition();
     const [requestMessage, setRequestMessage] = useState('');
     const [requestFeedback, setRequestFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+
+    useEffect(() => {
+        if (!isAuthenticated || (isAuthenticated && !isDriver)) router.replace('/');
+    }, [isAuthenticated, isDriver, router]);
 
     const fetchRide = useCallback(async () => {
         setLoading(true);
@@ -52,7 +59,7 @@ export default function DriverRideDetailPage() {
         if (result.success) setRide(result.data!);
     }, [id]);
 
-    useEffect(() => { fetchRide(); }, [fetchRide]);
+    useEffect(() => { if (isDriver) fetchRide(); }, [fetchRide, isDriver]);
 
     function handleRequest() {
         startRequestTransition(async () => {
@@ -80,10 +87,10 @@ export default function DriverRideDetailPage() {
         return `€${parseFloat(price.toString()).toFixed(2)}`;
     }
 
+    if (!isDriver) return null;
+
     const StatusIcon = ride ? (STATUS_ICONS[ride.status] ?? Clock) : Clock;
     const isAvailable = ride?.status === 'pending' && !ride?.driverId;
-
-    // LivingRide activates 1 hour before departure for assigned rides
     const isLivingRideActive = ride?.status === 'assigned' &&
         (new Date(ride.departureTime).getTime() - Date.now()) <= 60 * 60 * 1000;
 
@@ -112,7 +119,6 @@ export default function DriverRideDetailPage() {
 
                     {ride && !loading && (
                         <>
-                            {/* Header */}
                             <div className={dashStyles.headerBlock}>
                                 <div className={dashStyles.titleRow}>
                                     <div className={dashStyles.titleIcon}><Car /></div>
@@ -128,7 +134,6 @@ export default function DriverRideDetailPage() {
                                 </div>
                             </div>
 
-                            {/* Feedback banner */}
                             {requestFeedback && (
                                 <div className={requestFeedback.ok ? styles.alertSuccess : styles.alertError}>
                                     {requestFeedback.ok
@@ -138,7 +143,6 @@ export default function DriverRideDetailPage() {
                                 </div>
                             )}
 
-                            {/* Ride info card */}
                             <div className={styles.card}>
                                 <div className={styles.infoGrid}>
                                     <div className={styles.infoItem}>
@@ -174,8 +178,14 @@ export default function DriverRideDetailPage() {
                                     <div className={styles.infoItem}>
                                         <div className={styles.infoItemIcon}><DollarSign /></div>
                                         <div>
-                                            <p className={styles.infoItemLabel}>{t('rides.price', 'Price')}</p>
-                                            <p className={styles.infoItemValue}>{formatPrice(ride.price)}</p>
+                                            <p className={styles.infoItemLabel}>
+                                                {ride.driverPrice
+                                                    ? t('rideDetail.driverPrice', 'Prix chauffeur')
+                                                    : t('rides.price', 'Prix estimé')}
+                                            </p>
+                                            <p className={styles.infoItemValue}>
+                                                {formatPrice(ride.driverPrice ?? ride.price)}
+                                            </p>
                                         </div>
                                     </div>
                                     {ride.distanceKm && (
@@ -198,7 +208,6 @@ export default function DriverRideDetailPage() {
                                     )}
                                 </div>
 
-                                {/* Customers */}
                                 {ride.customers.length > 0 && (
                                     <div className={styles.notesBlock}>
                                         <p className={styles.notesLabel}>
@@ -221,7 +230,6 @@ export default function DriverRideDetailPage() {
                                 )}
                             </div>
 
-                            {/* Request action — only for available rides */}
                             {isAvailable && (
                                 <div className={styles.dangerCard} style={{ borderColor: 'var(--app-surface-border)' }}>
                                     <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 700, color: 'var(--app-title-color)' }}>
@@ -258,7 +266,6 @@ export default function DriverRideDetailPage() {
                                 </div>
                             )}
 
-                            {/* Living Ride — assigned + within 1 hour of departure */}
                             {isLivingRideActive && (
                                 <LivingRide ride={ride} onUpdate={silentRefresh} />
                             )}

@@ -20,6 +20,8 @@ export async function updateRideProgress(
     rideId: string,
     data: { waitingTime?: number; driverNotes?: string },
 ): Promise<ActionResponse<void>> {
+    console.log('[Action] updateRideProgress — rideId:', rideId, '| data:', data);
+
     const roleCheck = await requireRole('driver');
     if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
 
@@ -29,6 +31,7 @@ export async function updateRideProgress(
     const parsed = UpdateProgressSchema.safeParse(data);
     if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid data', code: ErrorCodes.VALIDATION_ERROR };
 
+    console.log('[Action] updateRideProgress — validations passed, delegating to DriverRideController');
     return DriverRideController.updateRideProgress(rideId, parsed.data);
 }
 
@@ -36,6 +39,8 @@ export async function completeRide(
     rideId: string,
     driverPrice: string,
 ): Promise<ActionResponse<void>> {
+    console.log('[Action] completeRide — rideId:', rideId, '| driverPrice:', driverPrice);
+
     const roleCheck = await requireRole('driver');
     if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
 
@@ -45,6 +50,7 @@ export async function completeRide(
     const priceValidation = DriverPriceSchema.safeParse(driverPrice.trim());
     if (!priceValidation.success) return { success: false, error: priceValidation.error.issues[0]?.message ?? 'Invalid amount', code: ErrorCodes.VALIDATION_ERROR };
 
+    console.log('[Action] completeRide — validations passed, delegating to DriverRideController');
     return DriverRideController.completeRide(rideId, priceValidation.data);
 }
 

@@ -228,7 +228,10 @@ export default function DriverRidesView() {
                                         <td className={styles.tableCell}>
                                             <div className={styles.priceCell}>
                                                 <DollarSign className={styles.priceIcon} />
-                                                {ride.price ? parseFloat(ride.price).toFixed(2) : "-"}
+                                                {activeView === 'available'
+                                                    ? (ride.price ? parseFloat(ride.price).toFixed(2) : '-')
+                                                    : (ride.driverPrice ? parseFloat(ride.driverPrice).toFixed(2) : '-')
+                                                }
                                             </div>
                                         </td>
                                         <td className={styles.tableCell}>

@@ -17,7 +17,7 @@ import {
 import type { RideFilters, RidesManagementData } from "@/lib/services/RidesManagementService";
 import { RideStatus, RideWithRelations } from "@/content/database_types/ride";
 import {
-    Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X, ArrowUpDown
+    Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X, ArrowUpDown, ClipboardList
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSessionWithRole } from "@/context/SessionContext";
@@ -27,6 +27,7 @@ import { StatusBanner } from "@/components/classicComponents/StatusBanner";
 // Import des modals et composants locaux
 import { EditRideModal } from "@/components/admin/rideManagement/EditRideModal";
 import { AssignDriverModal } from "@/components/admin/rideManagement/AssignDriverModal";
+import { AssignmentRequestsModal } from "@/components/admin/rideManagement/AssignmentRequestsModal";
 import { DeleteConfirmModal } from "@/components/admin/rideManagement/DeleteConfirmModal";
 import { AddRideModal } from "@/components/admin/rideManagement/AddRideModal";
 import { ColumnFilter } from "@/components/admin/rideManagement/ColumnFilter";
@@ -39,7 +40,7 @@ import styles from "@/components/admin/rideManagement/RidesManagementBoard.modul
  */
 export default function RideManagementPage() {
     const { t } = useTranslation();
-    const { session } = useSessionWithRole();
+    const { isAdmin, isAuthenticated } = useSessionWithRole();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -268,9 +269,11 @@ export default function RideManagementPage() {
         return 0;
     });
 
-    if (!session || session.user.role !== 'admin') {
-        redirect('/');
-    }
+    useEffect(() => {
+        if (isAuthenticated && !isAdmin) router.replace('/');
+    }, [isAuthenticated, isAdmin, router]);
+
+    if (!isAdmin) return null;
 
     const [editModal, setEditModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
         open: false,
@@ -283,6 +286,10 @@ export default function RideManagementPage() {
     const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: string | null }>({
         open: false,
         rideId: null
+    });
+    const [requestsModal, setRequestsModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+        open: false,
+        ride: null
     });
 
     const [availableDrivers, setAvailableDrivers] = useState<Array<{ id: string; name: string; email: string }>>([]);
@@ -709,6 +716,15 @@ export default function RideManagementPage() {
                                                             <UserPlus className={styles.tableActionIcon} />
                                                         </button>
                                                     )}
+                                                    {ride.status === 'pending' && (
+                                                        <button
+                                                            onClick={() => setRequestsModal({ open: true, ride })}
+                                                            className={styles.tableActionButton}
+                                                            title="Demandes d'assignation"
+                                                        >
+                                                            <ClipboardList className={styles.tableActionIcon} />
+                                                        </button>
+                                                    )}
                                                     <button
                                                         onClick={() => setDeleteModal({ open: true, rideId: ride.id })}
                                                         className={styles.tableActionButton}
@@ -769,6 +785,14 @@ export default function RideManagementPage() {
                             drivers={availableDrivers}
                             onClose={() => setAssignModal({ open: false, ride: null })}
                             onAssign={handleAssignDriver}
+                        />
+                    )}
+
+                    {requestsModal.open && requestsModal.ride && (
+                        <AssignmentRequestsModal
+                            ride={requestsModal.ride}
+                            onClose={() => setRequestsModal({ open: false, ride: null })}
+                            onApproved={() => { setRequestsModal({ open: false, ride: null }); loadRides(); setFeedback({ tone: 'success', message: 'Chauffeur assigné avec succès' }); }}
                         />
                     )}
 

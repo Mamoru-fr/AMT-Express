@@ -371,3 +371,21 @@ export async function fetchAllProjects(): Promise<ActionResponse<Array<{id: stri
 
   return RidesManagementController.fetchAllProjects();
 }
+
+export async function fetchAssignmentRequestsForRide(rideId: string): Promise<ActionResponse<import('@/lib/services/RidesManagementService').AssignmentRequestWithDriver[]>> {
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+  return RidesManagementController.getAssignmentRequestsForRide(rideId);
+}
+
+export async function approveAssignmentRequest(requestId: string): Promise<ActionResponse<void>> {
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+  return RidesManagementController.approveAssignmentRequest(requestId);
+}
+
+export async function rejectAssignmentRequest(requestId: string): Promise<ActionResponse<void>> {
+  const roleCheck = await requireRole('admin');
+  if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+  return RidesManagementController.rejectAssignmentRequest(requestId);
+}

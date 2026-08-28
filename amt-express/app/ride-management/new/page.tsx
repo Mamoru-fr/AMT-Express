@@ -5,6 +5,7 @@ import {useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {AlertTriangle, Building, CheckSquare, Clock, DollarSign, FileText, FolderOpen, MapPin, Users, X} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
+import {useSessionWithRole} from '@/context/SessionContext';
 import {
     createRide,
     fetchAllCustomers,
@@ -36,9 +37,16 @@ type ProjectOption = {
 
 export default function NewRidePage() {
     const {t} = useTranslation();
+    const { isAdmin, isAuthenticated } = useSessionWithRole();
     const router = useRouter();
     const searchParams = useSearchParams();
     const returnTo = searchParams.get('returnTo') || '/ride-management';
+
+    useEffect(() => {
+        if (isAuthenticated && !isAdmin) router.replace('/');
+    }, [isAuthenticated, isAdmin, router]);
+
+    if (!isAdmin) return null;
 
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 import { updateRideProgress, completeRide } from '@/lib/actions/driverRideActions';
+import { Button } from '@/components/classicComponents/Button';
 import type { RideWithRelations } from '@/content/database_types/ride';
 import styles from './LivingRide.module.css';
 
@@ -37,6 +38,7 @@ function WaitingPopup({ ride, onClose, onSave }: {
             setError(t('livingRide.waitingError', 'Valeur invalide.'));
             return;
         }
+        console.log('[WaitingPopup] handleSave — minutes:', minutes);
         startTransition(async () => {
             await onSave(minutes);
         });
@@ -67,13 +69,17 @@ function WaitingPopup({ ride, onClose, onSave }: {
                     )}
                 </div>
                 <div className={styles.formActions}>
-                    <button className={styles.btnCancel} onClick={onClose} disabled={isPending}>
+                    <Button variant="secondary" onClick={onClose} disabled={isPending}>
                         {t('common.cancel', 'Annuler')}
-                    </button>
-                    <button className={styles.btnConfirm} onClick={handleSave} disabled={isPending}>
-                        <CheckCircle className={styles.btnIcon} />
-                        {isPending ? t('common.saving', 'Enregistrement...') : t('common.save', 'Enregistrer')}
-                    </button>
+                    </Button>
+                    <Button
+                        icon={<CheckCircle className={styles.btnIcon} />}
+                        isPending={isPending}
+                        pendingText={t('common.saving', 'Enregistrement...')}
+                        onClick={handleSave}
+                    >
+                        {t('common.save', 'Enregistrer')}
+                    </Button>
                 </div>
             </div>
         </div>
@@ -92,6 +98,7 @@ function NotesPopup({ ride, onClose, onSave }: {
     const [isPending, startTransition] = useTransition();
 
     function handleSave() {
+        console.log('[NotesPopup] handleSave — notes length:', value.trim().length);
         startTransition(async () => {
             await onSave(value.trim());
         });
@@ -117,13 +124,17 @@ function NotesPopup({ ride, onClose, onSave }: {
                     />
                 </div>
                 <div className={styles.formActions}>
-                    <button className={styles.btnCancel} onClick={onClose} disabled={isPending}>
+                    <Button variant="secondary" onClick={onClose} disabled={isPending}>
                         {t('common.cancel', 'Annuler')}
-                    </button>
-                    <button className={styles.btnConfirm} onClick={handleSave} disabled={isPending}>
-                        <CheckCircle className={styles.btnIcon} />
-                        {isPending ? t('common.saving', 'Enregistrement...') : t('common.save', 'Enregistrer')}
-                    </button>
+                    </Button>
+                    <Button
+                        icon={<CheckCircle className={styles.btnIcon} />}
+                        isPending={isPending}
+                        pendingText={t('common.saving', 'Enregistrement...')}
+                        onClick={handleSave}
+                    >
+                        {t('common.save', 'Enregistrer')}
+                    </Button>
                 </div>
             </div>
         </div>
@@ -160,8 +171,10 @@ function CompletePopup({ rideId, onCancel, onSuccess }: {
             setError(t('livingRide.amountRequired', 'Saisissez un montant valide.'));
             return;
         }
+        console.log('[CompletePopup] handleConfirm — rideId:', rideId, '| amount:', amount.trim());
         startTransition(async () => {
             const result = await completeRide(rideId, amount.trim());
+            console.log('[CompletePopup] handleConfirm — result:', result);
             if (result.success) {
                 onSuccess();
             } else {
@@ -200,17 +213,19 @@ function CompletePopup({ rideId, onCancel, onSuccess }: {
                     </p>
                 )}
                 <div className={styles.formActions}>
-                    <button className={styles.btnCancel} onClick={onCancel} disabled={isPending}>
+                    <Button variant="secondary" onClick={onCancel} disabled={isPending}>
                         {t('common.cancel', 'Annuler')}
-                    </button>
-                    <button
-                        className={`${styles.btnConfirm} ${styles.btnConfirmDanger}`}
+                    </Button>
+                    <Button
+                        variant="danger"
+                        icon={<Flag className={styles.btnIcon} />}
+                        isPending={isPending}
+                        pendingText={t('livingRide.completing', 'Finalisation...')}
+                        disabled={!isValid}
                         onClick={handleConfirm}
-                        disabled={!isValid || isPending}
                     >
-                        <Flag className={styles.btnIcon} />
-                        {isPending ? t('livingRide.completing', 'Finalisation...') : t('livingRide.confirmComplete', 'Confirmer et terminer')}
-                    </button>
+                        {t('livingRide.confirmComplete', 'Confirmer et terminer')}
+                    </Button>
                 </div>
             </div>
         </div>
@@ -230,17 +245,21 @@ function LivingRideFullscreen({ ride, onClose, onUpdate }: {
     const [localRide, setLocalRide] = useState(ride);
 
     async function handleSaveWaiting(minutes: number) {
+        console.log('[LivingRideFullscreen] handleSaveWaiting — minutes:', minutes);
         await updateRideProgress(localRide.id, { waitingTime: minutes });
         setLocalRide(r => ({ ...r, waitingTime: minutes }));
         setPopup(null);
         await onUpdate();
+        console.log('[LivingRideFullscreen] handleSaveWaiting — done');
     }
 
     async function handleSaveNotes(notes: string) {
+        console.log('[LivingRideFullscreen] handleSaveNotes — notes length:', notes.length);
         await updateRideProgress(localRide.id, { driverNotes: notes });
         setLocalRide(r => ({ ...r, driverNotes: notes }));
         setPopup(null);
         await onUpdate();
+        console.log('[LivingRideFullscreen] handleSaveNotes — done');
     }
 
     return (
@@ -305,15 +324,15 @@ function LivingRideFullscreen({ ride, onClose, onUpdate }: {
 
             {/* Action bar */}
             <div className={styles.actionBar}>
-                <button className={styles.actionBtn} onClick={() => setPopup('waiting')}>
+                <button className={styles.actionBtn} onClick={() => { console.log('[ActionBar] Attente clicked'); setPopup('waiting'); }}>
                     <Clock className={styles.actionBtnIcon} />
                     {t('rideDetail.waitingTime', 'Attente')}
                 </button>
-                <button className={styles.actionBtn} onClick={() => setPopup('notes')}>
+                <button className={styles.actionBtn} onClick={() => { console.log('[ActionBar] Notes clicked'); setPopup('notes'); }}>
                     <FileText className={styles.actionBtnIcon} />
                     {t('livingRide.notes', 'Notes')}
                 </button>
-                <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => setPopup('complete')}>
+                <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => { console.log('[ActionBar] Terminer clicked'); setPopup('complete'); }}>
                     <Flag className={styles.actionBtnIcon} />
                     {t('livingRide.completeRide', 'Terminer')}
                 </button>
@@ -345,10 +364,13 @@ export function LivingRide({ ride, onUpdate }: Props) {
 
     return (
         <>
-            <button className={styles.startButton} onClick={() => setIsOpen(true)}>
-                <Play className={styles.startButtonIcon} />
+            <Button
+                icon={<Play className={styles.startButtonIcon} />}
+                className={styles.startButton}
+                onClick={() => { console.log('[LivingRide] Start button clicked'); setIsOpen(true); }}
+            >
                 {t('livingRide.start', 'Démarrer le Living Ride')}
-            </button>
+            </Button>
 
             {isOpen && (
                 <LivingRideFullscreen

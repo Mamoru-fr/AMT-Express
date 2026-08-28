@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 
 import { createRideRequest } from '@/lib/actions/customerRideActions';
+import { Button } from '@/components/classicComponents/Button';
 import styles from './BookingForm.module.css';
 
 export function BookingForm() {
@@ -130,10 +131,15 @@ export function BookingForm() {
             {error && <p className={styles.feedbackError}>{error}</p>}
 
             <div className={styles.formActions}>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                    {isPending ? t('rideRequest.submitting') : t('rideRequest.submit')}
-                    {!isPending && <ArrowRight size={16} />}
-                </button>
+                <Button
+                    type="submit"
+                    icon={<ArrowRight size={16} />}
+                    isPending={isPending}
+                    pendingText={t('rideRequest.submitting')}
+                    className={styles.submitButton}
+                >
+                    {t('rideRequest.submit')}
+                </Button>
             </div>
         </form>
     );
