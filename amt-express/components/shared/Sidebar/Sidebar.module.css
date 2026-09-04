@@ -145,7 +145,6 @@
     align-items: center;
     gap: 0.85rem;
     padding: 0.82rem 0.85rem;
-    max-width: 60px;
     border-radius: 1rem;
     color: var(--app-text-color);
     text-decoration: none;
@@ -457,7 +456,12 @@
     transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
     flex: 1;
     min-width: 0;
-    max-width: 60px;
+}
+
+@media (max-width: 820px) {
+    .bottomTabItem {
+        max-width: 60px;
+    }
 }
 
 .bottomTabItem:hover {
