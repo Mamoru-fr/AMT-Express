@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import styles from './StatusBanner.module.css';
 
 type StatusBannerProps = {
     title?: string;
@@ -12,12 +12,12 @@ export function StatusBanner({ title, message, className, tone = 'info' }: Statu
 
     return (
         <div
-            className={cn('statusBanner', `statusBanner--${tone}`, className)}
+            className={`${styles.statusBanner} ${styles[`statusBanner--${tone}`]} ${className || ''}`}
             role={isError ? 'alert' : 'status'}
             aria-live={isError ? 'assertive' : 'polite'}
         >
-            {title && <strong className="statusBannerTitle">{title}</strong>}
-            <p className="statusBannerMessage">{message}</p>
+            {title && <strong className={styles.statusBannerTitle}>{title}</strong>}
+            <p className={styles.statusBannerMessage}>{message}</p>
         </div>
     );
 }

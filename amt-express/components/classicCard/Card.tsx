@@ -2,7 +2,7 @@
  * This component is used to create a card with a title, description and content.
 */
 
-import {cn} from "@/utils/cn";
+import styles from './Card.module.css';
 
 type CardProps = {
   className?: string;
@@ -13,10 +13,7 @@ export function Card({className, ...rest}: CardProps) {
   return (
     <div
       data-slot="card"
-      className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border",
-        className,
-      )}
+      className={`${styles.card} ${className || ''}`}
       {...rest}
     />
   );
@@ -30,7 +27,7 @@ export function CardContent({className, ...rest}: CardProps) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-6 last:pb-6", className)}
+      className={`${styles.cardContent} ${className || ''}`}
       {...rest}
     />
   );

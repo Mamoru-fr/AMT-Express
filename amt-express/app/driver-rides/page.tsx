@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { ClipboardList } from 'lucide-react';
 
 import { useSessionWithRole } from '@/context/SessionContext';
-import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 import DriverRidesView from '@/components/driver/DriverRidesView';
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
 
@@ -22,7 +22,7 @@ export default function DriverCoursesPage() {
     if (!isDriver) return null;
 
     return (
-        <DriverSidebar>
+        <RoleSidebar>
             <div className={styles.customerDashboard}>
                 <div className={styles.customerInner}>
                     <div className={styles.headerBlock}>
@@ -35,6 +35,6 @@ export default function DriverCoursesPage() {
                     <DriverRidesView />
                 </div>
             </div>
-        </DriverSidebar>
+        </RoleSidebar>
     );
 }

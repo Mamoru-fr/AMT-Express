@@ -11,7 +11,7 @@ import { Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X, 
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
 import { StatusBanner } from '@/components/classicComponents/StatusBanner';
 import { Button } from '@/components/classicComponents/Button';
-import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 
 // Actions & Types
 import { toggleDriverAvailability, requestRideAssignment, fetchDriverDashboard } from '@/lib/actions/driverDashboardActions';
@@ -171,7 +171,7 @@ export default function DriverDashboardPage() {
   if (!data) return null;
 
   return (
-    <DriverSidebar>
+    <RoleSidebar>
     <div className={styles.driverDashboard}>
       <div className={styles.driverInner}>
         {feedback && (
@@ -436,7 +436,7 @@ export default function DriverDashboardPage() {
         )}
       </div>
     </div>
-    </DriverSidebar>
+    </RoleSidebar>
   );
 }
 

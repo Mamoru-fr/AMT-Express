@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { useSessionWithRole } from '@/context/SessionContext';
-import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 import { LivingRide } from '@/components/driver/LivingRide';
 import { getDriverRideDetail, requestRideAssignment } from '@/lib/actions/driverDashboardActions';
 import type { RideWithRelations } from '@/content/database_types/ride';
@@ -95,7 +95,7 @@ export default function DriverRideDetailPage() {
         (new Date(ride.departureTime).getTime() - Date.now()) <= 60 * 60 * 1000;
 
     return (
-        <DriverSidebar>
+        <RoleSidebar>
             <div className={dashStyles.customerDashboard}>
                 <div className={dashStyles.customerInner}>
                     <Link href="/driver-rides" className={styles.backLink}>
@@ -273,6 +273,6 @@ export default function DriverRideDetailPage() {
                     )}
                 </div>
             </div>
-        </DriverSidebar>
+        </RoleSidebar>
     );
 }

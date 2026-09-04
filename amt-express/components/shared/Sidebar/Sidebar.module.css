@@ -1,18 +1,20 @@
+/* ===== Conteneur principal ===== */
 .shell {
     --sidebar-width: 292px;
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
     padding-left: var(--sidebar-width);
-    background:
-    radial-gradient(circle at top left, rgba(30, 58, 138, 0.06), transparent 30%),
-    linear-gradient(180deg, var(--app-page-bg), rgba(255, 255, 255, 1));
+    background: 
+        radial-gradient(circle at top left, rgba(30, 58, 138, 0.06), transparent 30%),
+        linear-gradient(180deg, var(--app-page-bg), rgba(255, 255, 255, 1));
 }
 
 .shellCollapsed {
     --sidebar-width: 92px;
 }
 
+/* ===== Sidebar ===== */
 .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -24,7 +26,7 @@
     flex-direction: column;
     gap: 0.8rem;
     border-right: 1px solid var(--app-surface-border);
-    background:
+    background: 
         radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 30%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.98));
     backdrop-filter: blur(16px);
@@ -32,13 +34,7 @@
     color: var(--app-text-color);
 }
 
-.brandRow {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.25rem 0.15rem 0.5rem;
-}
-
+/* ===== Brand Button ===== */
 .brandButton {
     width: 100%;
     display: block;
@@ -60,6 +56,13 @@
     transform: scale(0.78);
 }
 
+.brandRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.15rem 0.5rem;
+}
+
 .brandMark {
     position: relative;
     display: flex;
@@ -77,6 +80,7 @@
 .brandIcon {
     width: 1.05rem;
     height: 1.05rem;
+    transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .brandOverlayIcon {
@@ -104,10 +108,6 @@
     color: var(--app-primary-text);
 }
 
-.brandIcon {
-    transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
 .brandText {
     flex: 1;
     min-width: 0;
@@ -124,6 +124,7 @@
     color: var(--app-muted-color);
 }
 
+/* ===== Section Label ===== */
 .sectionLabel {
     padding: 0.4rem 0.25rem 0.2rem;
     font-size: 0.7rem;
@@ -132,41 +133,7 @@
     color: var(--app-muted-color);
 }
 
-.collapseButton,
-.mobileToggle {
-    border: 1px solid var(--app-surface-border);
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--app-text-color);
-    border-radius: 999px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.collapseButton {
-    width: 2.25rem;
-    height: 2.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.collapseButton:hover,
-.mobileToggle:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
-    background: rgba(59, 130, 246, 0.04);
-}
-
-.collapseIcon,
-.mobileToggleIcon {
-    width: 1rem;
-    height: 1rem;
-}
-
-.collapseButton {
-    display: none;
-}
-
+/* ===== Navigation Items ===== */
 .nav {
     display: flex;
     flex-direction: column;
@@ -178,6 +145,7 @@
     align-items: center;
     gap: 0.85rem;
     padding: 0.82rem 0.85rem;
+    max-width: 60px;
     border-radius: 1rem;
     color: var(--app-text-color);
     text-decoration: none;
@@ -237,6 +205,7 @@
     color: var(--app-muted-color);
 }
 
+/* ===== Bottom Section ===== */
 .bottomSection {
     margin-top: auto;
     display: flex;
@@ -244,10 +213,6 @@
     gap: 0.45rem;
     padding-top: 0.35rem;
     border-top: 1px solid var(--app-surface-border);
-}
-
-.languageBlock {
-    margin-bottom: 0.4rem;
 }
 
 .utilityItem {
@@ -275,7 +240,7 @@
     flex-shrink: 0;
 }
 
-/* Profile button styles */
+/* ===== Profile Button ===== */
 .profileButton {
     position: relative;
     width: 100%;
@@ -304,7 +269,7 @@
     line-height: 1;
 }
 
-/* Profile Popup */
+/* ===== Profile Popup ===== */
 .profilePopup {
     position: absolute;
     bottom: calc(100% + 0.25rem);
@@ -372,6 +337,214 @@
     padding: 0.25rem 0.75rem;
 }
 
+/* ===== Nav Group Popup ===== */
+.navGroupPopup {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 1000;
+    min-width: 200px;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateX(-50%) translateY(0);
+    animation: fadeInUp 0.15s ease-out;
+}
+
+/* Popup pour les groupes dans la BottomTabBar */
+.bottomTabNavGroupPopup {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 1000;
+    min-width: 200px;
+    max-width: 300px;
+    width: auto;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateX(-50%);
+    animation: fadeInUp 0.15s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.navGroupPopupItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.75rem;
+    color: var(--app-text-color);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.navGroupPopupItem:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--app-primary);
+}
+
+.navGroupPopupIcon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.navGroupPopupLabel {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ===== Bottom Tab Bar ===== */
+.bottomTabBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+    background: rgba(255, 255, 255, 0.98);
+    border-top: 1px solid var(--app-surface-border);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+.bottomTabBarIconsOnly {
+    padding: 0.75rem 0;
+}
+
+.bottomTabItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    color: var(--app-muted-color);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    flex: 1;
+    min-width: 0;
+    max-width: 60px;
+}
+
+.bottomTabItem:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.bottomTabItemActive {
+    color: var(--app-primary);
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.bottomTabItemActive .bottomTabIcon {
+    transform: scale(1.1);
+}
+
+.bottomTabIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.15s ease;
+}
+
+.bottomTabLabel {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.bottomTabItemIconsOnly .bottomTabLabel {
+    display: none;
+}
+
+/* Bouton de profil dans la BottomTabBar */
+.bottomTabProfileItem {
+    align-self: center;
+    position: relative;
+    z-index: 1;
+}
+
+.bottomTabProfileItem .bottomTabItem {
+    padding: 0.5rem 0;
+}
+
+.profileAvatarBottomTab {
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--app-primary), #0f766e);
+    color: var(--app-primary-text);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.profileInitialBottomTab {
+    line-height: 1;
+}
+
+/* Style pour le popup du profil dans la BottomTabBar */
+.bottomTabProfilePopup {
+    position: absolute;
+    bottom: calc(100% + 1rem);
+    left: 50%;
+    z-index: 1001;
+    min-width: 200px;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--app-surface-border);
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateX(-50%);
+    animation: fadeInUp 0.15s ease-out;
+}
+
+@media (max-width: 820px) {
+    .bottomTabProfileItem .profilePopup {
+        left: 50%;
+        bottom: calc(100% + 0.5rem);
+        transform: translateX(-50%);
+    }
+}
+
+/* ===== Mobile Toggle ===== */
 .mobileToggle {
     display: none;
     margin-top: auto;
@@ -381,8 +554,32 @@
     justify-content: center;
     font-size: 0.85rem;
     font-weight: 700;
+    border: 1px solid var(--app-surface-border);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--app-text-color);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.mobileToggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.mobileToggleIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ===== Mobile Launcher ===== */
+.mobileLauncher,
+.mobileBackdrop {
+    display: none;
+}
+
+/* ===== Main ===== */
 .main {
     min-width: 0;
     min-height: 0;
@@ -393,11 +590,7 @@
     flex: 1;
 }
 
-.mobileLauncher,
-.mobileBackdrop {
-    display: none;
-}
-
+/* ===== Etat Collapsed ===== */
 .shellCollapsed .brandText,
 .shellCollapsed .navText,
 .shellCollapsed .mobileToggle span,
@@ -413,12 +606,6 @@
 .shellCollapsed .brandRow {
     justify-content: center;
     padding-bottom: 0.25rem;
-}
-
-.shellCollapsed .collapseButton {
-    position: absolute;
-    right: 0.65rem;
-    top: 1rem;
 }
 
 .shellCollapsed .navItem {
@@ -440,13 +627,13 @@
     margin: 0 auto;
 }
 
-/* Profile popup positioning in different states */
 .shellCollapsed .profilePopup {
     left: calc(100% + 0.5rem);
     bottom: 0;
     transform: none;
 }
 
+/* ===== Mobile Styles ===== */
 @media (max-width: 820px) {
     .profilePopup {
         position: fixed;
@@ -461,22 +648,34 @@
         left: calc(var(--sidebar-width) + 1rem);
         transform: translateY(-50%);
     }
-}
-
-@media (max-width: 820px) {
+    
+    .navGroupPopup {
+        position: fixed;
+        left: 50%;
+        bottom: auto;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+    }
+    
+    .shellMobileOpen .navGroupPopup {
+        left: calc(var(--sidebar-width) + 1rem);
+        transform: translateY(-50%);
+    }
+    
     .shell,
     .shellCollapsed {
         padding-left: 0;
     }
-
+    
     .shell {
         position: relative;
     }
-
+    
     .shellMobileOpen {
         overflow: hidden;
     }
-
+    
     .mobileLauncher {
         position: fixed;
         top: 0.75rem;
@@ -493,12 +692,12 @@
         box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
         color: var(--app-primary);
     }
-
+    
     .mobileLauncherIcon {
         width: 1.15rem;
         height: 1.15rem;
     }
-
+    
     .mobileBackdrop {
         position: fixed;
         inset: 0;
@@ -510,12 +709,12 @@
         pointer-events: none;
         transition: opacity 0.2s ease;
     }
-
+    
     .shellMobileOpen .mobileBackdrop {
         opacity: 1;
         pointer-events: auto;
     }
-
+    
     .sidebar {
         position: fixed;
         top: 0;
@@ -535,88 +734,122 @@
         z-index: 55;
         visibility: hidden;
     }
-
+    
     .shellMobileOpen .sidebar {
         transform: translateX(0);
         visibility: visible;
     }
-
+    
     .brandButton {
         border: 1px solid var(--app-surface-border);
         border-radius: 1.15rem;
         background: rgba(255, 255, 255, 0.96);
         padding: 0.75rem;
     }
-
+    
     .brandRow {
         justify-content: space-between;
         padding: 0;
     }
-
+    
     .nav {
         display: flex;
         flex-wrap: wrap;
         gap: 0.55rem;
     }
-
+    
     .nav > * {
         flex: 1 1 8rem;
         min-width: 0;
     }
-
+    
     .navItem {
         min-height: 4rem;
     }
-
+    
     .bottomSection {
         display: flex;
         flex-wrap: wrap;
         gap: 0.55rem;
     }
-
+    
     .bottomSection > * {
         flex: 1 1 8rem;
         min-width: 0;
     }
-
+    
     .languageBlock {
         flex: 1 1 100%;
     }
-
+    
     .utilityItem {
         min-height: 4rem;
     }
-
+    
     .mobileToggle {
         display: none;
     }
-
+    
     .collapseButton {
         display: none;
     }
-
+    
     .shellCollapsed .brandText,
-    .shellCollapsed .navText,
-    .shellCollapsed .mobileToggle span {
+    .shellCollapsed .navText {
         display: flex;
     }
-
+    
     .shellCollapsed .nav > * {
         flex: 1 1 4.75rem;
     }
-
+    
     .shellCollapsed .navItem {
         justify-content: flex-start;
         padding-inline: 0.9rem;
     }
-
+    
     .shellCollapsed .navItemActive,
     .shellCollapsed .navItemActiveSubtle {
         justify-content: flex-start;
     }
-
+    
     .shellCollapsed .utilityItem {
         justify-content: flex-start;
         padding-inline: 0.9rem;
+    }
+    
+    /* Afficher la bottom tab bar en mobile */
+    .bottomTabBar {
+        display: flex;
+    }
+    
+    /* Cacher la sidebar en mode mobile (remplacée par la bottom tab bar) */
+    .hideSidebarOnMobile .sidebar,
+    .hideSidebarOnMobile .mobileLauncher,
+    .hideSidebarOnMobile .mobileBackdrop,
+    .hideSidebarOnMobile .mobileToggle {
+        display: none;
+    }
+}
+
+/* ===== Desktop: Afficher la Bottom Tab Bar uniquement si la sidebar est masquée ===== */
+@media (min-width: 821px) {
+    .bottomTabBar {
+        display: none;
+    }
+    
+    /* Si on force l'affichage de la bottom tab bar (option dans les paramètres) */
+    .forceBottomTabBar .bottomTabBar {
+        display: flex;
+    }
+    
+    .forceBottomTabBar .sidebar,
+    .forceBottomTabBar .mobileLauncher,
+    .forceBottomTabBar .mobileBackdrop {
+        display: none;
+    }
+    
+    .forceBottomTabBar .main {
+        padding-bottom: 3.5rem; /* Espace pour la bottom tab bar */
     }
 }
