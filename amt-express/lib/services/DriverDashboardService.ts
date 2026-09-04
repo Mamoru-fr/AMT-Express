@@ -2,6 +2,7 @@ import db from "@/lib/db/drizzle";
 import {rides, users, drivers, rideCustomers, assignmentRequests} from "@/lib/db/schema";
 import {eq, and, gte, desc, sql, or, count} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
+import {calculateClientPrice} from "@/utils/clientPrice";
 
 type Ride = typeof rides.$inferSelect;
 type RideWithCustomers = Ride & {
@@ -38,9 +39,16 @@ export class DriverDashboardService {
      * Get driver record for a user
      */
     static async getDriverForUser(userId: string) {
-        return db.query.drivers.findFirst({
+        const existing = await db.query.drivers.findFirst({
             where: eq(drivers.userId, userId)
         });
+        if (existing) return existing;
+
+        // Auto-create a minimal profile when the user has role=driver but no drivers record
+        const [created] = await db.insert(drivers)
+            .values({ userId, vehiclePlate: '' })
+            .returning();
+        return created;
     }
 
     /**
@@ -272,5 +280,46 @@ export class DriverDashboardService {
             page,
             totalPages: Math.ceil(total / limit)
         };
+    }
+
+    static async updateRideProgress(
+        driverId: string,
+        rideId: string,
+        data: { waitingTime?: number; driverNotes?: string },
+    ): Promise<void> {
+        console.log('[DriverDashboardService] updateRideProgress — driverId:', driverId, '| rideId:', rideId, '| data:', data);
+
+        const ride = await db.query.rides.findFirst({ where: eq(rides.id, rideId) });
+        if (!ride) throw new Error('Ride not found');
+        if (ride.driverId !== driverId) throw new Error('This ride is not assigned to you');
+
+        const update: Record<string, unknown> = {};
+        if (data.waitingTime !== undefined) update.waitingTime = data.waitingTime;
+        if (data.driverNotes !== undefined) update.driverNotes = data.driverNotes;
+
+        console.log('[DriverDashboardService] updateRideProgress — ownership verified, updating DB with:', update);
+        await db.update(rides).set(update).where(eq(rides.id, rideId));
+        console.log('[DriverDashboardService] updateRideProgress — DB update done');
+    }
+
+    static async completeRide(
+        driverId: string,
+        rideId: string,
+        driverPrice: string,
+    ): Promise<void> {
+        console.log('[DriverDashboardService] completeRide — driverId:', driverId, '| rideId:', rideId, '| driverPrice:', driverPrice);
+
+        const ride = await db.query.rides.findFirst({ where: eq(rides.id, rideId) });
+        if (!ride) throw new Error('Ride not found');
+        if (ride.driverId !== driverId) throw new Error('This ride is not assigned to you');
+
+        console.log('[DriverDashboardService] completeRide — ownership verified, updating DB');
+        await db.update(rides).set({
+            status: 'completed',
+            driverPrice,
+            price: calculateClientPrice(driverPrice),
+            arrivalTime: new Date(),
+        }).where(eq(rides.id, rideId));
+        console.log('[DriverDashboardService] completeRide — DB update done');
     }
 }

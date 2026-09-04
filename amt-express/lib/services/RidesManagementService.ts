@@ -1,6 +1,6 @@
 import db from "@/lib/db/drizzle";
-import {rides, users, drivers, rideCustomers, productions, projects} from "@/lib/db/schema";
-import {eq, sql, desc, asc, and, or, ilike} from "drizzle-orm";
+import {rides, users, drivers, rideCustomers, productions, projects, assignmentRequests} from "@/lib/db/schema";
+import {eq, sql, desc, asc, and, or, ilike, ne} from "drizzle-orm";
 import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
 
 export interface RideFilters {
@@ -446,4 +446,77 @@ export class RidesManagementService {
             .from(projects)
             .orderBy(asc(projects.name));
     }
+
+    static async getAssignmentRequestsForRide(rideId: string): Promise<AssignmentRequestWithDriver[]> {
+        const rows = await db
+            .select({
+                requestId: assignmentRequests.id,
+                status: assignmentRequests.status,
+                requestedAt: assignmentRequests.requestedAt,
+                driverId: assignmentRequests.driverId,
+                driverName: users.name,
+                driverEmail: users.email,
+            })
+            .from(assignmentRequests)
+            .innerJoin(drivers, eq(assignmentRequests.driverId, drivers.id))
+            .innerJoin(users, eq(drivers.userId, users.id))
+            .where(eq(assignmentRequests.rideId, rideId))
+            .orderBy(asc(assignmentRequests.requestedAt));
+
+        return rows;
+    }
+
+    static async approveAssignmentRequest(requestId: string): Promise<void> {
+        const request = await db.query.assignmentRequests.findFirst({
+            where: eq(assignmentRequests.id, requestId),
+        });
+        if (!request) throw new Error('Assignment request not found');
+        if (request.status !== 'pending') throw new Error('Request is no longer pending');
+
+        const ride = await db.query.rides.findFirst({
+            where: eq(rides.id, request.rideId),
+        });
+        if (!ride) throw new Error('Ride not found');
+        if (ride.status !== 'pending') throw new Error('Ride is no longer available for assignment');
+
+        // Assign the driver and mark ride as assigned
+        await db.update(rides)
+            .set({ driverId: request.driverId, status: 'assigned' })
+            .where(eq(rides.id, request.rideId));
+
+        // Mark this request as approved
+        await db.update(assignmentRequests)
+            .set({ status: 'approved' })
+            .where(eq(assignmentRequests.id, requestId));
+
+        // Reject all other pending requests for this ride
+        await db.update(assignmentRequests)
+            .set({ status: 'rejected' })
+            .where(and(
+                eq(assignmentRequests.rideId, request.rideId),
+                ne(assignmentRequests.id, requestId),
+                eq(assignmentRequests.status, 'pending')
+            ));
+    }
+
+    static async rejectAssignmentRequest(requestId: string): Promise<void> {
+        const request = await db.query.assignmentRequests.findFirst({
+            where: eq(assignmentRequests.id, requestId),
+        });
+        if (!request) throw new Error('Assignment request not found');
+        if (request.status !== 'pending') throw new Error('Request is no longer pending');
+
+        await db.update(assignmentRequests)
+            .set({ status: 'rejected' })
+            .where(eq(assignmentRequests.id, requestId));
+    }
 }
+
+export type AssignmentRequestWithDriver = {
+    requestId: string;
+    status: string;
+    requestedAt: Date;
+    driverId: string;
+    driverName: string | null;
+    driverEmail: string | null;
+};

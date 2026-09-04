@@ -6,7 +6,7 @@ import {useState, useEffect} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 // Icons imports from lucide-react
-import {Car, Users, FileText, Euro, LayoutDashboard} from "lucide-react";
+import {Car, Users, FileText, Euro, LayoutDashboard, Plus} from "lucide-react";
 
 // Actions imports from the admin dashboard library
 import type {AdminDashboardData} from "@/lib/services/AdminDashboardService";
@@ -17,7 +17,8 @@ import {MonthlyRidesChart} from "@/components/dashboard/MonthlyRidesChart";
 import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
-import {AdminSidebar} from "@/components/admin/navigation/AdminSidebar";
+import {RoleSidebar} from "../shared/RoleSidebar";
+import { Button } from "@/components/classicComponents/Button";
 import {useTranslation} from "react-i18next";
 import styles from "./AdminDashboard.module.css";
 
@@ -54,7 +55,7 @@ export function AdminDashboard({data}: Props) {
 
     // ========== Component State ==========
     return (
-        <AdminSidebar>
+        <RoleSidebar>
             <div className={styles.adminDashboard}>
                 <div className={styles.adminInner}>
                 {/* ========== Dashboard Header ========== */}
@@ -104,14 +105,17 @@ export function AdminDashboard({data}: Props) {
                 {/* ========== Quick Actions ========== */}
                 {/* Primary action: Create new ride */}
                 <div className={styles.actionsRow}>
-                    {/* Button text adapts to screen size: "Add Ride" on mobile, "Add New Ride" on larger screens */}
-                    <button
+                    <Button
+                        icon={<Plus size={16} />}
+                        onClick={() => {
+                            const params = new URLSearchParams();
+                            params.set('returnTo', currentReturnTo);
+                            router.push(`/ride-management/new?${params.toString()}`);
+                        }}
                         className={styles.primaryAction}
-                        onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
                     >
-                        <span className={styles.primaryActionIcon}>+</span>
-                        <span>{t('adminDashboard.actions.addNewRide')}</span>
-                    </button>
+                        {t('adminDashboard.actions.addNewRide')}
+                    </Button>
                 </div>
 
                 {/* ========== Analytics Charts ========== */}
@@ -130,6 +134,6 @@ export function AdminDashboard({data}: Props) {
                 </div>
             </div>
             </div>
-        </AdminSidebar>
+        </RoleSidebar>
     );
 }

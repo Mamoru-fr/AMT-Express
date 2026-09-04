@@ -1,14 +1,5 @@
 'use client'
 
-/**
- * DriverRidesView Component
- * 
- * Displays rides for driver users with 3 different views:
- * 1. Completed Rides - Rides the driver has completed
- * 2. My Assigned Rides - Rides currently assigned to the driver
- * 3. Available Rides - Pending rides without a driver that can be requested
- */
-
 import {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {RideWithRelations} from "@/content/database_types/ride";
@@ -18,7 +9,9 @@ import {
     fetchDriverAssignedRides,
     fetchPendingRides
 } from "@/lib/actions/ridesViewActions";
-import {Calendar, MapPin, Clock, User, DollarSign, CheckCircle} from "lucide-react";
+import Link from "next/link";
+import {Calendar, MapPin, DollarSign, Users, RefreshCw, ExternalLink} from "lucide-react";
+import styles from "./DriverRidesView.module.css";
 
 type DriverView = "completed" | "assigned" | "available";
 
@@ -94,223 +87,173 @@ export default function DriverRidesView() {
 
     function formatDate(date: Date | string | null) {
         if (!date) return "-";
-        return new Date(date).toLocaleDateString("fr-FR", {
+        return new Date(date).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
             year: "numeric",
             hour: "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
         });
     }
 
-    function getStatusBadge(status: string) {
-        const statusStyles: Record<string, string> = {
-            pending: "bg-yellow-100 text-yellow-800",
-            assigned: "bg-blue-100 text-blue-800",
-            completed: "bg-green-100 text-green-800",
-            cancelled: "bg-red-100 text-red-800"
-        };
-
-        return (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[status] || "bg-gray-100 text-gray-800"}`}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-            </span>
-        );
-    }
+    const statusClass: Record<string, string> = {
+        pending: styles.statusPending,
+        assigned: styles.statusAssigned,
+        completed: styles.statusCompleted,
+        cancelled: styles.statusCancelled,
+    };
 
     const rides = getCurrentRides();
 
     return (
-        <div className="min-h-dvh bg-gray-50 flex flex-col p-6">
-            <div className="max-w-7xl mx-auto w-full flex flex-1 flex-col">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">My Rides</h1>
-                    <p className="text-gray-600 mt-2">View and manage your assigned and available rides</p>
+        <div className={styles.container}>
+            {/* Tabs + refresh */}
+            <div className={styles.tabsContainer}>
+                <div className={styles.tabsList}>
+                    <button
+                        onClick={() => setActiveView("assigned")}
+                        className={`${styles.tabButton} ${activeView === "assigned" ? styles.tabButtonActive : ""}`}
+                    >
+                        {t('driverRides.tabs.assigned', 'Assigned')}
+                        {countAssignedRides > 0 && (
+                            <span className={`${styles.tabBadge} ${styles.tabBadgeAssigned}`}>
+                                {countAssignedRides}
+                            </span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveView("available")}
+                        className={`${styles.tabButton} ${activeView === "available" ? styles.tabButtonActive : ""}`}
+                    >
+                        {t('driverRides.tabs.available', 'Available')}
+                        {countAvailableRides > 0 && (
+                            <span className={`${styles.tabBadge} ${styles.tabBadgeAvailable}`}>
+                                {countAvailableRides}
+                            </span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveView("completed")}
+                        className={`${styles.tabButton} ${activeView === "completed" ? styles.tabButtonActive : ""}`}
+                    >
+                        {t('driverRides.tabs.completed', 'Completed')}
+                        {countCompletedRides > 0 && (
+                            <span className={`${styles.tabBadge} ${styles.tabBadgeCompleted}`}>
+                                {countCompletedRides}
+                            </span>
+                        )}
+                    </button>
                 </div>
+                <button
+                    onClick={loadRides}
+                    disabled={loading}
+                    className={styles.refreshButton}
+                    title={t('driverRides.refresh', 'Refresh')}
+                >
+                    <RefreshCw className={`${styles.refreshIcon} ${loading ? styles.refreshSpin : ""}`} />
+                </button>
+            </div>
 
-                {/* Tabs */}
-                <div className="bg-white shadow rounded-lg mb-6">
-                    <div className="flex border-b">
-                        <button
-                            onClick={() => setActiveView("assigned")}
-                            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-                                activeView === "assigned"
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-500 hover:text-gray-700"
-                            }`}
-                        >
-                            My Assigned Rides
-                            {assignedRides.length > 0 && (
-                                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
-                                    {assignedRides.length}
-                                </span>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => setActiveView("available")}
-                            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-                                activeView === "available"
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-500 hover:text-gray-700"
-                            }`}
-                        >
-                            Available Rides
-                            {availableRides.length > 0 && (
-                                <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs">
-                                    {availableRides.length}
-                                </span>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => setActiveView("completed")}
-                            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-                                activeView === "completed"
-                                    ? "text-blue-600 border-b-2 border-blue-600"
-                                    : "text-gray-500 hover:text-gray-700"
-                            }`}
-                        >
-                            Completed Rides
-                            {completedRides.length > 0 && (
-                                <span className="ml-2 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">
-                                    {completedRides.length}
-                                </span>
-                            )}
+            {/* Content card */}
+            <div className={styles.contentCard}>
+                {loading ? (
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.loadingSpinner} />
+                        <p className={styles.loadingText}>{t('driverRides.loading', 'Loading rides...')}</p>
+                    </div>
+                ) : error ? (
+                    <div className={styles.errorContainer}>
+                        <p className={styles.errorText}>{error}</p>
+                        <button onClick={loadRides} className={styles.errorButton}>
+                            {t('driverRides.retry', 'Retry')}
                         </button>
                     </div>
-                </div>
-
-                {/* Content */}
-                <div className="bg-white shadow rounded-lg">
-                    {loading ? (
-                        <div className="p-12 text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="text-gray-500 mt-4">Loading rides...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="p-12 text-center">
-                            <p className="text-red-600">{error}</p>
-                            <button
-                                onClick={loadRides}
-                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    ) : rides.length === 0 ? (
-                        <div className="p-12 text-center">
-                            <p className="text-gray-500">No rides found in this view</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Ride ID
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Route
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Departure Time
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Customers
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Price
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
-                                        </th>
+                ) : rides.length === 0 ? (
+                    <div className={styles.emptyContainer}>
+                        <p className={styles.emptyText}>
+                            {activeView === "assigned" && t('driverRides.empty.assigned', 'No assigned rides at the moment.')}
+                            {activeView === "available" && t('driverRides.empty.available', 'No available rides right now.')}
+                            {activeView === "completed" && t('driverRides.empty.completed', 'No completed rides yet.')}
+                        </p>
+                    </div>
+                ) : (
+                    <div className={styles.tableContainer}>
+                        <table className={styles.table}>
+                            <thead className={styles.tableHeader}>
+                                <tr>
+                                    <th className={styles.headerCell}>{t('driverRides.table.rideId', 'Ride ID')}</th>
+                                    <th className={styles.headerCell}>{t('driverRides.table.route', 'Route')}</th>
+                                    <th className={styles.headerCell}>{t('driverRides.table.departure', 'Departure')}</th>
+                                    <th className={styles.headerCell}>{t('driverRides.table.customers', 'Customers')}</th>
+                                    <th className={styles.headerCell}>{t('driverRides.table.price', 'Price')}</th>
+                                    <th className={styles.headerCell}>
+                                        {activeView === "available"
+                                            ? t('driverRides.table.action', 'Action')
+                                            : t('driverRides.table.status', 'Status')}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className={styles.tableBody}>
+                                {rides.map((ride) => (
+                                    <tr key={ride.id} className={styles.tableRow}>
+                                        <td className={styles.tableCell}>
+                                            <span className={styles.rideId}>#{ride.id.slice(0, 8)}</span>
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            <div className={styles.routeCell}>
+                                                <div className={styles.routeRow}>
+                                                    <MapPin className={`${styles.routeIcon} ${styles.routeIconFrom}`} />
+                                                    <span className={styles.routeTextFrom}>{ride.departure}</span>
+                                                </div>
+                                                <div className={styles.routeRow}>
+                                                    <MapPin className={`${styles.routeIcon} ${styles.routeIconTo}`} />
+                                                    <span className={styles.routeTextTo}>{ride.destination}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            <div className={styles.dateCell}>
+                                                <Calendar className={styles.dateIcon} />
+                                                {formatDate(ride.departureTime)}
+                                            </div>
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            <div className={styles.customersCell}>
+                                                <Users className={styles.customersIcon} />
+                                                {ride.customers && ride.customers.length > 0
+                                                    ? ride.customers.map(c => c.name).join(', ')
+                                                    : <em>{t('driverRides.table.noCustomers', 'None')}</em>}
+                                            </div>
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            <div className={styles.priceCell}>
+                                                <DollarSign className={styles.priceIcon} />
+                                                {activeView === 'available'
+                                                    ? (ride.price ? parseFloat(ride.price).toFixed(2) : '-')
+                                                    : (ride.driverPrice ? parseFloat(ride.driverPrice).toFixed(2) : '-')
+                                                }
+                                            </div>
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {activeView === "available" ? (
+                                                <Link href={`/driver-rides/${ride.id}`} className={styles.requestButton}>
+                                                    {t('driverRides.table.view', 'View')}
+                                                </Link>
+                                            ) : (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <span className={`${styles.statusBadge} ${statusClass[ride.status] ?? styles.statusPending}`}>
+                                                        {ride.status}
+                                                    </span>
+                                                    <Link href={`/driver-rides/${ride.id}`} className={styles.detailLink} title={t('driverRides.table.viewDetail', 'View detail')}>
+                                                        <ExternalLink className={styles.detailIcon} />
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {rides.map((ride) => (
-                                        <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                #{ride.id}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-col space-y-1">
-                                                    <div className="flex items-center text-sm text-gray-900">
-                                                        <MapPin className="h-4 w-4 mr-2 text-green-500" />
-                                                        {ride.departure}
-                                                    </div>
-                                                    <div className="flex items-center text-sm text-gray-500">
-                                                        <MapPin className="h-4 w-4 mr-2 text-red-500" />
-                                                        {ride.destination}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center text-sm text-gray-900">
-                                                    <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                                                    {formatDate(ride.departureTime)}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-col space-y-1">
-                                                    {ride.customers && ride.customers.length > 0 ? (
-                                                        ride.customers.map((customer) => (
-                                                            <div key={customer.id} className="flex items-center text-sm text-gray-900">
-                                                                <User className="h-4 w-4 mr-2 text-gray-400" />
-                                                                {customer.name}
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <span className="text-sm text-gray-500">No customers</span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center text-sm font-medium text-gray-900">
-                                                    <DollarSign className="h-4 w-4 mr-1 text-green-500" />
-                                                    {ride.price ? `${parseFloat(ride.price).toFixed(2)}` : "-"}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {getStatusBadge(ride.status)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
-
-                {/* Summary Stats */}
-                {!loading && !error && (
-                    <div className="mt-6 flex flex-wrap gap-4">
-                        <div className="bg-white shadow rounded-lg p-6 w-full md:w-[calc(33.333%-1rem)] min-w-0">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">Assigned Rides</p>
-                                    <p className="text-2xl font-bold text-blue-600">{assignedRides.length}</p>
-                                </div>
-                                <Clock className="h-10 w-10 text-blue-600 opacity-20" />
-                            </div>
-                        </div>
-                        <div className="bg-white shadow rounded-lg p-6 w-full md:w-[calc(33.333%-1rem)] min-w-0">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">Available Rides</p>
-                                    <p className="text-2xl font-bold text-yellow-600">{availableRides.length}</p>
-                                </div>
-                                <MapPin className="h-10 w-10 text-yellow-600 opacity-20" />
-                            </div>
-                        </div>
-                        <div className="bg-white shadow rounded-lg p-6 w-full md:w-[calc(33.333%-1rem)] min-w-0">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">Completed Rides</p>
-                                    <p className="text-2xl font-bold text-green-600">{completedRides.length}</p>
-                                </div>
-                                <CheckCircle className="h-10 w-10 text-green-600 opacity-20" />
-                            </div>
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

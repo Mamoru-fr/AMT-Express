@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { RideWithRelations } from "@/content/database_types/ride";
+import { Button } from "@/components/classicComponents/Button";
 import {
     fetchCustomerCompletedRides,
     fetchCustomerRequestedRides,
@@ -163,9 +164,9 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                 ) : error ? (
                     <div className={styles.errorContainer}>
                         <p className={styles.errorText}>{error}</p>
-                        <button onClick={handleRefresh} className={styles.errorButton}>
+                        <Button variant="secondary" onClick={handleRefresh}>
                             {t('customerRides.retry')}
-                        </button>
+                        </Button>
                     </div>
                 ) : rides.length === 0 ? (
                     <div className={styles.emptyContainer}>

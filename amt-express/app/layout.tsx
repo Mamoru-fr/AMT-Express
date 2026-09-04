@@ -43,38 +43,30 @@ export default async function RootLayout({
   admin,
   driver,
   customer,
-  auth: authSlot,
 }: Readonly<{
   children: ReactNode;
   admin?: ReactNode;
   driver?: ReactNode;
   customer?: ReactNode;
-  auth?: ReactNode;
 }>) {
-  const { session, isAuthenticated, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
+  const { session, isAdmin, isDriver, isCustomer } = await getSessionWithRole();
   const cookieStore = await cookies();
   const lang = cookieStore.get('preferredLanguage')?.value ?? 'en';
 
-  const activeSlot = !isAuthenticated
-    ? authSlot
-    : isAdmin
-      ? admin
-      : isDriver
-        ? driver
-        : isCustomer
-          ? customer
-          : null;
+  // Déterminer le slot actif en fonction du rôle (priorité: admin > driver > customer)
+  const activeSlot = isAdmin ? admin : isDriver ? driver : isCustomer ? customer : null;
 
   return (
     <html lang={lang} suppressHydrationWarning>
       <body className={`antialiased`}>
         <ServiceWorkerRegister />
-          <I18nProvider initialLanguage={lang}>
-            <SessionProvider session={session}>
-              {children}
-              <SlotRenderer slot={activeSlot} />
-            </SessionProvider>
-          </I18nProvider>
+        <I18nProvider initialLanguage={lang}>
+          <SessionProvider session={session}>
+            {children}
+            {/* SlotRenderer gère l'affichage conditionnel des slots (admin, driver, customer) */}
+            <SlotRenderer slot={activeSlot} />
+          </SessionProvider>
+        </I18nProvider>
       </body>
     </html>
   );

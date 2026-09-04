@@ -11,7 +11,7 @@ import { Car, Calendar, Clock, CheckCircle, User, LayoutDashboard, PlusCircle } 
 // Components
 import CustomerRidesView from '@/components/customer/CustomerRidesView';
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
-import { CustomerSidebar } from '@/components/customer/navigation/CustomerSidebar';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 
 // Actions
 import { getCustomerDashboardData, type CustomerDashboardData } from '@/lib/actions/customerDashboardActions';
@@ -55,20 +55,20 @@ export default function CustomerDashboardPage() {
   // Loading state
   if (isLoading) {
     return (
-      <CustomerSidebar>
+      <RoleSidebar>
         <div className={styles.customerDashboard}>
           <div className={styles.customerInner}>
             <p>{t('dashboard.loading')}</p>
           </div>
         </div>
-      </CustomerSidebar>
+      </RoleSidebar>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <CustomerSidebar>
+      <RoleSidebar>
         <div className={styles.customerDashboard}>
           <div className={styles.customerInner}>
             <div className={errorStyles.homeErrorMessage}>
@@ -76,7 +76,7 @@ export default function CustomerDashboardPage() {
             </div>
           </div>
         </div>
-      </CustomerSidebar>
+      </RoleSidebar>
     );
   }
 
@@ -86,7 +86,7 @@ export default function CustomerDashboardPage() {
   const { completedRides, pendingRides, totalRides } = data;
 
   return (
-    <CustomerSidebar>
+    <RoleSidebar>
       <div className={styles.customerDashboard}>
         <div className={styles.customerInner}>
           {/* Dashboard Header */}
@@ -153,6 +153,6 @@ export default function CustomerDashboardPage() {
           </div>
         </div>
       </div>
-    </CustomerSidebar>
+    </RoleSidebar>
   );
 }

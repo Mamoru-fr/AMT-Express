@@ -2,6 +2,7 @@
 
 import {X} from "lucide-react";
 import {useTranslation} from "react-i18next";
+import { Button } from "@/components/classicComponents/Button";
 import styles from "./DeleteConfirmModal.module.css";
 
 /**
@@ -39,18 +40,12 @@ export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmMo
                 </p>
 
                 <div className={styles.modalFooter}>
-                    <button
-                        onClick={onClose}
-                        className={styles.cancelButton}
-                    >
+                    <Button variant="secondary" onClick={onClose}>
                         {t('common.cancel')}
-                    </button>
-                    <button
-                        onClick={() => onConfirm(rideId)}
-                        className={styles.deleteButton}
-                    >
+                    </Button>
+                    <Button variant="danger" onClick={() => onConfirm(rideId)}>
                         {t('rideModals.deleteConfirm.deleteButton')}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

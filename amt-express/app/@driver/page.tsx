@@ -10,7 +10,8 @@ import { Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X, 
 // Components
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
 import { StatusBanner } from '@/components/classicComponents/StatusBanner';
-import { DriverSidebar } from '@/components/driver/navigation/DriverSidebar';
+import { Button } from '@/components/classicComponents/Button';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
 
 // Actions & Types
 import { toggleDriverAvailability, requestRideAssignment, fetchDriverDashboard } from '@/lib/actions/driverDashboardActions';
@@ -170,7 +171,7 @@ export default function DriverDashboardPage() {
   if (!data) return null;
 
   return (
-    <DriverSidebar>
+    <RoleSidebar>
     <div className={styles.driverDashboard}>
       <div className={styles.driverInner}>
         {feedback && (
@@ -373,13 +374,13 @@ export default function DriverDashboardPage() {
                     )}
                   </div>
 
-                  <button
+                  <Button
+                    full
                     onClick={() => setRequestModal({ open: true, rideId: ride.id })}
                     disabled={loadingAction}
-                    className={styles.requestButton}
                   >
                     {t('driverDashboard.requestRide', 'Request This Ride')}
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -415,26 +416,27 @@ export default function DriverDashboardPage() {
               />
 
               <div className={styles.modalActions}>
-                <button
+                <Button
+                  variant="secondary"
                   onClick={() => setRequestModal({ open: false, rideId: null })}
-                  className={styles.modalCancelButton}
                 >
                   {t('common.cancel', 'Cancel')}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleRequestRide(requestModal.rideId!)}
                   disabled={loadingAction}
-                  className={styles.modalConfirmButton}
+                  isPending={loadingAction}
+                  pendingText={t('common.sending', 'Sending...')}
                 >
                   {t('driverDashboard.confirmRequest', 'Send Request')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
       </div>
     </div>
-    </DriverSidebar>
+    </RoleSidebar>
   );
 }
 

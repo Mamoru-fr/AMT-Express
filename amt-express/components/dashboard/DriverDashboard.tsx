@@ -7,6 +7,7 @@ import {Car, DollarSign, Star, Calendar, MapPin, Clock, Users, CheckCircle, X} f
 import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";
 import {useTranslation} from "react-i18next";
 import {StatusBanner} from "@/components/classicComponents/StatusBanner";
+import { Button } from "@/components/classicComponents/Button";
 import styles from "./DriverDashboard.module.css";
 
 type Props = {
@@ -280,13 +281,13 @@ export function DriverDashboard({data, onRefresh}: Props) {
                                             )}
                                         </div>
 
-                                        <button
+                                        <Button
+                                            full
                                             onClick={() => setRequestModal({open: true, rideId: ride.id})}
                                             disabled={loading}
-                                            className={styles.requestButton}
                                         >
                                             {t('driverDashboard.requestRide', 'Request This Ride')}
-                                        </button>
+                                        </Button>
                                     </div>
                                 ))}
                             </div>
@@ -322,19 +323,20 @@ export function DriverDashboard({data, onRefresh}: Props) {
                                 />
 
                                 <div className={styles.modalActions}>
-                                    <button
+                                    <Button
+                                        variant="secondary"
                                         onClick={() => setRequestModal({open: false, rideId: null})}
-                                        className={styles.modalCancelButton}
                                     >
                                         {t('common.cancel', 'Cancel')}
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                         onClick={() => handleRequestRide(requestModal.rideId!)}
                                         disabled={loading}
-                                        className={styles.modalConfirmButton}
+                                        isPending={loading}
+                                        pendingText={t('common.sending', 'Sending...')}
                                     >
                                         {t('driverDashboard.confirmRequest', 'Send Request')}
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </div>

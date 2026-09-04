@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { Input } from "@/components/classicComponents/Input";
 import { Button } from "@/components/classicComponents/Button";
 import { StatusBanner } from "@/components/classicComponents/StatusBanner";
 import { signin, signup } from "@/lib/actions/signActions";
+import { useSessionWithRole } from "@/context/SessionContext";
 import { AlertTriangle, Car } from "lucide-react";
 
 type View = 'signin' | 'signup';
@@ -28,10 +29,35 @@ function SubmitButton({ content }: { content: string }) {
 
 export default function ConnectionsPage() {
     const { t } = useTranslation();
+    const router = useRouter();
     const searchParams = useSearchParams();
+    const { isAuthenticated, isAdmin, isDriver, isCustomer } = useSessionWithRole();
     const [view, setView] = useState<View>(() => searchParams ? normalizeView(searchParams.get('view')) : 'signin');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [infoMessage, setInfoMessage] = useState<string | null>(null);
+
+    // Rediriger si déjà authentifié
+    useEffect(() => {
+        const returnTo = searchParams.get('returnTo');
+        
+        // Si déjà authentifié, rediriger vers returnTo ou / 
+        if (isAuthenticated) {
+            let decodedReturnTo = returnTo || '/';
+            try {
+                decodedReturnTo = returnTo ? decodeURIComponent(returnTo) : '/';
+            } catch (e) {
+                console.error('Failed to decode returnTo:', e);
+                decodedReturnTo = '/';
+            }
+            
+            // Éviter les boucles infinies
+            if (!decodedReturnTo.includes('/connections')) {
+                router.push(decodedReturnTo);
+            } else {
+                router.push('/');
+            }
+        }
+    }, [isAuthenticated, router, searchParams]);
 
     useEffect(() => {
         const error = searchParams ? searchParams.get('error') : null;

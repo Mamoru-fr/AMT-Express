@@ -1,0 +1,407 @@
+.container {
+    width: 100%;
+}
+
+/* Tabs */
+.tabsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0.75rem;
+    border: 1px solid var(--app-surface-border);
+    box-shadow: var(--app-surface-shadow);
+    margin-bottom: 1.5rem;
+    background: var(--app-surface);
+}
+
+.tabsList {
+    display: flex;
+    border-bottom: 1px solid var(--app-surface-border);
+    flex: 1;
+}
+
+.tabButton {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--app-muted-color);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.tabButton:hover {
+    color: var(--app-text-color);
+}
+
+.tabButtonActive {
+    color: var(--app-primary) !important;
+    border-bottom: 3px solid var(--app-primary);
+}
+
+.tabBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+    line-height: 1;
+}
+
+.tabBadgeAssigned {
+    background: rgba(59, 130, 246, 0.15);
+    color: #1e40af;
+}
+
+.tabBadgeAvailable {
+    background: rgba(251, 191, 36, 0.15);
+    color: #92400e;
+}
+
+.tabBadgeCompleted {
+    background: rgba(34, 197, 94, 0.15);
+    color: #166534;
+}
+
+/* Content Card */
+.contentCard {
+    background: var(--app-surface);
+    border: 1px solid var(--app-surface-border);
+    border-radius: 0.75rem;
+    box-shadow: var(--app-surface-shadow);
+    overflow: hidden;
+}
+
+/* Loading */
+.loadingContainer {
+    padding: 3rem;
+    text-align: center;
+}
+
+.loadingSpinner {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid rgba(59, 130, 246, 0.15);
+    border-bottom-color: var(--app-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loadingText {
+    color: var(--app-muted-color);
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Error */
+.errorContainer {
+    padding: 3rem;
+    text-align: center;
+}
+
+.errorText {
+    color: var(--app-error);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.errorButton {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--app-primary);
+    color: var(--app-primary-text);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.errorButton:hover {
+    background: var(--app-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Empty */
+.emptyContainer {
+    padding: 3rem;
+    text-align: center;
+}
+
+.emptyText {
+    color: var(--app-muted-color);
+    font-size: 0.95rem;
+}
+
+/* Table */
+.tableContainer {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    background: var(--app-surface-subtle);
+}
+
+.headerCell {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--app-muted-color);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--app-surface-border);
+}
+
+.tableBody {
+    background: var(--app-surface);
+}
+
+.tableRow {
+    display: table-row;
+    transition: background 0.2s ease;
+}
+
+.tableRow:hover {
+    background: var(--app-surface-hover);
+}
+
+.tableCell {
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--app-surface-border);
+}
+
+/* Cell content */
+.rideId {
+    font-weight: 700;
+    color: var(--app-text-color);
+    font-size: 0.875rem;
+}
+
+.routeCell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.routeRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.routeIcon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.routeIconFrom {
+    color: var(--app-success);
+}
+
+.routeIconTo {
+    color: var(--app-error);
+}
+
+.routeTextFrom {
+    font-weight: 600;
+    color: var(--app-text-color);
+}
+
+.routeTextTo {
+    color: var(--app-muted-color);
+}
+
+.dateCell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--app-text-color);
+}
+
+.dateIcon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--app-muted-color);
+    flex-shrink: 0;
+}
+
+.customersCell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--app-text-color);
+}
+
+.customersIcon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--app-muted-color);
+    flex-shrink: 0;
+}
+
+.priceCell {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--app-text-color);
+}
+
+.priceIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--app-success);
+    flex-shrink: 0;
+}
+
+/* Status Badge */
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    line-height: 1;
+    text-transform: capitalize;
+}
+
+.statusPending {
+    background: rgba(251, 191, 36, 0.15);
+    color: #92400e;
+}
+
+.statusAssigned {
+    background: rgba(59, 130, 246, 0.15);
+    color: #1e40af;
+}
+
+.statusCompleted {
+    background: rgba(34, 197, 94, 0.15);
+    color: #166534;
+}
+
+.statusCancelled {
+    background: rgba(239, 68, 68, 0.15);
+    color: #991b1b;
+}
+
+/* Request button (available rides action) */
+.requestButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--app-primary);
+    color: var(--app-primary-text);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+
+.requestButton:hover:not(:disabled) {
+    background: var(--app-primary-dark);
+    transform: translateY(-1px);
+}
+
+.requestButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Refresh button */
+.refreshButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    color: var(--app-muted-color);
+    cursor: pointer;
+    border-radius: 0.375rem;
+    margin-right: 0.75rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+    color: var(--app-primary);
+    background: var(--app-surface-subtle);
+}
+
+.refreshButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.refreshIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.refreshSpin {
+    animation: spin 0.8s linear infinite;
+}
+
+.detailLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--app-muted-color);
+    transition: color 0.2s ease;
+}
+
+.detailLink:hover {
+    color: var(--app-primary);
+}
+
+.detailIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+@media (max-width: 640px) {
+    .tabButton {
+        padding: 0.875rem 1rem;
+        font-size: 0.8125rem;
+    }
+
+    .tableCell {
+        padding: 1rem 0.75rem;
+    }
+}

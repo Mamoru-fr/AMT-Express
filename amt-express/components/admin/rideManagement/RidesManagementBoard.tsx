@@ -25,7 +25,7 @@ import {DeleteConfirmModal} from "./DeleteConfirmModal";
 import {AddRideModal} from "./AddRideModal";
 import {ColumnFilter} from "./ColumnFilter";
 import {AdvancedSortModal} from "./AdvancedSortModal";
-import {AdminSidebar} from "@/components/admin/navigation/AdminSidebar";
+import { RoleSidebar } from "@/components/shared/RoleSidebar";
 import styles from './RidesManagementBoard.module.css';
 
 /**
@@ -247,7 +247,8 @@ export function RidesManagementBoard() {
     });
 
     // Security check - redirect non-admin users to home page
-    if (!session || session.user.role !== 'admin') {
+    const { isAdmin } = useSessionWithRole();
+    if (!isAdmin) {
         redirect('/');
     }
 
@@ -521,7 +522,7 @@ export function RidesManagementBoard() {
     }
 
     return (
-        <AdminSidebar>
+        <RoleSidebar>
             <div className={styles.pageShell}>
             <div className={styles.pageInner}>
                     {feedback && (
@@ -842,6 +843,6 @@ export function RidesManagementBoard() {
                 )}
             </div>
             </div>
-        </AdminSidebar>
+        </RoleSidebar>
     );
 }

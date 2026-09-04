@@ -5,6 +5,8 @@ import {useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {AlertTriangle, Building, CheckSquare, Clock, DollarSign, FileText, FolderOpen, MapPin, Users, X} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
+import {useSessionWithRole} from '@/context/SessionContext';
+import { Button } from '@/components/classicComponents/Button';
 import {
     createRide,
     fetchAllCustomers,
@@ -14,7 +16,7 @@ import {
 } from '@/lib/actions/ridesManagementActions';
 import {RideStatus} from '@/content/database_types/ride';
 import {SearchableSelect} from '@/components/classicComponents/SearchableSelect';
-import {AdminSidebar} from '@/components/admin/navigation/AdminSidebar';
+import {RoleSidebar} from '@/components/shared/RoleSidebar';
 import styles from '@/components/admin/rideManagement/AddRideModal.module.css';
 
 type DropdownOption = {
@@ -36,9 +38,16 @@ type ProjectOption = {
 
 export default function NewRidePage() {
     const {t} = useTranslation();
+    const { isAdmin, isAuthenticated } = useSessionWithRole();
     const router = useRouter();
     const searchParams = useSearchParams();
     const returnTo = searchParams.get('returnTo') || '/ride-management';
+
+    useEffect(() => {
+        if (isAuthenticated && !isAdmin) router.replace('/');
+    }, [isAuthenticated, isAdmin, router]);
+
+    if (!isAdmin) return null;
 
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
@@ -152,7 +161,8 @@ export default function NewRidePage() {
             });
 
             if (result.success) {
-                router.replace(returnTo);
+                const decodedReturnTo = decodeURIComponent(returnTo);
+                router.replace(decodedReturnTo);
                 return;
             }
 
@@ -167,12 +177,13 @@ export default function NewRidePage() {
 
     const handleCancel = () => {
         if (!loading) {
-            router.replace(returnTo);
+            const decodedReturnTo = decodeURIComponent(returnTo);
+            router.replace(decodedReturnTo);
         }
     };
 
     return (
-        <AdminSidebar>
+        <RoleSidebar>
             <div className={styles.pageShell}>
                 <div className={styles.pageContainer}>
                 <div className={styles.pageHeader}>
@@ -194,6 +205,9 @@ export default function NewRidePage() {
                         onClick={(event) => {
                             if (loading) {
                                 event.preventDefault();
+                            } else {
+                                const decodedReturnTo = decodeURIComponent(returnTo);
+                                router.replace(decodedReturnTo);
                             }
                         }}
                     >
@@ -430,25 +444,24 @@ export default function NewRidePage() {
                 </form>
 
                 <div className={styles.pageFooter}>
-                    <button
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={handleCancel}
                         disabled={loading}
-                        className={`${styles.buttonBase} ${styles.buttonCancel}`}
                     >
                         {t('common.cancel', 'Cancel')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
-                        onClick={handleSubmit}
-                        disabled={loading || loadingData}
-                        className={styles.buttonCreate}
+                        isPending={loading || loadingData}
+                        pendingText={t('common.creating', 'Creating...')}
                     >
-                        {loading ? t('common.creating', 'Creating...') : t('ridesManagement.createRide')}
-                    </button>
+                        {t('ridesManagement.createRide')}
+                    </Button>
                 </div>
             </div>
             </div>
-        </AdminSidebar>
+        </RoleSidebar>
     );
 }

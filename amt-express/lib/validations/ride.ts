@@ -115,7 +115,7 @@ export const UpdateRideDetailsSchema = z.object({
 
 export const AssignDriverSchema = z.object({
   rideId: z.string().uuid('Ride ID must be a valid UUID'),
-  driverId: z.string().uuid('Driver ID must be a valid UUID'),
+  driverId: z.string().min(1, 'Driver ID is required'), // better-auth IDs are not UUIDs
 });
 
 // ============================================

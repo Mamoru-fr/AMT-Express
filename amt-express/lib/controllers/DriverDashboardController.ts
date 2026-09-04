@@ -4,6 +4,7 @@ import {DriverDashboardService, DriverDashboardData, DriverStats, SuggestedRide}
 import {RideWithRelations} from '@/content/database_types/ride';
 import {ToggleAvailabilitySchema, RequestRideAssignmentSchema, RideHistorySchema} from '@/lib/validations/dashboard';
 import {verifyRole} from '@/lib/middleware/roleMiddleware';
+import {RidesViewService} from '@/lib/services/RidesViewService';
 
 /**
  * DriverDashboardController - Gère la sécurité et la validation
@@ -189,6 +190,21 @@ export class DriverDashboardController {
                 error: 'Failed to fetch ride history',
                 code: ErrorCodes.DATABASE_ERROR
             };
+        }
+    }
+
+    static async getDriverRideDetail(rideId: string): Promise<ActionResponse<RideWithRelations>> {
+        try {
+            const roleCheck = await verifyRole('driver');
+            if (!roleCheck.success) return roleCheck;
+
+            const ride = await RidesViewService.getRideById(rideId);
+            if (!ride) return { success: false, error: 'Ride not found', code: ErrorCodes.RIDE_NOT_FOUND };
+
+            return { success: true, data: ride };
+        } catch (error) {
+            console.error('Error fetching ride detail:', error);
+            return { success: false, error: 'Failed to fetch ride detail', code: ErrorCodes.DATABASE_ERROR };
         }
     }
 }

@@ -1,32 +1,51 @@
-import { cn } from "@/utils/cn";
+import type { ReactNode } from 'react';
 import styles from './button.module.css';
 
 type Props = {
-    content: string;
+    children?: ReactNode;
+    /** Fallback when no children provided */
+    content?: string;
     className?: string;
-    variant?: 'primary' | 'secondary';
+    variant?: 'primary' | 'secondary' | 'danger';
+    full?: boolean;
+    icon?: ReactNode;
+    isPending?: boolean;
+    pendingText?: string;
     onClick?: () => void;
     type?: 'button' | 'submit' | 'reset';
     disabled?: boolean;
     'aria-label'?: string;
-}
+};
 
-export function Button({ content, className, variant = 'primary', onClick, type = 'button', disabled = false, 'aria-label': ariaLabel }: Props) {
-    const variantClass = variant === 'primary' ? styles.buttonPrimary : styles.buttonSecondary;
-    
+export function Button({
+    children,
+    content,
+    className,
+    variant = 'primary',
+    full = false,
+    icon,
+    isPending = false,
+    pendingText,
+    onClick,
+    type = 'button',
+    disabled = false,
+    'aria-label': ariaLabel,
+}: Props) {
+    const variantClass =
+        variant === 'danger' ? styles.buttonDanger :
+        variant === 'secondary' ? styles.buttonSecondary :
+        styles.buttonPrimary;
+
     return (
-        <button 
+        <button
             type={type}
-            disabled={disabled}
-            className={cn(
-                styles.button,
-                variantClass,
-                className
-            )}
+            disabled={disabled || isPending}
+            className={[styles.button, variantClass, full && styles.buttonFull, className].filter(Boolean).join(' ')}
             onClick={onClick}
             aria-label={ariaLabel}
         >
-            {content}
+            {icon && <span className={styles.buttonIcon}>{icon}</span>}
+            {isPending && pendingText ? pendingText : (children ?? content)}
         </button>
     );
 }

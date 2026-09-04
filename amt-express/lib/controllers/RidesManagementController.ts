@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {RidesManagementService} from '@/lib/services/RidesManagementService';
+import type {AssignmentRequestWithDriver} from '@/lib/services/RidesManagementService';
 import {
     CreateRideSchema,
     UpdateRideDetailsSchema,
@@ -357,6 +358,60 @@ export class RidesManagementController {
                 error: 'Failed to fetch projects',
                 code: ErrorCodes.DATABASE_ERROR
             };
+        }
+    }
+
+    static async getAssignmentRequestsForRide(rideId: string): Promise<ActionResponse<AssignmentRequestWithDriver[]>> {
+        try {
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
+
+            const validation = RideIdSchema.safeParse({ rideId });
+            if (!validation.success) {
+                return { success: false, error: 'Invalid ride ID', code: ErrorCodes.VALIDATION_ERROR };
+            }
+
+            const data = await RidesManagementService.getAssignmentRequestsForRide(rideId);
+            return { success: true, data };
+        } catch (error) {
+            console.error('Error fetching assignment requests:', error);
+            return { success: false, error: 'Failed to fetch assignment requests', code: ErrorCodes.DATABASE_ERROR };
+        }
+    }
+
+    static async approveAssignmentRequest(requestId: string): Promise<ActionResponse<void>> {
+        try {
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
+
+            if (!requestId || typeof requestId !== 'string') {
+                return { success: false, error: 'Invalid request ID', code: ErrorCodes.VALIDATION_ERROR };
+            }
+
+            await RidesManagementService.approveAssignmentRequest(requestId);
+            return { success: true, data: undefined };
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : 'Unknown error';
+            console.error('Error approving assignment request:', error);
+            return { success: false, error: msg, code: ErrorCodes.DATABASE_ERROR };
+        }
+    }
+
+    static async rejectAssignmentRequest(requestId: string): Promise<ActionResponse<void>> {
+        try {
+            const roleCheck = await verifyRole('admin');
+            if (!roleCheck.success) return roleCheck;
+
+            if (!requestId || typeof requestId !== 'string') {
+                return { success: false, error: 'Invalid request ID', code: ErrorCodes.VALIDATION_ERROR };
+            }
+
+            await RidesManagementService.rejectAssignmentRequest(requestId);
+            return { success: true, data: undefined };
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : 'Unknown error';
+            console.error('Error rejecting assignment request:', error);
+            return { success: false, error: msg, code: ErrorCodes.DATABASE_ERROR };
         }
     }
 }

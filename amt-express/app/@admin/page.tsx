@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 /* Lucide icons */
-import { Car, Users, FileText, Euro, LayoutDashboard, AlertTriangle } from 'lucide-react';
+import { Car, Users, FileText, Euro, LayoutDashboard, AlertTriangle, Plus } from 'lucide-react';
 
 /* Components */
 import { DashboardDataCard } from '@/components/specificCards/DashboardDataCard';
@@ -14,7 +14,8 @@ import { MonthlyRidesChart } from '@/components/dashboard/MonthlyRidesChart';
 import { MonthlyRevenueChart } from '@/components/dashboard/MonthlyRevenueChart';
 import { StatusPieChart } from '@/components/dashboard/StatusPieChart';
 import { RecentRidesTable } from '@/components/dashboard/RecentRidesTable';
-import { AdminSidebar } from '@/components/admin/navigation/AdminSidebar';
+import { RoleSidebar } from '@/components/shared/RoleSidebar';
+import { Button } from '@/components/classicComponents/Button';
 import { useTranslation } from 'react-i18next';
 
 /* Actions & Types */
@@ -100,7 +101,7 @@ export default function AdminDashboardPage() {
   const { kpis, monthlyRides, monthlyRevenue, statusDistribution, recentRides } = data;
 
   return (
-    <AdminSidebar>
+    <RoleSidebar>
       <div className={adminStyles.adminDashboard}>
         <div className={adminStyles.adminInner}>
           {/* Dashboard Header */}
@@ -144,13 +145,13 @@ export default function AdminDashboardPage() {
 
           {/* Quick Actions */}
           <div className={adminStyles.actionsRow}>
-            <button
-              className={adminStyles.primaryAction}
+            <Button
+              icon={<Plus size={16} />}
               onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+              className={adminStyles.primaryAction}
             >
-              <span className={adminStyles.primaryActionIcon}>+</span>
-              <span>{t('adminDashboard.actions.addNewRide')}</span>
-            </button>
+              {t('adminDashboard.actions.addNewRide')}
+            </Button>
           </div>
 
           {/* Charts */}
@@ -166,6 +167,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
-    </AdminSidebar>
+    </RoleSidebar>
   );
 }

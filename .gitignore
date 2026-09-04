@@ -41,3 +41,7 @@ amt-express/.dockerignore
 amt-express/dockerfile
 amt-express/docker-compose.yml
 amt-express/backups
+.github/agents/*
+.github/hooks/*
+.github/skills/*
+.vibe/*

@@ -1,7 +1,7 @@
 .driverDashboard {
+  padding: 1rem;
   width: 100%;
   min-height: 100dvh;
-  padding: 0;
 }
 
 .driverInner {
@@ -55,12 +55,13 @@
 .toggleTrack {
   position: relative;
   display: inline-flex;
-  width: 3.25rem;
+  width: 3.60rem;
   height: 1.75rem;
   border-radius: 9999px;
   border: none;
   align-items: center;
   transition: background-color 0.2s ease;
+  padding: 0 0 0 1.1rem;
 }
 
 .toggleTrackEnabled {
