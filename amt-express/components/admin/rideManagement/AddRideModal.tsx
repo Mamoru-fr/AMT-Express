@@ -525,7 +525,6 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                     </Button>
                     <Button
                         type="submit"
-                        onClick={handleSubmit}
                         disabled={loading || loadingData}
                         isPending={loading}
                         pendingText={t('common.creating', 'Creating...')}

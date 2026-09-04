@@ -17,7 +17,7 @@ import {MonthlyRidesChart} from "@/components/dashboard/MonthlyRidesChart";
 import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
 import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
 import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
-import {AdminSidebar} from "@/components/admin/navigation/AdminSidebar";
+import {RoleSidebar} from "../shared/RoleSidebar";
 import { Button } from "@/components/classicComponents/Button";
 import {useTranslation} from "react-i18next";
 import styles from "./AdminDashboard.module.css";
@@ -55,7 +55,7 @@ export function AdminDashboard({data}: Props) {
 
     // ========== Component State ==========
     return (
-        <AdminSidebar>
+        <RoleSidebar>
             <div className={styles.adminDashboard}>
                 <div className={styles.adminInner}>
                 {/* ========== Dashboard Header ========== */}
@@ -134,6 +134,6 @@ export function AdminDashboard({data}: Props) {
                 </div>
             </div>
             </div>
-        </AdminSidebar>
+        </RoleSidebar>
     );
 }

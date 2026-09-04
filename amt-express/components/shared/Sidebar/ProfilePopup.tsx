@@ -86,7 +86,7 @@ export function ProfilePopup({ userInitial, userName, utilityItems, isOpen, onCl
                     case 'dropdown':
                         return (
                             <div key={index} className={styles.profilePopupLanguage}>
-                                <LanguageDropdown variant="popup" onSelect={onClose} />
+                                <LanguageDropdown variant="popup" />
                             </div>
                         );
                     default:
