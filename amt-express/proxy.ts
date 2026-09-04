@@ -53,57 +53,55 @@ export async function proxy(request: NextRequest) {
   }
 
   // =============================================
-  // 3. Définir les paths publics (accessibles sans auth)
+  // 3. Récupérer isCustomer (manquant actuellement)
+  // =============================================
+  let isCustomer = false;
+  try {
+    const sessionResult = await getSessionWithRole();
+    isAuthenticated = sessionResult.isAuthenticated;
+    isAdmin = sessionResult.isAdmin;
+    isDriver = sessionResult.isDriver;
+    isCustomer = sessionResult.isCustomer;
+    session = sessionResult.session;
+  } catch (error) {
+    console.error('Proxy: Failed to get session:', error);
+    return NextResponse.redirect(new URL('/connections?error=server_error', request.url));
+  }
+
+  // =============================================
+  // 4. Définir les paths publics (accessibles sans auth)
   // =============================================
   const publicPaths = [
     '/connections',
-    // '/' is intentionally excluded: unauthenticated users are redirected to /connections below
   ];
-  const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
+  const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith(`${path}/`));
 
   // =============================================
-  // 4. Rediriger les utilisateurs non authentifiés
+  // 5. Rediriger les utilisateurs non authentifiés vers /connections
   // =============================================
   if (!isAuthenticated && !isPublicPath) {
-    // Conserver l'URL de retour pour rediriger après connexion
-    const returnTo = encodeURIComponent(pathname);
+    const returnTo = encodeURIComponent(pathname + (request.nextUrl.search || ''));
     return NextResponse.redirect(new URL(`/connections?returnTo=${returnTo}`, request.url));
   }
 
   // =============================================
-  // 5. Protéger les routes admin
+  // 6. Rediriger vers le bon tableau de bord après connexion
+  //    (Les Parallel Routes gèrent l'affichage, mais on redirige vers /)
   // =============================================
-  const adminPaths = [
-    '/admin',
-    '/ride-management',
-    '/ride-management/new',
-  ];
-
-  if (adminPaths.some(path => pathname.startsWith(path)) && !isAdmin) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (pathname === '/connections' && isAuthenticated) {
+    const returnTo = request.nextUrl.searchParams.get('returnTo');
+    if (returnTo) {
+      let decodedReturnTo = decodeURIComponent(returnTo);
+      // Éviter les boucles infinies vers /connections
+      if (decodedReturnTo.includes('/connections')) {
+        decodedReturnTo = '/';
+      }
+      return NextResponse.redirect(new URL(decodedReturnTo, request.url));
+    } else {
+      // Rediriger vers / (les Parallel Routes gèrent l'affichage)
+      return NextResponse.redirect(new URL('/', request.url));
+    }
   }
-
-  // =============================================
-  // 6. Protéger les routes driver
-  // =============================================
-  const driverPaths = [
-    '/driver',
-    '/driver/dashboard',
-  ];
-
-  if (driverPaths.some(path => pathname.startsWith(path)) && !isDriver) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // =============================================
-  // 7. Protéger les routes customer (si besoin)
-  // =============================================
-  // Note: Pour l'instant, le customer dashboard est accessible via / (Parallel Routes)
-  // Si tu ajoutes des routes spécifiques pour customer, décommente cette section
-  // const customerPaths = ['/customer'];
-  // if (customerPaths.some(path => pathname.startsWith(path)) && !isCustomer) {
-  //   return NextResponse.redirect(new URL('/', request.url));
-  // }
 
   // =============================================
   // 8. Ajouter des headers de sécurité globaux

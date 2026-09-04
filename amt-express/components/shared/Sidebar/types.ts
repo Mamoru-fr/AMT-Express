@@ -40,8 +40,8 @@ export type UtilityItem = {
     href?: string; // Lien pour les liens (ex: /profile, /settings)
     label: string; // Clé de traduction
     icon: LucideIcon;
-    action?: () => void; // Action pour les boutons (ex: déconnexion)
-    type: 'link' | 'button' | 'dropdown';
+    action?: string; // Nom de l'action pour les boutons (ex: 'signOut')
+    type: 'link' | 'action' | 'dropdown';
 };
 
 // Type pour les données exportées par chaque sidebar (Admin, Driver, Customer)

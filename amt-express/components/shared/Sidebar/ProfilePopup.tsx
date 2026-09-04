@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { User, Settings } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageDropdown } from '@/components/LanguageComponents/LanguageDropdown';
 import { signOut } from '@/lib/actions/AuthActions';
@@ -19,8 +19,9 @@ type Props = {
     utilityItems: UtilityItem[];
 };
 
-export function ProfilePopup({ userInitial, userName,utilityItems, isOpen, onClose, buttonRef, addedclass }: Props) {
+export function ProfilePopup({ userInitial, userName, utilityItems, isOpen, onClose, buttonRef, addedclass }: Props) {
     const { t } = useTranslation();
+    const [isSigningOut, setIsSigningOut] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -44,15 +45,28 @@ export function ProfilePopup({ userInitial, userName,utilityItems, isOpen, onClo
     }, [isOpen, onClose, buttonRef]);
 
     const handleSignOut = async () => {
-        await signOut();
-        onClose();
+        setIsSigningOut(true);
+        try {
+            await signOut();
+        } catch (error) {
+            console.error('Failed to sign out:', error);
+        } finally {
+            setIsSigningOut(false);
+            onClose();
+        }
     };
 
     if (!isOpen) return null;
 
     return (
         <div className={`${styles.profilePopup} ${addedclass || ''}`} role="menu" aria-label={t('adminNavigation.profileMenu')}>
+            {/* Afficher les utilityItems (sauf signOut qui est géré séparément) */}
             {utilityItems.map((item, index) => {
+                // Ignorer les items de type 'action' avec action='signOut' (géré plus bas)
+                if (item.type === 'action' && item.action === 'signOut') {
+                    return null;
+                }
+
                 switch (item.type) {
                     case 'link':
                         return (
@@ -67,37 +81,30 @@ export function ProfilePopup({ userInitial, userName,utilityItems, isOpen, onClo
                                 <span>{t(item.label)}</span>
                             </Link>
                         );
-                    case 'button':
-                        return (
-                            <button
-                                key={index}
-                                type="button"
-                                className={styles.profilePopupItem}
-                                onClick={item.action || onClose}
-                                role="menuitem"
-                            >
-                                <item.icon className={styles.profilePopupIcon} />
-                                <span>{t(item.label)}</span>
-                            </button>
-                        );
+                    case 'action':
+                        return null; // Les actions sont gérées séparément (ex: signOut)
                     case 'dropdown':
                         return (
                             <div key={index} className={styles.profilePopupLanguage}>
-                                <LanguageDropdown variant="popup" />
+                                <LanguageDropdown variant="popup" onSelect={onClose} />
                             </div>
                         );
                     default:
                         return null;
                 }
             })}
+            
+            {/* Bouton de déconnexion (séparé pour être toujours présent) */}
             <div className={styles.profilePopupDivider} />
             <button
                 type="button"
                 className={styles.profilePopupItem}
                 onClick={handleSignOut}
+                disabled={isSigningOut}
                 role="menuitem"
             >
-                <span>{t('adminNavigation.signOut')}</span>
+                <LogOut className={styles.profilePopupIcon} />
+                <span>{isSigningOut ? t('common.signingOut') : t('adminNavigation.signOut')}</span>
             </button>
         </div>
     );

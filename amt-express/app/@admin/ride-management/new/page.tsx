@@ -161,7 +161,8 @@ export default function NewRidePage() {
             });
 
             if (result.success) {
-                router.replace(returnTo);
+                const decodedReturnTo = decodeURIComponent(returnTo);
+                router.replace(decodedReturnTo);
                 return;
             }
 
@@ -176,7 +177,8 @@ export default function NewRidePage() {
 
     const handleCancel = () => {
         if (!loading) {
-            router.replace(returnTo);
+            const decodedReturnTo = decodeURIComponent(returnTo);
+            router.replace(decodedReturnTo);
         }
     };
 
@@ -203,6 +205,9 @@ export default function NewRidePage() {
                         onClick={(event) => {
                             if (loading) {
                                 event.preventDefault();
+                            } else {
+                                const decodedReturnTo = decodeURIComponent(returnTo);
+                                router.replace(decodedReturnTo);
                             }
                         }}
                     >

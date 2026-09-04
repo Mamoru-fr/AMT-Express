@@ -6,6 +6,7 @@ import {
     User,
     HelpCircle,
     History,
+    LogOut,
 } from 'lucide-react';
 import { SidebarData } from '@/components/shared/Sidebar/types';
 
@@ -28,8 +29,8 @@ export const customerSidebarData: SidebarData = {
             icon: PlusCircle,
             groupId: 'rides',
             priority: 1,
-            match: (url) => url.startsWith('/rides/booking'),
-            matchMode: 'ancestor',
+            match: (url) => url === '/rides/booking' || url.startsWith('/rides/booking/'),
+            matchMode: 'exact',
         },
         {
             href: '/rides',
@@ -38,8 +39,8 @@ export const customerSidebarData: SidebarData = {
             icon: Calendar,
             groupId: 'rides',
             priority: 2,
-            match: (url) => url.startsWith('/rides') && !url.startsWith('/rides/booking'),
-            matchMode: 'ancestor',
+            match: (url) => url === '/rides' || (url.startsWith('/rides/') && !url.startsWith('/rides/booking')),
+            matchMode: 'exact',
         },
     ],
     navGroups: [
@@ -73,6 +74,12 @@ export const customerSidebarData: SidebarData = {
             label: 'language',
             icon: User,
             type: 'dropdown',
+        },
+        {
+            label: 'customerNavigation.signOut',
+            icon: LogOut,
+            type: 'action',
+            action: 'signOut',
         },
     ],
     brandTitle: 'customerNavigation.brandTitle',

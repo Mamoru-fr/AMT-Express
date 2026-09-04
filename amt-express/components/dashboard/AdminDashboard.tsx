@@ -107,7 +107,11 @@ export function AdminDashboard({data}: Props) {
                 <div className={styles.actionsRow}>
                     <Button
                         icon={<Plus size={16} />}
-                        onClick={() => router.push(`/ride-management/new?returnTo=${encodeURIComponent(currentReturnTo)}`)}
+                        onClick={() => {
+                            const params = new URLSearchParams();
+                            params.set('returnTo', currentReturnTo);
+                            router.push(`/ride-management/new?${params.toString()}`);
+                        }}
                         className={styles.primaryAction}
                     >
                         {t('adminDashboard.actions.addNewRide')}

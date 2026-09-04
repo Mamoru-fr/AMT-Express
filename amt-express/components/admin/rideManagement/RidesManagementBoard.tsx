@@ -247,7 +247,8 @@ export function RidesManagementBoard() {
     });
 
     // Security check - redirect non-admin users to home page
-    if (!session || session.user.role !== 'admin') {
+    const { isAdmin } = useSessionWithRole();
+    if (!isAdmin) {
         redirect('/');
     }
 

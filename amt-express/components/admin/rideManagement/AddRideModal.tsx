@@ -94,7 +94,9 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
 
     const goBack = () => {
         if (mode === 'page') {
-            router.replace(fallbackReturnTo);
+            // Décoder fallbackReturnTo pour éviter le double encodage
+            const decodedReturnTo = decodeURIComponent(fallbackReturnTo);
+            router.replace(decodedReturnTo);
             return;
         }
 
@@ -190,7 +192,8 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                 setProjectId('');
                 
                 if (mode === 'page') {
-                    router.replace(fallbackReturnTo);
+                    const decodedReturnTo = decodeURIComponent(fallbackReturnTo);
+                    router.replace(decodedReturnTo);
                     return;
                 }
 
