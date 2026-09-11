@@ -1,0 +1,123 @@
+name: Deploy to Vercel (UAT) + Neon DB Update
+
+on:
+    pull_request:
+        branches: [main]
+        paths:
+            - "amt-express/**"
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: "22"
+
+jobs:
+    setup:
+        name: Setup
+        outputs:
+            branch: ${{ steps.branch_name.outputs.current_branch }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get branch name
+              id: branch_name
+              uses: tj-actions/branch-names@v8
+
+    build:
+        name: Build & Export
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        needs: setup
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "pnpm"
+                  cache-dependency-path: "**/pnpm-lock.yaml"
+
+            - name: Install pnpm globally
+              run: npm install -g pnpm@9
+
+            - name: Install dependencies
+              working-directory: ./amt-express
+              run: |
+                  # Configure pnpm for CI (pnpm v9+ uses pnpm-workspace.yaml)
+                  echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
+                  echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
+                  pnpm install --frozen-lockfile --ignore-scripts
+
+            - name: Build Next.js
+              working-directory: ./amt-express
+              env:
+                  NODE_ENV: production
+                  DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
+                  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+              run: pnpm build
+
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nextjs-build
+                  path: ./amt-express/.next/
+                  retention-days: 7
+    
+    run_migrations:
+        name: Run Database Migrations (UAT)
+        needs: [setup, build]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install pnpm globally
+              run: npm install -g pnpm@9
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "pnpm"
+                  cache-dependency-path: "**/pnpm-lock.yaml"
+
+            - name: Install dependencies
+              working-directory: ./amt-express
+              run: |
+                  echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
+                  echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
+                  pnpm install --frozen-lockfile --ignore-scripts
+
+            - name: Run database migrations
+              working-directory: ./amt-express
+              env:
+                  DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
+              run: pnpm db:push
+
+    deploy_uat:
+        name: Deploy to Vercel (UAT)
+        needs: [setup, build, run_migrations]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install Vercel CLI
+              run: npm install -g vercel
+
+            - name: Deploy to Vercel (UAT)
+              run: |
+                  vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+                  vercel build --token=${{ secrets.VERCEL_TOKEN }}
+                  vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
+                      --name="amt-express-uat-pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}" \
+                      --env DATABASE_URL=${{ secrets.UAT_DATABASE_URL }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
