@@ -77,7 +77,7 @@ jobs:
     
     run_migrations:
         name: Run Database Migrations (UAT)
-        needs: [setup, build]
+        needs: [setup]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -108,32 +108,20 @@ jobs:
 
     deploy_uat:
         name: Deploy to Vercel (UAT)
-        needs: [setup, build, run_migrations]
+        needs: [setup, run_migrations]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-
-            - name: Download build artifact
-              uses: actions/download-artifact@v4
-              with:
-                  name: nextjs-build
-                  path: ./amt-express/.next/
 
             - name: Install Vercel CLI
               run: npm install -g vercel
 
             - name: Deploy to Vercel (UAT)
               run: |
-                  vercel deploy \
-                      --prebuilt \
-                      --force \
-                      --prod \
-                      --token=${{ secrets.VERCEL_TOKEN }} \
+                  vercel --prod --token=${{ secrets.VERCEL_TOKEN }} \
                       --name="amt-express-uat-pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}"
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-                  DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
-                  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
               working-directory: ./amt-express
