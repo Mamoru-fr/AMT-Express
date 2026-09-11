@@ -113,12 +113,9 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            
-            - name: Install pnpm globally
-              run: npm install -g pnpm@9
 
             - name: Install Vercel CLI
-              run: pnpm install -g vercel
+              run: npx install -g vercel
 
             - name: Pull Vercel Environment Variables
               run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
