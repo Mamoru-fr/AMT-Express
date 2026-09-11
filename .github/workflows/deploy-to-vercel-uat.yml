@@ -125,6 +125,8 @@ jobs:
 
             - name: Build Project Artifact
               run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
 
             - name: Deploy to Vercel (UAT)
               run: vercel deploy --prebuild --token=${{ secrets.VERCEL_TOKEN }}
