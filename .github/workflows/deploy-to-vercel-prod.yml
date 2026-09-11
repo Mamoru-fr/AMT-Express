@@ -73,7 +73,7 @@ jobs:
     
     run_migrations:
         name: Run Database Migrations (PROD)
-        needs: [setup, build]
+        needs: [setup]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -104,22 +104,20 @@ jobs:
 
     deploy_prod:
         name: Deploy to Vercel (PROD)
-        needs: [setup, build, run_migrations]
+        needs: [setup, run_migrations]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
             - name: Install Vercel CLI
-              run: npm install -g vercel
+              run: pnpm install -g vercel
 
+            - name: Pull Vercel Environment Variables
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+            
+            - name: Build Project Artifact
+              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+            
             - name: Deploy to Vercel (PROD)
-              run: |
-                  vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-                  vercel build --token=${{ secrets.VERCEL_TOKEN }}
-                  vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
-                      --name="amt-express-prod-pr-${{ github.sha }}-${{ needs.setup.outputs.branch }}" \
-                      --env DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}
-              env:
-                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+              run: vercel deploy --prebuild --prod --token=${{ secrets.VERCEL_TOKEN }} \
