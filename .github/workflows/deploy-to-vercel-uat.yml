@@ -121,11 +121,11 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: nextjs-build
-                  path: ./amt-express/.next/
+                  path: ./.next/
 
             - name: Deploy to Vercel (UAT)
               run: |
-                  vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
+                  vercel deploy --prebuilt --force --token=${{ secrets.VERCEL_TOKEN }} \
                       --name="amt-express-uat-pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}"
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
