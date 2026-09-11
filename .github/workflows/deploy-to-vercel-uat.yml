@@ -108,11 +108,14 @@ jobs:
 
     deploy_uat:
         name: Deploy to Vercel (UAT)
-        needs: [setup, run_migrations]
+        needs: [setup, run_migrations, build]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            
+            - name: Install pnpm globally
+              run: npm install -g pnpm@9
 
             - name: Install Vercel CLI
               run: pnpm install -g vercel
