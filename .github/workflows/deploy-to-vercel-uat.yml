@@ -129,4 +129,4 @@ jobs:
                 DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
 
             - name: Deploy to Vercel (UAT)
-              run: vercel deploy --prebuild --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
