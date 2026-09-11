@@ -113,13 +113,17 @@ jobs:
             - name: Install Vercel CLI
               run: npm install -g vercel
 
+            - name: Download build artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: nextjs-build
+                  path: ./amt-express/.next/
+
             - name: Deploy to Vercel (PROD)
               run: |
-                  vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-                  vercel build --token=${{ secrets.VERCEL_TOKEN }}
-                  vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
-                      --name="amt-express-prod-pr-${{ github.sha }}-${{ needs.setup.outputs.branch }}" \
-                      --env DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}
+                vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
+                      --name="amt-express-prod-pr-${{ github.sha }}-${{ needs.setup.outputs.branch }}"    
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+                  DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
