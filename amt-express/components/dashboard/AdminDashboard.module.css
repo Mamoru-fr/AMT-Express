@@ -1,0 +1,214 @@
+.adminDashboard {
+  width: 100%;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.adminInner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2rem;
+}
+
+.headerBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.titleIcon {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-title-color);
+  background: #e5edff;
+  border-radius: 0.5rem;
+}
+
+.titleIcon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+  font-weight: 700;
+  color: var(--app-title-color);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--app-muted-color);
+  font-size: 0.875rem;
+}
+
+.kpiGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kpiGrid > * {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 0;
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: 0;
+  width: 100%;
+}
+
+.primaryAction {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  background: var(--app-primary);
+  color: var(--app-primary-text);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 6px;
+  box-shadow: var(--app-surface-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.primaryAction:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.12);
+}
+
+.primaryActionIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.chartGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.bottomGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  align-items: stretch;
+}
+
+.recentRidesCol {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+.recentRidesCol > * {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (min-width: 640px) {
+  .adminInner {
+    width: 100%;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    line-height: 1.9rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .kpiGrid {
+    gap: 0.75rem;
+  }
+
+  .primaryAction {
+    min-width: min(220px, 100%);
+    flex-shrink: 0;
+  }
+
+  .chartGrid,
+  .bottomGrid {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .adminInner {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 768px) {
+  .kpiGrid {
+    gap: 0.75rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.5625rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .kpiGrid {
+    gap: 1rem;
+  }
+  
+  .kpiGrid > * {
+    flex: 1 1 calc(25% - 0.75rem);
+  }
+
+  .chartGrid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  
+  .chartGrid > * {
+    flex: 1 1 calc(50% - 0.625rem);
+    min-width: 0;
+  }
+
+  .bottomGrid {
+    flex-direction: row;
+    gap: 1.25rem;
+  }
+  
+  .bottomGrid > *:nth-child(1) {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+  
+  .bottomGrid > *:nth-child(2) {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: 100%;
+  }
+}

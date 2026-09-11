@@ -1,0 +1,159 @@
+name: Integration Tests - Rides
+
+on:
+  push:
+    branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, development, feature/** ]
+    paths:
+      - 'amt-express/**'
+      - '.github/workflows/**'
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  setup:
+    name: Setup
+    outputs:
+      branch: ${{ steps.branch_name.outputs.current_branch }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch_name
+        uses: tj-actions/branch-names@v8
+  
+  create_neon_branch:
+    name: Create Neon Branch
+    outputs:
+      db_url: ${{ steps.create_neon_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch expiration date as an env variable (2 weeks from now)
+        id: get_expiration_date
+        run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      - name: Create Neon Branch
+        id: create_neon_branch
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/test:rides-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          parent_branch: uat
+          expires_at: ${{ env.EXPIRES_AT }}
+      - name: Debug - Show Neon Branch URL
+        run: |
+          echo "DEBUG: Neon branch created"
+          echo "db_url: ${{ steps.create_neon_branch.outputs.db_url }}"
+          echo "db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
+        
+      - name: Save DB URL to file
+        run: |
+          echo "${{ steps.create_neon_branch.outputs.db_url }}" > db_url.txt
+          echo "DEBUG: Saved db_url to db_url.txt"
+
+      - name: Upload DB URL as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db_url_artifact
+          path: db_url.txt
+          retention-days: 1
+
+  integration-tests:
+    name: Rides Integration Tests (With Database)
+    needs: [setup, create_neon_branch]
+    env:
+      DATABASE_URL: ${{ needs.create_neon_branch.outputs.db_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Download DB URL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: db_url_artifact
+      
+      - name: Set DATABASE_URL from file
+        run: |
+          DB_URL=$(cat db_url.txt)
+          echo "DATABASE_URL=$DB_URL" >> $GITHUB_ENV
+          echo "DEBUG: DATABASE_URL set to $DB_URL"
+
+      - name: Debug - Show DATABASE_URL at start
+        run: |
+          echo "DEBUG: DATABASE_URL in integration-tests job env:"
+          echo "DATABASE_URL = ${{ env.DATABASE_URL }}"
+          echo "DATABASE_URL length = ${#DATABASE_URL}"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm globally
+        run: npm install -g pnpm@9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        working-directory: ./amt-express
+        run: |
+          echo 'autoInstallPeers: true' >> pnpm-workspace.yaml
+          echo 'strictPeerDependencies: false' >> pnpm-workspace.yaml
+          pnpm install --frozen-lockfile --ignore-scripts
+        
+      - name: Run database migrations
+        working-directory: ./amt-express
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: pnpm db:push
+
+      - name: Run Rides tests
+        working-directory: ./amt-express
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+        run: |
+          echo "DEBUG [test]: DATABASE_URL = ${DATABASE_URL}"
+          echo "DEBUG [test]: DATABASE_URL length = ${#DATABASE_URL}"
+          echo "DEBUG [test]: NODE_ENV = ${NODE_ENV}"
+          pnpm test:rides
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-test-results
+          path: ./amt-express/test-results/
+          retention-days: 7
+
+  delete_neon_branch:
+    name: Delete Neon Branch
+    needs: [setup, create_neon_branch, integration-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon Branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/test:rides-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Delete DB URL artifact
+        uses: geekyeggo/delete-artifact@v6
+        with:
+          name: db_url_artifact

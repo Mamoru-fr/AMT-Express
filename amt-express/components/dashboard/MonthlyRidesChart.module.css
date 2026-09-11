@@ -1,0 +1,34 @@
+.card {
+  background: var(--app-surface-bg);
+  border: 1px solid var(--app-surface-border);
+  border-radius: var(--app-surface-radius);
+  box-shadow: var(--app-surface-shadow);
+  padding: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 1.25rem;
+  }
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  color: var(--app-text-color);
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+  }
+}

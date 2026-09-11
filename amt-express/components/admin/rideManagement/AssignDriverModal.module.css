@@ -1,0 +1,199 @@
+/* ========== Modal Overlay ========== */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+}
+
+/* ========== Modal Container ========== */
+.modalContainer {
+    background: var(--app-surface-bg);
+    border-radius: 1rem;
+    box-shadow: var(--app-surface-shadow);
+    max-width: 28rem;
+    width: 100%;
+    padding: 1.5rem;
+}
+
+/* ========== Modal Header ========== */
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.modalTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--app-title-color);
+    margin: 0;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    color: var(--app-muted-color);
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.closeButton:hover {
+    color: var(--app-text-color);
+    background: rgba(15, 23, 42, 0.05);
+}
+
+.closeIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* ========== Ride Info Section ========== */
+.rideInfo {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid var(--app-surface-border);
+    border-radius: 0.75rem;
+}
+
+.rideInfoLine {
+    font-size: 0.875rem;
+    color: var(--app-muted-color);
+    margin: 0 0 0.5rem;
+}
+
+.rideInfoLine:last-child {
+    margin-bottom: 0;
+}
+
+.rideInfoLabel {
+    font-weight: 600;
+    color: var(--app-text-color);
+}
+
+/* ========== Form Section ========== */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formLabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--app-text-color);
+}
+
+.formSelect {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--app-surface-border);
+    border-radius: 0.75rem;
+    background: var(--app-surface-bg);
+    color: var(--app-text-color);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formSelect:focus {
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* ========== Modal Footer (Buttons) ========== */
+.modalFooter {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+/* Cancel Button */
+.cancelButton {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--app-surface-border);
+    background: var(--app-surface-bg);
+    color: var(--app-text-color);
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cancelButton:hover {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+/* Primary Button (Assign) */
+.assignButton {
+    padding: 0.75rem 1.5rem;
+    background: var(--app-primary);
+    color: var(--app-primary-text);
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.assignButton:hover {
+    background: var(--app-primary-hover);
+    transform: translateY(-1px);
+}
+
+.assignButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 480px) {
+    .modalContainer {
+        max-width: calc(100% - 2rem);
+        padding: 1rem;
+    }
+    
+    .modalTitle {
+        font-size: 1.125rem;
+    }
+    
+    .modalFooter {
+        flex-wrap: wrap;
+    }
+    
+    .cancelButton,
+    .assignButton {
+        flex: 1 1 100%;
+    }
+}

@@ -1,0 +1,98 @@
+/* Button Component Styles */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.buttonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Primary */
+.buttonPrimary {
+  background: var(--app-primary);
+  color: var(--app-primary-text);
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  filter: brightness(1.25);
+  transform: translateY(-1px);
+}
+
+.buttonPrimary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary */
+.buttonSecondary {
+  background: var(--app-surface-bg);
+  color: var(--app-text-color);
+  border: 1px solid var(--app-surface-border);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background: var(--app-page-bg);
+  transform: translateY(-1px);
+}
+
+.buttonSecondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Danger */
+.buttonDanger {
+  background: var(--app-danger);
+  color: #fff;
+}
+
+.buttonDanger:hover:not(:disabled) {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+.buttonDanger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Full-width utility */
+.buttonFull {
+  width: 100%;
+}
+
+.buttonSecondary:active {
+  transform: translateY(0);
+}
+
+.buttonSecondary:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.buttonSecondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --app-page-bg: #f8f9fa;
+    --app-surface-bg: #ffffff;
+    --app-surface-border: #e5e7eb;
+    --app-surface-radius: 12px;
+    --app-surface-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    --app-title-color: #1e3a8a;
+    --app-text-color: #1f2937;
+    --app-muted-color: #6b7280;
+
+    --app-primary: #1e3a8a;
+    --app-primary-hover: #1d4ed8;
+    --app-primary-text: #ffffff;
+
+    --app-status-pending-bg: rgba(245, 158, 11, 0.14);
+    --app-status-pending-text: #b45309;
+    --app-status-assigned-bg: rgba(59, 130, 246, 0.14);
+    --app-status-assigned-text: #1d4ed8;
+    --app-status-completed-bg: rgba(16, 185, 129, 0.14);
+    --app-status-completed-text: #047857;
+    --app-status-cancelled-bg: rgba(239, 68, 68, 0.14);
+    --app-status-cancelled-text: #b91c1c;
+
+    /* Success colors */
+    --app-success: #16a34a;
+    --app-success-bg: rgba(22, 163, 74, 0.14);
+    --app-success-text: #047857;
+
+    /* Warning colors */
+    --app-warning: #d97706;
+    --app-warning-bg: rgba(217, 119, 6, 0.14);
+    --app-warning-text: #b45309;
+
+    /* Danger/Error colors */
+    --app-danger: #dc2626;
+    --app-danger-bg: rgba(220, 38, 38, 0.14);
+    --app-danger-text: #b91c1c;
+
+    /* Info colors */
+    --app-info: #2563eb;
+    --app-info-bg: rgba(37, 99, 235, 0.14);
+    --app-info-text: #1d4ed8;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, div, span, applet, object, iframe,
+  h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+  a, abbr, acronym, address, big, cite, code,
+  del, dfn, em, img, ins, kbd, q, s, samp,
+  small, strike, strong, sub, sup, tt, var,
+  b, u, i, center,
+  dl, dt, dd, ol, ul, li,
+  fieldset, form, label, legend,
+  table, caption, tbody, tfoot, thead, tr, th, td,
+  article, aside, canvas, details, embed,
+  figure, figcaption, footer, header, hgroup,
+  menu, nav, output, ruby, section, summary,
+  time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body {
+    min-width: 320px;
+    position: relative;
+    overflow-x: hidden;
+    background: var(--app-page-bg);
+    color: var(--theme-text);
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  #__next {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    color: var(--theme-text);
+  }
+
+  p {
+    margin: 0;
+    color: var(--theme-text-secondary);
+    line-height: 1.5;
+  }
+
+  button {
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='tel'],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-md);
+    background-color: var(--theme-bg);
+    transition: all var(--transition-base);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--theme-text-secondary);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-client-gradient-end);
+    box-shadow: 0 0 0 3px rgba(255, 128, 8, 0.1);
+  }
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 480px) {
+  body {
+    padding: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+}

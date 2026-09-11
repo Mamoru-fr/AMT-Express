@@ -1,0 +1,139 @@
+'use client'
+
+/* ========== Import Section ========== */
+// React 
+import {useState, useEffect} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+
+// Icons imports from lucide-react
+import {Car, Users, FileText, Euro, LayoutDashboard, Plus} from "lucide-react";
+
+// Actions imports from the admin dashboard library
+import type {AdminDashboardData} from "@/lib/services/AdminDashboardService";
+
+// Component imports for dashboard cards, charts, tables, and modals
+import {DashboardDataCard} from "@/components/specificCards/DashboardDataCard";
+import {MonthlyRidesChart} from "@/components/dashboard/MonthlyRidesChart";
+import {MonthlyRevenueChart} from "@/components/dashboard/MonthlyRevenueChart";
+import {StatusPieChart} from "@/components/dashboard/StatusPieChart";
+import {RecentRidesTable} from "@/components/dashboard/RecentRidesTable";
+import {RoleSidebar} from "../shared/RoleSidebar";
+import { Button } from "@/components/classicComponents/Button";
+import {useTranslation} from "react-i18next";
+import styles from "./AdminDashboard.module.css";
+
+// Type imports for ride status enumeration
+/**
+ * Props for the AdminDashboard component
+ * @property {AdminDashboardData} data - Pre-fetched dashboard data including KPIs, charts, and recent rides
+ */
+type Props = {
+    data: AdminDashboardData;
+};
+
+/**
+ * AdminDashboard - Main dashboard component for administrators
+ * 
+ * Displays comprehensive platform analytics including:
+ * - Key Performance Indicators (KPIs): total rides, active users, pending invoices, monthly revenue
+ * - Monthly rides and revenue trend charts
+ * - Ride status distribution pie chart
+ * - Recent rides table with quick actions
+ * - Add new ride functionality with modal form
+ * 
+ * @param {Props} props - Component props containing pre-fetched dashboard data
+ * @returns {JSX.Element} The admin dashboard interface
+ */
+export function AdminDashboard({data}: Props) {
+    const {t} = useTranslation();
+    // Destructure dashboard data for easier access
+    const {kpis, monthlyRides, monthlyRevenue, statusDistribution, recentRides} = data;
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const currentReturnTo = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+
+    // ========== Component State ==========
+    return (
+        <RoleSidebar>
+            <div className={styles.adminDashboard}>
+                <div className={styles.adminInner}>
+                {/* ========== Dashboard Header ========== */}
+                <div className={styles.headerBlock}>
+                    <div className={styles.titleRow}>
+                        <div className={styles.titleIcon}>
+                            <LayoutDashboard />
+                        </div>
+                        <h1 className={styles.title}>{t('adminDashboard.title')}</h1>
+                    </div>
+                    <p className={styles.subtitle}>{t('adminDashboard.subtitle')}</p>
+                </div>
+
+                {/* ========== Key Performance Indicators (KPIs) ========== */}
+                {/* Responsive grid: 2 columns on mobile, 4 columns on large screens */}
+                <div className={styles.kpiGrid}>
+                    {/* Total number of rides across all statuses */}
+                    <DashboardDataCard
+                        title={t('adminDashboard.kpis.totalRides')}
+                        data={kpis.totalRides}
+                        icon={Car}
+                        iconColor="blue"
+                    />
+                    {/* Count of currently active users (drivers + customers) */}
+                    <DashboardDataCard
+                        title={t('adminDashboard.kpis.activeUsers')}
+                        data={kpis.activeUsers}
+                        icon={Users}
+                        iconColor="green"
+                    />
+                    {/* Number of invoices awaiting payment */}
+                    <DashboardDataCard
+                        title={t('adminDashboard.kpis.pendingInvoices')}
+                        data={kpis.pendingInvoices}
+                        icon={FileText}
+                        iconColor="yellow"
+                    />
+                    {/* Total revenue generated in the current month */}
+                    <DashboardDataCard
+                        title={t('adminDashboard.kpis.monthlyRevenue')}
+                        data={`€${Number(kpis.monthlyRevenue).toFixed(2)}`}
+                        icon={Euro}
+                        iconColor="purple"
+                    />
+                </div>
+
+                {/* ========== Quick Actions ========== */}
+                {/* Primary action: Create new ride */}
+                <div className={styles.actionsRow}>
+                    <Button
+                        icon={<Plus size={16} />}
+                        onClick={() => {
+                            const params = new URLSearchParams();
+                            params.set('returnTo', currentReturnTo);
+                            router.push(`/ride-management/new?${params.toString()}`);
+                        }}
+                        className={styles.primaryAction}
+                    >
+                        {t('adminDashboard.actions.addNewRide')}
+                    </Button>
+                </div>
+
+                {/* ========== Analytics Charts ========== */}
+                {/* Displays monthly trends for rides and revenue */}
+                <div className={styles.chartGrid}>
+                    <MonthlyRidesChart data={monthlyRides} />
+                    <MonthlyRevenueChart data={monthlyRevenue} />
+                </div>
+
+                {/* ========== Status Overview & Recent Activity ========== */}
+                {/* Left: Pie chart showing ride status distribution */}
+                {/* Right: Table of most recent rides - takes natural width without stretching container */}
+                <div className={styles.bottomGrid}>
+                    <StatusPieChart data={statusDistribution} />
+                    <RecentRidesTable rides={recentRides} />
+                </div>
+            </div>
+            </div>
+        </RoleSidebar>
+    );
+}
