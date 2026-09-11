@@ -1,6 +1,7 @@
 .card {
   flex: 1;
   width: 100%;
+  min-width: 225px;
   background: var(--app-surface-bg);
   border: 1px solid var(--app-surface-border);
   border-radius: var(--app-surface-radius);
