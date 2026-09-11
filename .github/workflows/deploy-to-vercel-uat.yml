@@ -5,6 +5,12 @@ on:
         branches: [main]
         paths:
             - "amt-express/**"
+    workflow_dispatch:
+        inputs:
+            confirm:
+                description: 'Confirmer le déploiement en production (tapez "yes")'
+                required: true
+                default: 'no'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
