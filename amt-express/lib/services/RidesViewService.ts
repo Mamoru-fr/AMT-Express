@@ -1,275 +1,280 @@
 import db from "@/lib/db/drizzle";
-import {rides, users, drivers, rideCustomers} from "@/lib/db/schema";
-import {eq, and, desc, inArray, count} from "drizzle-orm";
-import {RideWithRelations} from "@/content/database_types/ride";
+import { rides, users, drivers, rideCustomers } from "@/lib/db/schema";
+import { eq, and, desc, inArray, count, or, sql } from "drizzle-orm";
+import { RideWithRelations } from "@/content/database_types/ride";
 
-type RideWithCustomers = typeof rides.$inferSelect & {
-    rideCustomers: Array<typeof rideCustomers.$inferSelect & {customer: typeof users.$inferSelect}>;
-};
-
+/**
+ * Optimized RidesViewService with N+1 query fixes
+ * Uses Drizzle's `with:` clause to load relationships in single queries
+ */
 export class RidesViewService {
-    /**
-     * Get driver record from userId
-     */
-    static async getDriverForUser(userId: string) {
-        return db.query.drivers.findFirst({
-            where: eq(drivers.userId, userId)
-        });
-    }
+  /**
+   * Get driver record from userId
+   */
+  static async getDriverForUser(userId: string) {
+    return db.query.drivers.findFirst({
+      where: eq(drivers.userId, userId),
+    });
+  }
 
-    /**
-     * Fetches completed and pending rides count for a driver
-     */
-    static async fetchDriverRidesCount(driverId: string): Promise<{completed: number, pending: number}> {
-        const countResultCompleted = await db
-            .select({count: count()})
-            .from(rides)
-            .where(
-                and(
-                    eq(rides.driverId, driverId),
-                    eq(rides.status, 'completed')
-                )
-            );
+  /**
+   * Fetches completed and pending rides count for a driver
+   * OPTIMIZED: Single query with CASE WHEN for both counts
+   */
+  static async fetchDriverRidesCount(driverId: string): Promise<{ completed: number; pending: number }> {
+    const countResults = await db
+      .select({
+        completed: sql<number>`SUM(CASE WHEN ${rides.status} = 'completed' THEN 1 ELSE 0 END)`,
+        pending: sql<number>`SUM(CASE WHEN ${rides.status} = 'pending' THEN 1 ELSE 0 END)`,
+      })
+      .from(rides)
+      .where(eq(rides.driverId, driverId));
 
-        const totalCompleted = countResultCompleted[0]?.count || 0;
+    return {
+      completed: countResults[0]?.completed || 0,
+      pending: countResults[0]?.pending || 0,
+    };
+  }
 
-        const countResultPending = await db
-            .select({count: count()})
-            .from(rides)
-            .where(eq(rides.status, 'pending'));
+  /**
+   * Fetches all completed rides for a specific driver
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async fetchDriverCompletedRides(driverId: string): Promise<RideWithRelations[]> {
+    const driverRides = await db.query.rides.findMany({
+      where: and(
+        eq(rides.driverId, driverId),
+        eq(rides.status, 'completed')
+      ),
+      orderBy: desc(rides.departureTime),
+      with: {
+        driver: {
+          with: {
+            user: true
+          }
+        },
+        rideCustomers: {
+          with: {
+            customer: true
+          }
+        }
+      }
+    });
 
-        const totalPending = countResultPending[0]?.count || 0;
+    return driverRides.map((ride: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: ride.rideCustomers?.map((rc: any) => rc.customer) || [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
+  }
 
-        return {completed: totalCompleted, pending: totalPending};
-    }
+  /**
+   * Fetches all rides assigned to the current driver (not completed)
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async fetchDriverAssignedRides(driverId: string): Promise<RideWithRelations[]> {
+    const driverRides = await db.query.rides.findMany({
+      where: and(
+        eq(rides.driverId, driverId),
+        inArray(rides.status, ['assigned'])
+      ),
+      orderBy: desc(rides.departureTime),
+      with: {
+        driver: {
+          with: {
+            user: true
+          }
+        },
+        rideCustomers: {
+          with: {
+            customer: true
+          }
+        }
+      }
+    });
 
-    /**
-     * Fetches all completed rides for a specific driver
-     */
-    static async fetchDriverCompletedRides(driverId: string): Promise<RideWithRelations[]> {
-        const driverRides = await db
-            .select({
-                ride: rides,
-                driver: users,
-            })
-            .from(rides)
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(
-                and(
-                    eq(rides.driverId, driverId),
-                    eq(rides.status, 'completed')
-                )
-            )
-            .orderBy(desc(rides.departureTime));
+    return driverRides.map((ride: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: ride.rideCustomers?.map((rc: any) => rc.customer) || [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
+  }
 
-        // Fetch customers for each ride
-        const ridesWithCustomers: RideWithRelations[] = await Promise.all(
-            driverRides.map(async ({ride, driver}) => {
-                const customersData = await db
-                    .select({
-                        customer: users
-                    })
-                    .from(rideCustomers)
-                    .innerJoin(users, eq(rideCustomers.customerId, users.id))
-                    .where(eq(rideCustomers.rideId, ride.id));
+  /**
+   * Fetches all pending rides (not assigned to any driver)
+   * ALREADY OPTIMIZED: Uses with: clause
+   */
+  static async fetchPendingRides(): Promise<RideWithRelations[]> {
+    const pendingRides = await db.query.rides.findMany({
+      where: eq(rides.status, 'pending'),
+      orderBy: [desc(rides.departureTime)],
+      with: {
+        driver: {
+          with: {
+            user: true
+          }
+        },
+        rideCustomers: {
+          with: {
+            customer: true
+          }
+        }
+      }
+    });
 
-                return {
-                    ...ride,
-                    waitingTime: ride.waitingTime || 0,
-                    options: [],
-                    driver: driver || undefined,
-                    customers: customersData.map(c => c.customer),
-                    selectedOptions: [],
-                };
-            })
-        );
+    return pendingRides.map((ride: any) => ({
+      ...ride,
+      customers: ride.rideCustomers?.map((rc: any) => ({
+        id: rc.customer?.id,
+        name: rc.customer?.name || rc.customer?.email,
+        email: rc.customer?.email
+      })) || [],
+      waitingTime: ride.waitingTime || 0,
+    })) as RideWithRelations[];
+  }
 
-        return ridesWithCustomers;
-    }
-
-    /**
-     * Fetches all rides assigned to the current driver (not completed)
-     */
-    static async fetchDriverAssignedRides(driverId: string): Promise<RideWithRelations[]> {
-        const driverRides = await db
-            .select({
-                ride: rides,
-                driver: users,
-            })
-            .from(rides)
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(
-                and(
-                    eq(rides.driverId, driverId),
-                    inArray(rides.status, ['assigned'])
-                )
-            )
-            .orderBy(desc(rides.departureTime));
-
-        // Fetch customers for each ride
-        const ridesWithCustomers: RideWithRelations[] = await Promise.all(
-            driverRides.map(async ({ride, driver}) => {
-                const customersData = await db
-                    .select({
-                        customer: users
-                    })
-                    .from(rideCustomers)
-                    .innerJoin(users, eq(rideCustomers.customerId, users.id))
-                    .where(eq(rideCustomers.rideId, ride.id));
-
-                return {
-                    ...ride,
-                    waitingTime: ride.waitingTime || 0,
-                    options: [],
-                    driver: driver || undefined,
-                    customers: customersData.map(c => c.customer),
-                    selectedOptions: [],
-                };
-            })
-        );
-
-        return ridesWithCustomers;
-    }
-
-    /**
-     * Fetches all pending rides (not assigned to any driver)
-     */
-    static async fetchPendingRides(): Promise<RideWithRelations[]> {
-        const pendingRides = await db.query.rides.findMany({
-            where: eq(rides.status, 'pending'),
-            orderBy: [desc(rides.departureTime)],
-            with: {
-                driver: true,
-                rideCustomers: {
-                    with: {
-                        customer: true
-                    }
-                }
+  /**
+   * Fetches all rides for a customer
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async fetchCustomerRides(customerId: string): Promise<RideWithRelations[]> {
+    const customerRides = await db.query.rideCustomers.findMany({
+      where: eq(rideCustomers.customerId, customerId),
+      orderBy: desc(rides.departureTime),
+      with: {
+        ride: {
+          with: {
+            driver: {
+              with: {
+                user: true
+              }
+            },
+            rideCustomers: {
+              with: {
+                customer: true
+              }
             }
-        });
+          }
+        }
+      }
+    });
 
-        return pendingRides.map((ride: RideWithCustomers) => ({
-            ...ride,
-            customers: ride.rideCustomers.map((rc: RideWithCustomers['rideCustomers'][0]) => ({
-                id: rc.customer.id,
-                name: rc.customer.name || rc.customer.email,
-                email: rc.customer.email
-            }))
-        })) as unknown as RideWithRelations[];
-    }
+    return customerRides.map((rc: any) => ({
+      ...rc.ride,
+      waitingTime: rc.ride.waitingTime || 0,
+      options: [],
+      driver: rc.ride.driver?.user || undefined,
+      customers: rc.ride.rideCustomers?.map((r: any) => r.customer) || [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
+  }
 
-    /**
-     * Fetches all rides for a customer
-     */
-    static async fetchCustomerRides(customerId: string): Promise<RideWithRelations[]> {
-        const customerRides = await db
-            .select({
-                ride: rides,
-                driver: users,
-            })
-            .from(rideCustomers)
-            .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(eq(rideCustomers.customerId, customerId))
-            .orderBy(desc(rides.departureTime));
+  /**
+   * Fetches completed/cancelled rides for a customer
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async fetchCustomerCompletedRides(customerId: string): Promise<RideWithRelations[]> {
+    const customerRides = await db.query.rideCustomers.findMany({
+      where: and(
+        eq(rideCustomers.customerId, customerId),
+        inArray(rides.status, ['completed', 'cancelled'])
+      ),
+      orderBy: desc(rides.departureTime),
+      with: {
+        ride: {
+          with: {
+            driver: {
+              with: {
+                user: true
+              }
+            }
+          }
+        }
+      }
+    });
 
-        const ridesWithCustomers: RideWithRelations[] = customerRides.map(({ride, driver}) => ({
-            ...ride,
-            waitingTime: ride.waitingTime || 0,
-            options: [],
-            driver: driver || undefined,
-            customers: [],
-            selectedOptions: [],
-        }));
+    return customerRides.map(({ ride }: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
+  }
 
-        return ridesWithCustomers;
-    }
+  /**
+   * Fetches pending/assigned rides for a customer
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async fetchCustomerPendingRides(customerId: string): Promise<RideWithRelations[]> {
+    const customerRides = await db.query.rideCustomers.findMany({
+      where: and(
+        eq(rideCustomers.customerId, customerId),
+        inArray(rides.status, ['pending', 'assigned'])
+      ),
+      orderBy: desc(rides.departureTime),
+      with: {
+        ride: {
+          with: {
+            driver: {
+              with: {
+                user: true
+              }
+            }
+          }
+        }
+      }
+    });
 
-    /**
-     * Fetches completed/cancelled rides for a customer
-     */
-    static async fetchCustomerCompletedRides(customerId: string): Promise<RideWithRelations[]> {
-        const customerRides = await db
-            .select({ ride: rides, driver: users })
-            .from(rideCustomers)
-            .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(
-                and(
-                    eq(rideCustomers.customerId, customerId),
-                    inArray(rides.status, ['completed', 'cancelled'])
-                )
-            )
-            .orderBy(desc(rides.departureTime));
+    return customerRides.map(({ ride }: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
+  }
 
-        return customerRides.map(({ ride, driver }) => ({
-            ...ride,
-            waitingTime: ride.waitingTime || 0,
-            options: [],
-            driver: driver || undefined,
-            customers: [],
-            selectedOptions: [],
-        }));
-    }
+  /**
+   * Fetches a single ride by ID with all relations
+   * FIXED: Uses Drizzle relations with `with:` for single query
+   */
+  static async getRideById(rideId: string): Promise<RideWithRelations | null> {
+    const result = await db.query.rides.findFirst({
+      where: eq(rides.id, rideId),
+      with: {
+        driver: {
+          with: {
+            user: true
+          }
+        },
+        rideCustomers: {
+          with: {
+            customer: true
+          }
+        }
+      }
+    });
 
-    /**
-     * Fetches pending/assigned rides for a customer
-     */
-    static async fetchCustomerPendingRides(customerId: string): Promise<RideWithRelations[]> {
-        const customerRides = await db
-            .select({ ride: rides, driver: users })
-            .from(rideCustomers)
-            .innerJoin(rides, eq(rides.id, rideCustomers.rideId))
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(
-                and(
-                    eq(rideCustomers.customerId, customerId),
-                    inArray(rides.status, ['pending', 'assigned'])
-                )
-            )
-            .orderBy(desc(rides.departureTime));
+    if (!result) return null;
 
-        return customerRides.map(({ ride, driver }) => ({
-            ...ride,
-            waitingTime: ride.waitingTime || 0,
-            options: [],
-            driver: driver || undefined,
-            customers: [],
-            selectedOptions: [],
-        }));
-    }
-
-    static async getRideById(rideId: string): Promise<RideWithRelations | null> {
-        const result = await db
-            .select({ ride: rides, driver: users })
-            .from(rides)
-            .leftJoin(drivers, eq(rides.driverId, drivers.id))
-            .leftJoin(users, eq(drivers.userId, users.id))
-            .where(eq(rides.id, rideId))
-            .limit(1);
-
-        if (!result[0]) return null;
-        const { ride, driver } = result[0];
-
-        const customerRows = await db
-            .select({ customer: users })
-            .from(rideCustomers)
-            .innerJoin(users, eq(rideCustomers.customerId, users.id))
-            .where(eq(rideCustomers.rideId, rideId));
-
-        return {
-            ...ride,
-            waitingTime: ride.waitingTime || 0,
-            options: [],
-            driver: driver || undefined,
-            customers: customerRows.map(r => ({ id: r.customer.id, name: r.customer.name, email: r.customer.email })),
-            selectedOptions: [],
-        } as unknown as RideWithRelations;
-    }
+    return {
+      ...result,
+      waitingTime: result.waitingTime || 0,
+      options: [],
+      driver: result.driver?.user || undefined,
+      customers: result.rideCustomers?.map((rc: any) => rc.customer) || [],
+      selectedOptions: [],
+    } as unknown as RideWithRelations;
+  }
 }
 
+export default RidesViewService;

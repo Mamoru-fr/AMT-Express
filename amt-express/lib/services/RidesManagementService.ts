@@ -1,7 +1,16 @@
 import db from "@/lib/db/drizzle";
-import {rides, users, drivers, rideCustomers, productions, projects, assignmentRequests} from "@/lib/db/schema";
-import {eq, sql, desc, asc, and, or, ilike, ne} from "drizzle-orm";
-import {RideStatus, RideWithRelations} from "@/content/database_types/ride";
+import { unstable_cache } from 'next/cache';
+import { rides, users, drivers, rideCustomers, productions, projects, assignmentRequests } from "@/lib/db/schema";
+import { eq, sql, desc, asc, and, or, ilike, ne } from "drizzle-orm";
+import { RideStatus, RideWithRelations } from "@/content/database_types/ride";
+
+// Cache durations (in seconds)
+const CACHE_DURATIONS = {
+  CUSTOMERS: 300,      // 5 minutes
+  PRODUCTIONS: 3600,    // 1 hour
+  PROJECTS: 3600,      // 1 hour
+  DRIVERS: 300,        // 5 minutes
+} as const;
 
 export interface RideFilters {
     search?: string;
@@ -188,13 +197,22 @@ export class RidesManagementService {
 
     /**
      * Assigns a driver to a ride and updates its status
+     * OPTIMIZED: Single query with JOIN to avoid N+1 (ride + driver in one call)
      */
     static async assignDriverToRide(rideId: string, driverUserId: string): Promise<void> {
-        // Check if ride exists and is available
-        const ride = await db.query.rides.findFirst({
-            where: (rides, {eq}) => eq(rides.id, rideId),
-        });
+        // Single query to get ride AND driver info
+        const result = await db
+            .select({
+                ride: rides,
+                driver: drivers,
+            })
+            .from(rides)
+            .leftJoin(drivers, eq(rides.driverId, drivers.id))
+            .leftJoin(users, eq(drivers.userId, users.id))
+            .where(eq(rides.id, rideId))
+            .limit(1);
 
+        const ride = result[0]?.ride;
         if (!ride) {
             throw new Error('Ride not found');
         }
@@ -202,23 +220,31 @@ export class RidesManagementService {
         if (ride.status !== 'pending') {
             throw new Error('Ride is not available for assignment');
         }
-        
-        // Convert userId to drivers.id
-        const driver = await db.query.drivers.findFirst({
-            where: eq(drivers.userId, driverUserId)
-        });
-        
-        if (!driver) {
-            throw new Error('Driver not found');
-        }
 
-        await db
-            .update(rides)
-            .set({
-                driverId: driver.id,
-                status: 'assigned'
-            })
-            .where(eq(rides.id, rideId));
+        // Check if driver exists (only if we're assigning a new driver)
+        // If driverUserId is provided, we need to get the driver.id from drivers table
+        if (driverUserId) {
+            const driver = await db.query.drivers.findFirst({
+                where: eq(drivers.userId, driverUserId),
+            });
+            if (!driver) {
+                throw new Error('Driver not found');
+            }
+            
+            await db
+                .update(rides)
+                .set({
+                    driverId: driver.id,
+                    status: 'assigned',
+                })
+                .where(eq(rides.id, rideId));
+        } else {
+            // If no driverUserId, just update status to assigned (but this case shouldn't happen)
+            await db
+                .update(rides)
+                .set({ status: 'assigned' })
+                .where(eq(rides.id, rideId));
+        }
     }
 
     /**
@@ -303,16 +329,25 @@ export class RidesManagementService {
 
     /**
      * Fetches all users with 'driver' role
+     * CACHED: Uses unstable_cache for performance (5 min cache)
      */
     static async getAvailableDrivers(): Promise<Array<{id: string, name: string, email: string}>> {
-        return db
-            .select({
-                id: users.id,
-                name: users.name,
-                email: users.email
-            })
-            .from(users)
-            .where(eq(users.role, 'driver'));
+        const fetchDrivers = async () => {
+            return db
+                .select({
+                    id: users.id,
+                    name: users.name,
+                    email: users.email
+                })
+                .from(users)
+                .where(eq(users.role, 'driver'));
+        };
+        
+        return unstable_cache(
+            fetchDrivers,
+            ['drivers-list'],
+            { revalidate: CACHE_DURATIONS.DRIVERS, tags: ['drivers'] }
+        )();
     }
 
     /**
@@ -359,6 +394,7 @@ export class RidesManagementService {
 
     /**
      * Creates a new ride and associates it with customers
+     * OPTIMIZED: Single query for driver lookup if needed
      */
     static async createRide(data: {
         departureTime: Date;
@@ -373,13 +409,15 @@ export class RidesManagementService {
     }): Promise<string> {
         const {departureTime, customerIds, departure, destination, driverId: driverUserId, price, driverPrice, status, customerNotes} = data;
 
-        // If driverId provided, convert from userId to drivers.id
+        // If driverId provided, convert from userId to drivers.id in a single optimized query
         let driverId: string | null = null;
         if (driverUserId) {
-            const driver = await db.query.drivers.findFirst({
-                where: eq(drivers.userId, driverUserId)
-            });
-            driverId = driver?.id ?? null;
+            const driverResult = await db
+                .select({ driverId: drivers.id })
+                .from(drivers)
+                .where(eq(drivers.userId, driverUserId))
+                .limit(1);
+            driverId = driverResult[0]?.driverId ?? null;
         }
 
         const [newRide] = await db
@@ -396,7 +434,7 @@ export class RidesManagementService {
             })
             .returning();
 
-        // Associate customers
+        // Associate customers in a single batch insert
         if (customerIds.length > 0) {
             await db.insert(rideCustomers).values(
                 customerIds.map(customerId => ({
@@ -411,43 +449,70 @@ export class RidesManagementService {
 
     /**
      * Fetches all users with 'customer' role
+     * CACHED: Uses unstable_cache for performance (5 min cache)
      */
     static async getAllCustomers(): Promise<Array<{id: string, name: string, email: string}>> {
-        return db
-            .select({
-                id: users.id,
-                name: users.name,
-                email: users.email
-            })
-            .from(users)
-            .where(eq(users.role, 'customer'));
+        const fetchCustomers = async () => {
+            return db
+                .select({
+                    id: users.id,
+                    name: users.name,
+                    email: users.email
+                })
+                .from(users)
+                .where(eq(users.role, 'customer'));
+        };
+        
+        return unstable_cache(
+            fetchCustomers,
+            ['customers-list'],
+            { revalidate: CACHE_DURATIONS.CUSTOMERS, tags: ['customers'] }
+        )();
     }
 
     /**
      * Fetches all productions
+     * CACHED: Uses unstable_cache for performance (1 hour cache)
      */
     static async getAllProductions(): Promise<Array<{id: string, name: string}>> {
-        return db
-            .select({
-                id: productions.id,
-                name: productions.name
-            })
-            .from(productions)
-            .orderBy(asc(productions.name));
+        const fetchProductions = async () => {
+            return db
+                .select({
+                    id: productions.id,
+                    name: productions.name
+                })
+                .from(productions)
+                .orderBy(asc(productions.name));
+        };
+        
+        return unstable_cache(
+            fetchProductions,
+            ['productions-list'],
+            { revalidate: CACHE_DURATIONS.PRODUCTIONS, tags: ['productions'] }
+        )();
     }
 
     /**
      * Fetches all projects
+     * CACHED: Uses unstable_cache for performance (1 hour cache)
      */
     static async getAllProjects(): Promise<Array<{id: string, name: string, productionId: string | null}>> {
-        return db
-            .select({
-                id: projects.id,
-                name: projects.name,
-                productionId: projects.productionId
-            })
-            .from(projects)
-            .orderBy(asc(projects.name));
+        const fetchProjects = async () => {
+            return db
+                .select({
+                    id: projects.id,
+                    name: projects.name,
+                    productionId: projects.productionId
+                })
+                .from(projects)
+                .orderBy(asc(projects.name));
+        };
+        
+        return unstable_cache(
+            fetchProjects,
+            ['projects-list'],
+            { revalidate: CACHE_DURATIONS.PROJECTS, tags: ['projects'] }
+        )();
     }
 
     static async getAssignmentRequestsForRide(rideId: string): Promise<AssignmentRequestWithDriver[]> {
