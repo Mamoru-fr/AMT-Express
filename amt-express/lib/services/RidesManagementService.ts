@@ -97,14 +97,17 @@ export class RidesManagementService {
         const rideIds = ridesData.map(row => row.ride.id);
         
         // Fetch all ride-customer relationships in one query
-        const customersResult = await db
-            .select({
-                rideId: rideCustomers.rideId,
-                customer: users
-            })
-            .from(rideCustomers)
-            .innerJoin(users, eq(rideCustomers.customerId, users.id))
-            .where(rideIds.length > 0 ? or(...rideIds.map(id => eq(rideCustomers.rideId, id))) : undefined);
+        // FIX: Avoid scanning the entire rideCustomers table when rideIds is empty
+        const customersResult = rideIds.length > 0
+            ? await db
+                .select({
+                    rideId: rideCustomers.rideId,
+                    customer: users
+                })
+                .from(rideCustomers)
+                .innerJoin(users, eq(rideCustomers.customerId, users.id))
+                .where(or(...rideIds.map(id => eq(rideCustomers.rideId, id))))
+            : [];
 
         // === GROUP CUSTOMERS BY RIDE ID ===
         const customersByRideId = new Map<string, typeof users.$inferSelect[]>();
