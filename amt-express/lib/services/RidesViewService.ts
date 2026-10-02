@@ -141,12 +141,11 @@ export class RidesViewService {
 
   /**
    * Fetches all rides for a customer
-   * FIXED: Uses Drizzle relations with `with:` for single query
+   * OPTIMIZED: orderBy moved to ride relation, removed redundant rideCustomers loading
    */
   static async fetchCustomerRides(customerId: string): Promise<RideWithRelations[]> {
     const customerRides = await db.query.rideCustomers.findMany({
       where: eq(rideCustomers.customerId, customerId),
-      orderBy: desc(rides.departureTime),
       with: {
         ride: {
           with: {
@@ -154,13 +153,9 @@ export class RidesViewService {
               with: {
                 user: true
               }
-            },
-            rideCustomers: {
-              with: {
-                customer: true
-              }
             }
-          }
+          },
+          orderBy: desc(rides.departureTime),
         }
       }
     });
@@ -170,75 +165,73 @@ export class RidesViewService {
       waitingTime: rc.ride.waitingTime || 0,
       options: [],
       driver: rc.ride.driver?.user || undefined,
-      customers: rc.ride.rideCustomers?.map((r: any) => r.customer) || [],
+      customers: [rc.customer],
       selectedOptions: [],
     })) as RideWithRelations[];
   }
 
   /**
    * Fetches completed/cancelled rides for a customer
-   * FIXED: Uses Drizzle relations with `with:` for single query
+   * OPTIMIZED: Filters on ride.status directly in SQL (no in-memory filtering)
    */
   static async fetchCustomerCompletedRides(customerId: string): Promise<RideWithRelations[]> {
     const customerRides = await db.query.rideCustomers.findMany({
       where: eq(rideCustomers.customerId, customerId),
-      orderBy: desc(rides.departureTime),
       with: {
         ride: {
+          where: inArray(rides.status, ['completed', 'cancelled']),
           with: {
             driver: {
               with: {
                 user: true
               }
             }
-          }
+          },
+          orderBy: desc(rides.departureTime),
         }
       }
     });
 
-    return customerRides
-      .filter((rc: any) => rc.ride && ['completed', 'cancelled'].includes(rc.ride.status))
-      .map(({ ride }: any) => ({
-        ...ride,
-        waitingTime: ride.waitingTime || 0,
-        options: [],
-        driver: ride.driver?.user || undefined,
-        customers: [],
-        selectedOptions: [],
-      })) as RideWithRelations[];
+    return customerRides.map(({ ride }: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
   }
 
   /**
    * Fetches pending/assigned rides for a customer
-   * FIXED: Uses Drizzle relations with `with:` for single query
+   * OPTIMIZED: Filters on ride.status directly in SQL (no in-memory filtering)
    */
   static async fetchCustomerPendingRides(customerId: string): Promise<RideWithRelations[]> {
     const customerRides = await db.query.rideCustomers.findMany({
       where: eq(rideCustomers.customerId, customerId),
-      orderBy: desc(rides.departureTime),
       with: {
         ride: {
+          where: inArray(rides.status, ['pending', 'assigned']),
           with: {
             driver: {
               with: {
                 user: true
               }
             }
-          }
+          },
+          orderBy: desc(rides.departureTime),
         }
       }
     });
 
-    return customerRides
-      .filter((rc: any) => rc.ride && ['pending', 'assigned'].includes(rc.ride.status))
-      .map(({ ride }: any) => ({
-        ...ride,
-        waitingTime: ride.waitingTime || 0,
-        options: [],
-        driver: ride.driver?.user || undefined,
-        customers: [],
-        selectedOptions: [],
-      })) as RideWithRelations[];
+    return customerRides.map(({ ride }: any) => ({
+      ...ride,
+      waitingTime: ride.waitingTime || 0,
+      options: [],
+      driver: ride.driver?.user || undefined,
+      customers: [],
+      selectedOptions: [],
+    })) as RideWithRelations[];
   }
 
   /**
