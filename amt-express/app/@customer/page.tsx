@@ -50,7 +50,7 @@ export default function CustomerDashboardPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [t]);
 
   // Loading state
   if (isLoading) {

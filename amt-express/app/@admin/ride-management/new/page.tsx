@@ -43,12 +43,7 @@ export default function NewRidePage() {
     const searchParams = useSearchParams();
     const returnTo = searchParams.get('returnTo') || '/ride-management';
 
-    useEffect(() => {
-        if (isAuthenticated && !isAdmin) router.replace('/');
-    }, [isAuthenticated, isAdmin, router]);
-
-    if (!isAdmin) return null;
-
+    // All hooks must be at the top before any conditional return
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
     const [error, setError] = useState('');
@@ -57,7 +52,7 @@ export default function NewRidePage() {
     const [destination, setDestination] = useState('');
     const [departureTime, setDepartureTime] = useState('');
     const [price, setPrice] = useState('');
-    const [status, setStatus] = useState<RideStatus>('pending');
+    const [status] = useState<RideStatus>('pending');
     const [driverId, setDriverId] = useState('');
     const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
     const [customerNotes, setCustomerNotes] = useState('');
@@ -70,10 +65,12 @@ export default function NewRidePage() {
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [filteredProjects, setFilteredProjects] = useState<ProjectOption[]>([]);
 
+    // Security: Redirect if not admin
     useEffect(() => {
-        loadDropdownData();
-    }, []);
+        if (isAuthenticated && !isAdmin) router.replace('/');
+    }, [isAuthenticated, isAdmin, router]);
 
+    // Filter projects based on production
     useEffect(() => {
         if (productionId) {
             setFilteredProjects(projects.filter(project => project.productionId === productionId));
@@ -84,6 +81,23 @@ export default function NewRidePage() {
             setFilteredProjects(projects);
         }
     }, [productionId, projects, projectId]);
+
+    // Load dropdown data only if user is admin
+    useEffect(() => {
+        if (!isAdmin) return;
+        loadDropdownData();
+    }, [isAdmin]);
+
+    // Ensure projects are only used when admin
+    useEffect(() => {
+        if (!isAdmin) {
+            setProjects([]);
+            setProductionId('');
+            setProjectId('');
+        }
+    }, [isAdmin]);
+
+    if (!isAdmin) return null;
 
     const selectedProduction = productions.find(production => production.id === productionId) || null;
 
