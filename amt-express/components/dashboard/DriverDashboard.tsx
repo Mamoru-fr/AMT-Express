@@ -297,9 +297,9 @@ export function DriverDashboard({data, onRefresh}: Props) {
                     {/* Request Modal */}
                     {requestModal.open && requestModal.rideId && (
                         <div className={styles.modalBackdrop}>
-                            <div className={styles.modalCard}>
+                            <div className={styles.modalCard} role="dialog" aria-modal="true" aria-labelledby="request-ride-title">
                                 <div className={styles.modalHeader}>
-                                    <h3 className={styles.modalTitle}>
+                                    <h3 className={styles.modalTitle} id="request-ride-title">
                                         {t('driverDashboard.requestRideTitle', 'Request Ride Assignment')}
                                     </h3>
                                     <button

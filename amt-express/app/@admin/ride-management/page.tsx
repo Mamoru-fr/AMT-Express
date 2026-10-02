@@ -313,22 +313,17 @@ export default function RideManagementPage() {
         }
     };
 
-    // Security: Redirect if not admin
-    useEffect(() => {
-        if (isAuthenticated && !isAdmin) router.replace('/');
-    }, [isAuthenticated, isAdmin, router]);
-
     // Load rides when filters change
     useEffect(() => {
         if (!isAdmin) return;
         loadRides();
-    }, [filters, isAdmin, loadRides]);
+    }, [filters, isAdmin]);
 
     // Load drivers on mount
     useEffect(() => {
         if (!isAdmin) return;
         loadAvailableDrivers();
-    }, [isAdmin, loadAvailableDrivers]);
+    }, [isAdmin]);
 
     // Early return after all hooks and effects
     if (!isAdmin) return null;

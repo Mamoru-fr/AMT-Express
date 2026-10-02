@@ -38,7 +38,7 @@
     min-width: 0;
     max-height: 40px;
     border: none;
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     background: transparent;
     color: var(--app-title-color);
     font: inherit;

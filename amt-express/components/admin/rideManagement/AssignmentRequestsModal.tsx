@@ -63,9 +63,9 @@ export function AssignmentRequestsModal({ ride, onClose, onApproved }: Props) {
 
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContainer}>
+            <div className={styles.modalContainer} role="dialog" aria-modal="true" aria-labelledby="assignment-requests-title">
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Demandes d&apos;assignation</h3>
+                    <h3 className={styles.modalTitle} id="assignment-requests-title">Demandes d&apos;assignation</h3>
                     <button onClick={onClose} className={styles.closeButton} aria-label="Fermer">
                         <X className={styles.closeIcon} />
                     </button>

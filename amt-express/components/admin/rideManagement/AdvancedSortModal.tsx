@@ -132,9 +132,9 @@ export function AdvancedSortModal({
 
     return createPortal(
         <div className={styles.modalOverlay} onClick={onClose}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="advanced-sort-title">
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>
+                    <h3 className={styles.modalTitle} id="advanced-sort-title">
                         <ArrowUpDown size={18} className={styles.modalIcon} />
                         {t('ridesManagement.advancedSort.title')}
                     </h3>

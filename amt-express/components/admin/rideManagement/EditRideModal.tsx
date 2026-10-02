@@ -53,9 +53,9 @@ export function EditRideModal({ride, onClose, onSave}: EditRideModalProps) {
 
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContainer}>
+            <div className={styles.modalContainer} role="dialog" aria-modal="true" aria-labelledby="edit-ride-title">
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>{t('rideModals.editRide.title', {rideId: ride.id})}</h3>
+                    <h3 className={styles.modalTitle} id="edit-ride-title">{t('rideModals.editRide.title', {rideId: ride.id})}</h3>
                     <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>

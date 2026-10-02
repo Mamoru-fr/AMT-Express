@@ -86,8 +86,9 @@ export async function searchAvailableRides(
             };
         }
 
-        // Bypass the driver-role controller and call the service directly
-        let rides = await RidesViewService.fetchPendingRides();
+        // Fetch only rides available for the current customer
+        const { user } = await getSessionWithRole();
+        let rides = await RidesViewService.fetchCustomerPendingRides(user!.id);
 
         if (!rides) {
             return {

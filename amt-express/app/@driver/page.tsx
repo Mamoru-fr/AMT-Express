@@ -69,8 +69,8 @@ export default function DriverDashboardPage() {
     fetchData();
   }, []);
 
-  // Refresh data helper
-  const refreshData = async () => {
+  // Refresh data helper - memoized to prevent unnecessary re-creations
+  const refreshData = useCallback(async () => {
     try {
       const driverData = await fetchDriverDashboard();
       if (driverData.success) {
@@ -80,7 +80,7 @@ export default function DriverDashboardPage() {
     } catch (err) {
       console.error('Failed to refresh data:', err);
     }
-  };
+  }, []);
 
   // Availability toggle handler
   const handleAvailabilityToggle = async () => {

@@ -341,7 +341,7 @@
 }
 
 .connections-input:focus {
-  outline: none;
+  outline: 2px solid transparent; outline-offset: 2px;
   border-color: var(--color-client-gradient-end);
   box-shadow: 0 0 0 3px rgba(255, 128, 8, 0.1);
 }

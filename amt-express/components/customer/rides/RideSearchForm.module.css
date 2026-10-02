@@ -58,7 +58,7 @@
 }
 
 .filterInput:focus {
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     border-color: var(--app-primary);
     box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
 }
@@ -248,7 +248,7 @@
 }
 
 .priceInput:focus {
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     border-color: var(--app-primary);
     box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
 }

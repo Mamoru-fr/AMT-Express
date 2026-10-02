@@ -181,10 +181,7 @@ export class RidesViewService {
    */
   static async fetchCustomerCompletedRides(customerId: string): Promise<RideWithRelations[]> {
     const customerRides = await db.query.rideCustomers.findMany({
-      where: and(
-        eq(rideCustomers.customerId, customerId),
-        inArray(rides.status, ['completed', 'cancelled'])
-      ),
+      where: eq(rideCustomers.customerId, customerId),
       orderBy: desc(rides.departureTime),
       with: {
         ride: {
@@ -199,14 +196,16 @@ export class RidesViewService {
       }
     });
 
-    return customerRides.map(({ ride }: any) => ({
-      ...ride,
-      waitingTime: ride.waitingTime || 0,
-      options: [],
-      driver: ride.driver?.user || undefined,
-      customers: [],
-      selectedOptions: [],
-    })) as RideWithRelations[];
+    return customerRides
+      .filter((rc: any) => rc.ride && ['completed', 'cancelled'].includes(rc.ride.status))
+      .map(({ ride }: any) => ({
+        ...ride,
+        waitingTime: ride.waitingTime || 0,
+        options: [],
+        driver: ride.driver?.user || undefined,
+        customers: [],
+        selectedOptions: [],
+      })) as RideWithRelations[];
   }
 
   /**
@@ -215,10 +214,7 @@ export class RidesViewService {
    */
   static async fetchCustomerPendingRides(customerId: string): Promise<RideWithRelations[]> {
     const customerRides = await db.query.rideCustomers.findMany({
-      where: and(
-        eq(rideCustomers.customerId, customerId),
-        inArray(rides.status, ['pending', 'assigned'])
-      ),
+      where: eq(rideCustomers.customerId, customerId),
       orderBy: desc(rides.departureTime),
       with: {
         ride: {
@@ -233,14 +229,16 @@ export class RidesViewService {
       }
     });
 
-    return customerRides.map(({ ride }: any) => ({
-      ...ride,
-      waitingTime: ride.waitingTime || 0,
-      options: [],
-      driver: ride.driver?.user || undefined,
-      customers: [],
-      selectedOptions: [],
-    })) as RideWithRelations[];
+    return customerRides
+      .filter((rc: any) => rc.ride && ['pending', 'assigned'].includes(rc.ride.status))
+      .map(({ ride }: any) => ({
+        ...ride,
+        waitingTime: ride.waitingTime || 0,
+        options: [],
+        driver: ride.driver?.user || undefined,
+        customers: [],
+        selectedOptions: [],
+      })) as RideWithRelations[];
   }
 
   /**
