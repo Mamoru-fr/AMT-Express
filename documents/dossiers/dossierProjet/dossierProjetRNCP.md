@@ -18,7 +18,7 @@ Alexis SANTOS — Promo Janvier 2026 — Ada Tech School
 
 Dans le secteur du transport VTC/taxi, les petites et moyennes entreprises gèrent encore leurs courses, leurs chauffeurs et leur facturation avec des outils manuels : tickets papier, dispatch par téléphone, factures Excel. Pour une société comme AMT CGS GROUPE et ses \~200 chauffeurs, cela se traduit par des erreurs de saisie, des temps d'inactivité pour les chauffeurs et des retards de paiement.
 
-AMT Express est une plateforme web full-stack qui centralise la gestion des courses pour trois rôles : les administrateurs (création et assignation des courses, tableaux de bord KPI), les chauffeurs (courses disponibles, demandes d'assignation, planning de shifts) et les clients professionnels des secteurs cinéma et événementiel (réservation, historique, notation).
+AMT Express est une plateforme web full-stack qui centralise la gestion des courses pour trois rôles : les administrateurs (création et assignation des courses, tableaux de bord KPI), les chauffeurs (courses disponibles, demandes d'assignation, planning de shifts) et les clients professionnels de nombreux secteurs (réservation, historique, notation).
 
 L'application est développée en TypeScript avec Next.js 16 (App Router), une base PostgreSQL hébergée sur Neon, l'ORM Drizzle, l'authentification Better Auth et la validation Zod. Elle peut être conteneurisée avec Docker, testée avec Vitest (unitaires et intégration) et déployée sur Vercel via une CI GitHub Actions, selon un Git Flow strict. Le projet a été développé en autonomie complète, de l'analyse des besoins à la mise en production, avec un budget de 0 € (free tiers).
 
