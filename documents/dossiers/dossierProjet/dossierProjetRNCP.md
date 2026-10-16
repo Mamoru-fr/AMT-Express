@@ -311,7 +311,7 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 | Production          | vrais utilisateurs | branche `main`, Vercel PROD, secrets gérés, HTTPS                                                            |
 
 
-Variables d'environnement distinctes (`DATABASE_URL`, `BETTER_AUTH_SECRET`/`AUTH_SECRET`, `NEXT_PUBLIC_URL`, `VERCEL_DATABASE_URL`) ; fichier `.env.example` présent dans le repo (template documenté).
+Variables d'environnement distinctes (`DATABASE_URL`, `BETTER_AUTH_SECRET`/`AUTH_SECRET`, `NEXT_PUBLIC_APP_URL`) ; fichier `.env.example` présent dans le repo (template documenté).
 
 ### 9.2. Intégration continue ✅
 
