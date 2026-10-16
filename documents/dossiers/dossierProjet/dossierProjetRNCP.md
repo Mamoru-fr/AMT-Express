@@ -6,7 +6,7 @@
 
 **AMT Express — Plateforme web de gestion de courses pour entreprises de transport VTC/taxi**
 
-Alexis SANTOS — Promo Septembre 2025 — Ada Tech School
+Alexis SANTOS — Promo Janvier 2026 — Ada Tech School
 
 > **États de validation du premier jet** : ✅ rédigé · 🟡 rédigé à valider par Alexis · 🔴 à produire (capture, maquette, précision chiffrée) · ❓ à confirmer avec le code ou l'école
 
@@ -20,7 +20,7 @@ Dans le secteur du transport VTC/taxi, les petites et moyennes entreprises gère
 
 AMT Express est une plateforme web full-stack qui centralise la gestion des courses pour trois rôles : les administrateurs (création et assignation des courses, tableaux de bord KPI), les chauffeurs (courses disponibles, demandes d'assignation, planning de shifts) et les clients professionnels des secteurs cinéma et événementiel (réservation, historique, notation).
 
-L'application est développée en TypeScript avec Next.js 16 (App Router), une base PostgreSQL hébergée sur Neon, l'ORM Drizzle, l'authentification Better Auth et la validation Zod. Elle est conteneurisée avec Docker, testée avec Vitest (unitaires et intégration) et déployée sur Vercel via une CI GitHub Actions, selon un Git Flow strict. Le projet a été développé en autonomie complète, de l'analyse des besoins à la mise en production, avec un budget de 0 € (free tiers).
+L'application est développée en TypeScript avec Next.js 16 (App Router), une base PostgreSQL hébergée sur Neon, l'ORM Drizzle, l'authentification Better Auth et la validation Zod. Elle peut être conteneurisée avec Docker, testée avec Vitest (unitaires et intégration) et déployée sur Vercel via une CI GitHub Actions, selon un Git Flow strict. Le projet a été développé en autonomie complète, de l'analyse des besoins à la mise en production, avec un budget de 0 € (free tiers).
 
 ### 1.2. Présentation en anglais 🟡
 
@@ -28,7 +28,7 @@ In the private-hire and taxi sector, small and medium companies still manage rid
 
 AMT Express is a full-stack web platform that centralises ride management for three roles: administrators (ride creation and assignment, KPI dashboards), drivers (available rides, assignment requests, shift planning) and professional customers from the film and event industries (booking, history, ratings).
 
-The application is built in TypeScript with Next.js 16 (App Router), a PostgreSQL database hosted on Neon, Drizzle ORM, Better Auth for authentication and Zod for validation. It is containerised with Docker, tested with Vitest (unit and integration), and deployed to Vercel through GitHub Actions CI, following a strict Git Flow. The project was built entirely on my own, from requirements analysis to production, on a $0 budget (free tiers).
+The application is built in TypeScript with Next.js 16 (App Router), a PostgreSQL database hosted on Neon, Drizzle ORM, Better Auth for authentication and Zod for validation. It can be containerised with Docker, tested with Vitest (unit and integration), and deployed to Vercel through GitHub Actions CI, following a strict Git Flow. The project was built entirely on my own, from requirements analysis to production, on a $0 budget (free tiers).
 
 ---
 
@@ -58,7 +58,7 @@ Ce projet mobilise l'ensemble des compétences du titre professionnel Concepteur
 
 ### 3.1. Contexte du projet 🟡
 
-AMT CGS GROUPE est une société de transport VTC comptant environ **200 chauffeurs**, dont les clients sont principalement des **productions cinéma et des entreprises de l'événementiel**. Avant le projet, l'ensemble du cycle opérationnel était géré manuellement :
+AMT CGS GROUPE est une société de transport VTC comptant environ **200 chauffeurs**, dont les clients sont principalement des **productions cinéma et des entreprises de toutes sortes**. Avant le projet, l'ensemble du cycle opérationnel était géré manuellement :
 
 
 | Point de douleur            | Processus existant                      | Impact                                       |
