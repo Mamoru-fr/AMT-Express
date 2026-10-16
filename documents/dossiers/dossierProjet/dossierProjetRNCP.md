@@ -18,7 +18,7 @@ Alexis SANTOS — Promo Septembre 2025 — Ada Tech School
 
 Dans le secteur du transport VTC/taxi, les petites et moyennes entreprises gèrent encore leurs courses, leurs chauffeurs et leur facturation avec des outils manuels : tickets papier, dispatch par téléphone, factures Excel. Pour une société comme AMT CGS GROUPE et ses \~200 chauffeurs, cela se traduit par des erreurs de saisie, des temps d'inactivité pour les chauffeurs et des retards de paiement.
 
-AMT Express est une plateforme web full-stack qui centralise la gestion des courses pour trois rôles : les administrateurs (création, assignation et facturation des courses, tableaux de bord KPI), les chauffeurs (courses disponibles, demandes d'assignation, planning de shifts) et les clients professionnels des secteurs cinéma et événementiel (réservation, historique, notation).
+AMT Express est une plateforme web full-stack qui centralise la gestion des courses pour trois rôles : les administrateurs (création et assignation des courses, tableaux de bord KPI), les chauffeurs (courses disponibles, demandes d'assignation, planning de shifts) et les clients professionnels des secteurs cinéma et événementiel (réservation, historique, notation).
 
 L'application est développée en TypeScript avec Next.js 16 (App Router), une base PostgreSQL hébergée sur Neon, l'ORM Drizzle, l'authentification Better Auth et la validation Zod. Elle est conteneurisée avec Docker, testée avec Vitest (unitaires et intégration) et déployée sur Vercel via une CI GitHub Actions, selon un Git Flow strict. Le projet a été développé en autonomie complète, de l'analyse des besoins à la mise en production, avec un budget de 0 € (free tiers).
 
@@ -26,7 +26,7 @@ L'application est développée en TypeScript avec Next.js 16 (App Router), une b
 
 In the private-hire and taxi sector, small and medium companies still manage rides, drivers and billing with manual tools: paper tickets, phone dispatch, and Excel invoices. For a company like AMT CGS GROUPE and its \~200 drivers, this means typing errors, idle time between rides, and late payments.
 
-AMT Express is a full-stack web platform that centralises ride management for three roles: administrators (ride creation, assignment and billing, KPI dashboards), drivers (available rides, assignment requests, shift planning) and professional customers from the film and event industries (booking, history, ratings).
+AMT Express is a full-stack web platform that centralises ride management for three roles: administrators (ride creation and assignment, KPI dashboards), drivers (available rides, assignment requests, shift planning) and professional customers from the film and event industries (booking, history, ratings).
 
 The application is built in TypeScript with Next.js 16 (App Router), a PostgreSQL database hosted on Neon, Drizzle ORM, Better Auth for authentication and Zod for validation. It is containerised with Docker, tested with Vitest (unit and integration), and deployed to Vercel through GitHub Actions CI, following a strict Git Flow. The project was built entirely on my own, from requirements analysis to production, on a $0 budget (free tiers).
 
@@ -86,7 +86,7 @@ En tant que Tech Lead / Project Manager unique du projet, j'ai conçu et dévelo
 1. *En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise.*
 2. *En tant qu'administrateur, je veux affecter une course à un chauffeur — ou valider sa demande d'assignation — afin de distribuer l'effort de manière fiable.*
 3. *En tant que chauffeur, je veux voir les courses disponibles et postuler, afin de maximiser mes revenus en choisissant mes courses.*
-4. *En tant qu'administrateur, je veux générer des factures individuelles ou groupées avec des rappels automatiques, afin d'être payé à temps.*
+4. *En tant qu'administrateur, je veux générer des factures individuelles ou groupées avec des rappels automatiques, afin d'être payé à temps.* (objectif — non livré, cf. §3.4 hors périmètre)
 5. *En tant que client, je veux réserver une course et retrouver mon historique, afin de commander sans friction.*
 6. *En tant qu'administrateur, je veux importer mes anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie.*
 
@@ -100,14 +100,13 @@ En tant que Tech Lead / Project Manager unique du projet, j'ai conçu et dévelo
 | 3   | Demandes d'assignation chauffeur → validation admin                                                  | ✅ livré                   |
 | 4   | Dashboards KPI (courses, revenus, taux d'assignation) + Recharts                                     | ✅ livré                   |
 | 5   | Import CSV en masse avec backup automatique                                                          | ✅ livré                   |
-| 6   | Facturation individuelle/groupée, remises justifiées                                                  | ✅ livré                   |
-| 7   | Notation des courses (1–5 étoiles + commentaire)                                                     | ✅ livré                   |
-| 8   | i18n FR/EN, PWA (Service Worker)                                                                     | ✅ livré                   |
-| 9   | Export CSV (jusqu'à 10 000 lignes)                                                                   | ✅ livré                   |
-| 10  | Journal d'audit (`activity_logs`)                                                                    | ✅ livré                   |
+| 6   | Notation des courses (1–5 étoiles + commentaire)                                                     | ✅ livré                   |
+| 7   | i18n FR/EN, PWA (Service Worker)                                                                     | ✅ livré                   |
+| 8   | Export CSV (jusqu'à 10 000 lignes)                                                                   | ✅ livré                   |
+| 9   | Journal d'audit (`activity_logs`)                                                                    | ✅ livré                   |
 
 
-**Hors périmètre MVP** (reporté et documenté) : GPS temps réel, OCR de tickets (Tesseract.js), paiements Stripe/PayPal, chat interne, notifications push, synchronisation calendrier, **rappels automatiques de factures (J+7/J+14/J+30), génération PDF de factures**.
+**Hors périmètre MVP** (reporté et documenté) : GPS temps réel, OCR de tickets (Tesseract.js), paiements Stripe/PayPal, chat interne, notifications push, synchronisation calendrier, **module complet de facturation (création individuelle/groupée, remises, rappels J+7/J+14/J+30, export PDF) — planifié post-MVP, cf. roadmap admin dashboard**.
 
 ### 3.5. Risques et difficultés 🟡
 
@@ -144,7 +143,8 @@ En tant que Tech Lead / Project Manager unique du projet, j'ai conçu et dévelo
 
 - **MCD (Merise)** 🔴 : entités métier et cardinalités — *à dessiner* (ex. : un `ride` appartient à 0..1 `driver` ; un `ride` inclut 1..n `ride_customers` ; une `invoice` regroupe 1..n `invoice_items` ; une `production` contient 0..n `projects`).
 - **MLD** 🔴 : transformation en tables relationnelles, PK/FK — *forte base déjà présente dans les specs techniques (v2.0, ERD 20 tables avant refactor vers 19)*.
-- **MPD** 🟡 : schéma réel `lib/db/schema.ts` — types SQL, contraintes CHECK (note 1–5, dates), UNIQUE (email, paires ride/customer), index simples et composites, FK `ON DELETE SET NULL`/`CASCADE`. Justification des index composites (ex. `idx_rides_driver_status` pour les courses actives d'un chauffeur) et partiels.
+- **MPD** 🟡 : schéma réel `lib/db/schema.ts` — 19 `pgTable`, 5 `pgEnum` (`user_role`, `ride_status`, `shift_status`, `request_status`, `invoice_status`), FK `ON DELETE SET NULL`/`CASCADE`, index mono-colonne uniquement (pas d'index composite ni partiel).
+  - *Amélioration planifiée* : contraintes CHECK (rating 1–5), UNIQUE composite (`ride_id`, `customer_id`), index composite (`driver_id`, `status`) — via migration Drizzle.
 
 ### 4.3. Maquettes de l'interface 🔴
 
@@ -192,7 +192,7 @@ flowchart TB
 
 ### 5.3. Choix de stack justifiés 🟡
 
-- **PostgreSQL (Neon)** : les données sont fortement relationnelles (users ↔ rides ↔ invoices ↔ ratings) et nécessitent des transactions ACID (facturation, assignation) — un NoSQL n'aurait aucun sens ici. Neon serverless : free tier compatible budget 0 €, branching pour les tests.
+- **PostgreSQL (Neon)** : les données sont fortement relationnelles (users ↔ drivers ↔ rides ↔ shift_planning ↔ assignment_requests) et l'import CSV en masse requiert des transactions ACID (création atomique production + projet générique, `db.transaction` dans `lib/db/import-csv.ts`) — un NoSQL n'aurait aucun sens ici. Neon serverless : free tier compatible budget 0 €, branching pour les tests.
 - **Next.js 16 + Server Actions** : une seule base de code pour front et back, typage de bout en bout avec TypeScript, suppression de la couche API REST redondante pour un MVP solo — itération plus rapide.
 - **Drizzle ORM** : type-safe, requêtes proches du SQL (maîtrise réelle des requêtes, optimisations manuelles possibles — cf. RidesViewService), léger comparé à Prisma.
 - **Zod** : une seule source de vérité pour la validation, schémas réutilisés côté front (erreurs de formulaire) et back.
@@ -219,7 +219,7 @@ flowchart TB
 ### 6.3. Objectifs de qualité ✅
 
 - Conventions de nommage (PascalCase composants, camelCase fonctions), ESLint, `pnpm ci` (build + tous les tests) obligatoire avant chaque PR — aucune PR mergée rouge.
-- Validation Zod systématique, type `ActionResponse<T>` unifié avec `ErrorCodes` — **216 tests automatisés** (9 fichiers : 7 unitaires, 2 intégration).
+- Validation Zod systématique, type `ActionResponse<T>` unifié avec `ErrorCodes` — **❓ tests automatisés (à chiffrer avec `pnpm test:run`)** ; 9 fichiers (7 unitaires, 2 intégration).
 - Revue de code externe : retours de l'instructrice intégrés (sécurité, a11y, performance — PR #75/#76).
 
 ---
@@ -253,11 +253,13 @@ amt-express/
 
 ### 7.3. Back-end 🟡
 
-*(propositions d'extraits : une Server Action de création de course avec son schéma Zod ; le middleware `verifyRole()` ; un service métier pur — calcul de facturation ou cycle de statuts ; l'optimisation SQL de `RidesViewService` (anti full-table-scan, commit e7abfdf / 849b99d).)* Chaque action retourne un `ActionResponse<T>` : succès ou erreur typée avec code — le front ne gère jamais une erreur non prévue.
+*(propositions d'extraits : une Server Action de création de course avec son schéma Zod ; le middleware `verifyRole()` ; un service métier pur — cycle de statuts des courses ou logique d'assignation ; l'optimisation SQL de `RidesViewService` (anti full-table-scan, commit e7abfdf / 849b99d).)* Chaque action retourne un `ActionResponse<T>` : succès ou erreur typée avec code — le front ne gère jamais une erreur non prévue.
 
 ### 7.4. Accès aux données 🟡
 
-Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les vues détaillées (course + chauffeur + clients + options + factures) ; transactions (facturation multi-lignes, assignation avec rejet des demandes concurrentes) ; index composites documentés (§ 4.2).
+Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les vues détaillées (course + chauffeur + clients) ; index mono-colonne documentés (§ 4.2). Une transaction ACID réelle : import CSV en masse (création atomique production + projet générique, `db.transaction` dans `lib/db/import-csv.ts`).
+
+**Objectifs / roadmap** (non implémentés à ce stade) : environnement de facturation complet au sein de la solution, transactions multi-lignes, rejet des demandes concurrentes d'assignation.
 
 ### 7.5. Sécurité en action 🔴
 
@@ -291,7 +293,7 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 
 - **Unitaires** (Vitest + Testing Library) : services (ActionResponse, import CSV, rôles, traductions, validations), composants (Button), actions (AuthActions).
 - **Intégration** (base réelle) : `AuthActions`, `RidesManagementActions`.
-- **216 tests automatisés** au total (9 fichiers) ; couverture mesurable via `pnpm test:coverage` (lib/ et utils/).
+- **❓ tests automatisés (à chiffrer avec `pnpm test:run`)** — 9 fichiers (7 unitaires, 2 intégration) ; couverture mesurable via `pnpm test:coverage` (lib/ et utils/).
 - 🔴 *capture : sortie `pnpm ci` verte + fichier de test commenté (mocks des dépendances externes expliqués).*
 
 ---
@@ -363,13 +365,13 @@ Trame 5 étapes (à raconter avec vos mots) :
 
 ### Bilan honnête 🟡
 
-Livré : un MVP complet en production réelle pour un client de \~200 chauffeurs — auth multi-rôles, CRUD courses, assignations, KPI, facturation, import CSV, i18n, PWA, CI/CD — 76 PR ouvertes (36 merges traçables), 216 tests automatisés, budget 0 €. Moins bien réussi : le premier cycle de déploiement (17 itérations nécessaires — l'anticipation de la chaîne Vercel/Neon a manqué) ; l'OCR et le GPS reportés ; les rappels automatiques de factures et la génération PDF non livrés (champs présents dans le schéma, logique à implémenter).
+Livré : un MVP complet en production réelle pour un client de \~200 chauffeurs — auth multi-rôles, CRUD courses, assignations, KPI, import CSV, i18n, PWA, CI/CD — 76 PR ouvertes (36 merges traçables), ❓ tests automatisés (à chiffrer avec `pnpm test:run`), budget 0 €. Moins bien réussi : le premier cycle de déploiement (17 itérations nécessaires — l'anticipation de la chaîne Vercel/Neon a manqué) ; l'OCR et le GPS reportés ; le module de facturation non livré (tables `invoices`/`invoice_items` présentes dans le schéma, logique à implémenter : création, rappels J+7/J+14/J+30, export PDF).
 
 ### Axes d'amélioration ✅
 
 1. **Affectation automatique des courses** : algorithme de suggestion basé sur disponibilité/disposition (le besoin et la maquette existent dans les specs).
 2. **OCR de tickets (Tesseract.js)** : fiabiliser la saisie des prix à partir de photos.
-3. **Génération de factures PDF** côté serveur avec template déterministe.
+3. **Module complet de facturation** : création individuelle/groupée, remises justifiées, rappels J+7/J+14/J+30, export PDF côté serveur (tables `invoices`/`invoice_items` déjà dans le schéma ; cf. roadmap admin dashboard).
 4. **Systématiser l'audit sécurité** (`pnpm audit` en CI) et uniformiser les noms de variables d'environnement (`BETTER_AUTH_SECRET` vs `AUTH_SECRET`).
 5. **Accessibilité RGAA** : audit complet au-delà des aria-labels déjà posés.
 
@@ -387,8 +389,9 @@ Un projet solo de A à Z force à tenir tous les rôles à la fois — architect
 
 ### Notes de rédaction (à supprimer avant rendu)
 
-- Données vérifiées sur `main` au 16/10/2026 (SHA `bce57b7`, PR #76) : 19 tables, Next 16.1.1, React 19.2.3, Zod 4.3.5, Drizzle 0.45.1, Better Auth 1.4.10, Vitest 4, pnpm 9.15.4, 76 PR ouvertes (36 merges traçables #41–#76), 216 tests automatisés (9 fichiers), 7 workflows CI.
-- **Corrections appliquées le 16/10/2026** : rappels factures J+7/J+14/J+30 retirés du MVP (champs schéma présents, logique non implémentée) ; export PDF retiré (CSV uniquement) ; `.env.example` confirmé présent ; enums corrigés (5 pgEnum réels, pas de `option_type`/`vehicle_type`) ; parallel routes corrigées (`connections` au lieu de `@auth`) ; nombre de tests corrigé (216, pas 157) ; workflows corrigés (7, pas 8).
+- Données vérifiées sur `main` au 16/10/2026 (SHA `bce57b7`, PR #76) : 19 tables, Next 16.1.1, React 19.2.3, Zod 4.3.5, Drizzle 0.45.1, Better Auth 1.4.10, Vitest 4, pnpm 9.15.4, 76 PR ouvertes (36 merges traçables #41–#76), ❓ tests automatisés (à chiffrer avec `pnpm test:run` ; 9 fichiers : 7 unitaires, 2 intégration), 7 workflows CI.
+- **Corrections appliquées le 16/10/2026** : rappels factures J+7/J+14/J+30 retirés du MVP (champs schéma présents, logique non implémentée) ; export PDF retiré (CSV uniquement) ; `.env.example` confirmé présent ; enums corrigés (5 pgEnum réels, pas de `option_type`/`vehicle_type`) ; parallel routes corrigées (`connections` au lieu de `@auth`) ; workflows corrigés (7, pas 8).
+- **Corrections appliquées le 16/10/2026 (2e passe, vérifiées contre le code)** : module de facturation retiré du MVP (aucun `insert` sur `invoices`/`invoice_items` dans `lib/` ; seul `AdminDashboardService` compte les factures impayées pour le KPI) et déplacé en « hors périmètre » ; user story 4 annotée « objectif — non livré » ; §7.4 : transactions multi-lignes et index composites retirés des livrés (une seule transaction réelle : import CSV, `lib/db/import-csv.ts:482`), sous-section « Objectifs / roadmap » ajoutée ; §4.2 MPD réécrit sur le schéma réel (19 `pgTable`, 5 `pgEnum`, FK `ON DELETE SET NULL`/`CASCADE`, index mono-colonne ; amélioration planifiée : CHECK rating 1–5, UNIQUE composite, index composite) ; §1.1/§1.2/§5.3/§7.3 : « facturation » retirée des fonctions présentées comme livrées ; aucun chiffre de tests (à chiffrer avec `pnpm test:run` — comptages statiques divergents : ~202 `it(` + ~38 générés par `forEach` dans `translations.test.ts`, le commit `a0b372a` annonçait 222).
 - Les specs papier (janv. 2026, AMT Horizon, 20 tables) sont antérieures au refactor : le dossier s'appuie sur le repo, pas sur elles.
 - Écart à arbitrer : les specs papier mentionnent Zustand, Socket.io, Stripe — **confirmé absent** de `package.json`.
 - Le jury reçoit le dossier **imprimé** quelques minutes avant : chaque section doit être skimmable (titres, tableaux, schémas, légendes de captures).
