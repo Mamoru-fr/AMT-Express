@@ -121,6 +121,7 @@ export function ProfileSection({ showTitle = true }: Props) {
                                 placeholder={t('profile.namePlaceholder')}
                                 disabled={namePending}
                                 autoFocus
+                                aria-label={t('profile.namePlaceholder')}
                             />
                             <div className={styles.inlineActions}>
                                 <button onClick={handleSaveName} disabled={namePending} className={styles.iconButtonPrimary} title={t('customerDashboard.save')}>
@@ -212,6 +213,7 @@ export function ProfileSection({ showTitle = true }: Props) {
                                     className={styles.editInput}
                                     disabled={emailPending}
                                     autoFocus
+                                    aria-label={t('profile.newEmailPlaceholder')}
                                 />
                                 <div className={styles.editActions}>
                                     <button onClick={() => { setEditingEmail(false); setEmailFeedback(null); setNewEmailValue(''); }} className={styles.cancelButton} disabled={emailPending}>

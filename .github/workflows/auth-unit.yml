@@ -18,7 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '24.7.0'
+
 
 jobs:
   unit-tests:

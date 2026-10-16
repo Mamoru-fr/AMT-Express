@@ -72,15 +72,15 @@ export default function ConnectionsPage() {
             const decodedError = decodeURIComponent(error);
 
             if (decodedError.startsWith('errors.')) {
-                setErrorMessage(t(decodedError));
+                setErrorMessage(decodedError);
             } else {
                 const errorKey = `errors.${decodedError}`;
-                setErrorMessage(t(errorKey, { defaultValue: decodedError }));
+                setErrorMessage(errorKey);
             }
         } else {
             setErrorMessage(null);
         }
-    }, [searchParams, t]);
+    }, [searchParams, view]);
 
     const handleForgotPassword = () => {
         setInfoMessage(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));

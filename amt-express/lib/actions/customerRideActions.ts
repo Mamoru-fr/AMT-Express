@@ -3,8 +3,6 @@
 import { ActionResponse, ErrorCodes } from '@/lib/types/action-response';
 import { RidesViewController } from '@/lib/controllers/RidesViewController';
 import { CustomerRideController } from '@/lib/controllers/CustomerRideController';
-import { RidesViewService } from '@/lib/services/RidesViewService';
-import { RidesManagementService } from '@/lib/services/RidesManagementService';
 import { getSessionWithRole } from '@/lib/auth/session';
 import { RideWithRelations } from '@/content/database_types/ride';
 
@@ -37,16 +35,18 @@ export async function createRideRequest(formData: FormData): Promise<ActionRespo
             return { success: false, error: 'Departure time must be in the future', code: ErrorCodes.VALIDATION_ERROR };
         }
 
-        const rideId = await RidesManagementService.createRide({
+        const response = await CustomerRideController.createRideRequest({
             departure,
             destination,
             departureTime: departureDateTime,
-            customerIds: [user.id],
-            status: 'pending',
             customerNotes: notes,
         });
 
-        return { success: true, data: { rideId } };
+        if (!response.success) {
+            return { success: false, error: response.error, code: response.code };
+        }
+
+        return { success: true, data: { rideId: response.data! } };
     } catch (error) {
         return {
             success: false,
@@ -75,27 +75,18 @@ export async function searchAvailableRides(
     } = {}
 ): Promise<ActionResponse<RideWithRelations[]>> {
     try {
-        // Get authenticated customer
-        const { isAuthenticated } = await getSessionWithRole();
-        
-        if (!isAuthenticated) {
+        // Use Controller — handles auth + customer role verification
+        const response = await RidesViewController.fetchCustomerPendingRides();
+
+        if (!response.success) {
             return {
                 success: false,
-                error: 'Unauthorized: Please log in to search for rides',
-                code: ErrorCodes.UNAUTHORIZED,
+                error: response.error || 'Failed to fetch pending rides',
+                code: response.code || ErrorCodes.DATABASE_ERROR,
             };
         }
 
-        // Bypass the driver-role controller and call the service directly
-        let rides = await RidesViewService.fetchPendingRides();
-
-        if (!rides) {
-            return {
-                success: false,
-                error: 'Failed to fetch pending rides',
-                code: ErrorCodes.DATABASE_ERROR,
-            };
-        }
+        let rides = response.data || [];
 
         if (params.departure) {
             rides = rides.filter(ride => 
@@ -274,23 +265,9 @@ export async function getMyRides(): Promise<ActionResponse<RideWithRelations[]>>
 
 export async function getCustomerRideDetail(rideId: string): Promise<ActionResponse<RideWithRelations>> {
     try {
-        const { isAuthenticated, user } = await getSessionWithRole();
-        if (!isAuthenticated || !user?.id) {
-            return { success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
-        }
-
-        const ride = await RidesViewService.getRideById(rideId);
-        if (!ride) {
-            return { success: false, error: 'Ride not found', code: ErrorCodes.RIDE_NOT_FOUND };
-        }
-
-        // Ensure the customer is actually part of this ride
-        const isOwner = ride.customers.some(c => c.id === user.id);
-        if (!isOwner) {
-            return { success: false, error: 'Access denied', code: ErrorCodes.FORBIDDEN };
-        }
-
-        return { success: true, data: ride };
+        // Use Controller — handles auth + ownership verification
+        const response = await CustomerRideController.getRideDetail(rideId);
+        return response;
     } catch (error) {
         return {
             success: false,

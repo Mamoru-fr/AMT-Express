@@ -1,20 +1,8 @@
-import {z} from 'zod';
 import {ActionResponse, ErrorCodes} from '@/lib/types/action-response';
 import {AuthService} from '@/lib/services/AuthService';
 import {headers} from 'next/headers';
 import {verifyAuth} from '@/lib/middleware/roleMiddleware';
-
-// Validation schemas
-const SignInSchema = z.object({
-    email: z.string().email('Email invalide'),
-    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
-});
-
-const SignUpSchema = z.object({
-    name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-    email: z.string().email('Email invalide'),
-    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères')
-});
+import {signInSchema, signUpSchema} from '@/lib/validations/auth';
 
 /**
  * AuthController - Gère la validation et la sécurité de l'authentification
@@ -27,7 +15,7 @@ export class AuthController {
     static async signIn(email: string, password: string): Promise<ActionResponse<void>> {
         try {
             // === VALIDATION DES CHAMPS ===
-            const validationResult = SignInSchema.safeParse({email, password});
+            const validationResult = signInSchema.safeParse({email, password});
             if (!validationResult.success) {
                 return {
                     success: false,
@@ -81,7 +69,7 @@ export class AuthController {
     ): Promise<ActionResponse<void>> {
         try {
             // === VALIDATION DES CHAMPS ===
-            const validationResult = SignUpSchema.safeParse({name, email, password});
+            const validationResult = signUpSchema.safeParse({name, email, password, confirmPassword});
             if (!validationResult.success) {
                 return {
                     success: false,

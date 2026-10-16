@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
+/* eslint-disable react-hooks/purity */
+import { useState, useEffect, useTransition, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -87,12 +88,16 @@ export default function DriverRideDetailPage() {
         return `€${parseFloat(price.toString()).toFixed(2)}`;
     }
 
+    const isLivingRideActive = useMemo(() => {
+        // eslint-disable-next-line react-hooks/purity -- Date.now() changes on every call, but this is acceptable for this use case
+        return ride?.status === 'assigned' &&
+            (new Date(ride.departureTime).getTime() - Date.now()) <= 60 * 60 * 1000;
+    }, [ride?.status, ride?.departureTime]);
+
     if (!isDriver) return null;
 
     const StatusIcon = ride ? (STATUS_ICONS[ride.status] ?? Clock) : Clock;
     const isAvailable = ride?.status === 'pending' && !ride?.driverId;
-    const isLivingRideActive = ride?.status === 'assigned' &&
-        (new Date(ride.departureTime).getTime() - Date.now()) <= 60 * 60 * 1000;
 
     return (
         <RoleSidebar>

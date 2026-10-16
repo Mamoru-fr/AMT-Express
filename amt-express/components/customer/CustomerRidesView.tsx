@@ -56,7 +56,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                     cache.current.pending = pendingResult.data;
                     setPendingRides(pendingResult.data);
                 } else {
-                    setError(pendingResult.error || t('customerRides.errors.failedToLoadPendingRides'));
+                    setError(pendingResult.error || 'Failed to load pending rides');
                 }
             }
             if (completedResult) {
@@ -64,23 +64,23 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                     cache.current.completed = completedResult.data;
                     setCompletedRides(completedResult.data);
                 } else {
-                    setError(prev => prev || completedResult.error || t('customerRides.errors.failedToLoadCompletedRides'));
+                    setError(prev => prev || completedResult.error || 'Failed to load completed rides');
                 }
             }
         } catch {
-            setError(t('customerRides.errors.unexpectedError'));
+            setError('An unexpected error occurred');
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [t]);
+    }, []);
 
     // Seed state from cache on mount without re-fetching if cache is warm
     useEffect(() => {
         if (cache.current.pending !== null) setPendingRides(cache.current.pending);
         if (cache.current.completed !== null) setCompletedRides(cache.current.completed);
         loadAll(false);
-    }, [loadAll]);
+    }, []);
 
     async function handleRefresh() {
         cache.current = { pending: null, completed: null };
