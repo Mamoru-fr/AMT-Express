@@ -155,7 +155,6 @@ export class RidesViewService {
               }
             }
           },
-          orderBy: desc(rides.departureTime),
         }
       }
     });
@@ -167,7 +166,7 @@ export class RidesViewService {
       driver: rc.ride.driver?.user || undefined,
       customers: [rc.customer],
       selectedOptions: [],
-    })) as RideWithRelations[];
+    })).sort((a, b) => new Date(b.departureTime).getTime() - new Date(a.departureTime).getTime()) as RideWithRelations[];
   }
 
   /**
@@ -179,7 +178,6 @@ export class RidesViewService {
       where: eq(rideCustomers.customerId, customerId),
       with: {
         ride: {
-          where: inArray(rides.status, ['completed', 'cancelled']),
           with: {
             driver: {
               with: {
@@ -187,19 +185,21 @@ export class RidesViewService {
               }
             }
           },
-          orderBy: desc(rides.departureTime),
         }
       }
     });
 
-    return customerRides.map(({ ride }: any) => ({
-      ...ride,
-      waitingTime: ride.waitingTime || 0,
-      options: [],
-      driver: ride.driver?.user || undefined,
-      customers: [],
-      selectedOptions: [],
-    })) as RideWithRelations[];
+    return customerRides
+      .filter(({ ride }: any) => ride.status === 'completed' || ride.status === 'cancelled')
+      .map(({ ride }: any) => ({
+        ...ride,
+        waitingTime: ride.waitingTime || 0,
+        options: [],
+        driver: ride.driver?.user || undefined,
+        customers: [],
+        selectedOptions: [],
+      }))
+      .sort((a, b) => new Date(b.departureTime).getTime() - new Date(a.departureTime).getTime()) as RideWithRelations[];
   }
 
   /**
@@ -211,7 +211,6 @@ export class RidesViewService {
       where: eq(rideCustomers.customerId, customerId),
       with: {
         ride: {
-          where: inArray(rides.status, ['pending', 'assigned']),
           with: {
             driver: {
               with: {
@@ -219,19 +218,21 @@ export class RidesViewService {
               }
             }
           },
-          orderBy: desc(rides.departureTime),
         }
       }
     });
 
-    return customerRides.map(({ ride }: any) => ({
-      ...ride,
-      waitingTime: ride.waitingTime || 0,
-      options: [],
-      driver: ride.driver?.user || undefined,
-      customers: [],
-      selectedOptions: [],
-    })) as RideWithRelations[];
+    return customerRides
+      .filter(({ ride }: any) => ride.status === 'pending' || ride.status === 'assigned')
+      .map(({ ride }: any) => ({
+        ...ride,
+        waitingTime: ride.waitingTime || 0,
+        options: [],
+        driver: ride.driver?.user || undefined,
+        customers: [],
+        selectedOptions: [],
+      }))
+      .sort((a, b) => new Date(b.departureTime).getTime() - new Date(a.departureTime).getTime()) as RideWithRelations[];
   }
 
   /**

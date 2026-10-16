@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslation } from 'react-i18next';
 
 /* eslint-disable react/no-unescaped-entities */

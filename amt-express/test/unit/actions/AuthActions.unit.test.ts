@@ -115,26 +115,22 @@ describe('AuthActions [UNIT]', () => {
 
     it('should return error for empty name', async () => {
       const result = await signUp('', 'test@example.com', 'PassWord123!', 'PassWord123!');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Name is required');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Name is required') });
     });
 
     it('should return error for invalid email', async () => {
       const result = await signUp('Test User', 'invalid-email', 'PassWord123!', 'PassWord123!');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid email');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Invalid email') });
     });
 
     it('should return error for short password', async () => {
       const result = await signUp('Test User', 'test@example.com', '123', '123');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Password must be at least 8 characters');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Password must be at least 8 characters') });
     });
 
     it('should return error for password mismatch', async () => {
       const result = await signUp('Test User', 'test@example.com', 'PassWord123!', 'Different123!');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Passwords do not match');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Passwords do not match') });
     });
   });
 
@@ -147,20 +143,17 @@ describe('AuthActions [UNIT]', () => {
 
     it('should return error for empty email', async () => {
       const result = await signIn('', 'PassWord123!');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Email is required');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Email is required') });
     });
 
     it('should return error for empty password', async () => {
       const result = await signIn('test@example.com', '');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Password is required');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Password is required') });
     });
 
     it('should return error for invalid email format', async () => {
       const result = await signIn('invalid-email', 'PassWord123!');
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid email');
+      expect(result).toMatchObject({ success: false, error: expect.stringContaining('Invalid email') });
     });
   });
 

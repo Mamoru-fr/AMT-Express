@@ -200,6 +200,7 @@ export function SearchableSelect({
                     value={query}
                     disabled={disabled}
                     placeholder={isMultiple ? (selectedOptions.length > 0 ? effectiveSearchPlaceholder : placeholder) : (selectedOption ? effectiveSearchPlaceholder : placeholder)}
+                    aria-label={placeholder}
                     className={isMultiple ? `${styles.input} ${styles.inputMulti}` : styles.input}
                     onFocus={(event) => {
                         setOpen(true);

@@ -10,9 +10,10 @@ type Props = {
     onChange?: (value: string) => void;
     name?: string;
     required?: boolean;
+    ariaLabel?: string;
 };
 
-export function Input({ placeholder, className, type, value, onChange, name, required }: Props) {
+export function Input({ placeholder, className, type, value, onChange, name, required, ariaLabel }: Props) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword && showPassword ? 'text' : type;
@@ -30,6 +31,7 @@ export function Input({ placeholder, className, type, value, onChange, name, req
                 type={inputType}
                 name={name}
                 required={required}
+                aria-label={ariaLabel || placeholder}
                 {...(value !== undefined && { value })}
                 {...(onChange && { onChange: (e) => onChange(e.target.value) })}
             />

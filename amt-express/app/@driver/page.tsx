@@ -1,7 +1,7 @@
 'use client'
 
 // React and Hooks
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Icons

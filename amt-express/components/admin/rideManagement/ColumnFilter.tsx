@@ -182,6 +182,7 @@ export function ColumnFilter({
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className={styles.searchInput}
+                                aria-label={`Rechercher dans ${label}`}
                             />
                             {searchTerm && (
                                 <button className={styles.clearSearch} onClick={() => setSearchTerm('')}>

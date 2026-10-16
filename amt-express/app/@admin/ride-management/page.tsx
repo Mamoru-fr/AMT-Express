@@ -500,6 +500,7 @@ export default function RideManagementPage() {
                                     className={styles.searchInput}
                                     value={filters.search}
                                     onChange={(e) => handleSearch(e.target.value)}
+                                    aria-label={t('ridesManagement.searchPlaceholder', 'Search by ID, departure, destination...')}
                                 />
                             </div>
 

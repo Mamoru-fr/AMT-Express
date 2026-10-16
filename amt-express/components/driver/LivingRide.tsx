@@ -203,6 +203,7 @@ function CompletePopup({ rideId, onCancel, onSuccess }: {
                         value={amount}
                         onChange={e => { setAmount(e.target.value); setError(null); }}
                         placeholder="0.00"
+                        aria-label={t('livingRide.amountLabel', 'Montant du compteur')}
                         className={`${styles.formInput} ${styles.amountInput} ${error ? styles.formInputError : ''}`}
                     />
                     <span className={styles.amountCurrency}>€</span>
