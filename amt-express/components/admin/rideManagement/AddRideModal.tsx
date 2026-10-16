@@ -222,7 +222,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
 
     return (
         <div className={isPageMode ? styles.pageShell : styles.modalOverlay}>
-            <div className={isPageMode ? styles.pageContainer : styles.modalContainer}>
+            <div className={isPageMode ? styles.pageContainer : styles.modalContainer} role={!isPageMode ? "dialog" : undefined} aria-modal={!isPageMode ? "true" : undefined} aria-labelledby="add-ride-title">
                 {isPageMode ? (
                     <div className={styles.pageHeader}>
                         <div className={styles.pageHeaderText}>
@@ -248,7 +248,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                     </div>
                 ) : (
                     <div className={styles.modalHeader}>
-                        <h2 className={styles.modalTitle}>
+                        <h2 className={styles.modalTitle} id="add-ride-title">
                             <CheckSquare className={styles.titleIcon} />
                             {t('ridesManagement.addRide', 'Add New Ride')}
                         </h2>

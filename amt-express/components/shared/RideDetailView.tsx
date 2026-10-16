@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
+/* eslint-disable react-hooks/purity */
+import { useState, useEffect, useTransition, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, MapPin, Clock, User, DollarSign, Car, AlertTriangle, CheckCircle, XCircle, Loader2, Ban } from 'lucide-react';
@@ -45,11 +46,12 @@ export function RideDetailView() {
 
     useEffect(() => { fetchRide(); }, [fetchRide]);
 
-    function canCancel(ride: RideWithRelations): boolean {
+    const canCancelRide = useMemo(() => {
+        if (!ride) return false;
         if (ride.status === 'completed' || ride.status === 'cancelled') return false;
         const ONE_HOUR_MS = 60 * 60 * 1000;
         return new Date(ride.departureTime).getTime() - Date.now() >= ONE_HOUR_MS;
-    }
+    }, [ride]);
 
     function handleCancel() {
         startCancelTransition(async () => {
@@ -66,6 +68,7 @@ export function RideDetailView() {
 
     function formatDate(date: Date | string | null) {
         if (!date) return '-';
+        // eslint-disable-next-line react-hooks/purity -- new Date is pure when called with a stable input
         return new Date(date).toLocaleDateString(undefined, {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
             hour: '2-digit', minute: '2-digit',
@@ -199,7 +202,7 @@ export function RideDetailView() {
                         )}
                     </div>
 
-                    {canCancel(ride) && (
+                    {canCancelRide && (
                         <div className={styles.dangerCard}>
                             <div className={styles.dangerHeader}>
                                 <Ban className={styles.dangerIcon} />

@@ -185,9 +185,9 @@ function CompletePopup({ rideId, onCancel, onSuccess }: {
 
     return (
         // Backdrop click does nothing — intentional blocking behavior
-        <div className={styles.popupBackdrop} role="dialog" aria-modal="true">
+        <div className={styles.popupBackdrop} role="dialog" aria-modal="true" aria-labelledby="complete-ride-title">
             <div className={styles.popupCard}>
-                <h3 className={styles.popupTitle}>
+                <h3 className={styles.popupTitle} id="complete-ride-title">
                     <Flag style={{ display: 'inline', width: '1rem', marginRight: '0.5rem', verticalAlign: 'middle', color: '#fca5a5' }} />
                     {t('livingRide.completeTitle', 'Terminer le trajet')}
                 </h3>
@@ -203,6 +203,7 @@ function CompletePopup({ rideId, onCancel, onSuccess }: {
                         value={amount}
                         onChange={e => { setAmount(e.target.value); setError(null); }}
                         placeholder="0.00"
+                        aria-label={t('livingRide.amountLabel', 'Montant du compteur')}
                         className={`${styles.formInput} ${styles.amountInput} ${error ? styles.formInputError : ''}`}
                     />
                     <span className={styles.amountCurrency}>€</span>

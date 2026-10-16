@@ -416,7 +416,7 @@
 
 .formInput:focus,
 .formSelect:focus {
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     border-color: var(--app-primary);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
@@ -475,7 +475,7 @@
     flex: 1 1 180px;
     min-width: 140px;
     border: none;
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     background: transparent;
     color: var(--app-title-color);
     font: inherit;
@@ -595,7 +595,7 @@
     min-width: 0;
     width: 100%;
     border: none;
-    outline: none;
+    outline: 2px solid transparent; outline-offset: 2px;
     background: transparent;
     color: var(--app-title-color);
     font: inherit;

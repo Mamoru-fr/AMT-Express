@@ -27,9 +27,9 @@ export function DeleteConfirmModal({rideId, onClose, onConfirm}: DeleteConfirmMo
     
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContainer}>
+            <div className={styles.modalContainer} role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>{t('rideModals.deleteConfirm.title')}</h3>
+                    <h3 className={styles.modalTitle} id="delete-confirm-title">{t('rideModals.deleteConfirm.title')}</h3>
                     <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>

@@ -46,9 +46,9 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
 
     return (
         <div className={styles.modalOverlay}>
-            <div className={styles.modalContainer}>
+            <div className={styles.modalContainer} role="dialog" aria-modal="true" aria-labelledby="assign-driver-title">
                 <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>{t('rideModals.assignDriver.title', {rideId: ride.id})}</h3>
+                    <h3 className={styles.modalTitle} id="assign-driver-title">{t('rideModals.assignDriver.title', {rideId: ride.id})}</h3>
                     <button onClick={onClose} className={styles.closeButton} aria-label={t('common.close')}>
                         <X className={styles.closeIcon}/>
                     </button>

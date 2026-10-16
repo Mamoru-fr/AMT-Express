@@ -1,27 +1,24 @@
 'use client'
 
 // Import des dépendances nécessaires
-import { useState, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
     fetchRidesForManagement,
     fetchAvailableDrivers,
     exportRidesToCSV,
     updateRideDetails,
     assignDriverToRide,
-    cancelRide,
-    deleteRide,
-    fetchAllCustomers
+    deleteRide
 } from "@/lib/actions/ridesManagementActions";
 
 import type { RideFilters, RidesManagementData } from "@/lib/services/RidesManagementService";
 import { RideStatus, RideWithRelations } from "@/content/database_types/ride";
 import {
-    Search, Filter, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X, ArrowUpDown, ClipboardList
+    Search, Download, Edit, Trash2, UserPlus, ChevronLeft, ChevronRight, Plus, X, ArrowUpDown, ClipboardList
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSessionWithRole } from "@/context/SessionContext";
-import { redirect } from "next/navigation";
 import { StatusBanner } from "@/components/classicComponents/StatusBanner";
 
 // Import des modals et composants locaux
@@ -42,16 +39,30 @@ export default function RideManagementPage() {
     const { t } = useTranslation();
     const { isAdmin, isAuthenticated } = useSessionWithRole();
     const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const currentReturnTo = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-
-    // Main data state
     const [data, setData] = useState<RidesManagementData | null>(null);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isAdvancedSortModalOpen, setIsAdvancedSortModalOpen] = useState(false);
     const [feedback, setFeedback] = useState<{ tone: 'info' | 'warning' | 'error' | 'success'; message: string } | null>(null);
+
+    const [editModal, setEditModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+        open: false,
+        ride: null
+    });
+    const [assignModal, setAssignModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+        open: false,
+        ride: null
+    });
+    const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: string | null }>({
+        open: false,
+        rideId: null
+    });
+    const [requestsModal, setRequestsModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
+        open: false,
+        ride: null
+    });
+
+    const [availableDrivers, setAvailableDrivers] = useState<Array<{ id: string; name: string; email: string }>>([]);
 
     type SortRule = {
         column: 'departureTime' | 'clients' | 'departure' | 'destination' | 'driver' | 'price' | 'status';
@@ -79,6 +90,11 @@ export default function RideManagementPage() {
         price: [],
         status: []
     });
+
+    // Security: Redirect if not admin
+    useEffect(() => {
+        if (isAuthenticated && !isAdmin) router.replace('/');
+    }, [isAuthenticated, isAdmin, router]);
 
     const getColumnOptions = (
         columnKey: string,
@@ -195,7 +211,7 @@ export default function RideManagementPage() {
     const hasActiveColumnFilters = Object.values(columnFilters).some(values => values.length > 0);
 
     const passesColumnFilters = (ride: RideWithRelations): boolean => {
-        const activeFilters = Object.entries(columnFilters).filter(([_, values]) => values.length > 0);
+        const activeFilters = Object.entries(columnFilters).filter(([, values]) => values.length > 0);
         if (activeFilters.length === 0) return true;
         
         for (const [column, values] of activeFilters) {
@@ -269,56 +285,8 @@ export default function RideManagementPage() {
         return 0;
     });
 
-    useEffect(() => {
-        if (isAuthenticated && !isAdmin) router.replace('/');
-    }, [isAuthenticated, isAdmin, router]);
-
-    if (!isAdmin) return null;
-
-    const [editModal, setEditModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
-        open: false,
-        ride: null
-    });
-    const [assignModal, setAssignModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
-        open: false,
-        ride: null
-    });
-    const [deleteModal, setDeleteModal] = useState<{ open: boolean; rideId: string | null }>({
-        open: false,
-        rideId: null
-    });
-    const [requestsModal, setRequestsModal] = useState<{ open: boolean; ride: RideWithRelations | null }>({
-        open: false,
-        ride: null
-    });
-
-    const [availableDrivers, setAvailableDrivers] = useState<Array<{ id: string; name: string; email: string }>>([]);
-    const [availableCustomers, setAvailableCustomers] = useState<Array<{ id: string; name: string; email: string }>>([]);
-
-    useEffect(() => {
-        loadRides();
-    }, [filters]);
-
-    const fetchAvailableDriversAndCustomers = async () => {
-        try {
-            const driversResponse = await fetchAvailableDrivers();
-            if (driversResponse.success) {
-                setAvailableDrivers(driversResponse.data);
-            }
-            const customersResponse = await fetchAllCustomers();
-            if (customersResponse.success) {
-                setAvailableCustomers(customersResponse.data);
-            }
-        } catch (error) {
-            console.error('Error fetching drivers or customers:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchAvailableDriversAndCustomers();
-    }, []);
-
-    const loadRides = async () => {
+    // Helper functions (must be defined before use in useEffect)
+    const loadRides = useCallback(async () => {
         setLoading(true);
         try {
             const result = await fetchRidesForManagement(filters);
@@ -332,7 +300,33 @@ export default function RideManagementPage() {
         } finally {
             setLoading(false);
         }
+    }, [filters]);
+
+    const loadAvailableDrivers = async () => {
+        try {
+            const driversResponse = await fetchAvailableDrivers();
+            if (driversResponse.success) {
+                setAvailableDrivers(driversResponse.data);
+            }
+        } catch (error) {
+            console.error('Error fetching drivers:', error);
+        }
     };
+
+    // Load rides when filters change
+    useEffect(() => {
+        if (!isAdmin) return;
+        loadRides();
+    }, [filters, isAdmin]);
+
+    // Load drivers on mount
+    useEffect(() => {
+        if (!isAdmin) return;
+        loadAvailableDrivers();
+    }, [isAdmin]);
+
+    // Early return after all hooks and effects
+    if (!isAdmin) return null;
 
     const handleSearch = (search: string) => {
         setFilters(prev => ({ ...prev, search, page: 1 }));
@@ -394,7 +388,17 @@ export default function RideManagementPage() {
         }
     };
 
-    const handleEditRide = async (ride: RideWithRelations, updates: any) => {
+    const handleEditRide = async (
+        ride: RideWithRelations,
+        updates: {
+            departure?: string;
+            destination?: string;
+            departureTime?: Date;
+            price?: string;
+            status?: RideStatus;
+            customerNotes?: string;
+        }
+    ) => {
         try {
             await updateRideDetails(ride.id, updates);
             setEditModal({ open: false, ride: null });
@@ -415,17 +419,6 @@ export default function RideManagementPage() {
         } catch (error) {
             console.error('Failed to assign driver:', error);
             setFeedback({ tone: 'error', message: t('ridesManagement.assignFailed', 'Failed to assign driver') });
-        }
-    };
-
-    const handleCancelRide = async (rideId: string) => {
-        try {
-            await cancelRide(rideId);
-            loadRides();
-            setFeedback({ tone: 'success', message: t('ridesManagement.cancelSuccess', 'Ride cancelled successfully') });
-        } catch (error) {
-            console.error('Failed to cancel ride:', error);
-            setFeedback({ tone: 'error', message: t('ridesManagement.cancelFailed', 'Failed to cancel ride') });
         }
     };
 
@@ -507,6 +500,7 @@ export default function RideManagementPage() {
                                     className={styles.searchInput}
                                     value={filters.search}
                                     onChange={(e) => handleSearch(e.target.value)}
+                                    aria-label={t('ridesManagement.searchPlaceholder', 'Search by ID, departure, destination...')}
                                 />
                             </div>
 

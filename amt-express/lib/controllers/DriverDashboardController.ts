@@ -197,9 +197,28 @@ export class DriverDashboardController {
         try {
             const roleCheck = await verifyRole('driver');
             if (!roleCheck.success) return roleCheck;
+            const { user } = roleCheck.data!;
 
             const ride = await RidesViewService.getRideById(rideId);
             if (!ride) return { success: false, error: 'Ride not found', code: ErrorCodes.RIDE_NOT_FOUND };
+
+            // Verify that the authenticated driver is the driver of this ride
+            const driver = await DriverDashboardService.getDriverForUser(user.id);
+            if (!driver) {
+                return {
+                    success: false,
+                    error: 'Driver profile not found',
+                    code: ErrorCodes.UNAUTHORIZED
+                };
+            }
+            
+            if (ride.driverId !== driver.id) {
+                return {
+                    success: false,
+                    error: 'Access denied: You can only view your own rides',
+                    code: ErrorCodes.FORBIDDEN
+                };
+            }
 
             return { success: true, data: ride };
         } catch (error) {
