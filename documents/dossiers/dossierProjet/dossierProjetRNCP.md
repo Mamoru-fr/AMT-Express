@@ -276,25 +276,35 @@ classDiagram
 
 **Enums** : `user_role` (admin/driver/customer) · `ride_status` (pending/assigned/completed/cancelled) · `invoice_status` (unpaid/paid/cancelled) · `request_status` (pending/approved/rejected) · `shift_status` (planned/active/completed/cancelled).
 
-**MCD (Merise)** — entités métier et cardinalités (cœur du modèle ; les tables d'auth, de notification et d'audit sont omises pour la lisibilité) :
-
-*Nota : le schéma ci-dessous utilise la notation « pattes d'oie » de Mermaid. Pour le rendu final, il sera transcrit en notation Merise stricte — cardinalités (0,n)/(1,1) sur les pattes — dans l'outil de modélisation (cf. annexe #2). Les cardinalités Merise sont données dans le MLD ci-dessous.*
+**MCD (Merise)** — entités métier, associations et cardinalités en notation Merise (cœur du modèle ; les tables d'auth, de notification et d'audit sont omises pour la lisibilité). Rappels de lecture : la cardinalité se lit **au pied de l'entité** ; les associations `transporte` et `embarque` sont **porteuses** (elles portent les tables associatives `ride_customers` et `ride_selected_options`) ; l'association `est-aussi` relie `USER` et `DRIVER` (1,1 du côté chauffeur : un chauffeur est exactement un utilisateur).
 
 ```mermaid
-erDiagram
-    PRODUCTION ||--o{ PROJECT : contient
-    PROJECT ||--o{ RIDE : contient
-    USER ||--o| DRIVER : est-aussi
-    DRIVER |o--o{ RIDE : est-assignee
-    DRIVER ||--o{ ASSIGNMENT_REQUEST : demande
-    RIDE ||--o{ ASSIGNMENT_REQUEST : recoit
-    RIDE ||--o{ RIDE_CUSTOMER : transporte
-    RIDE ||--o{ RIDE_SELECTED_OPTION : embarque
-    RIDE_OPTION ||--o{ RIDE_SELECTED_OPTION : optionnalise
-    DRIVER ||--o{ SHIFT_PLANNING : planifie
-    RIDE ||--o{ NOTIFICATION : notifie
-    USER ||--o{ NOTIFICATION : recoit
+flowchart LR
+    PROD[PRODUCTION] -- "(0,n)" --> A1{"contient"} -- "(1,1)" --> PROJ[PROJECT]
+    PROJ -- "(0,n)" --> A2{"concerne"} -- "(1,1)" --> RIDE
+    USER -- "(0,1)" --> A3{"est-aussi"} -- "(1,1)" --> DRV[DRIVER]
+    DRV -- "(0,n)" --> A4{"est-assignee-a"} -- "(0,1)" --> RIDE
+    DRV -- "(0,n)" --> A5{"emet"} -- "(1,1)" --> AR[ASSIGNMENT_REQUEST]
+    RIDE -- "(0,n)" --> A6{"recoit"} -- "(1,1)" --> AR
+    RIDE -- "(1,n)" --> A7{"transporte<br/>(porteuse : ride_customers)"} -- "(0,n)" --> USER
+    RIDE -- "(0,n)" --> A8{"embarque<br/>(porteuse : ride_selected_options)"} -- "(0,n)" --> ROPT[RIDE_OPTION]
+    DRV -- "(0,n)" --> A9{"planifie"} -- "(1,1)" --> SHP[SHIFT_PLANNING]
+    USER -- "(0,n)" --> A10{"recoit"} -- "(1,1)" --> NT[NOTIFICATION]
+    RIDE -- "(0,n)" --> A11{"concerne"} -- "(1,1)" --> NT
+    style A1 fill:#F4A259,color:#000
+    style A2 fill:#F4A259,color:#000
+    style A3 fill:#F4A259,color:#000
+    style A4 fill:#F4A259,color:#000
+    style A5 fill:#F4A259,color:#000
+    style A6 fill:#F4A259,color:#000
+    style A7 fill:#F4A259,color:#000
+    style A8 fill:#F4A259,color:#000
+    style A9 fill:#F4A259,color:#000
+    style A10 fill:#F4A259,color:#000
+    style A11 fill:#F4A259,color:#000
 ```
+
+*Nota : structure et cardinalités Merise strictes ci-dessus. Pour la version imprimée, seule la mise en page (chapelets horizontaux) pourra être redessinée dans l'outil de modélisation (cf. annexe #2) — le fond ne changera pas.*
 
 **MLD** — transformation en tables relationnelles (extraits des règles de passage) :
 
@@ -645,7 +655,7 @@ Un projet solo de A à Z force à tenir tous les rôles à la fois — architect
 - **Corrections appliquées le 16/10/2026** : rappels factures J+7/J+14/J+30 retirés du MVP (champs schéma présents, logique non implémentée) ; export PDF retiré (CSV uniquement) ; `.env.example` confirmé présent ; enums corrigés (5 pgEnum réels, pas de `option_type`/`vehicle_type`) ; parallel routes corrigées (`connections` au lieu de `@auth`) ; workflows corrigés (7, pas 8).
 - **Corrections appliquées le 16/10/2026 (2e passe, vérifiées contre le code)** : module de facturation retiré du MVP (aucun `insert` sur `invoices`/`invoice_items` dans `lib/` ; seul `AdminDashboardService` compte les factures impayées pour le KPI) et déplacé en « hors périmètre » ; user story 4 annotée « objectif — non livré » ; §7.4 : transactions multi-lignes et index composites retirés des livrés (une seule transaction réelle : import CSV, `lib/db/import-csv.ts:482`), sous-section « Objectifs / roadmap » ajoutée ; §4.2 MPD réécrit sur le schéma réel (19 `pgTable`, 5 `pgEnum`, FK `ON DELETE SET NULL`/`CASCADE`, index mono-colonne ; amélioration planifiée : CHECK rating 1–5, UNIQUE composite, index composite) ; §1.1/§1.2/§5.3/§7.3 : « facturation » retirée des fonctions présentées comme livrées ; chiffre de tests sourcé par exécution réelle (`pnpm test` 16/10/2026 : 9 fichiers, 240 passed / 0 failed ; les comptages statiques `it(` divergeaient à cause des tests générés par boucles, le commit `a0b372a` annonçait un chiffre différent).
 - **Pass du 23/10/2026 (v2 — mise en forme & schémas)** : page de garde + sommaire ajoutés (logique des dossiers exemples de la Drive : Awaleh, Diaz) ; 11 diagrammes Mermaid produits (UML ×3, MCD/MLD, navigation, architecture, flux Server Action, Git Flow, pipeline CI, infra, jeu d'essai, avant/après) ; badges/encadrés HTML pour impression A4 ; annexe transformée en tableau de suivi. **Aucun fait nouveau inventé** : les schémas décrivent des mécanismes déjà documentés dans le dossier ; les parcours (§ 4.1 activité, § 7.6) restent marqués « à vérifier contre le code ». Diagrammes Mermaid : pour le PDF final, soit l'extension Mermaid est activée, soit exporter chaque schéma en SVG/PNG et insérer l'image.
-- **Review anais0210 intégrée (23/10/2026, PR #77)** : UC12 « Noter une course » déplacé vers le Client ; diagramme d'activité requalifié « parcours cible » (transaction d'assignation et rejet des demandes concurrentes marqués non livrés, renvoi § 7.4 ; plafond de demandes à confirmer) ; entité Rating retirée (notation = attributs de `rides`, noms de colonnes à confirmer) ; cardinalités corrigées (Driver 0..1 → 0..n Ride ; MCD `|o--o{` chauffeur optionnel ; RideSelectedOption → exactement 1 RideOption ; ride_customers (0,n) côté client) ; « FK composites » → deux FK simples ; `MAIN .->` → `-.->` ; schéma infra corrigé (push → Actions → Vercel, plus l'inverse ; « préviews par PR » marquées à confirmer) ; notes ajoutées sur la transcription Merise/UML canonique attendue pour les annexes #1 et #2.
+- **Review anais0210 intégrée (23/10/2026, PR #77)** : UC12 « Noter une course » déplacé vers le Client ; diagramme d'activité requalifié « parcours cible » (transaction d'assignation et rejet des demandes concurrentes marqués non livrés, renvoi § 7.4 ; plafond de demandes à confirmer) ; entité Rating retirée (notation = attributs de `rides`, noms de colonnes à confirmer) ; cardinalités corrigées (Driver 0..1 → 0..n Ride ; RideSelectedOption → exactement 1 RideOption ; ride_customers (0,n) côté client) ; **MCD redessiné en notation Merise stricte** (associations en losanges, cardinalités (0,n)/(1,1) au pied de chaque entité, associations porteuses `transporte`/`embarque` explicitées) ; « FK composites » → deux FK simples ; `MAIN .->` → `-.->` ; schéma infra corrigé (push → Actions → Vercel, plus l'inverse ; « préviews par PR » marquées à confirmer) ; note ajoutée sur la transcription UML canonique attendue pour l'annexe #1.
 - Les specs papier (janv. 2026, AMT Horizon, 20 tables) sont antérieures au refactor : le dossier s'appuie sur le repo, pas sur elles.
 - Écart à arbitrer : les specs papier mentionnent Zustand, Socket.io, Stripe — **confirmé absent** de `package.json`.
 - Le jury reçoit le dossier **imprimé** quelques minutes avant : chaque section doit être skimmable (titres, tableaux, schémas, légendes de captures).
