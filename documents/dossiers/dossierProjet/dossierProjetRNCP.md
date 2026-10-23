@@ -231,7 +231,7 @@ flowchart TD
     C --> SA[Server Action<br/>validation Zod]
     SA --> VR{verifyRole<br/>'driver' ?}
     VR -- refus --> E1[ActionResponse UNAUTHORIZED — fin]
-    VR -- ok --> S1[Service : contrôle du statut<br/>(plafond de demandes : à confirmer)]
+    VR -- ok --> S1["Service : contrôle du statut<br/>(plafond de demandes : à confirmer)"]
     S1 -- statut invalide --> E2[ActionResponse erreur — fin]
     S1 -- ok --> I[(Insertion assignment_requests)]
     I --> N1[Notification admin]
