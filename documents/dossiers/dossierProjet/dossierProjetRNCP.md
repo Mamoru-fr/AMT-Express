@@ -178,14 +178,14 @@ flowchart TB
 ### 5.2. La sécurité (OWASP) 🟡
 
 
-| Risque OWASP                      | Réponse dans AMT Express                                                                                                                                                                 |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Risque OWASP                      | Réponse dans AMT Express                                                                                                                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A01 — Contrôle d'accès défaillant | `verifyRole()` dans **chaque** Server Action, hiérarchie de rôles, activation manuelle des chauffeurs, bannissement ; correction de fuites de données (commit `68cf1da`, 02/10/2026 : *fix data leaks*) |
-| A02 — Cryptographie défaillante   | Cookies HTTP-only (`nextCookies()`), secrets en variables d'environnement, HTTPS en production                                                                                           |
-| A03 — Injection                   | Requêtes paramétrées via Drizzle, validation/sanitization Zod côté serveur sur **toutes** les entrées                                                                                    |
-| A05 — Mauvaise configuration      | `.env` hors dépôt, `NODE_ENV` géré, messages d'erreur génériques aux clients (`ActionResponse`)                                                                                          |
-| A06 — Dépendances vulnérables     | `pnpm audit` (à systématiser en CI — voir § 10)                                                                                                                                          |
-| A07 — Auth défaillante            | Better Auth (hachage, sessions expirantes), secret ≥ 32 caractères, rôle par défaut minimal (`customer`)                                                                                 |
+| A02 — Cryptographie défaillante   | Cookies HTTP-only (`nextCookies()`), secrets en variables d'environnement, HTTPS en production                                                                                                          |
+| A03 — Injection                   | Requêtes paramétrées via Drizzle, validation/sanitization Zod côté serveur sur **toutes** les entrées                                                                                                   |
+| A05 — Mauvaise configuration      | `.env` hors dépôt, `NODE_ENV` géré, messages d'erreur génériques aux clients (`ActionResponse`)                                                                                                         |
+| A06 — Dépendances vulnérables     | `pnpm audit` (à systématiser en CI — voir § 10)                                                                                                                                                         |
+| A07 — Auth défaillante            | Better Auth (hachage, sessions expirantes), secret ≥ 32 caractères, rôle par défaut minimal (`customer`)                                                                                                |
 
 
 **RGPD** : données personnelles limitées au strict nécessaire, journal d'audit `activity_logs`, durée de conservation définie, procédure d'archivage des comptes désactivés. 🔴 *registre des traitements : une page à rédiger.*
@@ -283,9 +283,9 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 | Pré-conditions                     | admin authentifié (`verifyRole('admin')`) ; base avec au moins 1 client et 1 chauffeur actifs                        |
 | Données en entrée (cas nominal)    | départ « Paris 15e », destination « Orly », horaire J+2 10h00, prix client 45,00 €, option « aéroport »              |
 | Résultat attendu                   | `ActionResponse` succès + id ; ligne `rides` créée en `pending` ; ligne `ride_customers` créée ; notification client |
-| Résultat obtenu                    | ✅ conforme (test d'intégration `RidesManagementActions` — 🔴 capture à insérer)                                      |
+| Résultat obtenu                    | ✅ conforme (test d'intégration `RidesManagementActions` — 🔴 capture à insérer)                                       |
 | Cas d'erreur 1 : horaire passé     | Zod rejette → `ActionResponse` erreur `VALIDATION_ERROR`, champs signalés, **aucune écriture en base**               |
-| Cas d'erreur 2 : rôle non autorisé | `verifyRole()` → erreur `UNAUTHORIZED` ; 🔴 capture                                                                  |
+| Cas d'erreur 2 : rôle non autorisé | `verifyRole()` → erreur `UNAUTHORIZED` ; 🔴 capture                                                                   |
 | Écart éventuel                     | *(à documenter si un écart est survenu pendant le développement)*                                                    |
 
 
@@ -303,12 +303,12 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 ### 9.1. Les environnements séparés ✅
 
 
-| Environnement       | Rôle               | Mise en œuvre                                                                                                |
-| ------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Développement       | itération rapide   | local (Node 20) ou Docker Compose (PostgreSQL inclus, `node:20.12.2-alpine`), `pnpm db:push`, hot reload, logs verbeux              |
+| Environnement       | Rôle               | Mise en œuvre                                                                                                              |
+| ------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Développement       | itération rapide   | local (Node 20) ou Docker Compose (PostgreSQL inclus, `node:20.12.2-alpine`), `pnpm db:push`, hot reload, logs verbeux     |
 | Tests / intégration | valider avant prod | branche `development`, base Neon dédiée, `NODE_ENV=test` (bypass de `verifyRole()` ciblé), CI GitHub Actions (Node 24.7.0) |
-| UAT / préproduction | recette            | déploiement Vercel UAT via `workflow_dispatch`, vérification manuelle                                        |
-| Production          | vrais utilisateurs | branche `main`, Vercel PROD, secrets gérés, HTTPS                                                            |
+| UAT / préproduction | recette            | déploiement Vercel UAT via `workflow_dispatch`, vérification manuelle                                                      |
+| Production          | vrais utilisateurs | branche `main`, Vercel PROD, secrets gérés, HTTPS                                                                          |
 
 
 Variables d'environnement distinctes (`DATABASE_URL`, `BETTER_AUTH_SECRET`/`AUTH_SECRET`, `NEXT_PUBLIC_APP_URL`) ; fichier `.env.example` présent dans le repo (template documenté).
