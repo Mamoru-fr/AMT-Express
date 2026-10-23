@@ -195,7 +195,7 @@ flowchart LR
 
 ### 4.1. Modélisation UML ✅ *(diagrammes produits v2 — à valider contre le code)*
 
-**Diagramme de cas d'utilisation** — acteurs Admin / Chauffeur / Client (le système de facturation est hors MVP) :
+**Diagramme de cas d'utilisation** — acteurs Admin / Chauffeur / Client (le système de facturation est hors MVP). *Nota : transcription en flowchart Mermaid ; le rendu UML canonique (acteurs en bonhommes, ellipses) sera produit dans l'outil de modélisation pour l'annexe #1.*
 
 ```mermaid
 flowchart LR
@@ -219,11 +219,11 @@ flowchart LR
     end
 
     Admin --- UC1 & UC2 & UC3 & UC4 & UC5 & UC6
-    Driver --- UC7 & UC8 & UC9 & UC12
-    Customer --- UC10 & UC11
+    Driver --- UC7 & UC8 & UC9
+    Customer --- UC10 & UC11 & UC12
 ```
 
-**Diagramme d'activité** — parcours « demande d'assignation » :
+**Diagramme d'activité** — parcours « demande d'assignation » *(parcours cible — hypothèses à vérifier contre le code, cf. § 7.4 : une seule transaction réelle livrée, l'import CSV)* :
 
 ```mermaid
 flowchart TD
@@ -231,16 +231,17 @@ flowchart TD
     C --> SA[Server Action<br/>validation Zod]
     SA --> VR{verifyRole<br/>'driver' ?}
     VR -- refus --> E1[ActionResponse UNAUTHORIZED — fin]
-    VR -- ok --> S1[Service : contrôle statut<br/>+ plafond de demandes]
+    VR -- ok --> S1[Service : contrôle du statut<br/>(plafond de demandes : à confirmer)]
     S1 -- statut invalide --> E2[ActionResponse erreur — fin]
     S1 -- ok --> I[(Insertion assignment_requests)]
     I --> N1[Notification admin]
     N1 --> D{Admin décide}
-    D -- valide --> T[Transaction : rides.driver_id ← chauffeur<br/>statut assigned<br/>rejet des autres demandes]
+    D -- valide --> T[Objectif roadmap § 7.4 — non livré à ce stade :<br/>transaction d'assignation<br/>+ rejet des demandes concurrentes]
     T --> N2[Notification chauffeur → course assignée]
     D -- rejette --> N3[Notification chauffeur → demande rejetée]
     N2 --> F([Fin])
     N3 --> F
+    style T fill:#F4A259,color:#000
 ```
 
 **Diagramme de classes** (entités métier, préparatoire du MCD) :
@@ -251,24 +252,22 @@ classDiagram
     class Driver { +id +user_id +active }
     class Production { +id +name }
     class Project { +id +production_id +name }
-    class Ride { +id +project_id +driver_id? +status : ride_status +price }
+    class Ride { +id +project_id +driver_id? +status : ride_status +price +notation 1..5 étoiles +commentaire de notation }
     class RideCustomer { +ride_id +customer_id }
     class RideOption { +id +label +price }
     class RideSelectedOption { +ride_id +option_id }
     class AssignmentRequest { +ride_id +driver_id +status : request_status }
     class ShiftPlanning { +driver_id +status : shift_status }
-    class Rating { +ride_id +score 1..5 +comment }
     User "1" --> "0..1" Driver
     Production "1" *-- "0..n" Project
     Project "1" --> "0..n" Ride
-    Ride "0..1" <-- "1" Driver : assigned
+    Driver "0..1" --> "0..n" Ride : assignee-a
     Ride "1" --> "1..n" RideCustomer
     Ride "1" --> "0..n" RideSelectedOption
-    RideSelectedOption "0..n" --> "1..n" RideOption
+    RideSelectedOption "0..n" --> "1" RideOption
     Ride "1" --> "0..n" AssignmentRequest
     AssignmentRequest "0..n" --> "1" Driver
     Driver "1" --> "0..n" ShiftPlanning
-    Ride "1" --> "0..1" Rating
 ```
 
 ### 4.2. Conception de la base de données 🟡 ✅ *(schémas produits v2 — à valider)*
@@ -279,19 +278,20 @@ classDiagram
 
 **MCD (Merise)** — entités métier et cardinalités (cœur du modèle ; les tables d'auth, de notification et d'audit sont omises pour la lisibilité) :
 
+*Nota : le schéma ci-dessous utilise la notation « pattes d'oie » de Mermaid. Pour le rendu final, il sera transcrit en notation Merise stricte — cardinalités (0,n)/(1,1) sur les pattes — dans l'outil de modélisation (cf. annexe #2). Les cardinalités Merise sont données dans le MLD ci-dessous.*
+
 ```mermaid
 erDiagram
     PRODUCTION ||--o{ PROJECT : contient
     PROJECT ||--o{ RIDE : contient
     USER ||--o| DRIVER : est-aussi
-    DRIVER ||--o{ RIDE : est-assignee
+    DRIVER |o--o{ RIDE : est-assignee
     DRIVER ||--o{ ASSIGNMENT_REQUEST : demande
     RIDE ||--o{ ASSIGNMENT_REQUEST : recoit
     RIDE ||--o{ RIDE_CUSTOMER : transporte
     RIDE ||--o{ RIDE_SELECTED_OPTION : embarque
     RIDE_OPTION ||--o{ RIDE_SELECTED_OPTION : optionnalise
     DRIVER ||--o{ SHIFT_PLANNING : planifie
-    RIDE ||--o| RATING : evalue
     RIDE ||--o{ NOTIFICATION : notifie
     USER ||--o{ NOTIFICATION : recoit
 ```
@@ -299,8 +299,8 @@ erDiagram
 **MLD** — transformation en tables relationnelles (extraits des règles de passage) :
 
 - `rides (id, project_id*, driver_id*, status, price, …)` — FK vers `projects` (NOT NULL), FK vers `drivers` (NULLABLE : course non encore assignée).
-- `ride_customers (ride_id*, customer_id*)` — table associative, cardinalité (1,n) des deux côtés.
-- `assignment_requests (ride_id*, driver_id*, status)` — FK composites vers `rides` et `drivers`, statut contraint par l'enum `request_status`.
+- `ride_customers (ride_id*, customer_id*)` — table associative : (1,n) côté course (une course transporte au moins un client), (0,n) côté client (un client peut n'avoir aucune course).
+- `assignment_requests (ride_id*, driver_id*, status)` — deux FK simples (`ride_id`, `driver_id`), statut contraint par l'enum `request_status`.
 - `projects (id, production_id*, …)` — FK vers `productions` ; une production contient 0..n projets.
 
 **MPD** 🟡 : schéma réel `lib/db/schema.ts` — 19 `pgTable`, 5 `pgEnum` (`user_role`, `ride_status`, `shift_status`, `request_status`, `invoice_status`), FK `ON DELETE SET NULL`/`CASCADE`, index mono-colonne uniquement (pas d'index composite ni partiel).
@@ -376,7 +376,7 @@ flowchart TB
 - **Zod** : une seule source de vérité pour la validation, schémas réutilisés côté front (erreurs de formulaire) et back.
 - **Vitest** : cohérence avec l'écosystème Vite/Next, API compatible Jest, rapide.
 - **Docker multi-étapes** (`node:20-alpine`, user non-root, healthcheck) : builds reproductibles, image de production légère.
-- **Vercel** : déploiement natif Next.js, free tier, préviews par PR.
+- **Vercel** : déploiement natif Next.js, free tier (déploiements réels pilotés par `workflow_dispatch` — les préviews automatiques par PR restent à activer/à confirmer).
 
 ---
 
@@ -396,7 +396,7 @@ flowchart LR
     F["feature/* · hotfix/*"] -- "PR + CI verte" --> DEV["development<br/>(intégration)"]
     DEV -- "PR + workflow_dispatch + confirmation manuelle" --> UAT["Vercel UAT"]
     UAT -- "validation humaine" --> MAIN["main — production<br/>Vercel PROD"]
-    MAIN .->|"rollback : re-déploiement du tag précédent"| MAIN
+    MAIN -.->|"rollback : re-déploiement du tag précédent"| MAIN
 ```
 
 - **Suivi** : GitHub Projects (board), issues (~25 ouvertes pour le post-MVP), messages de commit conventionnels (`feat`, `fix`, `refactor`, `chore`).
@@ -464,7 +464,7 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 
 ### 7.6. Fonctionnalité métier complète 🟡
 
-**Parcours « demande d'assignation »** (proposition — de l'UI au stockage ; le diagramme d'activité complet est au § 4.1) : le chauffeur voit une course `pending` → clique « demander » → Server Action validée Zod → `verifyRole('driver')` → service : contrôle du statut et du plafond de demandes simultanées → insertion `assignment_requests` → notification admin → l'admin valide → transaction : `rides.driver_id` mis à jour + statut `assigned` + rejet des autres demandes → notification chauffeur. *(à vérifier contre le code réel — cible idéale car elle traverse toutes les couches.)*
+**Parcours « demande d'assignation »** (proposition — de l'UI au stockage ; le diagramme d'activité complet est au § 4.1) : le chauffeur voit une course `pending` → clique « demander » → Server Action validée Zod → `verifyRole('driver')` → service : contrôle du statut et du plafond de demandes simultanées → insertion `assignment_requests` → notification admin → l'admin valide → *(objectif — non livré à ce stade, cf. § 7.4 : la transaction d'assignation et le rejet des demandes concurrentes sont en roadmap)* → notification chauffeur. *(à vérifier contre le code réel — cible idéale car elle traverse toutes les couches.)*
 
 ---
 
@@ -555,10 +555,10 @@ README (installation locale, Docker Compose, build production), `documentation/`
 
 ```mermaid
 flowchart LR
-    U["Utilisateur<br/>(desktop / mobile / PWA)"] -- "HTTPS" --> V["Vercel — CDN + Next.js 16<br/>(build atomique, préviews par PR)"]
+    U["Utilisateur<br/>(desktop / mobile / PWA)"] -- "HTTPS" --> V["Vercel — CDN + Next.js 16<br/>(build atomique)"]
     V -- "requêtes SQL chiffrées" --> N[("Neon — PostgreSQL 16<br/>(free tier, branching)")]
-    V -- "déclenchements" --> GH["GitHub Actions<br/>(7 workflows)"]
-    GH -- "deploy (workflow_dispatch)" --> V
+    P["Push / PR GitHub"] -- "déclenchent" --> GH["GitHub Actions<br/>(7 workflows)"]
+    GH -- "deploy (workflow_dispatch,<br/>confirmation manuelle)" --> V
     N -- "pnpm db:backup" --> BK["Sauvegardes locales<br/>(préalables aux opérations risquées)"]
     style V fill:#176B87,color:#fff
     style N fill:#060605,color:#fff
@@ -645,6 +645,7 @@ Un projet solo de A à Z force à tenir tous les rôles à la fois — architect
 - **Corrections appliquées le 16/10/2026** : rappels factures J+7/J+14/J+30 retirés du MVP (champs schéma présents, logique non implémentée) ; export PDF retiré (CSV uniquement) ; `.env.example` confirmé présent ; enums corrigés (5 pgEnum réels, pas de `option_type`/`vehicle_type`) ; parallel routes corrigées (`connections` au lieu de `@auth`) ; workflows corrigés (7, pas 8).
 - **Corrections appliquées le 16/10/2026 (2e passe, vérifiées contre le code)** : module de facturation retiré du MVP (aucun `insert` sur `invoices`/`invoice_items` dans `lib/` ; seul `AdminDashboardService` compte les factures impayées pour le KPI) et déplacé en « hors périmètre » ; user story 4 annotée « objectif — non livré » ; §7.4 : transactions multi-lignes et index composites retirés des livrés (une seule transaction réelle : import CSV, `lib/db/import-csv.ts:482`), sous-section « Objectifs / roadmap » ajoutée ; §4.2 MPD réécrit sur le schéma réel (19 `pgTable`, 5 `pgEnum`, FK `ON DELETE SET NULL`/`CASCADE`, index mono-colonne ; amélioration planifiée : CHECK rating 1–5, UNIQUE composite, index composite) ; §1.1/§1.2/§5.3/§7.3 : « facturation » retirée des fonctions présentées comme livrées ; chiffre de tests sourcé par exécution réelle (`pnpm test` 16/10/2026 : 9 fichiers, 240 passed / 0 failed ; les comptages statiques `it(` divergeaient à cause des tests générés par boucles, le commit `a0b372a` annonçait un chiffre différent).
 - **Pass du 23/10/2026 (v2 — mise en forme & schémas)** : page de garde + sommaire ajoutés (logique des dossiers exemples de la Drive : Awaleh, Diaz) ; 11 diagrammes Mermaid produits (UML ×3, MCD/MLD, navigation, architecture, flux Server Action, Git Flow, pipeline CI, infra, jeu d'essai, avant/après) ; badges/encadrés HTML pour impression A4 ; annexe transformée en tableau de suivi. **Aucun fait nouveau inventé** : les schémas décrivent des mécanismes déjà documentés dans le dossier ; les parcours (§ 4.1 activité, § 7.6) restent marqués « à vérifier contre le code ». Diagrammes Mermaid : pour le PDF final, soit l'extension Mermaid est activée, soit exporter chaque schéma en SVG/PNG et insérer l'image.
+- **Review anais0210 intégrée (23/10/2026, PR #77)** : UC12 « Noter une course » déplacé vers le Client ; diagramme d'activité requalifié « parcours cible » (transaction d'assignation et rejet des demandes concurrentes marqués non livrés, renvoi § 7.4 ; plafond de demandes à confirmer) ; entité Rating retirée (notation = attributs de `rides`, noms de colonnes à confirmer) ; cardinalités corrigées (Driver 0..1 → 0..n Ride ; MCD `|o--o{` chauffeur optionnel ; RideSelectedOption → exactement 1 RideOption ; ride_customers (0,n) côté client) ; « FK composites » → deux FK simples ; `MAIN .->` → `-.->` ; schéma infra corrigé (push → Actions → Vercel, plus l'inverse ; « préviews par PR » marquées à confirmer) ; notes ajoutées sur la transcription Merise/UML canonique attendue pour les annexes #1 et #2.
 - Les specs papier (janv. 2026, AMT Horizon, 20 tables) sont antérieures au refactor : le dossier s'appuie sur le repo, pas sur elles.
 - Écart à arbitrer : les specs papier mentionnent Zustand, Socket.io, Stripe — **confirmé absent** de `package.json`.
 - Le jury reçoit le dossier **imprimé** quelques minutes avant : chaque section doit être skimmable (titres, tableaux, schémas, légendes de captures).
