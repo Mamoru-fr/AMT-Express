@@ -263,8 +263,10 @@ classDiagram
     Project "1" --> "0..n" Ride
     Ride "0..1" <-- "1" Driver : assigned
     Ride "1" --> "1..n" RideCustomer
-    Ride "1" --> "0..n" RideSelectedOption --> RideOption
-    Ride "1" --> "0..n" AssignmentRequest --> Driver
+    Ride "1" --> "0..n" RideSelectedOption
+    RideSelectedOption "0..n" --> "1..n" RideOption
+    Ride "1" --> "0..n" AssignmentRequest
+    AssignmentRequest "0..n" --> "1" Driver
     Driver "1" --> "0..n" ShiftPlanning
     Ride "1" --> "0..1" Rating
 ```
@@ -318,7 +320,7 @@ erDiagram
 
 ```mermaid
 flowchart TD
-    C[[Page connections (auth)]] --> R{verifyRole :<br/>rôle de session}
+    C["Page connections (auth)"] --> R{verifyRole :<br/>rôle de session}
     R -- admin --> A["@admin — parallel route<br/>courses, assignations,<br/>import CSV, KPI dashboards"]
     R -- driver --> D["@driver — parallel route<br/>courses disponibles,<br/>demandes, shifts"]
     R -- customer --> CU["@customer — parallel route<br/>réservation, historique, notation"]
