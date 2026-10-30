@@ -1,6 +1,8 @@
 # Annexe #2 bis — Dictionnaire de données (MPD, tables cœur)
 
 > Chaque ligne vérifiée dans `lib/db/schema.ts` @ `main` (SHA `bce57b7`, 30/10/2026). Le dictionnaire couvre les tables que le jury interroge en premier ; l'ERD (annexe #2) donne la vue d'ensemble.
+>
+> **Note (†)** : dans le schéma actuel, plusieurs colonnes NOT NULL portent un `ON DELETE SET NULL` — le SET NULL échouerait à l'exécution si la ligne référencée venait à être supprimée. C'est une dette connue, documentée comme telle dans l'ERD (annexe #2, améliorations planifiées) ; la contrainte applicable aujourd'hui est donc « NOT NULL, FK ».
 
 ## `rides` — la course
 
@@ -39,7 +41,7 @@
 | `id` | text (uuid) | PK | Identifiant de la demande |
 | `ride_id` | text | NOT NULL, FK `rides`, CASCADE | Course visée |
 | `shift_id` | text | FK `shift_planning`, SET NULL | Shift du chauffeur au moment de la demande |
-| `driver_id` | text | NOT NULL, FK `drivers`, SET NULL | Chauffeur demandeur |
+| `driver_id` | text | NOT NULL, FK `drivers` † | Chauffeur demandeur |
 | `status` | enum `request_status` | NOT NULL, def `pending` | pending · approved · rejected |
 | `requested_at` | timestamp | def now | Horodatage de la demande |
 
@@ -48,7 +50,7 @@
 | Colonne | Type | Contraintes | Signification |
 | --- | --- | --- | --- |
 | `id` | text (uuid) | PK | Identifiant du shift |
-| `driver_id` | text | NOT NULL, FK `drivers`, SET NULL | Chauffeur planifié |
+| `driver_id` | text | NOT NULL, FK `drivers` † | Chauffeur planifié |
 | `start_time` | timestamp | NOT NULL | Début du shift |
 | `end_time` | timestamp | NOT NULL | Fin du shift |
 | `status` | enum `shift_status` | def `planned` | planned · active · completed · cancelled |
@@ -60,7 +62,7 @@
 | --- | --- | --- | --- |
 | `id` | text (uuid) | PK | Identifiant de la ligne |
 | `ride_id` | text | NOT NULL, FK `rides`, CASCADE | Course concernée |
-| `option_id` | text | NOT NULL, FK `ride_options`, SET NULL | Option choisie |
+| `option_id` | text | NOT NULL, FK `ride_options` † | Option choisie |
 | `price` | numeric(10,2) | NOT NULL | **Prix figé au moment de la sélection** (l'option peut changer de tarif ensuite ; la course facturée, non) |
 
 ## `users` — comptes et rôles (extrait des colonnes métier)
