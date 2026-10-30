@@ -1,6 +1,6 @@
 # Annexe #2 bis — Dictionnaire de données (MPD, tables cœur)
 
-> Chaque ligne vérifiée dans \`lib/db/schema.ts\` @ \`main\` (SHA \`bce57b7\`, 30/10/2026). Le dictionnaire couvre les tables que le jury interroge en premier ; l'ERD (annexe #2) donne la vue d'ensemble.
+> Chaque ligne vérifiée dans `lib/db/schema.ts` @ `main` (SHA `bce57b7`, 30/10/2026). Le dictionnaire couvre les tables que le jury interroge en premier ; l'ERD (annexe #2) donne la vue d'ensemble.
 
 ## `rides` — la course
 
