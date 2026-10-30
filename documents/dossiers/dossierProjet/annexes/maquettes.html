@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>AMT Express — Wireframes (annexe #3)</title>
+<style>
+  :root {
+    --primary: #1e3a8a; --bg: #f8f9fa; --surface: #ffffff; --border: #e5e7eb;
+    --pending: #b45309; --assigned: #1d4ed8; --completed: #047857; --cancelled: #b91c1c;
+    --client: rgb(255, 128, 8); --muted: #6b7280; --error-bg: #FDF3F3; --sidebar-bg: #f1f3f7;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #111827; margin: 0; padding: 24px; }
+  h1 { color: var(--primary); }
+  .note { max-width: 980px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 0.9rem; }
+  .vue { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 32px; max-width: 1100px; page-break-after: always; }
+  h3 { margin-top: 0; }
+  .legende { color: var(--muted); font-size: 0.82rem; margin: 4px 0 16px; }
+  /* ---- Ossature commune (SidebarShell.tsx / BottomTabBar.tsx) ---- */
+  .shell { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-height: 430px; }
+  .sidebar { width: 250px; flex-shrink: 0; background: var(--sidebar-bg); border-right: 1px solid var(--border); padding: 14px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 6px 6px 14px; }
+  .brand-logo { width: 34px; height: 34px; border-radius: 10px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .brand-title { font-weight: 700; font-size: 0.92rem; line-height: 1.1; }
+  .brand-sub { color: var(--muted); font-size: 0.72rem; }
+  .section-label { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 8px 6px 6px; }
+  .navitem { display: flex; gap: 10px; align-items: flex-start; padding: 8px; border-radius: 10px; font-size: 0.82rem; margin-bottom: 2px; }
+  .navitem.active { background: #e3e9f7; }
+  .navitem .ni { font-size: 0.95rem; width: 18px; text-align: center; }
+  .navitem .nl { font-weight: 600; line-height: 1.2; }
+  .navitem .nd { color: var(--muted); font-size: 0.7rem; line-height: 1.2; }
+  .sidebar .bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+  .main { flex: 1; padding: 20px 22px; background: var(--bg); }
+  .page-title { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--primary); }
+  .page-sub { color: var(--muted); font-size: 0.8rem; margin: 2px 0 18px; }
+  /* ---- Bottom tab bar mobile ---- */
+  .phone { width: 400px; border: 8px solid #111827; border-radius: 28px; overflow: hidden; background: var(--bg); margin: 0 auto; display: flex; flex-direction: column; }
+  .phone-main { padding: 14px 14px 70px; min-height: 430px; }
+  .bottombar { position: relative; display: flex; align-items: center; justify-content: space-around; background: var(--surface); border-top: 1px solid var(--border); padding: 6px 8px 8px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.62rem; color: var(--muted); padding: 4px 10px; border-radius: 10px; }
+  .tab.active { color: var(--primary); background: #e3e9f7; }
+  .tab .ti { font-size: 1rem; }
+  .tab.avatar-tab { padding: 0; }
+  .avatar-lg { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .group-popup { position: absolute; bottom: 64px; right: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); padding: 8px; width: 220px; }
+  .gp-item { display: flex; gap: 8px; align-items: center; padding: 8px; font-size: 0.8rem; border-radius: 8px; }
+  .gp-item + .gp-item { border-top: 1px solid var(--bg); }
+  /* ---- Composants de page ---- */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .kpi .kl { color: var(--muted); font-size: 0.72rem; }
+  .kpi .kv { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .card h4 { margin: 0 0 10px; font-size: 0.85rem; }
+  .placeholder-box { background: #eef1f6; border-radius: 10px; height: 90px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 10px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .toolbar input, .toolbar select { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 0.8rem; background: #fff; }
+  .btn { border: none; border-radius: 8px; padding: 7px 12px; font-size: 0.8rem; cursor: pointer; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-ghost { background: #fff; color: var(--muted); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 8px; border-bottom: 1px solid var(--border); background: var(--sidebar-bg); }
+  td { padding: 8px; border-bottom: 1px solid var(--bg); }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+  .b-pending { color: var(--pending); background: #fef3c7; }
+  .b-assigned { color: var(--assigned); background: #dbeafe; }
+  .b-completed { color: var(--completed); background: #d1fae5; }
+  .b-cancelled { color: var(--cancelled); background: #fee2e2; }
+  .pager { color: var(--muted); font-size: 0.75rem; margin-top: 8px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tabbtn { padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; border: 1px solid var(--border); background: #fff; color: var(--muted); }
+  .tabbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; }
+  .field input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; color: var(--muted); }
+  .pill-toggle { display: inline-flex; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); font-size: 0.75rem; }
+  .pill-toggle span { padding: 6px 14px; }
+  .pill-toggle .on { background: var(--completed); color: #fff; }
+  .pill-toggle .off { background: #fff; color: var(--muted); }
+  .stat-chip { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; font-size: 0.7rem; margin: 0 6px 6px 0; }
+  .stat-chip b { color: var(--primary); }
+  .ride-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .empty { border: 2px dashed var(--border); border-radius: 12px; padding: 26px; text-align: center; color: var(--muted); font-size: 0.85rem; background: var(--surface); }
+  .error-banner { background: var(--error-bg); border: 1px solid var(--cancelled); border-left: 5px solid var(--cancelled); border-radius: 8px; padding: 12px 14px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+</style>
+</head>
+<body>
+
+<div class="note">
+  <strong>Annexe #3 — Wireframes simplifiés, fidèles à la structure réelle du code</strong> (@main, SHA bce57b7, 30/10/2026).<br />
+  Ossature reproduite depuis les composants réels : <b>SidebarShell.tsx</b> (sidebar desktop : bloc de marque « AMT Express / Espace… », section Navigation, items avec libellé + description, Paramètres + avatar en bas ; bascule en bottom tab bar sous 820 px), <b>BottomTabBar.tsx</b> (onglets par groupes, avatar de profil <u>au centre</u> avec popup), données de navigation <b>AdminSidebar / CustomerSidebar / DriverSidebar</b>, libellés français réels de <b>locales/fr.json</b>. Simplifié = moins de données (2–3 lignes), graphiques en blocs gris ; les libellés, la structure et les couleurs sont ceux de l'application.
+</div>
+
+<!-- ============ A1 — Admin desktop : Tableau de bord ============ -->
+<div class="vue">
+  <h3>A1 — Admin (desktop) : Tableau de bord — sidebar « Espace de travail »</h3>
+  <p class="legende">Sidebar réelle : items de AdminSidebar.ts, libellés de adminNavigation (fr.json). KPI et intitulés de adminDashboard.</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">✦</div><div><div class="brand-title">AMT Express</div><div class="brand-sub">Espace de travail</div></div></div>
+      <div class="section-label">Navigation</div>
+      <div class="navitem active"><span class="ni">▦</span><span><span class="nl">Tableau de bord</span><br/><span class="nd">Aperçu</span></span></div>
+      <div class="navitem"><span class="ni">↝</span><span><span class="nl">Gestion des courses</span><br/><span class="nd">Gérer les courses</span></span></div>
+      <div class="navitem"><span class="ni">＋</span><span><span class="nl">Nouvelle course</span><br/><span class="nd">Créer une course</span></span></div>
+      <div class="navitem"><span class="ni">＋</span><span><span class="nl">Demander un trajet</span><br/><span class="nd">Créer une demande de trajet pour vous-même</span></span></div>
+      <div class="navitem"><span class="ni">▤</span><span><span class="nl">Mes réservations</span><br/><span class="nd">Voir vos réservations en tant que passager</span></span></div>
+      <div class="bottom">
+        <div class="navitem"><span class="ni">⚙</span><span><span class="nl">Paramètres</span><br/><span class="nd">Zone de connexion</span></span></div>
+        <div class="navitem"><div class="avatar">A</div><span><span class="nl">Alexis</span></span></div>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="page-title">Tableau de bord Admin</div>
+      <div class="page-sub">Vue complète de l'activité de la plateforme</div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kl">Total des courses</div><div class="kv">128</div></div>
+        <div class="kpi"><div class="kl">Utilisateurs actifs</div><div class="kv">42</div></div>
+        <div class="kpi"><div class="kl">Factures en attente</div><div class="kv">7</div></div>
+        <div class="kpi"><div class="kl">Revenu mensuel</div><div class="kv">4 250 €</div></div>
+      </div>
+      <div class="toolbar"><button class="btn btn-primary">＋ Ajouter une nouvelle course</button></div>
+      <div class="duo">
+        <div class="card"><h4>Courses mensuelles</h4><div class="placeholder-box">— graphique Recharts —</div></div>
+        <div class="card"><h4>Revenu mensuel</h4><div class="placeholder-box">— graphique Recharts —</div></div>
+      </div>
+      <div class="card"><h4>Répartition des courses par statut</h4><div class="placeholder-box" style="height:70px">— camembert des 4 statuts —</div></div>
+      <div class="card"><h4>Courses récentes</h4>
+        <table>
+          <tr><th>Course</th><th>Statut</th></tr>
+          <tr><td>Paris 15e → Orly</td><td><span class="badge b-pending">En Attente</span></td></tr>
+          <tr><td>Boulogne → La Défense</td><td><span class="badge b-assigned">Assignée</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ A2 — Admin desktop : Gestion des Courses ============ -->
+<div class="vue">
+  <h3>A2 — Admin (desktop) : Gestion des Courses — « Vue de type Excel » (RidesManagementBoard)</h3>
+  <p class="legende">Colonnes et libellés réels de ridesManagement (fr.json) ; actions = modales réelles (AssignDriver, EditRide, DeleteConfirm, AdvancedSort).</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">✦</div><div><div class="brand-title">AMT Express</div><div class="brand-sub">Espace de travail</div></div></div>
+      <div class="section-label">Navigation</div>
+      <div class="navitem"><span class="ni">▦</span><span><span class="nl">Tableau de bord</span><br/><span class="nd">Aperçu</span></span></div>
+      <div class="navitem active"><span class="ni">↝</span><span><span class="nl">Gestion des courses</span><br/><span class="nd">Gérer les courses</span></span></div>
+      <div class="navitem"><span class="ni">＋</span><span><span class="nl">Nouvelle course</span><br/><span class="nd">Créer une course</span></span></div>
+      <div class="navitem"><span class="ni">＋</span><span><span class="nl">Demander un trajet</span><br/><span class="nd">Créer une demande de trajet pour vous-même</span></span></div>
+      <div class="navitem"><span class="ni">▤</span><span><span class="nl">Mes réservations</span><br/><span class="nd">Voir vos réservations en tant que passager</span></span></div>
+      <div class="bottom">
+        <div class="navitem"><span class="ni">⚙</span><span><span class="nl">Paramètres</span><br/><span class="nd">Zone de connexion</span></span></div>
+        <div class="navitem"><div class="avatar">A</div><span><span class="nl">Alexis</span></span></div>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="page-title">Gestion des Courses</div>
+      <div class="page-sub">Vue de type Excel pour gérer toutes les courses de la plateforme</div>
+      <div class="toolbar">
+        <input placeholder="Rechercher par ID, départ, destination..." style="flex:1" />
+        <select><option>Tous les Statuts</option></select>
+        <button class="btn btn-primary">Ajouter une Course</button>
+        <button class="btn btn-outline">Exporter CSV</button>
+        <button class="btn btn-ghost">⇅ Tri avancé</button>
+      </div>
+      <table>
+        <tr><th>Date et Heure</th><th>Clients</th><th>Départ</th><th>Destination</th><th>Arrivée</th><th>Chauffeur</th><th>Prix (€)</th><th>Statut</th><th>Actions</th></tr>
+        <tr><td>02/11 · 10:00</td><td>Claire B.</td><td>Paris 15e</td><td>Orly</td><td>—</td><td>Non assigné</td><td>45,00</td><td><span class="badge b-pending">En Attente</span></td><td>✎ 🚗 🗑</td></tr>
+        <tr><td>02/11 · 14:30</td><td>Jean-Michel P.</td><td>Boulogne</td><td>La Défense</td><td>—</td><td>Djamel K.</td><td>32,50</td><td><span class="badge b-assigned">Assignée</span></td><td>✎ 🚗 🗑</td></tr>
+        <tr><td>01/11 · 08:00</td><td>Marc D.</td><td>Studios</td><td>Hôtel</td><td>08:42</td><td>Marc D.</td><td>58,00</td><td><span class="badge b-completed">Terminée</span></td><td>✎ 🚗 🗑</td></tr>
+      </table>
+      <div class="pager">Affichage de 3 sur 128 courses</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ A3 — Admin mobile : bottom tab bar + popup de groupe ============ -->
+<div class="vue">
+  <h3>A3 — Admin (mobile) : bottom tab bar + popup du groupe « Trajets »</h3>
+  <p class="legende">Sous 820 px, SidebarShell bascule sur BottomTabBar : les groupes à un seul item deviennent des onglets directs, les groupes multi-items ouvrent un popup ; l'avatar de profil est au centre (popup : Paramètres, Profil, Langue, Déconnexion).</p>
+  <div class="phone">
+    <div class="phone-main">
+      <div class="page-title">Tableau de bord Admin</div>
+      <div class="page-sub">Vue complète de l'activité de la plateforme</div>
+      <div class="kpi-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="kpi"><div class="kl">Total des courses</div><div class="kv">128</div></div>
+        <div class="kpi"><div class="kl">Revenu mensuel</div><div class="kv">4 250 €</div></div>
+      </div>
+      <div class="placeholder-box">— Courses mensuelles —</div>
+    </div>
+    <div class="group-popup"><b style="font-size:0.75rem;color:#6b7280">Trajets</b>
+      <div class="gp-item">↝ Gestion des courses</div>
+      <div class="gp-item">＋ Nouvelle course</div>
+      <div class="gp-item">＋ Demander un trajet</div>
+      <div class="gp-item">▤ Mes réservations</div>
+    </div>
+    <div class="bottombar">
+      <div class="tab active"><span class="ti">▦</span>Tableau de bord</div>
+      <div class="tab"><div class="avatar-lg">A</div></div>
+      <div class="tab active"><span class="ti">↝</span>Trajets</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ C1 — Client desktop : Mon Espace Client ============ -->
+<div class="vue">
+  <h3>C1 — Client (desktop) : Tableau de bord — sidebar « Espace Client »</h3>
+  <p class="legende">Items de CustomerSidebar.ts ; libellés de customerNavigation et customerDashboard (fr.json).</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">✦</div><div><div class="brand-title">AMT Express</div><div class="brand-sub">Espace Client</div></div></div>
+      <div class="section-label">Navigation</div>
+      <div class="navitem active"><span class="ni">▦</span><span><span class="nl">Tableau de bord</span><br/><span class="nd">Votre espace client</span></span></div>
+      <div class="navitem"><span class="ni">＋</span><span><span class="nl">Demander un trajet</span><br/><span class="nd">Renseignez les détails de votre trajet, nous nous occupons du reste</span></span></div>
+      <div class="navitem"><span class="ni">▤</span><span><span class="nl">Mes réservations</span><br/><span class="nd">Voir et gérer vos réservations</span></span></div>
+      <div class="bottom">
+        <div class="navitem"><span class="ni">⚙</span><span><span class="nl">Paramètres</span><br/><span class="nd">Paramètres du compte</span></span></div>
+        <div class="navitem"><div class="avatar">C</div><span><span class="nl">Claire</span></span></div>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="page-title">Mon Espace Client</div>
+      <div class="page-sub">Suivez vos trajets et votre historique</div>
+      <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
+        <div class="kpi"><div class="kl">Total trajets</div><div class="kv">12</div></div>
+        <div class="kpi"><div class="kl">En attente</div><div class="kv">2</div></div>
+        <div class="kpi"><div class="kl">Terminés</div><div class="kv">9</div></div>
+        <div class="kpi"><div class="kl">Chauffeurs uniques</div><div class="kv">4</div></div>
+      </div>
+      <div class="card"><h4>Mes trajets</h4><div style="color:#6b7280;font-size:0.78rem">Visualisez votre historique de trajets et suivez vos réservations en cours</div></div>
+      <div class="card"><h4>Récemment complétés</h4>
+        <div class="ride-card" style="margin-bottom:8px">Boulogne → La Défense · 32,50 € · <span class="badge b-completed">Terminée</span> · ★★★★☆</div>
+        <div class="ride-card" style="margin-bottom:0">Studios → Hôtel · 58,00 € · <span class="badge b-completed">Terminée</span> · ★★★★★</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ C2 — Client mobile : Demander un trajet ============ -->
+<div class="vue">
+  <h3>C2 — Client (mobile) : « Demander un trajet » — formulaire réel de demande</h3>
+  <p class="legende">Champs et libellés réels de rideRequest (fr.json) : la demande n'affiche ni prix ni options — c'est l'admin qui crée la course et assigne ; le client est informé ensuite. Bottom tab bar CustomerSidebar.</p>
+  <div class="phone">
+    <div class="phone-main">
+      <div class="page-title">Réserver un trajet</div>
+      <div class="page-sub">Recherchez et réservez votre prochain voyage</div>
+      <div class="card">
+        <div class="field"><label>Départ</label><input placeholder="Entrez le lieu de départ" /></div>
+        <div class="field"><label>Destination</label><input placeholder="Entrez la destination" /></div>
+        <div class="duo" style="gap:10px">
+          <div class="field" style="margin-bottom:0"><label>Date</label><input placeholder="jj/mm/aaaa" /></div>
+          <div class="field" style="margin-bottom:0"><label>Heure</label><input placeholder="--:--" /></div>
+        </div>
+        <div class="field" style="margin-top:12px"><label>Notes / Demandes spéciales</label><input placeholder="Informations complémentaires (optionnel)" /></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;background:rgb(255,128,8)">Envoyer la demande</button>
+    </div>
+    <div class="bottombar">
+      <div class="tab"><span class="ti">▦</span>Tableau de bord</div>
+      <div class="tab"><div class="avatar-lg">C</div></div>
+      <div class="tab active"><span class="ti">▤</span>Trajets</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ D1 — Chauffeur mobile : dashboard + disponibilité ============ -->
+<div class="vue">
+  <h3>D1 — Chauffeur (mobile) : Tableau de Bord Chauffeur — disponibilité + courses</h3>
+  <p class="legende">Libellés réels de driverDashboard (fr.json) : le chauffeur ne voit ni le prix ni les options des courses disponibles dans sa liste — il demande l'assignation, l'admin valide.</p>
+  <div class="phone">
+    <div class="phone-main">
+      <div class="page-title">Tableau de Bord Chauffeur</div>
+      <div class="page-sub">Gérez vos courses et votre disponibilité</div>
+      <div class="pill-toggle" style="margin-bottom:12px"><span class="on">Disponible</span><span class="off">Hors ligne</span></div>
+      <div>
+        <span class="stat-chip">Total des Courses <b>34</b></span>
+        <span class="stat-chip">Terminées <b>29</b></span>
+        <span class="stat-chip">Gains <b>1 240 €</b></span>
+        <span class="stat-chip">Note <b>★ 4,8</b></span>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h4>Vos Courses Assignées</h4>
+        <div class="ride-card">Boulogne → La Défense · 02/11 14:30 · <span class="badge b-assigned">Assignée</span></div>
+        <div class="ride-card" style="margin-bottom:0">Paris 15e → Orly · 02/11 10:00 · <span class="badge b-assigned">Assignée</span></div>
+      </div>
+      <div class="card">
+        <h4>Courses Disponibles</h4>
+        <div class="ride-card" style="margin-bottom:0">Studios → Hôtel · 01/11 08:00 · <span class="badge b-pending">En Attente</span>
+          <div style="margin-top:8px"><button class="btn btn-outline">Demander cette Course</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottombar">
+      <div class="tab active"><span class="ti">▦</span>Tableau de bord</div>
+      <div class="tab"><div class="avatar-lg">D</div></div>
+      <div class="tab"><span class="ti">▤</span>Trajets</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ E — États vides et erreur (libellés réels) ============ -->
+<div class="vue">
+  <h3>E — États vides et erreur — libellés réels de customerRides (fr.json)</h3>
+  <p class="legende">À gauche : l'état vide par onglet (jamais un écran blanc). À droite : l'erreur typée ActionResponse avec l'action « Réessayer » et le rafraîchissement manuel.</p>
+  <div class="duo">
+    <div>
+      <div class="tabs"><span class="tabbtn active">Réservations en attente</span><span class="tabbtn">Réservations terminées</span></div>
+      <div class="empty">Vous n'avez aucune réservation en attente</div>
+    </div>
+    <div>
+      <div class="error-banner"><span>Échec du chargement des trajets terminés</span><button class="btn btn-outline">Réessayer</button></div>
+      <div style="margin-top:10px"><button class="btn btn-ghost">↻ Actualiser</button></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
