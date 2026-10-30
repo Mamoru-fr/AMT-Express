@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>AMT Express — Wireframes (annexe #3)</title>
+<style>
+  :root {
+    --primary: #1e3a8a; --bg: #f8f9fa; --surface: #ffffff; --border: #e5e7eb;
+    --pending: #b45309; --assigned: #1d4ed8; --completed: #047857; --cancelled: #b91c1c;
+    --client: rgb(255, 128, 8); --muted: #6b7280; --error-bg: #FDF3F3;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #111827; margin: 0; padding: 24px; }
+  .note { max-width: 900px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; }
+  .vue { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 32px; max-width: 1100px; page-break-after: always; }
+  h1 { color: var(--primary); } h3 { margin-top: 0; }
+  .legende { color: var(--muted); font-size: 0.85rem; margin: 4px 0 18px; }
+  /* Barres & nav */
+  .topbar { display: flex; align-items: center; gap: 14px; background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; }
+  .brand { font-weight: 700; letter-spacing: 0.5px; }
+  .nav { display: flex; gap: 18px; margin-left: auto; font-size: 0.85rem; opacity: 0.9; }
+  .nav span.active { border-bottom: 2px solid #fff; padding-bottom: 2px; }
+  /* Tableau */
+  .toolbar { display: flex; gap: 10px; margin: 16px 0; }
+  .toolbar input, .toolbar select { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; background: #fff; }
+  .btn { border: none; border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; cursor: pointer; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-outline { background: #fff; color: var(--assigned); border: 1px solid var(--assigned); }
+  .btn-client { background: var(--client); color: #fff; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px; border-bottom: 1px solid var(--border); }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .b-pending { color: var(--pending); background: #fef3c7; }
+  .b-assigned { color: var(--assigned); background: #dbeafe; }
+  .b-completed { color: var(--completed); background: #d1fae5; }
+  .b-cancelled { color: var(--cancelled); background: #fee2e2; }
+  /* Formulaires */
+  .form { max-width: 560px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+  .field input, .field select { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; }
+  .field.err input { border-color: var(--cancelled); }
+  .field .msg-err { color: var(--cancelled); font-size: 0.75rem; margin-top: 4px; }
+  .chk { display: flex; gap: 16px; font-size: 0.85rem; margin-bottom: 14px; }
+  /* Mobile */
+  .phone { width: 380px; border: 8px solid #111827; border-radius: 28px; padding: 14px; background: var(--bg); margin: 0 auto; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+  .muted { color: var(--muted); font-size: 0.78rem; }
+  .switch { width: 46px; height: 26px; border-radius: 999px; background: var(--completed); position: relative; }
+  .switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; }
+  .stars { color: var(--client); letter-spacing: 2px; }
+  /* États */
+  .empty { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; color: var(--muted); }
+  .error-banner { background: var(--error-bg); border: 1px solid var(--cancelled); border-left: 5px solid var(--cancelled); border-radius: 8px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+</style>
+</head>
+<body>
+
+<div class="note">
+  <strong>Annexe #3 — Wireframes simplifiés</strong> (palette exacte de l'application, " + "globals.css" + " — 30/10/2026). Six vues : à confronter aux captures d'écran réelles (annexe #10) lors de la rédaction ; chaque divergence = à corriger ici ou à assumer dans le dossier. Fichier imprimable : une vue par page A4.
+</div>
+
+<div class="vue">
+  <h3>M1 — Admin : liste des courses (desktop)</h3>
+  <p class="legende">Tableau avec recherche, filtre par statut, badges de statut (couleurs réelles du code : pending ambre, assigned bleu, completed vert, cancelled rouge).</p>
+  <div class="topbar"><span class="brand">AMT Express</span><div class="nav"><span class="active">Courses</span><span>Chauffeurs</span><span>Clients</span><span>KPI</span><span>Import CSV</span></div></div>
+  <div class="toolbar"><input placeholder="Rechercher une course…" style="flex:1" /><select><option>Statut : tous</option></select><button class="btn btn-primary">+ Nouvelle course</button></div>
+  <table>
+    <tr><th>Course</th><th>Horaire</th><th>Chauffeur</th><th>Prix</th><th>Statut</th></tr>
+    <tr><td>Paris 15e → Orly</td><td>J+2 · 10:00</td><td>—</td><td>45,00 €</td><td><span class="badge b-pending">pending</span></td></tr>
+    <tr><td>Boulogne → La Défense</td><td>J+2 · 14:30</td><td>Djamel K.</td><td>32,50 €</td><td><span class="badge b-assigned">assigned</span></td></tr>
+    <tr><td>Studios → Hôtel</td><td>J+1 · 08:00</td><td>Marc D.</td><td>58,00 €</td><td><span class="badge b-completed">completed</span></td></tr>
+    <tr><td>Gare de Lyon → CDG</td><td>J+3 · 17:45</td><td>—</td><td>67,00 €</td><td><span class="badge b-cancelled">cancelled</span></td></tr>
+  </table>
+</div>
+
+<div class="vue">
+  <h3>M2 — Admin : création de course (desktop)</h3>
+  <p class="legende">Formulaire Zod — l'état d'erreur ci-dessous (départ trop court) est celui rejeté avant toute écriture en base (jeu d'essai § 8.1).</p>
+  <div class="form">
+    <div class="field err"><label>Départ</label><input value="Pa" /><div class="msg-err">3 caractères minimum</div></div>
+    <div class="field"><label>Destination</label><input value="Orly" /></div>
+    <div class="field"><label>Horaire de départ</label><input value="J+2 · 10:00" /></div>
+    <div class="field"><label>Client(s)</label><select multiple size="2"><option>Claire B. (corporate) — sélectionné</option><option>Jean-Michel P.</option></select></div>
+    <div class="chk"><label><input type="checkbox" checked /> Option aéroport (+8,00 €)</label><label><input type="checkbox" /> Siège enfant (+3,00 €)</label></div>
+    <button class="btn btn-primary">Créer la course</button>
+  </div>
+</div>
+
+<div class="vue">
+  <h3>M3 — Client : demande de course (mobile)</h3>
+  <p class="legende">Accent orange client — le prix total est verrouillé à la réservation (chaque option embarque son prix figé).</p>
+  <div class="phone">
+    <div class="row"><strong>AMT Express</strong><span class="muted">FR</span></div>
+    <div class="card">
+      <div class="field"><label>Départ</label><input value="Boulogne, rue Yves Kermadec" /></div>
+      <div class="field"><label>Destination</label><input value="La Défense, Coeur de Nobles" /></div>
+      <div class="field"><label>Horaire</label><input value="Demain · 14:30" /></div>
+    </div>
+    <div class="card">
+      <div class="row"><span>Option aéroport</span><span>8,00 €</span></div>
+      <div class="row"><span>Siège enfant</span><span>3,00 €</span></div>
+      <div class="row"><strong>Total</strong><strong>43,50 €</strong></div>
+    </div>
+    <button class="btn btn-client" style="width:100%">Réserver</button>
+  </div>
+</div>
+
+<div class="vue">
+  <h3>M4 — Chauffeur : tableau de bord (mobile)</h3>
+  <p class="legende">Toggle de disponibilité (colonne drivers.available) + courses disponibles : prix et distance visibles avant de demander.</p>
+  <div class="phone">
+    <div class="row"><strong>Bonjour Djamel</strong><div class="switch" title="Disponible"></div></div>
+    <p class="muted">Disponible — 3 courses à proximité</p>
+    <div class="card"><div class="row"><strong>Paris 15e → Orly</strong><span class="badge b-pending">pending</span></div><div class="row"><span class="muted">J+2 · 10:00 · 18 km</span><strong>45,00 €</strong></div><button class="btn btn-outline">Demander</button></div>
+    <div class="card"><div class="row"><strong>Boulogne → La Défense</strong><span class="badge b-pending">pending</span></div><div class="row"><span class="muted">J+2 · 14:30 · 9 km</span><strong>32,50 €</strong></div><button class="btn btn-outline">Demander</button></div>
+    <div class="card"><div class="row"><span>Mes shifts</span><span class="muted">2 planifiés ›</span></div></div>
+  </div>
+</div>
+
+<div class="vue">
+  <h3>M5 — État vide (tous rôles)</h3>
+  <p class="legende">Zone vide dédiée — jamais un écran blanc : pictogramme, message, action de sortie.</p>
+  <div class="empty"><div style="font-size:2rem">🗂️</div>Aucune course pour ces filtres.<br /><br /><button class="btn btn-outline">Réinitialiser les filtres</button></div>
+</div>
+
+<div class="vue">
+  <h3>M6 — État erreur (tous rôles)</h3>
+  <p class="legende">ActionResponse typé : le front n'affiche jamais d'erreur non prévue — bannière + réessayer.</p>
+  <div class="error-banner"><span>⚠️ Impossible de charger les courses. Vérifiez votre connexion.</span><button class="btn btn-outline">Réessayer</button></div>
+  <p class="muted" style="margin-top:14px">Variante notation client (historique) : <span class="stars">★★★★☆</span> — la note 1–5 et le commentaire vivent sur la ligne course/client (ride_customers).</p>
+</div>
+
+</body>
+</html>

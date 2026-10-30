@@ -81,19 +81,21 @@ The application is built in TypeScript with Next.js 16 (App Router), a PostgreSQ
 
 Ce projet mobilise l'ensemble des compétences du titre professionnel Concepteur Développeur d'Applications (RNCP 37873, niveau 6). 🟡 *(numérotation exacte des compétences à coller depuis le référentiel officiel — Drive école)*
 
-| Bloc | Compétence | Où c'est traité |
-| ---- | ---------- | --------------- |
-| CCP 1 | Installer et configurer son environnement de travail | § 5.3 (stack, pnpm, Docker) · § 6.1 |
-| CCP 1 | Développer des interfaces utilisateur | § 7.2 (front-end, parallel routes, responsive, a11y) |
-| CCP 1 | Développer des composants métier | § 7.3 (services, controllers) |
-| CCP 1 | Contribuer à la gestion d'un projet informatique | § 6 (planning, Git Flow, qualité) |
-| CCP 2 | Analyser les besoins et maquetter une application | § 3 (cahier des charges) · § 4.3 (maquettes) |
-| CCP 2 | Définir l'architecture logicielle d'une application | § 5.1 (couches) · § 7.1 |
-| CCP 2 | Concevoir et mettre en place une base de données relationnelle | § 4.2 (MCD/MLD/MPD, 19 tables) |
-| CCP 2 | Développer des composants d'accès aux données | § 7.4 (Drizzle, jointures, optimisation SQL) |
-| CCP 3 | Préparer et exécuter les plans de tests | § 8 (jeu d'essai, Vitest, CI) |
-| CCP 3 | Préparer et documenter le déploiement | § 9 (environnements, CI/CD, Docker, README) |
-| CCP 3 | Contribuer à la mise en production dans une démarche DevOps | § 9.2–9.5 (Vercel UAT/PROD, rollback) |
+| Bloc | Compétence | Où c'est traité | Annexe |
+| ---- | ---------- | --------------- | ------ |
+| CCP 1 | Installer et configurer son environnement de travail | § 5.3 (stack, pnpm, Docker) · § 6.1 | #7 board Projects (capture) |
+| CCP 1 | Développer des interfaces utilisateur | § 7.2 (front-end, parallel routes, responsive, a11y) | #3 maquettes · #10 captures d'écrans |
+| CCP 1 | Développer des composants métier | § 7.3 (services, controllers) | #12 extraits 3 et 6 |
+| CCP 1 | Contribuer à la gestion d'un projet informatique | § 6 (planning, Git Flow, qualité) | #7 board · #8 pipeline CI (captures) |
+| CCP 2 | Analyser les besoins et maquetter une application | § 3 (cahier des charges) · § 4.3 (maquettes) | #3 maquettes |
+| CCP 2 | Définir l'architecture logicielle d'une application | § 5.1 (couches) · § 7.1 | #1 UML canonique |
+| CCP 2 | Concevoir et mettre en place une base de données relationnelle | § 4.2 (MCD/MLD/MPD, 19 tables) | #2 ERD · #2 bis dictionnaire |
+| CCP 2 | Développer des composants d'accès aux données | § 7.4 (Drizzle, jointures, optimisation SQL) | #12 extraits 4 et 5 |
+| CCP 3 | Préparer et exécuter les plans de tests | § 8 (jeu d'essai, Vitest, CI) | #9 sortie de tests (capture) |
+| CCP 3 | Préparer et documenter le déploiement | § 9 (environnements, CI/CD, Docker, README) | #8 pipeline vert (capture) |
+| CCP 3 | Contribuer à la mise en production dans une démarche DevOps | § 9.2–9.5 (Vercel UAT/PROD, rollback) | #8 pipeline · #6 infra |
+
+> *Colonne « Annexe » : numérotation de l'inventaire en fin de dossier ; les fichiers produits vivent dans `documents/dossiers/dossierProjet/annexes/` sur cette branche.*
 
 ---
 
@@ -244,7 +246,7 @@ flowchart TD
     style T fill:#F4A259,color:#000
 ```
 
-**Diagramme de classes** (entités métier, préparatoire du MCD) :
+**Diagramme de classes** (entités métier, préparatoire du MCD — corrigé contre `lib/db/schema.ts` @ `main` le 30/10) :
 
 ```mermaid
 classDiagram
@@ -252,11 +254,11 @@ classDiagram
     class Driver { +id +user_id +active }
     class Production { +id +name }
     class Project { +id +production_id +name }
-    class Ride { +id +project_id +driver_id? +status : ride_status +price +notation 1..5 étoiles +commentaire de notation }
-    class RideCustomer { +ride_id +customer_id }
+    class Ride { +id +project_id +driver_id? +status : ride_status +price }
+    class RideCustomer { +ride_id +customer_id +rating 1..5 +comment }
     class RideOption { +id +label +price }
-    class RideSelectedOption { +ride_id +option_id }
-    class AssignmentRequest { +ride_id +driver_id +status : request_status }
+    class RideSelectedOption { +ride_id +option_id +price figé à la sélection }
+    class AssignmentRequest { +ride_id +shift_id? +driver_id +status : request_status }
     class ShiftPlanning { +driver_id +status : shift_status }
     User "1" --> "0..1" Driver
     Production "1" *-- "0..n" Project
@@ -318,7 +320,7 @@ flowchart LR
 - *Amélioration planifiée* : contraintes CHECK (rating 1–5), UNIQUE composite (`ride_id`, `customer_id`), index composite (`driver_id`, `status`) — via migration Drizzle.
 
 <div style="border: 1px solid #c62828; border-left: 5px solid #c62828; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FDF3F3;">
-🔴 <strong>À capturer pour le rendu</strong> : export du schéma complet (ERD 19 tables) depuis le code réel — les diagrammes ci-dessus couvrent le cœur métier, l'annexe attend le schéma exhaustif.
+✅ <strong>ERD exhaustif produit (annexe #2)</strong> — adapté à l'impression : carte relationnelle + 3 vues par module en A4 portrait ; dictionnaire de données colonne par colonne en annexe #2 bis.
 </div>
 
 ### 4.3. Maquettes de l'interface 🔴
@@ -376,7 +378,7 @@ flowchart TB
 | A06 — Dépendances vulnérables | `pnpm audit` (à systématiser en CI — voir § 10) |
 | A07 — Auth défaillante | Better Auth (hachage, sessions expirantes), secret ≥ 32 caractères, rôle par défaut minimal (`customer`) |
 
-**RGPD** : données personnelles limitées au strict nécessaire, journal d'audit `activity_logs`, durée de conservation définie, procédure d'archivage des comptes désactivés. 🔴 *registre des traitements : une page à rédiger.*
+**RGPD** : données personnelles limitées au strict nécessaire, journal d'audit `activity_logs`, durée de conservation définie, procédure d'archivage des comptes désactivés. ✅ *registre des traitements rédigé (annexe #11) — coller la version courte ci-dessus avant impression ; décisions ❓ au maître (DPO, région d'hébergement, archivage).*
 
 ### 5.3. Choix de stack justifiés 🟡
 
@@ -474,7 +476,7 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 
 ### 7.6. Fonctionnalité métier complète 🟡
 
-**Parcours « demande d'assignation »** (proposition — de l'UI au stockage ; le diagramme d'activité complet est au § 4.1) : le chauffeur voit une course `pending` → clique « demander » → Server Action validée Zod → `verifyRole('driver')` → service : contrôle du statut et du plafond de demandes simultanées → insertion `assignment_requests` → notification admin → l'admin valide → *(objectif — non livré à ce stade, cf. § 7.4 : la transaction d'assignation et le rejet des demandes concurrentes sont en roadmap)* → notification chauffeur. *(à vérifier contre le code réel — cible idéale car elle traverse toutes les couches.)*
+**Parcours « demande d'assignation »** (proposition — de l'UI au stockage ; le diagramme d'activité complet est au § 4.1) : le chauffeur voit une course `pending` → clique « demander » → Server Action validée Zod → `verifyRole('driver')` → service : contrôle du statut et du plafond de demandes simultanées → insertion `assignment_requests` → notification admin → l'admin valide (actions `approveAssignmentRequest` / `rejectAssignmentRequest` — livrées, vérifiées le 30/10) → *(objectif restant, cf. § 7.4 : transaction d'assignation et rejet des demandes concurrentes en roadmap)* → notification chauffeur. *(vérifié contre le code le 30/10 : la validation/rejet admin est livrée ; reste la transaction d'assignation en roadmap.)*
 
 ---
 
@@ -491,7 +493,7 @@ Drizzle type-safe ; jointures relationnelles (`db.query` avec `with`) pour les v
 | Résultat attendu | `ActionResponse` succès + id ; ligne `rides` créée en `pending` ; ligne `ride_customers` créée ; notification client |
 | Résultat obtenu | ✅ conforme (test d'intégration `RidesManagementActions` — 🔴 capture à insérer) |
 | Cas d'erreur 1 : horaire passé | Zod rejette → `ActionResponse` erreur `VALIDATION_ERROR`, champs signalés, **aucune écriture en base** |
-| Cas d'erreur 2 : rôle non autorisé | `verifyRole()` → erreur `UNAUTHORIZED` ; 🔴 capture |
+| Cas d'erreur 2 : rôle non autorisé | `verifyRole()` → `FORBIDDEN` (mauvais rôle ; session absente = `UNAUTHORIZED`) ; 🔴 capture |
 | Écart éventuel | *(à documenter si un écart est survenu pendant le développement)* |
 
 ```mermaid
@@ -499,7 +501,7 @@ flowchart TD
     IN[Départ : Paris 15e · Orly · J+2 10h00<br/>45,00 € · option aéroport] --> V{Zod : horaire futur ?}
     V -- non --> ERR1[VALIDATION_ERROR — aucun INSERT]
     V -- oui --> R{verifyRole : admin ?}
-    R -- non --> ERR2[UNAUTHORIZED — aucun INSERT]
+    R -- non --> ERR2[FORBIDDEN — aucun INSERT]
     R -- oui --> OK[rides : pending · ride_customers<br/>notification client]
     style ERR1 fill:#c62828,color:#fff
     style ERR2 fill:#c62828,color:#fff
@@ -548,7 +550,7 @@ flowchart LR
 1. **Tests/CI** : oui — tout passe en CI avant tout merge (36 PR mergées et traçables, pipeline vert).
 2. **Documentation** : README complet (installation, variables, dépannage), documentation embarquée (architecture, sessions, import CSV, Docker, Git Flow).
 3. **Gitflow** : `main` = prod ; `development` = intégration ; `feature/*`, `hotfix/*` ; merges par PR numérotées ; validation par CI.
-4. **Hébergement des données** : données personnelles de transport (pas de santé) — Neon/Vercel retenus ; considérations UE à documenter 🔴 *(point RGPD à préciser : localisation des datacenters, transferts hors UE le cas échéant)*.
+4. **Hébergement des données** : données personnelles de transport (pas de santé) — Neon/Vercel retenus ; hébergement documenté en annexe #11 ✅ (région Neon à relever ; fonctions Vercel par défaut à Washington — pas de résidence UE persistante, transfert à encadrer).
 5. **Et si ça casse ?** : voir 9.4.
 
 ### 9.4. Stratégie de déploiement ✅
@@ -632,9 +634,9 @@ Un projet solo de A à Z force à tenir tous les rôles à la fois — architect
 
 | # | Pièce attendue | Statut v2 |
 | - | -------------- | --------- |
-| 1 | Diagrammes UML (cas d'utilisation, activité, classes) | ✅ produits § 4.1 — à valider contre le code |
-| 2 | MCD/MLD | ✅ produits § 4.2 (cœur métier) — 🔴 ERD exhaustif 19 tables à exporter |
-| 3 | Wireframes + maquettes | 🔴 à produire (§ 4.3) |
+| 1 | Diagrammes UML (cas d'utilisation, activité, classes) | ✅ produits § 4.1 + sources PlantUML canoniques (`annexes/UML-canonique.md`) — à rendre en image |
+| 2 | MCD/MLD | ✅ produits § 4.2 · ERD exhaustif adapté impression (`annexes/ERD-19-tables.md`) · dictionnaire de données (#2 bis) |
+| 3 | Wireframes + maquettes | ✅ wireframes HTML/CSS produits (`annexes/maquettes.html`, palette réelle du code) — captures haute-fidélité à faire (#10) |
 | 4 | Schéma de navigation | ✅ produit § 4.3 |
 | 5 | Schéma d'architecture | ✅ produits § 5.1 + § 7.3 |
 | 6 | Schéma d'infra (Vercel/Neon) | ✅ produit § 9.5 |
@@ -642,10 +644,12 @@ Un projet solo de A à Z force à tenir tous les rôles à la fois — architect
 | 8 | Pipeline CI vert | 🔴 à capturer (§ 9.2) |
 | 9 | Sortie de tests | 🔴 à capturer (§ 8) |
 | 10 | Captures d'écrans application (admin/driver/customer, FR/EN, desktop/mobile) | 🔴 à capturer |
-| 11 | Registre RGPD | 🔴 à rédiger (§ 5.2) |
-| 12 | Extraits de code commentés | 🔴 à sélectionner (§ 7) |
+| 11 | Registre RGPD | ✅ rédigé (`annexes/registre-traitements-rgpd.md` — relu par le juriste) ; décisions ❓ au maître |
+| 12 | Extraits de code commentés | ✅ stock de 6 extraits sourcés (`annexes/extraits-code-commentes.md`) — sélection des définitifs au maître |
 
 *Schémas complémentaires produits en v2 : avant/après (§ 3.1), Git Flow (§ 6.2), pipeline CI (§ 9.2), jeu d'essai (§ 8.1), défi Vercel (§ 11).*
+
+*La liste précise des captures à prendre (quoi, où, cible, pièges) est dans `annexes/captures-a-faire.md`.*
 
 ---
 
