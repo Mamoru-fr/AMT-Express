@@ -9,6 +9,7 @@
 | ERD exhaustif des 19 tables (généré du schéma réel, toutes colonnes, index, FK) | Annexe #2 🔴 du dossier | `annexes/ERD-19-tables.md` |
 | Registre des traitements RGPD (structure conforme, décisions ❓ signalées) | § 5.2 🔴 + annexe #11 | `annexes/registre-traitements-rgpd.md` |
 | 6 extraits de code commentés, sourcés du code réel | § 7 🔴 + annexe #12 | `annexes/extraits-code-commentes.md` |
+| Veille sur les vulnérabilités : 3 alertes réelles sourcées sur les versions du `package.json` (zod HIGH — candidat § 10 ; better-auth CRITIQUE ; next HIGH non déclenchable) | § 10 🔴 + annexe #13 | `annexes/veille-vulnerabilites.md` |
 
 ## Fragilités trouvées dans le dossier (corrections factuelles proposées)
 
@@ -37,7 +38,7 @@ Trois points où le dossier de la branche `documentation` dit quelque chose que 
 1. **Captures** (annexes #7, #8, #9, #10) : board GitHub Projects, pipeline CI vert, sortie `pnpm test`, écrans de l'application (FR/EN, desktop/mobile, états vide/erreur) — je ne peux pas les prendre à sa place.
 2. **§ 2 : la numérotation officielle des 11 compétences** (référentiel Drive école) — accès que je n'ai pas ; la trame du tableau est prête, il reste à coller les intitulés exacts.
 3. **§ 11 : le récit du verrou technique** — les 17 fix deploy : ce qui a réellement débloqué (version CLI ? variable ? config ?) et la fausse piste, seul le maître s'en souvient. La trame 5 étapes est prête.
-4. **§ 10 : un exemple concret de CVE traitée** — à constituer pendant la rédaction (Dependabot/`pnpm audit`), avec date et décision.
+4. **§ 10 : un exemple concret de CVE traitée** — la matière première factuelle est prête (**annexe #13**, ajoutée en relance 12h15 du 30/10 : trois CVE réelles, datées, sourcées, avec exposition d'AMT Express et versions correctives ; candidat recommandé : `zod` GHSA-mrhx-c7xc-m3w5, publié le 01/10/2026). Reste au maître : le geste de vérification (`pnpm ls zod better-auth next`), la mise à jour éventuelle, la capture `pnpm audit`, et le récit de sa décision.
 5. **Wireframes / maquettes / identité graphique** (§ 4.3) — à produire, même rétroactivement.
 6. **Registre RGPD** : valider les ❓ (durées, base légale de la position, DPO, localisation des datacenters Neon/Vercel).
 7. **Dossier professionnel** : template docx + exemples du Drive école — hors de ma portée.
