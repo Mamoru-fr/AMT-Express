@@ -23,5 +23,5 @@
 
 - **Anonymisation d'abord** : noms réels de clients/chauffeurs, emails, plaques d'immatriculation — remplacer ou flouter.
 - **Résolution** : PNG, écran complet, pas de recadrage aggressif — le dossier est imprimé A4, une capture floue décrédibilise tout.
-- **FR d'abord**, EN pour une seule vuede comparaison (i18n prouvé une fois suffit).
+- **FR d'abord**, EN pour une seule vue de comparaison (i18n prouvé une fois suffit).
 - Légende chaque capture dans le dossier (ce qu'on regarde, pourquoi c'est une preuve).
