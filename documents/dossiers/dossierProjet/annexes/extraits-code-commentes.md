@@ -1,15 +1,17 @@
 # Annexe #12 — Extraits de code commentés (§ 7 du dossier)
 
-> **Statut (30/10/2026)** : cette pièce est un **stock de sélection**, pas une annexe à imprimer en l'état. Le guide du dossier veut les extraits **dans la section 7** (10–30 lignes + un paragraphe chacun) : le maître en choisit 6 (dont un front-end, à sélectionner depuis les composants), ils migrent dans le corps du dossier, et ce fichier reste la réserve sourcée pour l'équipe — et la pièce à montrer sur écran en soutenance si le jury creuse. Tout est copié depuis le code réel (`main`, SHA `bce57b7`) : chemins exacts, aucun code retouché.
-> ❓ Il manque un **extrait front-end non trivial** (tableau admin avec filtres/tri, ou formulaire avec états d'erreur Zod) : à sélectionner depuis les composants — proposition de cibles en fin de document.
+> **Statut (30/10/2026)** : cette pièce est un **stock de sélection**, pas une annexe à imprimer en l'état. Le guide du dossier veut les extraits **dans la section 7** (10–30 lignes + un paragraphe chacun) : le maître en choisit 6 (dont un front-end, à sélectionner depuis les composants), ils migrent dans le corps du dossier, et ce fichier reste la réserve sourcée pour l'équipe — et la pièce à montrer sur écran en soutenance si le jury creuse. Tout est copié verbatim depuis le code réel (`main`, SHA `bce57b7`) : chemins exacts, aucun code retouché (extraits 1, 3, 5 et 6 rétablis à l'identique suite au retour de lecture).
+> À sélectionner : un **extrait front-end non trivial** (tableau admin avec filtres/tri, ou formulaire avec états d'erreur Zod) — proposition de cibles en fin de document.
 
 ## Extrait 1 — Sécurité : le middleware de rôles (§ 7.5)
 
 **Fichier** : `amt-express/lib/middleware/roleMiddleware.ts`
 
 ```ts
-export async function verifyRole(requiredRole: UserRole): Promise<RoleCheckResult> {
-    // Pas de validation de rôle en environnement de test (bypass ciblé)
+export async function verifyRole(
+    requiredRole: UserRole
+): Promise<RoleCheckResult> {
+    // Skip role validation in test environment
     if (process.env.NODE_ENV === 'test') {
         return {success: true, data: {session: {}, user: {id: 'test-user'}} };
     }
@@ -17,21 +19,27 @@ export async function verifyRole(requiredRole: UserRole): Promise<RoleCheckResul
     const {session, user, isAdmin, isDriver, isCustomer} = await getSessionWithRole();
 
     if (!session) {
-        return { success: false, error: 'Unauthorized: Authentication required',
-                 code: ErrorCodes.UNAUTHORIZED };   // session absente
+        return {
+            success: false,
+            error: 'Unauthorized: Authentication required',
+            code: ErrorCodes.UNAUTHORIZED
+        };
     }
 
-    // Hiérarchie : admin ≥ driver ≥ customer
+    // Hierarchy: admin ≥ driver ≥ customer
     const hasAccess =
         requiredRole === 'customer' ? (isCustomer || isDriver || isAdmin) :
         requiredRole === 'driver'   ? isDriver :
         requiredRole === 'admin'    ? isAdmin : false;
 
     if (!hasAccess) {
-        return { success: false,
-                 error: `Unauthorized: ${requiredRole...} access only`,
-                 code: ErrorCodes.FORBIDDEN };        // mauvais rôle
+        return {
+            success: false,
+            error: `Unauthorized: ${requiredRole.charAt(0).toUpperCase() + requiredRole.slice(1)} access only`,
+            code: ErrorCodes.FORBIDDEN
+        };
     }
+
     return {success: true, data: {session, user}};
 }
 ```
@@ -74,28 +82,43 @@ export const CreateRideSchema = z.object({
 **Fichier** : `amt-express/lib/actions/ridesManagementActions.ts`
 
 ```ts
-export async function createRide(data: { /* … */ }): Promise<ActionResponse<string>> {
-  // 1. Rôle : admin uniquement
+export async function createRide(data: {
+    departureTime: Date;
+    customerIds: string[];
+    departure: string;
+    destination: string;
+    driverId?: string;
+    price?: string | number;
+    driverPrice?: string | number;
+    status?: RideStatus;
+}): Promise<ActionResponse<string>> {
+  // Verify user is an admin
   const roleCheck = await requireRole('admin');
   if (!roleCheck.success) {
-    return { success: false, error: roleCheck.error || 'Unauthorized access',
-             code: ErrorCodes.UNAUTHORIZED };
+    return {
+      success: false,
+      error: roleCheck.error || 'Unauthorized access',
+      code: ErrorCodes.UNAUTHORIZED,
+    };
   }
 
-  // 2. Validation Zod
+  // Validate input directly without price conversion
   const validation = validateCreateRide(data);
   if (!validation.success || !validation.data) {
-    return { success: false, error: validation.error || 'Invalid ride data',
-             code: ErrorCodes.VALIDATION_ERROR };
+    return {
+      success: false,
+      error: validation.error || 'Invalid ride data',
+      code: ErrorCodes.VALIDATION_ERROR,
+    };
   }
 
-  // 3. Délégation au contrôleur (logique métier dans les couches basses)
   const result = await RidesManagementController.createRide(validation.data);
-
-  // 4. Journal d'audit si succès
+  
+  // Audit logging for ride creation
   if (result.success && result.data) {
     await AuditLogger.ride.create(result.data, roleCheck.data?.user.id);
   }
+  
   return result;
 }
 ```
@@ -136,22 +159,34 @@ static async fetchDriverCompletedRides(driverId: string) {
 **Fichier** : `amt-express/lib/db/import-csv.ts`
 
 ```ts
-// Créer la production + projet générique dans une transaction
-const genericProjectId = `${productionId}-general`;
-try {
-    await db.transaction(async (tx) => {
-        await tx.insert(productions).values({
-            id: productionId, name: productionName,
-            contactEmail: `${productionId}@production.com`,
+    // Créer la production + projet générique dans une transaction
+    const genericProjectId = `${productionId}-general`;
+    try {
+        await db.transaction(async (tx) => {
+            // Créer la production
+            await tx.insert(productions).values({
+                id: productionId,
+                name: productionName,
+                contactEmail: `${productionId}@production.com`,
+            });
+
+            // Créer le projet générique
+            await tx.insert(projects).values({
+                id: genericProjectId,
+                name: `${productionName} - Générique`,
+                productionId: productionId,
+                isGeneric: true,
+                startDate: new Date(),
+                endDate: new Date(),
+            });
         });
-        await tx.insert(projects).values({
-            id: genericProjectId, name: `${productionName} - Générique`,
-            productionId: productionId, isGeneric: true,
-            startDate: new Date(), endDate: new Date(),
-        });
-    });
-    return productionId;
-} catch (error) { /* log + retour null : jamais de création partielle */ }
+
+        safeLog(`  ➕ Created production: ${maskSensitive(productionName)} with generic project`);
+        return productionId;
+    } catch (error) {
+        safeError(`Failed to create production ${maskSensitive(productionName)}:`, error);
+        return null;
+    }
 ```
 
 **Pourquoi ça tient debout** : c'est la **seule transaction réelle du projet** (le dossier le dit honnêtement § 5.3/§ 7.4) et elle est bien choisie : une production sans son projet générique serait une incohérence de données, la transaction garantit les deux ou aucune. Le script affiche par ailleurs l'avertissement « This import is NOT transactional » pour l'import global — l'honnêteté du script sur ses propres limites fait partie de la preuve (sauvegarde `pnpm db:backup` exigée avant import).
@@ -161,26 +196,33 @@ try {
 **Fichier** : `amt-express/lib/actions/driverRideActions.ts`
 
 ```ts
-const DriverPriceSchema = z.string()
+const DriverPriceSchema = z
+    .string()
     .min(1, 'Meter amount is required')
     .regex(/^\d+(\.\d{1,2})?$/, 'Must be a valid amount (e.g. 42 or 42.50)');
 
-export async function completeRide(rideId: string, driverPrice: string): Promise<ActionResponse<void>> {
-  const roleCheck = await requireRole('driver');
-  if (!roleCheck.success) return { /* UNAUTHORIZED */ };
+export async function completeRide(
+    rideId: string,
+    driverPrice: string,
+): Promise<ActionResponse<void>> {
+    console.log('[Action] completeRide — rideId:', rideId, '| driverPrice:', driverPrice);
 
-  const idValidation = validateRideId({ rideId });
-  if (!idValidation.success) return { /* VALIDATION_ERROR */ };
+    const roleCheck = await requireRole('driver');
+    if (!roleCheck.success) return { success: false, error: roleCheck.error || 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
 
-  const priceValidation = DriverPriceSchema.safeParse(driverPrice.trim());
-  if (!priceValidation.success) return { /* VALIDATION_ERROR */ };
+    const idValidation = validateRideId({ rideId });
+    if (!idValidation.success) return { success: false, error: idValidation.error || 'Invalid ride ID', code: ErrorCodes.VALIDATION_ERROR };
 
-  return DriverRideController.completeRide(rideId, priceValidation.data);
+    const priceValidation = DriverPriceSchema.safeParse(driverPrice.trim());
+    if (!priceValidation.success) return { success: false, error: priceValidation.error.issues[0]?.message ?? 'Invalid amount', code: ErrorCodes.VALIDATION_ERROR };
+
+    console.log('[Action] completeRide — validations passed, delegating to DriverRideController');
+    return DriverRideController.completeRide(rideId, priceValidation.data);
 }
 ```
 
 **Pourquoi ça tient debout** : un extrait court qui montre la discipline de bout en bout — le prix du compteur saisi par le chauffeur est contraint par une regex (format monétaire exact) **avant** de quitter la couche action ; même schéma que l'extrait 3 (rôle → Zod → contrôleur), sur une écriture métier.
 
-## ❓ À sélectionner par Alexis : l'extrait front-end
+## À sélectionner par Alexis : l'extrait front-end
 
 Candidats (dossier § 7.2) : le tableau admin avec filtres/tri/pagination (composant `components/admin`), ou le formulaire de course avec états d'erreur Zod. Un seul suffit pour le dossier ; à choisir lors de la session de rédaction.
