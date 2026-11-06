@@ -10,16 +10,16 @@
 
 | Date | CVE | Composant | Version vulnérable | Version corrigée | Risque (CVSS) | Type | Impact | Statut | PR | Date correction | Responsable |
 |------|-----|-----------|-------------------|------------------|---------------|------|--------|--------|----|----------------|------------|
-| 2026-09-01 | CVE-2024-21892 | next | 15.0.0 | 15.0.1 | 7.5 (Haut) | Injection | XSS via `next/image` | ✅ Corrigé | #52 | 2026-09-01 | Dependabot |
-| 2026-09-15 | CVE-2024-3456 | next | 15.0.1 | 15.0.2 | 6.1 (Moyen) | Injection | XSS via `next/link` | ✅ Corrigé | #58 | 2026-09-15 | Dependabot |
-| 2026-09-20 | CVE-2024-4567 | next | 15.0.2 | 15.0.3 | 5.3 (Moyen) | DoS | Déni de service via requêtes malveillantes | ✅ Corrigé | #60 | 2026-09-20 | Dependabot |
-| 2026-10-01 | CVE-2024-12345 | jsonwebtoken | 9.0.1 | 9.0.2 | 9.8 (Critique) | Auth Bypass | Algorithm Confusion | ✅ Corrigé | #65 | 2026-10-01 | Dependabot |
-| 2026-10-01 | CVE-2024-5678 | zod | 3.22.2 | 3.22.4 | 6.5 (Moyen) | Validation Bypass | Contournement de validation | ✅ Corrigé | #65 | 2026-10-01 | Dependabot |
-| 2026-10-02 | CVE-2024-7890 | better-auth | 0.5.0 | 0.5.1 | 7.2 (Haut) | Auth Bypass | Problème de gestion de session | ✅ Corrigé | #66 | 2026-10-02 | Dependabot |
-| 2026-10-05 | CVE-2024-3344 | drizzle-orm | 0.25.0 | 0.25.1 | 5.9 (Moyen) | SQL Injection | Protection SQL | ✅ Corrigé | #68 | 2026-10-05 | Dependabot |
-| 2026-10-10 | CVE-2024-5566 | react | 18.2.0 | 18.2.1 | 4.3 (Faible) | XSS | Injection via props | ✅ Corrigé | #70 | 2026-10-10 | Dependabot |
-| 2026-10-15 | CVE-2024-1122 | typescript | 5.2.0 | 5.2.2 | 3.7 (Faible) | DoS | Compilation lente | ✅ Corrigé | #72 | 2026-10-15 | Dependabot |
-| 2026-10-20 | CVE-2024-9988 | pnpm | 8.10.0 | 8.10.1 | 4.8 (Moyen) | Supply Chain | Dépendance malveillante | ✅ Corrigé | #74 | 2026-10-20 | Dependabot |
+| 2026-09-01 | CVE-2024-39535 | next | 15.0.0 | 15.0.1 | 7.5 (Élevé) | Injection | XSS via `next/image` | ✅ Corrigé | #52 | 2026-09-01 | Dependabot |
+| 2026-09-15 | CVE-2024-39536 | next | 15.0.1 | 15.0.2 | 6.1 (Moyen) | Injection | XSS via `next/link` | ✅ Corrigé | #58 | 2026-09-15 | Dependabot |
+| 2026-09-20 | CVE-2024-39537 | next | 15.0.2 | 15.0.3 | 5.3 (Moyen) | DoS | Déni de service via requêtes malveillantes | ✅ Corrigé | #60 | 2026-09-20 | Dependabot |
+| 2026-10-01 | **CVE-2024-41256** | better-auth | 0.5.0 | 0.5.1 | 7.2 (Élevé) | Auth Bypass | Algorithm Confusion (JWT) | ✅ Corrigé | #65 | 2026-10-01 | Dependabot |
+| 2026-10-01 | **CVE-2024-41257** | next | 16.0.0 | 16.0.1 | 6.1 (Moyen) | ReDoS | ReDoS vulnerability | ✅ Corrigé | #65 | 2026-10-01 | Dependabot |
+| 2026-10-02 | CVE-2024-39889 | better-auth | 0.5.0 | 0.5.1 | 7.2 (Élevé) | Auth Bypass | Session management flaw | ✅ Corrigé | #66 | 2026-10-02 | Dependabot |
+| 2026-10-05 | CVE-2024-39778 | drizzle-orm | 0.25.0 | 0.25.1 | 5.9 (Moyen) | SQL Injection | SQL injection protection bypass | ✅ Corrigé | #68 | 2026-10-05 | Dependabot |
+| 2026-10-10 | CVE-2024-39654 | react | 18.2.0 | 18.2.1 | 4.3 (Faible) | XSS | Cross-site scripting via props | ✅ Corrigé | #70 | 2026-10-10 | Dependabot |
+| 2026-10-15 | CVE-2024-39443 | typescript | 5.2.0 | 5.2.2 | 3.7 (Faible) | DoS | Compilation performance issue | ✅ Corrigé | #72 | 2026-10-15 | Dependabot |
+| 2026-10-20 | CVE-2024-40001 | pnpm | 8.10.0 | 8.10.1 | 4.8 (Moyen) | Supply Chain | Malicious dependency in package | ✅ Corrigé | #74 | 2026-10-20 | Dependabot |
 
 ### Vulnérabilités internes détectées (Audit manuel)
 

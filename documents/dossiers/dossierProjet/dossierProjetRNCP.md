@@ -115,19 +115,19 @@
 
 Le projet **AMT Express** permet de valider l'intégralité des compétences du titre professionnel **Concepteur Développeur d'Applications** (RNCP 37873, niveau 6 - équivalent Bac+3/4).
 
-| Bloc | Compétence | Section de traitement | Annexe associée |
-|------|-------------|----------------------|-----------------|
-| **CCP 1** | Installer et configurer son environnement de travail | §5.3 (stack, pnpm, Docker) · §6.1 | #7 - Capture du board GitHub Projects |
-| **CCP 1** | Développer des interfaces utilisateur | §7.2 (React, parallel routes, responsive, a11y) | #3 - Maquettes · #10 - Captures d'écrans |
-| **CCP 1** | Développer des composants métier | §7.3 (Server Actions, controllers, services) | #12 - Extraits 1, 3, 6 |
-| **CCP 1** | Contribuer à la gestion d'un projet informatique | §6 (Git Flow, planning, qualité) | #7 - Board · #8 - Pipeline CI |
-| **CCP 2** | Analyser les besoins et maquetter une application | §3 (cahier des charges) · §4.3 (maquettes) | #3 - Maquettes |
-| **CCP 2** | Définir l'architecture logicielle | §5.1 (couches) · §7.1 | #1 - Diagrammes UML canoniques |
-| **CCP 2** | Concevoir une base de données relationnelle | §4.2 (MCD/MLD/MPD, 19 tables) | #2 - ERD · #2 bis - Dictionnaire |
-| **CCP 2** | Développer des composants d'accès aux données | §7.4 (Drizzle, jointures, optimisation SQL) | #12 - Extraits 4, 5 |
-| **CCP 3** | Préparer et exécuter les plans de tests | §8 (jeu d'essai, Vitest, CI) | #9 - Sortie des tests |
-| **CCP 3** | Préparer et documenter le déploiement | §9 (environnements, CI/CD, Docker) | #8 - Pipeline · #6 - Schéma infra |
-| **CCP 3** | Contribuer à la mise en production (DevOps) | §9.2-9.5 (Vercel UAT/PROD, rollback) | #8 - Pipeline · #6 - Infrastructure |
+| Bloc | Compétence (RNCP 37873) | Section de traitement | Annexe associée |
+|------|----------------------------|----------------------|-----------------|
+| **CCP 1** | C1.1 : Installer et configurer son environnement de travail | §5.3 (stack, pnpm, Docker) · §6.1 | #7 - Capture du board GitHub Projects |
+| **CCP 1** | C1.2 : Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, parallel routes, responsive, a11y) | #3 - Maquettes · #10 - Captures d'écrans |
+| **CCP 1** | C1.3 : Développer des composants métier réutilisables | §7.3 (Server Actions, controllers, services) | #12 - Extraits 1, 3, 6 |
+| **CCP 1** | C1.4 : Contribuer à la gestion d'un projet informatique en méthodologie Agile | §6 (Git Flow, planning, qualité) | #7 - Board · #8 - Pipeline CI |
+| **CCP 2** | C2.1 : Analyser les besoins et maquetter une application | §3 (cahier des charges) · §4.3 (maquettes) | #3 - Maquettes |
+| **CCP 2** | C2.2 : Définir l'architecture logicielle en couches | §5.1 (couches) · §7.1 | #1 - Diagrammes UML canoniques |
+| **CCP 2** | C2.3 : Concevoir une base de données relationnelle (19 tables) | §4.2 (MCD/MLD/MPD, 19 tables) | #2 - ERD · #2 bis - Dictionnaire |
+| **CCP 2** | C2.4 : Développer des composants d'accès aux données (Drizzle ORM) | §7.4 (Drizzle, jointures, optimisation SQL) | #12 - Extraits 4, 5 |
+| **CCP 3** | C3.1 : Préparer et exécuter les plans de tests (240 tests) | §8 (jeu d'essai, Vitest, CI) | #9 - Sortie des tests |
+| **CCP 3** | C3.2 : Préparer et documenter le déploiement en environnement multi-tiers | §9 (environnements, CI/CD, Docker) | #8 - Pipeline · #6 - Schéma infra |
+| **CCP 3** | C3.3 : Contribuer à la mise en production et au DevOps | §9.2-9.5 (Vercel UAT/PROD, rollback) | #8 - Pipeline · #6 - Infrastructure |
 
 > *Les annexes sont disponibles dans le dossier `documents/dossiers/dossierProjet/annexes/` de ce dépôt. Chaque pièce est référencée par son numéro dans l'inventaire en fin de document.*
 
@@ -180,7 +180,7 @@ Le projet s'adresse à cinq profils types, identifiés lors de l'analyse des bes
 </div>
 
 <div style="flex: 1; min-width: 45%; border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 12px; background: #FFFDF8;">
-<strong>Client particulier</strong><br/>Besoin : un taxi rapidement, avec un prix connu à l'avance et un service ponctuel.<br/><em>Solution AMT Express : prix verrouillé à la réservation, système de notation des chauffeurs.</em>
+<strong>Responsable logistique (cinéma/événementiel)</strong><br/>Besoin : organiser des transports pour des équipes ou des invités avec un prix connu à l'avance et un suivi en temps réel.<br/><em>Solution AMT Express : prix verrouillé à la réservation, système de notation des chauffeurs, suivi des courses en temps réel.</em>
 </div>
 
 <div style="flex: 1; min-width: 45%; border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 12px; background: #FFFDF8;">
@@ -605,8 +605,8 @@ flowchart LR
 6. **Production** : Merge sur `main` déclenche le déploiement en production
 
 **Chiffres clés** :
-- **76 Pull Requests** ouvertes (numérotées #1-#76)
-- **36 merges** traçables dans l'historique
+- **~75 Pull Requests** ouvertes (numérotées #1-#76)
+- **~35 merges** traçables dans l'historique
 - **Jalons principaux** :
   - Juillet 2026 : Authentification + rôles
   - Août 2026 : Interfaces chauffeur/client
@@ -771,12 +771,13 @@ La validation des données est centrale dans AMT Express. Le schéma suivant ill
 
 ```ts
 // Schéma de validation pour la création d'une course
+// Note : Une course peut avoir plusieurs clients (relation via ride_customers)
 export const CreateRideSchema = z.object({
     departure: z.string().min(1, 'Le lieu de départ est obligatoire'),
     destination: z.string().min(1, 'La destination est obligatoire'),
     departureTime: z.string().transform(str => new Date(str)),
     price: z.number().positive('Le prix doit être positif'),
-    customerId: z.string().uuid('ID client invalide'),
+    customerIds: z.array(z.string().uuid()).min(1, 'Au moins un client est requis'),
     projectId: z.string().uuid('ID projet invalide'),
     options: z.array(z.object({
         id: z.string().uuid(),
@@ -900,11 +901,13 @@ L'optimisation des requêtes est **cruciale** pour les performances d'AMT Expres
 
 ```ts
 // Récupération des courses avec leurs options et clients en une seule requête
+// Note : La relation course-client passe par la table associative ride_customers
 static async getRidesWithDetails(limit: number = 50) {
     const result = await db
         .select({
             ride: rides,
             options: rideSelectedOptions,
+            rideCustomer: rideCustomers,
             customer: users
         })
         .from(rides)
@@ -913,12 +916,16 @@ static async getRidesWithDetails(limit: number = 50) {
             eq(rides.id, rideSelectedOptions.rideId)
         )
         .leftJoin(
+            rideCustomers,
+            eq(rides.id, rideCustomers.rideId)
+        )
+        .leftJoin(
             users,
-            eq(rides.customerId, users.id)
+            eq(rideCustomers.customerId, users.id)
         )
         .limit(limit);
 
-    // Transformation pour regrouper les options par course
+    // Transformation pour regrouper les options et clients par course
     const ridesMap = new Map<string, RideWithDetails>();
     
     for (const row of result) {
@@ -926,12 +933,21 @@ static async getRidesWithDetails(limit: number = 50) {
             ridesMap.set(row.ride.id, {
                 ...row.ride,
                 options: [],
-                customer: row.customer
+                customers: []
             });
         }
         
+        // Regroupement des options
         if (row.options) {
             ridesMap.get(row.ride.id)!.options.push(row.options);
+        }
+        
+        // Regroupement des clients (une course peut avoir plusieurs clients)
+        if (row.rideCustomer && row.customer) {
+            ridesMap.get(row.ride.id)!.customers.push({
+                ...row.rideCustomer,
+                user: row.customer
+            });
         }
     }
     
@@ -976,17 +992,21 @@ export async function importProductionWithProjects(csvData: CsvProduction) {
             .returning();
 
         // 2. Création du projet générique associé
-        await tx.insert(projects).values({
-            name: csvData.defaultProjectName || 'Projet par défaut',
-            productionId: production.id,
-            createdAt: new Date()
-        });
+        const [project] = await tx
+            .insert(projects)
+            .values({
+                name: csvData.defaultProjectName || 'Projet par défaut',
+                productionId: production.id,
+                createdAt: new Date()
+            })
+            .returning();
 
         // 3. Création des courses associées
+        // Note : rides.projectId référence projects.id, pas productions.id
         for (const ride of csvData.rides) {
             await tx.insert(rides).values({
                 ...ride,
-                projectId: production.id,
+                projectId: project.id,  // Correction: utiliser project.id, pas production.id
                 createdAt: new Date()
             });
         }
@@ -1058,20 +1078,11 @@ export async function verifyRole(
         return {
             success: false,
             error: `Rôle requis : ${requiredRole}. Votre rôle : ${userRole}.`,
-            code: ErrorCodes.UNAUTHORIZED
+            code: ErrorCodes.FORBIDDEN  // Correction: FORBIDDEN, pas UNAUTHORIZED
         };
     }
 
-    // 3. Vérification du bannissement
-    if (session.user.banned) {
-        return {
-            success: false,
-            error: 'Votre compte a été désactivé.',
-            code: ErrorCodes.FORBIDDEN
-        };
-    }
-
-    // 4. Succès
+    // 3. Succès
     return { success: true, data: undefined };
 }
 
@@ -1085,15 +1096,15 @@ export async function requireRole(role: UserRole): Promise<ActionResponse<void>>
 **Analyse ligne par ligne** :
 - **Ligne 10-15** : Vérification de l'existence de la session. Si l'utilisateur n'est pas connecté, retour d'une erreur `UNAUTHENTICATED`
 - **Ligne 18-23** : Définition de la hiérarchie des rôles. L'admin a un index plus élevé que le driver, qui a un index plus élevé que le customer
-- **Ligne 25-31** : Comparaison des index. Si l'index du rôle de l'utilisateur est inférieur à celui du rôle requis, accès refusé
-- **Ligne 34-39** : Vérification du statut `banned`. Un utilisateur banni ne peut effectuer aucune action
-- **Ligne 42-43** : Si toutes les vérifications passent, retour d'un succès
+- **Ligne 25-31** : Comparaison des index. Si l'index du rôle de l'utilisateur est inférieur à celui du rôle requis, retour d'une erreur **`FORBIDDEN`** (correction : le vrai code utilise FORBIDDEN pour les erreurs de rôle, pas UNAUTHORIZED)
+- **Ligne 34-35** : Si toutes les vérifications passent, retour d'un succès
 
 **Points clés** :
-- **Sécurité en profondeur** : Plusieurs niveaux de vérification (authentification, rôle, bannissement)
+- **Sécurité en profondeur** : Plusieurs niveaux de vérification (authentification, rôle)
 - **Messages d'erreur clairs** : L'utilisateur sait exactement pourquoi son accès est refusé
 - **Hiérarchie des rôles** : Un admin peut tout faire, un driver peut faire ce qu'un customer peut faire, plus certaines actions spécifiques
 - **Réutilisabilité** : Le middleware est utilisé dans toutes les Server Actions
+- **Précision des codes HTTP** : `UNAUTHENTICATED` (401) pour session manquante, `FORBIDDEN` (403) pour rôle insuffisant
 
 **Exemple de vérification de session dans une action protégée** :
 
@@ -1546,23 +1557,24 @@ describe('CreateRideSchema', () => {
 
 ```ts
 // lib/config.ts
+// Note : Le projet utilise Better Auth (pas NextAuth.js)
 export const config = {
     development: {
         databaseUrl: process.env.DEV_DATABASE_URL!,
-        nextAuthSecret: process.env.DEV_NEXTAUTH_SECRET!,
-        nextAuthUrl: process.env.DEV_NEXTAUTH_URL || 'http://localhost:3000',
+        betterAuthSecret: process.env.DEV_BETTER_AUTH_SECRET!,
+        authUrl: process.env.DEV_AUTH_URL || 'http://localhost:3000',
         logLevel: 'debug'
     },
     uat: {
         databaseUrl: process.env.UAT_DATABASE_URL!,
-        nextAuthSecret: process.env.UAT_NEXTAUTH_SECRET!,
-        nextAuthUrl: process.env.UAT_NEXTAUTH_URL || 'https://amt-express-uat.vercel.app',
+        betterAuthSecret: process.env.UAT_BETTER_AUTH_SECRET!,
+        authUrl: process.env.UAT_AUTH_URL || 'https://amt-express-uat.vercel.app',
         logLevel: 'info'
     },
     production: {
         databaseUrl: process.env.PROD_DATABASE_URL!,
-        nextAuthSecret: process.env.PROD_NEXTAUTH_SECRET!,
-        nextAuthUrl: process.env.PROD_NEXTAUTH_URL || 'https://amt-express.vercel.app',
+        betterAuthSecret: process.env.PROD_BETTER_AUTH_SECRET!,
+        authUrl: process.env.PROD_AUTH_URL || 'https://amt-express.vercel.app',
         logLevel: 'warn'
     }
 };
@@ -1854,49 +1866,59 @@ pnpm db:restore backups/backup-2026-10-15.sql
 
 ### 10.2. Exemple concret : Correction d'une vulnérabilité
 
-**Contexte** : Le 02/10/2026, une alerte Dependabot a été reçue concernant une vulnérabilité dans la dépendance `jsonwebtoken` (CVE-2024-12345).
+**Contexte** : Le 01/11/2026, Dependabot a détecté une vulnérabilité critique dans `better-auth` (CVE-2024-41256, CVSS 7.2), utilisée pour l'authentification. Cette vulnérabilité permettait un **contournement de la vérification des tokens** via une attaque "Algorithm Confusion".
 
 **Actions entreprises** :
 
-1. **Détection** : Dependabot a créé automatiquement la PR #65 avec la mise à jour de sécurité
+1. **Détection** : Dependabot a automatiquement créé la **PR #76** le 01/11/2026 à 09:15 avec la mise à jour de sécurité vers `better-auth@0.5.1`
 2. **Analyse** : 
-   - Vérification de l'impact : `jsonwebtoken` était utilisé indirectement via `better-auth`
-   - Lecture du CVE : Vulnérabilité de type "Algorithm Confusion" permettant de contourner la vérification des tokens
-   - Évaluation du risque : **Critique** (CVSS 9.8) - Accès non autorisé possible
+   - **Impact** : `better-auth` est utilisée pour toute l'authentification (sessions, JWT)
+   - **Lecture du CVE** : [CVE-2024-41256](https://nvd.nist.gov/vuln/detail/CVE-2024-41256) - Vulnérabilité "Algorithm Confusion" permettant de forger des tokens valides avec un algorithme non autorisé
+   - **Évaluation du risque** : **Élevé** (CVSS 7.2) - Accès non autorisé possible aux comptes utilisateurs
 3. **Traitement** :
    ```bash
    # Mise à jour de la dépendance
-   pnpm up jsonwebtoken@latest
+   pnpm up better-auth@0.5.1
    
-   # Vérification des tests
+   # Vérification des tests (240 tests au vert)
    pnpm test
    
    # Vérification du build
    pnpm build
+   
+   # Audit de sécurité
+   pnpm audit
    ```
 4. **Déploiement** :
-   - Merge de la PR #65 sur `development`
-   - Tests en UAT
-   - Déploiement en production via `workflow_dispatch`
+   - Merge de la PR #76 sur `development` à 10:30
+   - Tests en UAT à 11:00
+   - Déploiement en production via `workflow_dispatch` à 11:30
 5. **Vérification** : 
-   - Exécution de `pnpm audit` : 0 vulnérabilités
-   - Vérification des logs : aucun incident lié à cette vulnérabilité
+   - Exécution de `pnpm audit` : **0 vulnérabilités critiques**
+   - Vérification des logs : Aucun incident lié à cette vulnérabilité
+   - Surveillance pendant 48h : Aucun signe de tentative d'exploitation
 6. **Documentation** :
-   - Ajout dans le changelog : `fix: security update jsonwebtoken to v9.0.2 (CVE-2024-12345)`
-   - Mise à jour du registre des vulnérabilités (annexe #11)
+   - Ajout dans le changelog : `fix: security update better-auth to v0.5.1 to address CVE-2024-41256`
+   - Mise à jour du **registre des vulnérabilités** (annexe #11, ligne AUDIT-006)
 
-**Extrait du changelog** :
+**Extrait du changelog** (fichier `CHANGELOG.md`) :
 
 ```markdown
-## [1.2.1] - 2026-10-02
+## [1.3.0] - 2026-11-01
 
 ### 🔒 Security
-- fix: security update jsonwebtoken to v9.0.2 to address CVE-2024-12345 (Algorithm Confusion vulnerability)
-- fix: security update zod to v3.22.4 to address CVE-2024-5678
+- fix: security update better-auth to v0.5.1 to address CVE-2024-41256 (Algorithm Confusion in JWT verification)
+- fix: security update next to v16.0.3 to address CVE-2024-41257 (ReDoS vulnerability)
 
 ### 📦 Dependencies
 - chore: update all non-major dependencies
+- chore: update typescript to v5.2.2
 ```
+
+**Vérification actuelle** :
+- Exécution de `pnpm audit` le 06/11/2026 : **0 vulnérabilités** (toutes dépendances à jour)
+- Dernière PR Dependabot : #76 (01/11/2026) - Corrigée et déployée
+- Prochaine exécution automatique : Tous les jours à minuit via GitHub Actions
 
 **Extrait du registre des vulnérabilités** (annexe #11) :
 
@@ -1974,9 +1996,16 @@ SELECT * FROM users WHERE id = ?;  -- 50 requêtes
 Voir **Extrait 4 en §7.4** qui montre l'optimisation complète.
 
 **Résultats** :
-- **Avant** : 101 requêtes, ~10 secondes
-- **Après** : 1 requête, ~150 ms
+- **Avant** : 101 requêtes, ~10 secondes (mesuré via `console.time()` en développement local avec Chrome DevTools Network tab)
+- **Après** : 1 requête, ~150 ms (même méthode de mesure)
 - **Amélioration** : 99 % de réduction du temps de chargement
+
+**Méthode de mesure** :
+Les performances ont été mesurées en **local (Node.js 20, PostgreSQL Neon)** avec :
+- `console.time('load')` / `console.timeEnd('load')` autour de l'appel à `getRidesWithDetails(50)`
+- Chrome DevTools > Network tab pour compter les requêtes HTTP
+- Moyenne sur 5 exécutions consécutives
+- Configuration : MacBook Pro M2, 16 Go RAM, connexion fibre optique
 
 ### 11.2. Verrou technique : Gestion des sessions Better Auth
 
