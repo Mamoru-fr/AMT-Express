@@ -3,14 +3,14 @@
 > **Source** : Journal complet des vulnérabilités détectées et corrigées (juillet - novembre 2026)
 > **Format** : Tableau structuré pour traçabilité et audit.
 > **Conformité** : Aligné sur les bonnes pratiques OWASP et les exigences RGPD.
-> **Version** : 2.0 (révisée le 06/11/2026)
+> **Version** : 2.1 (révisée le 06/11/2026)
 
 ---
 
 ## 📋 Principes directeurs
 
 **Transparence** : Toutes les vulnérabilités détectées sont documentées, même celles corrigées.
-**Traçabilité** : Chaque correction est liée à un commit ou une Pull Request pour audit complet.
+**Traçabilité** : Chaque correction est datée et documentée. Les commits spécifiques peuvent être retrouvés dans l'historique Git du projet.
 **Vérifiabilité** : Seules les vulnérabilités **confirmées** et **sourcées** sont incluses dans ce registre.
 
 > **⚠️ Note importante** : Les vulnérabilités externes (CVE) détectées sur les dépendances du projet sont documentées séparément dans l'**annexe #13** (veille sur les vulnérabilités). Cette annexe #11 se concentre sur les **audits internes** et les corrections **directement liées au code du projet**.
@@ -21,15 +21,15 @@
 
 ### Audits de sécurité internes
 
-| Date | ID Interne | Titre | Composant | Risque | Description | Impact | Statut | Commit/PR | Date correction |
-|------|------------|-------|-----------|--------|-------------|--------|--------|-----------|----------------|
-| 2026-09-10 | AUDIT-001 | Contrôle d'accès défaillant | `lib/actions/RidesManagementActions.ts` | Critique | Accès non autorisé aux courses d'autres clients (filtrage par `customerId` manquant) | Fuite de données | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-09-10 |
-| 2026-09-12 | AUDIT-002 | Fuites de données | `lib/services/DriverDashboardService.ts` | Élevé | Chauffeurs voyaient toutes les courses (pas de filtrage par `driverId`) | Fuite de données | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-09-12 |
-| 2026-09-15 | AUDIT-003 | Messages d'erreur détaillés | Toutes les Server Actions | Moyen | Exposent des infos sensibles (stack traces, détails DB) | Information disclosure | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-09-15 |
-| 2026-09-20 | AUDIT-004 | Manque de validation | Import CSV | Élevé | Injection possible via CSV malveillant (pas de validation des données) | RCE | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-09-20 |
-| 2026-10-02 | AUDIT-005 | Sécurité des rôles | `lib/middleware/roleMiddleware.ts` | Moyen | Hiérarchie des rôles non vérifiée (admin/driver/customer) | Élévation de privilèges | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-10-02 |
-| 2026-10-05 | AUDIT-006 | Session management | Better Auth | Élevé | Sessions non invalidées correctement après logout | Session hijacking | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-10-05 |
-| 2026-10-15 | AUDIT-007 | CSRF protection | Formulaires | Moyen | Manque de protection CSRF sur certains formulaires | CSRF | ✅ Corrigé | [Commit](https://github.com/Mamoru-fr/AMT-Express/commit/) | 2026-10-15 |
+| Date | ID Interne | Titre | Composant | Risque | Description | Impact | Statut | Date correction |
+|------|------------|-------|-----------|--------|-------------|--------|--------|----------------|
+| 2026-09-10 | AUDIT-001 | Contrôle d'accès défaillant | `lib/actions/RidesManagementActions.ts` | Critique | Accès non autorisé aux courses d'autres clients (filtrage par `customerId` manquant) | Fuite de données | ✅ Corrigé | 2026-09-10 |
+| 2026-09-12 | AUDIT-002 | Fuites de données | `lib/services/DriverDashboardService.ts` | Élevé | Chauffeurs voyaient toutes les courses (pas de filtrage par `driverId`) | Fuite de données | ✅ Corrigé | 2026-09-12 |
+| 2026-09-15 | AUDIT-003 | Messages d'erreur détaillés | Toutes les Server Actions | Moyen | Exposent des infos sensibles (stack traces, détails DB) | Information disclosure | ✅ Corrigé | 2026-09-15 |
+| 2026-09-20 | AUDIT-004 | Manque de validation | Import CSV | Élevé | Injection possible via CSV malveillant (pas de validation des données) | RCE | ✅ Corrigé | 2026-09-20 |
+| 2026-10-02 | AUDIT-005 | Sécurité des rôles | `lib/middleware/roleMiddleware.ts` | Moyen | Hiérarchie des rôles non vérifiée (admin/driver/customer) | Élévation de privilèges | ✅ Corrigé | 2026-10-02 |
+| 2026-10-05 | AUDIT-006 | Session management | Better Auth | Élevé | Sessions non invalidées correctement après logout | Session hijacking | ✅ Corrigé | 2026-10-05 |
+| 2026-10-15 | AUDIT-007 | CSRF protection | Formulaires | Moyen | Manque de protection CSRF sur certains formulaires | CSRF | ✅ Corrigé | 2026-10-15 |
 
 > **📌 Notes sur les audits internes** :
 > - Chaque audit a été **validé par des tests automatisés** (240 tests au total)
@@ -232,7 +232,8 @@ flowchart TD
 | 1.1 | 2026-10-02 | Alexis SANTOS | Ajout des corrections AUDIT-001 à AUDIT-003 |
 | 1.2 | 2026-10-05 | Alexis SANTOS | Ajout des corrections AUDIT-004 à AUDIT-007 |
 | 1.3 | 2026-11-06 | Alexis SANTOS | Mise à jour des statistiques (version avec erreurs) |
-| **2.0** | **2026-11-06** | **Alexis SANTOS** | **Révision complète : suppression des CVE non vérifiées, séparation des vulnérabilités internes/externes, ajout référence à l'annexe #13** |
+| 2.0 | 2026-11-06 | Alexis SANTOS | Révision complète : suppression des CVE non vérifiées, séparation des vulnérabilités internes/externes, ajout référence à l'annexe #13 |
+| **2.1** | **2026-11-06** | **Alexis SANTOS** | **Suppression de la colonne Commit/PR (liens non vérifiables), mise à jour de la méthodologie de traçabilité** |
 
 ## 🔗 Liens utiles
 
