@@ -2,7 +2,59 @@
 
 > Les diagrammes du dossier (§ 4.1) sont des **transcriptions Mermaid** — pratiques à maintenir, mais le jury attend un rendu UML canonique (acteurs en bonhommes, cas d'utilisation en ellipses, classes en rectangles compartimentés). Ce fichier donne les **sources PlantUML** à rendre en image pour l'annexe #1. Rendu : [plantuml.com](https://www.plantuml.com/plantuml) en ligne, ou l'extension VS Code *PlantUML* — exporter en **PNG** (300 dpi pour l'impression).
 
+> **✅ Version Mermaid disponible ci-dessous** pour une prévisualisation directe dans GitHub/Markdown.
+
 ## Cas d'utilisation (acteurs Admin / Chauffeur / Client)
+
+### Version Mermaid (pour prévisualisation directe)
+
+```mermaid
+flowchart LR
+    subgraph Actors
+        Admin([Administrateur])
+        Driver([Chauffeur])
+        Customer([Client])
+    end
+
+    subgraph AMT["AMT Express (MVP)"]
+        UC1[Créer / éditer une course]
+        UC2[Affecter une course ou valider une demande]
+        UC3[Consulter les KPI]
+        UC4[Importer des données CSV]
+        UC5[Exporter en CSV]
+        UC6[Bannir / activer un chauffeur]
+        UC7[Voir les courses disponibles]
+        UC8[Demander une assignation]
+        UC9[Gérer ses shifts]
+        UC10[Réserver une course]
+        UC11[Consulter son historique]
+        UC12[Noter une course]
+    end
+
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Driver --> UC7
+    Driver --> UC8
+    Driver --> UC9
+    Customer --> UC10
+    Customer --> UC11
+    Customer --> UC12
+
+    %% Relations entre cas d'utilisation
+    UC2 -.->|include| UC8
+    UC8 -.->|extend| UC1
+
+    %% Style
+    style AMT fill:#FFFDF8,stroke:#F4A259
+```
+
+### Version PlantUML (pour rendu canonique)
+
+> **À exporter en PNG** via [plantuml.com](https://www.plantuml.com/plantuml) pour l'annexe imprimée.
 
 ```plantuml
 @startuml
@@ -45,7 +97,49 @@ UC8 ..> UC1 : <<extend>>
 @enduml
 ```
 
+---
+
 ## Diagramme de classes (canonique, corrigé contre le schéma réel — 30/10)
+
+### Version Mermaid (pour prévisualisation directe)
+
+```mermaid
+classDiagram
+    class User { +id uuid, +role user_role, +email, +banned }
+    class Driver { +id uuid, +user_id FK, +available bool, +vehicle_plate }
+    class Production { +id uuid, +name }
+    class Project { +id uuid, +production_id FK }
+    class Ride { +id uuid, +project_id FK, +driver_id FK?, +status ride_status, +price }
+    class RideCustomer { +ride_id FK, +customer_id FK, +rating 1..5, +comment }
+    class RideOption { +id uuid, +additional_price }
+    class RideSelectedOption { +ride_id FK, +option_id FK, +price }
+    class AssignmentRequest { +ride_id FK, +shift_id FK?, +driver_id FK, +status request_status }
+    class ShiftPlanning { +driver_id FK, +status shift_status }
+    
+    User "1" --> "0..1" Driver
+    Production "1" *-- "0..n" Project
+    Project "1" --> "0..n" Ride
+    Driver "0..1" --> "0..n" Ride
+    Ride "1" --> "1..n" RideCustomer
+    Ride "1" --> "0..n" RideSelectedOption
+    RideSelectedOption "0..n" --> "1" RideOption
+    Ride "1" --> "0..n" AssignmentRequest
+    AssignmentRequest "0..n" --> "1" Driver
+    ShiftPlanning "1" --> "0..n" AssignmentRequest
+    Driver "1" --> "0..n" ShiftPlanning
+    User "1" <-- "0..n" RideCustomer
+    
+    %% Style
+    style User fill:#FFFDF8,stroke:#F4A259
+    style Driver fill:#FFFDF8,stroke:#F4A259
+    style Production fill:#FFFDF8,stroke:#F4A259
+    style Project fill:#FFFDF8,stroke:#F4A259
+    style Ride fill:#FFFDF8,stroke:#F4A259
+```
+
+### Version PlantUML (pour rendu canonique)
+
+> **À exporter en PNG** via [plantuml.com](https://www.plantuml.com/plantuml) pour l'annexe imprimée.
 
 ```plantuml
 @startuml
