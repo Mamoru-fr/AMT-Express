@@ -392,22 +392,65 @@ flowchart LR
 
 **Modèle Physique de Données (MPD)** — Implémentation réelle
 
-> **Fichier source** : `lib/db/schema.ts`
->
-> Le schéma physique comprend :
-> - 19 tables `pgTable`
-> - 5 types énumérés `pgEnum`
-> - Clés étrangères avec comportement `ON DELETE SET NULL` ou `CASCADE`
-> - Index mono-colonne uniquement (pas d'index composite ou partiel dans la version actuelle)
+Le modèle physique est représenté sous deux formes :
 
-**Améliorations planifiées** :
-- Ajout de contraintes CHECK (ex: rating entre 1 et 5)
-- Créer des index composites (ex: `driver_id` + `status`)
-- Définir des contraintes UNIQUE composites (ex: `ride_id` + `customer_id`)
+1. **Le diagramme complet** des 19 tables et de leurs relations figure en **annexe 2** (ERD). Il s'agit de la représentation visuelle de référence.
+2. **Un extrait du DDL correspondant** est donné ci-dessous pour illustrer l'implémentation physique effective, sur trois tables représentatives : la table centrale `rides`, la table de jointure `ride_customers` (relation *many-to-many* entre courses et clients, avec note et évaluation), et la table `assignment_requests` (proposition d'affectation d'un chauffeur à une course).
 
-<div style="border: 1px solid #2e7d32; border-left: 5px solid #2e7d32; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #E8F5E9;">
-✅ **ERD exhaustif produit (annexe #2)** — Le schéma relationnel complet est disponible dans `annexes/ERD-19-tables.md`. Il est adapté à l'impression avec 3 vues par module en format A4 portrait. Le dictionnaire de données détaillé est disponible en annexe #2 bis.
-</div>
+```sql
+-- Types énumérés (extrait) — générés à partir de pgEnum
+CREATE TYPE "ride_status" AS ENUM ('pending', 'assigned', 'completed', 'cancelled');
+CREATE TYPE "request_status" AS ENUM ('pending', 'approved', 'rejected');
+
+-- Table centrale des courses
+CREATE TABLE "rides" (
+  "id" text PRIMARY KEY,
+  "departure" varchar(255) NOT NULL,
+  "destination" varchar(255) NOT NULL,
+  "departure_time" timestamp NOT NULL,
+  "arrival_time" timestamp,
+  "price" numeric(10, 2),
+  "driver_price" numeric(10, 2),
+  "status" ride_status NOT NULL DEFAULT 'pending',
+  "driver_id" text REFERENCES "drivers"("id") ON DELETE SET NULL,
+  "project_id" text REFERENCES "projects"("id") ON DELETE SET NULL,
+  "waiting_time" integer DEFAULT 0,
+  "created_at" timestamp NOT NULL DEFAULT now(),
+  "updated_at" timestamp NOT NULL
+);
+CREATE INDEX "rides_driverId_idx" ON "rides" ("driver_id");
+CREATE INDEX "rides_projectId_idx" ON "rides" ("project_id");
+CREATE INDEX "rides_status_idx" ON "rides" ("status");
+
+-- Table de jointure : une course peut concerner plusieurs clients
+CREATE TABLE "ride_customers" (
+  "id" text PRIMARY KEY,
+  "ride_id" text NOT NULL REFERENCES "rides"("id") ON DELETE CASCADE,
+  "customer_id" text NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+  "rating" integer,
+  "comment" text,
+  "created_at" timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX "rideCustomers_rideId_idx" ON "ride_customers" ("ride_id");
+CREATE INDEX "rideCustomers_customerId_idx" ON "ride_customers" ("customer_id");
+
+-- Propositions d'affectation d'un chauffeur
+CREATE TABLE "assignment_requests" (
+  "id" text PRIMARY KEY,
+  "ride_id" text NOT NULL REFERENCES "rides"("id") ON DELETE CASCADE,
+  "shift_id" text REFERENCES "shift_planning"("id") ON DELETE SET NULL,
+  "driver_id" text NOT NULL REFERENCES "drivers"("id") ON DELETE SET NULL,
+  "status" request_status NOT NULL DEFAULT 'pending',
+  "requested_at" timestamp NOT NULL DEFAULT now(),
+  "updated_at" timestamp NOT NULL
+);
+CREATE INDEX "assignmentRequests_rideId_idx" ON "assignment_requests" ("ride_id");
+CREATE INDEX "assignmentRequests_driverId_idx" ON "assignment_requests" ("driver_id");
+```
+
+> Le schéma physique complet comprend : **19 tables** `pgTable`, **5 types énumérés** `pgEnum`, des clés étrangères avec comportement `ON DELETE SET NULL` ou `CASCADE`, et des **index mono-colonne** uniquement.
+
+> **Fichier source de vérité** : `lib/db/schema.ts` — le DDL et le diagramme ci-dessus en sont la transcription fidèle ; en cas de divergence, c'est ce fichier qui fait foi. Avantage en soutenance : le MPD est **engendré à partir du code**, non dessiné à la main ; il ne peut donc pas dériver de l'implémentation.
 
 ### 4.3. Maquettes de l'interface utilisateur
 
