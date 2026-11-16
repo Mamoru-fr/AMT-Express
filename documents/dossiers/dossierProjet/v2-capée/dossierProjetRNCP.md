@@ -151,9 +151,6 @@ Le projet **AMT Express** permet de valider l'intégralité des compétences du 
 
 *Avant : tickets papier → dispatch téléphonique → factures Excel, avec erreurs, retards et inactivité. Avec AMT Express : course créée dans l'application → assignation validée automatiquement → tableaux de bord KPI et export CSV, apportant traçabilité, fiabilité et visibilité.*
 
-    AVANT == "AMT Express" ==> APRES
-```
-
 ### 3.2. Public cible et personas
 
 Le projet s'adresse à cinq profils types ; les trois principaux sont :
@@ -298,8 +295,6 @@ classDiagram
 - `request_status` : pending, approved, rejected
 - `shift_status` : planned, active, completed, cancelled
 
-**Modèle Conceptuel de Données (MCD)** — Notation Merise
-
 **Modèle Conceptuel de Données (MCD)** — En notation Merise (cardinalités au pied de chaque entité) : une PRODUCTION **contient** (0,n)-(1,1) des PROJECT ; un USER **est-aussi** (0,1)-(1,1) un DRIVER ; un DRIVER **est-assignée-à** (0,n)-(0,1) des RIDE, **émet** (0,n)-(1,1) des ASSIGNMENT_REQUEST et **planifie** des SHIFT_PLANNING ; une RIDE **reçoit** (0,n)-(1,1) des ASSIGNMENT_REQUEST, **transporte** (1,n)-(0,n) des USER via la table porteuse `ride_customers`, et **embarque** (0,n)-(0,n) des RIDE_OPTION via `ride_selected_options` ; les NOTIFICATION **concernent** USER et RIDE. *MCD graphique détaillé en annexe #2.*
 
 **Modèle Logique de Données (MLD)** — Règles de passage
@@ -315,8 +310,6 @@ Le modèle physique est représenté sous deux formes :
 
 1. **Le diagramme complet** des 19 tables et de leurs relations figure en **annexe 2** (ERD). Il s'agit de la représentation visuelle de référence.
 2. **Un extrait du DDL correspondant** est donné ci-dessous pour illustrer l'implémentation physique effective, sur la table centrale `rides` ; la table `assignment_requests` est décrite à la suite.
-
-```sql
 
 ```sql
 -- Types énumérés (extrait) — générés à partir de pgEnum
@@ -762,7 +755,7 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 | 6 | Service (transaction) | Atomicité : assignation + rejet des concurrentes + audit |
 
 > **📌 Résumé de la section 7** : deux réalisations personnelles couvrent la chaîne complète — front-end typé et sécurisé, back-end en couches avec validation Zod, contrôle des rôles, règles métier et transaction ACID. *Compétences validées* : **CCP 1** (interfaces, composants métier, sécurité) et **CCP 2** (architecture en couches, accès aux données). L'optimisation N+1 et la transaction d'import CSV sont détaillées en **section 11** (défis et recherche) ; les extraits longs sont en **annexe**.
-
+<div style="page-break-before: always;"></div>
 
 ## 8. Tests
 
@@ -925,8 +918,6 @@ flowchart TD
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
 
 *Implémentation dans `lib/db/import-csv.ts` : `backupBeforeImport()` horodate un `pg_dump` (format custom) via execa ; `restoreFromBackup()` restaure via `pg_restore --clean --if-exists`.*
-
-```
 
 Scripts npm associés : pnpm db:backup, pnpm db:restore, pnpm db:import-csv data.csv (backup automatique avant import).
 
