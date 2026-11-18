@@ -1,6 +1,6 @@
-# Annexe #1 bis — UML canonique (sources PlantUML)
+# Annexe #1 — UML canonique (sources PlantUML)
 
-> Les diagrammes du dossier (§ 4.1) sont des **transcriptions Mermaid** — pratiques à maintenir, mais le jury attend un rendu UML canonique (acteurs en bonhommes, cas d'utilisation en ellipses, classes en rectangles compartimentés). Ce fichier donne les **sources PlantUML** à rendre en image pour l'annexe #1. Rendu : [plantuml.com](https://www.plantuml.com/plantuml) en ligne, ou l'extension VS Code *PlantUML* — exporter en **PNG** (300 dpi pour l'impression).
+> Les diagrammes du dossier (§ 5.1) sont des **transcriptions Mermaid** — pratiques à maintenir, mais le jury attend un rendu UML canonique (acteurs en bonhommes, cas d'utilisation en ellipses, classes en rectangles compartimentés). Ce fichier donne les **sources PlantUML** à rendre en image pour le dossier. Rendu : [plantuml.com](https://www.plantuml.com/plantuml) en ligne, ou l'extension VS Code *PlantUML* — exporter en **PNG** (300 dpi pour l'impression).
 
 > **✅ Version Mermaid disponible ci-dessous** pour une prévisualisation directe dans GitHub/Markdown.
 
@@ -192,3 +192,21 @@ User "0..n" <-- "1..n" RideCustomer
 ```
 
 *Corrections du 30/10 intégrées : la notation (1–5 + commentaire) vit dans `RideCustomer` (table associative `ride_customers`), pas dans `Ride` ; `AssignmentRequest.shift_id` (FK nullable vers `ShiftPlanning`) apparaît ; `RideSelectedOption` porte son prix figé. Cohérent avec l'ERD de l'annexe #2.*
+
+## Diagramme d'activité — parcours « demande d'assignation d'une course » (§ 5.1 du dossier)
+
+### Version Mermaid (pour prévisualisation directe)
+
+```mermaid
+flowchart TD
+    S([Chauffeur : course en attente repérée]) --> C[Clic « demander »]
+    C --> P{Demande autorisée ?<br/>plafond de 5 demandes simultanées,<br/>course non assignée,<br/>pas de demande déjà en cours}
+    P -- non --> E[Message d'erreur explicite — fin]
+    P -- oui --> I[Demande enregistrée,<br/>administrateur notifié]
+    I --> D{Administrateur décide}
+    D -- refus --> R[Demande rejetée — fin]
+    D -- validation --> A[Course assignée au chauffeur<br/>demandes concurrentes rejetées]
+    A --> F([Fin : course visible dans l'espace chauffeur])
+```
+
+*Version volontairement resserrée pour tenir sur une page A4 ; le déroulé technique complet (contrôle du rôle, transaction d'assignation, rejet des demandes concurrentes) est décrit en § 7.3 du dossier.*

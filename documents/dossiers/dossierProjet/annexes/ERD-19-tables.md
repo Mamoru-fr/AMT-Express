@@ -132,7 +132,7 @@ classDiagram
 | `request_status` | `pending` · `approved` · `rejected` |
 | `invoice_status` | `unpaid` · `paid` · `cancelled` |
 
-## Index (tous mono-colonne — § 4.2 MPD)
+## Index (tous mono-colonne — § 5.2 MPD)
 
 | Table | Index |
 | --- | --- |
@@ -153,7 +153,7 @@ classDiagram
 | notification_preferences | `userId` |
 | activity_logs | `userId` · `createdAt` |
 
-## Améliorations planifiées (§ 4.2 — reprises)
+## Améliorations planifiées (§ 5.2 — reprises)
 
 Contrainte `CHECK` sur `ride_customers.rating` (1–5) · `UNIQUE` composites (`ride_id, customer_id`) et (`ride_id, option_id`) · index composite (`driver_id, status`) sur `rides` · nuance : plusieurs colonnes `NOT NULL` portent `ON DELETE SET NULL` — le `SET NULL` échouera à l'exécution si la ligne référencée est supprimée (dette connue, non bloquante).
 

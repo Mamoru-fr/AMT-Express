@@ -73,6 +73,23 @@ flowchart TB
     style Surveillance fill:#fce4ec,stroke:#e91e63
 ```
 
+## Architecture logicielle en couches (§ 6.1 du dossier)
+
+```mermaid
+flowchart TB
+    A["UI — Next.js App Router · React 19<br/>parallel routes @admin/@driver/@customer<br/>+ page connections (authentification)"] --> B["Server Actions<br/>validation Zod"]
+    B --> C["Controllers"]
+    C --> D["Role Middleware<br/>verifyRole — admin ≥ driver ≥ customer"]
+    D --> E["Services — logique métier pure"]
+    E --> F["Drizzle ORM (type-safe)"]
+    F --> G[("PostgreSQL 18 — Neon")]
+    style A fill:#176B87,color:#fff
+    style D fill:#F4A259,color:#000
+    style G fill:#060605,color:#fff
+```
+
+*Couches transverses : Better Auth (sessions, rôles, bannissements), `activity_logs` (journalisation), i18next (FR/EN). Le détail des responsabilités par couche figure en § 6.1 du dossier.*
+
 ## Environnements de déploiement
 
 ### Architecture multi-environnements
