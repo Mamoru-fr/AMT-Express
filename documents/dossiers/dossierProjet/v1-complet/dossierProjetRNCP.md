@@ -299,13 +299,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    S([Course repérée]) --> C[Clic « demander »]
-    C --> P{Autorisée ? plafond 5, course libre}
+    S([Clic « demander »]) --> P{Autorisée ? plafond 5, course libre}
     P -- non --> E([Erreur explicite])
-    P -- oui --> I[Demande enregistrée, admin notifié]
-    I --> D{Admin décide}
-    D -- refus --> R([Demande rejetée])
-    D -- validation --> A([Course assignée, concurrentes rejetées])
+    P -- oui --> D{Décision admin}
+    D -- refus --> R([Rejetée])
+    D -- validation --> A([Assignée, concurrentes rejetées])
 ```
 
 
@@ -490,6 +488,8 @@ flowchart LR
 
 **Architecture adoptée** : Une architecture en **7 couches** (incluant les couches transverses) qui respecte les principes de séparation des responsabilités (SoC) et de dépendance unidirectionnelle.
 
+<div align="center">
+
 ```mermaid
 flowchart TB
     A["UI — Next.js · React 19 · parallel routes"] --> B["Server Actions — Zod"]
@@ -502,6 +502,8 @@ flowchart TB
     style D fill:#F4A259,color:#000
     style G fill:#060605,color:#fff
 ```
+
+</div>
 
 > *Vous retrouvez la version A4 (infrastructure complète : couches, environnements, hébergement) dans l'annexe #6.*
 
