@@ -212,13 +212,13 @@ Le projet a été développé selon une démarche inspirée du framework **Scrum
 
 ```mermaid
 flowchart LR
-    F["feature/* · hotfix/*"] -- "PR + CI verte" --> DEV["development<br/>(intégration)"]
-    DEV -- "PR + workflow_dispatch + confirmation manuelle" --> UAT["Vercel UAT<br/>(pré-production)"]
-    UAT -- "validation humaine" --> MAIN["main — production<br/>(Vercel PROD)"]
-    MAIN -.->|"rollback : re-déploiement du tag précédent"| MAIN
+    F["feature · hotfix"] -- "PR + CI verte" --> DEV["development"]
+    DEV -- "workflow_dispatch + confirmation" --> UAT["Vercel UAT"]
+    UAT -- "validation humaine" --> MAIN["main → PROD"]
+    MAIN -.->|"rollback : tag précédent"| MAIN
 ```
 
-> *Vous pouvez retrouver le schéma complet du cycle de déploiement (UAT, validation humaine, rollback) dans l'annexe #6.*
+> *Vous retrouvez la version A4 (cycle de déploiement complet) dans l'annexe #6.*
 
 **Détail du workflow** :
 1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
@@ -283,28 +283,14 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Admin([Administrateur])
-    Driver([Chauffeur])
-    Customer([Client])
-
-    subgraph UC[Cas d'utilisation]
-        UC1(Créer / éditer une course)
-        UC2(Affecter une course<br/>ou valider une demande)
-        UC3(Consulter les KPI)
-        UC4(Importer des données CSV)
-        UC5(Exporter en CSV)
-        UC6(Bannir / activer un chauffeur)
-        UC7(Voir les courses disponibles)
-        UC8(Demander une assignation)
-        UC9(Gérer ses shifts)
-        UC10(Réserver une course)
-        UC11(Consulter son historique)
-        UC12(Noter une course)
-    end
-
-    Admin --- UC1 & UC2 & UC3 & UC4 & UC5 & UC6
-    Driver --- UC7 & UC8 & UC9
-    Customer --- UC10 & UC11 & UC12
+    Admin([Administrateur]) --> UC1[Créer/éditer une course]
+    Admin --> UC2[Affecter · valider une demande]
+    Admin --> UC3[KPI · import/export CSV · bannissement]
+    Driver([Chauffeur]) --> UC4[Courses disponibles]
+    Driver --> UC5[Demander une assignation · plafond 5]
+    Driver --> UC6[Gérer ses shifts]
+    Customer([Client]) --> UC7[Réserver à prix verrouillé]
+    Customer --> UC8[Historique · notation]
 ```
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
@@ -312,20 +298,19 @@ flowchart LR
 > *Ce diagramme décrit le parcours métier validé avec le client. Les contrôles techniques correspondants (vérification du rôle, validation des données, transaction d'assignation avec rejet des demandes concurrentes) sont détaillés en section 7.*
 
 ```mermaid
-flowchart TD
-    S([Chauffeur : course en attente repérée]) --> C[Clic « demander »]
-    C --> P{Demande autorisée ?<br/>plafond de 5 demandes simultanées,<br/>course non assignée,<br/>pas de demande déjà en cours}
-    P -- non --> E[Message d'erreur explicite — fin]
-    P -- oui --> I[Demande enregistrée,<br/>administrateur notifié]
-    I --> D{Administrateur décide}
-    D -- valide --> T[Course assignée au chauffeur,<br/>autres demandes automatiquement refusées]
-    D -- rejette --> N[Chauffeur notifié du refus]
-    T --> F([Fin])
-    N --> F
-    style T fill:#2e7d32,color:#fff
+flowchart LR
+    S([Course repérée]) --> C[Clic « demander »]
+    C --> P{Autorisée ? plafond 5, course libre}
+    P -- non --> E([Erreur explicite])
+    P -- oui --> I[Demande enregistrée, admin notifié]
+    I --> D{Admin décide}
+    D -- refus --> R([Demande rejetée])
+    D -- validation --> A([Course assignée, concurrentes rejetées])
 ```
 
-> *Vous pouvez retrouver le schéma complet de ce parcours — diagramme d'activité au rendu UML canonique — dans l'annexe #1.*
+
+
+> *Vous retrouvez la version A4 de ce parcours (diagramme d'activité) dans l'annexe #1.*
 
 **Diagramme de classes** — Modèle conceptuel des données
 
@@ -355,7 +340,7 @@ classDiagram
     Driver "1" --> "0..n" ShiftPlanning
 ```
 
-> *Diagramme volontairement resserré pour tenir dans la page : seuls clés et statuts sont portés. Vous pouvez retrouver le schéma complet — classes compartimentées avec attributs et méthodes en annexe #1, ERD exhaustif des 19 tables en annexe #2.*
+> *Diagramme volontairement resserré pour tenir dans la page : seuls clés et statuts sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'annexe #1 et l'ERD des 19 tables dans l'annexe #2.*
 
 ### 5.2. Conception de la base de données
 
@@ -384,7 +369,7 @@ flowchart LR
     RIDE -- "(0,n) embarque (0,n)" --> ROPT[RIDE_OPTION]
 ```
 
-> *Vous pouvez retrouver le schéma complet — toutes les entités et associations, cardinalités Merise, format A4 — dans l'annexe #15.*
+> *Vous retrouvez la version A4 du MCD complet (toutes les entités et associations, notation Merise) dans l'annexe #15.*
 
 **Modèle Logique de Données (MLD)** — Règles de passage
 
@@ -462,12 +447,14 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
 ```mermaid
-flowchart TD
-    C["Page de connexion"] --> R{Rôle de la session}
-    R -- admin --> A["Espace admin :<br/>gestion des courses,<br/>assignations, import CSV,<br/>tableaux de bord"]
-    R -- chauffeur --> D["Espace chauffeur :<br/>courses disponibles,<br/>demandes d'assignation,<br/>planning des shifts"]
-    R -- client --> CU["Espace client :<br/>réservation,<br/>historique, notation"]
+flowchart LR
+    C[Connexion] --> R{Rôle}
+    R -- admin --> A["Espace admin : courses, assignations, KPI, CSV"]
+    R -- chauffeur --> Dr["Espace chauffeur : courses dispo, demandes, shifts"]
+    R -- client --> Cu["Espace client : réservation, historique, notation"]
 ```
+
+
 
 > *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'annexe #3.*
 
@@ -505,18 +492,18 @@ flowchart TD
 
 ```mermaid
 flowchart TB
-    A["UI — Next.js App Router · React 19<br/>parallel routes @admin/@driver/@customer<br/>+ page connections (authentification)"] --> B["Server Actions<br/>validation Zod"]
+    A["UI — Next.js · React 19 · parallel routes"] --> B["Server Actions — Zod"]
     B --> C["Controllers"]
-    C --> D["Role Middleware<br/>verifyRole — admin ≥ driver ≥ customer"]
-    D --> E["Services — logique métier pure"]
-    E --> F["Drizzle ORM (type-safe)"]
+    C --> D["verifyRole — admin ≥ driver ≥ customer"]
+    D --> E["Services — logique métier"]
+    E --> F["Drizzle ORM"]
     F --> G[("PostgreSQL 18 — Neon")]
     style A fill:#176B87,color:#fff
     style D fill:#F4A259,color:#000
     style G fill:#060605,color:#fff
 ```
 
-> *Vous pouvez retrouver le schéma d'infrastructure complet — déploiement, environnements, hébergement Vercel et Neon — dans l'annexe #6.*
+> *Vous retrouvez la version A4 (infrastructure complète : couches, environnements, hébergement) dans l'annexe #6.*
 
 **Détail des couches** :
 
@@ -977,23 +964,17 @@ jobs:
 ```
 
 ```mermaid
-flowchart TD
-    A[Push sur development/main] --> B[Job: test]
+flowchart LR
+    A[Push dev/main] --> B["Job: test"]
     B -->|Succès| C[Build]
-    C --> D[Tests]
-    D -->|Tous les tests passent| E{Environnement?}
-    E -->|development| F[Déploiement UAT automatique]
-    E -->|main| G[Déploiement PROD automatique]
-    E -->|workflow_dispatch| H[Choix manuel UAT/PROD]
-    H --> F
-    H --> G
-    F --> I[Vercel UAT]
-    G --> J[Vercel PROD]
-    style F fill:#FFC107,color:#000
-    style G fill:#2E7D32,color:#fff
+    C --> D{Environnement ?}
+    D -- development --> U[Déploiement UAT auto]
+    D -- main --> P[Déploiement PROD auto]
 ```
 
-> *La capture du pipeline réel — dernier run vert complet, « all checks passed » — sera fournie dans l'annexe #8.*
+
+
+> *La capture du pipeline réel (dernier run vert) sera fournie dans l'annexe #8.*
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
