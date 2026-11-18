@@ -107,25 +107,25 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 ### 3.2. Personas et rôles utilisateurs
 
-L'analyse des besoins, menée avec le client, a produit **cinq personas**. Ils sont décrits en détail (objectifs, besoins, frustrations, impact sur les fonctionnalités) dans le **document de spécifications fonctionnelles** du projet ; le dossier se contente ici de les rappeler et de montrer comment l'application les prend en compte.
+L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq personas**. Ils sont rappelés ici en synthèse ; leurs portraits complets — contexte de vie, citations, usage numérique, impact produit — sont réunis dans l'**annexe #17**.
 
-| Persona | Profil et objectifs | Frustrations actuelles | Rôle applicatif |
-|---------|--------------------|------------------------|------------------|
-| **Marc, 55 ans** — Manager de flotte (Île-de-France) | Zéro erreur de planification, couverture des pics de demande, réduction du travail manuel | 3 à 4 heures de planification manuelle par jour, chauffeurs injoignables | **Administrateur** |
-| **Nathalie, 47 ans** — Secrétaire administrative (PME de transport) | Envoyer les factures à temps sans erreurs, suivre les impayés sans y passer ses journées | Tickets égarés, factures incomplètes, ~20 % de retards de paiement | **Administrateur** |
-| **Djamel, 39 ans** — Chauffeur indépendant | Maximiser ses revenus en choisissant ses courses (prix et distance connus à l'avance) | Courses mal payées, absence de transparence sur les tarifs, appels permanents au dispatch | **Chauffeur** |
-| **Jean-Michel, 62 ans** — Client classique, usager régulier | Trouver une course vite et sans complication, avec un prix connu d'avance et un chauffeur ponctuel | Attentes aux heures de pointe, frais surprises, itinéraires mal connus | **Client** |
-| **Claire, 41 ans** — Assistante de direction (corporate) | Organiser les déplacements d'équipes entières, suivre les courses en temps réel, justifier les dépenses | Manque de visibilité sur le statut des courses, factures en retard ou erronées | **Client** |
+| Persona | Ce qu'il vit aujourd'hui | Ce qui lui manque | Rôle applicatif |
+|---------|--------------------------|-------------------|-----------------|
+| **Marc, 55 ans**<br>manager de flotte | Tout au papier : agenda imprimé de cinq kilos, courses notées à la main, coordination par téléphone. | Une seule source de vérité : savoir en continu qui roule pour qui, sans recopier ni rappeler. | **Administrateur** |
+| **Nathalie, 47 ans**<br>secrétaire administrative | Recopie chaque matin l'agenda papier dans Excel, relance les chauffeurs au téléphone et les clients pour les impayés. | Une seule saisie, et des relances qui ne reposent plus sur elle. | **Administrateur** |
+| **Djamel, 39 ans**<br>chauffeur indépendant | Vit dans sa voiture ; toutes les informations passent par le dispatch. | Ne manquer aucune course, et communiquer directement avec le client. | **Chauffeur** |
+| **Jean-Michel, 62 ans**<br>client régulier | Réserve par téléphone ; le prix est clair (tarification préfectorale), mais une fois la course demandée, plus rien. | Savoir que sa course est enregistrée, assignée, et où en est son chauffeur. | **Client** |
+| **Claire, 41 ans**<br>assistante de direction | Pilote les déplacements des cadres par e-mails en série (environ dix-huit messages par course). | Un écran unique : statut des courses en direct, facture plus rapide. | **Client** |
 
 **Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **trois rôles** : admin, driver, customer. Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
 
 | Rôle applicatif | Personas couverts | Besoin commun que le rôle résout |
 |-----------------|-------------------|----------------------------------|
-| **Administrateur** | Marc (pilotage), Nathalie (saisie et facturation) | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
+| **Administrateur** | Marc (pilotage), Nathalie (saisie et relances) | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
 | **Chauffeur** | Djamel | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts |
 | **Client** | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations |
 
-Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, notifications en temps réel de Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3).
+Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, suivi GPS et notifications en temps réel de Jean-Michel et Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3).
 
 ### 3.3. User Stories
 
@@ -149,7 +149,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (capture ci-dessous) : chaque issue y passe par les colonnes Backlog → In Progress → Done, ce qui a servi de plan de sprint hebdomadaire pendant tout le développement.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 CAPTURE À INSÉRER** : vue du board GitHub Projects montrant le backlog (issues ouvertes / fermées), à insérer ici en pleine page.
+> ** CAPTURE À INSÉRER** : vue du board GitHub Projects montrant le backlog (issues ouvertes / fermées), à insérer ici en pleine page.
 </div>
 
 ### 3.4. Périmètre du MVP
@@ -238,7 +238,7 @@ flowchart LR
   - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY**
+> ** À PRODUIRE POUR LE JURY**
 >
 > Cette section nécessite les **captures d'écran** suivantes pour illustrer concrètement la gestion de projet :
 >
@@ -522,7 +522,7 @@ flowchart TD
 - Respect des contrastes (validé via audit RGAA)
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY**
+> ** À PRODUIRE POUR LE JURY**
 >
 > Pour compléter cette section sur les **maquettes et l'accessibilité**, les éléments suivants sont nécessaires :
 >
@@ -680,7 +680,7 @@ amt-express/
 ```
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 CAPTURE À INSÉRER** : capture d'écran réelle de l'IDE (VS Code) ouverte sur le projet, explorateur de fichiers visible, à insérer à côté de l'arborescence ci-dessus.
+> ** CAPTURE À INSÉRER** : capture d'écran réelle de l'IDE (VS Code) ouverte sur le projet, explorateur de fichiers visible, à insérer à côté de l'arborescence ci-dessus.
 </div>
 
 **Lecture de l'arborescence** : les **parallel routes** (@admin/, @driver/, @customer/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
@@ -931,7 +931,7 @@ describe('Parcours : Création et assignation d\'une course', () => {
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **240 tests au vert** et fichier de test commenté (annexe #9).
+> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **240 tests au vert** et fichier de test commenté (annexe #9).
 </div>
 
 ### 8.2. Tests automatisés
@@ -1039,7 +1039,7 @@ flowchart TD
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY** : capture du **pipeline CI vert** (jobs test, deploy-uat, deploy-prod) et de l'interface de déploiement manuel workflow_dispatch (choix UAT/PROD).
+> ** À PRODUIRE POUR LE JURY** : capture du **pipeline CI vert** (jobs test, deploy-uat, deploy-prod) et de l'interface de déploiement manuel workflow_dispatch (choix UAT/PROD).
 </div>
 
 ### 9.3. Scripts de backup et restauration
@@ -1205,7 +1205,7 @@ jobs:
 - Les vulnérabilités connues sont couvertes par la combinaison Dependabot + `pnpm audit` + veille manuelle
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY**
+> ** À PRODUIRE POUR LE JURY**
 >
 > Pour illustrer le **processus de veille et de correction des vulnérabilités**, les éléments suivants seront fournis :
 >
@@ -1374,8 +1374,9 @@ static async getRidesWithDetails(limit: number = 50) {
 | 14    | Processus manuel vs AMT Express    | `annexes/avant-apres.md`             | Markdown | Produit ✅   |
 | 15    | MCD complet (format A4)            | `annexes/mcd-complet.md`             | Markdown | Produit ✅   |
 | 16    | Registre des traitements RGPD      | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
+| 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`      | Markdown | Produit ✅   |
 
-> **📌 Statut** : **14/16 annexes produites**. Les 2 annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> ** Statut** : **15/17 annexes produites**. Les annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
