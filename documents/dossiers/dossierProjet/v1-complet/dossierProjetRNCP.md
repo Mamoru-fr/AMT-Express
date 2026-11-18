@@ -45,7 +45,7 @@
 
 ### 1.1. Présentation en français
 
-Moi, Alexis Santos, j'ai choisi de répondre à un besoin réel : celui d'AMT CGS GROUPE, une société de transport VTC d'environ 1 150 chauffeurs indépendants dont tout le cycle opérationnel — saisie des courses, dispatch des chauffeurs, facturation — est encore géré au papier, au téléphone et sur Excel.
+J'ai choisi de répondre à un besoin réel : celui d'AMT CGS GROUPE, une société de transport VTC d'environ 1 150 chauffeurs indépendants dont tout le cycle opérationnel — saisie des courses, dispatch des chauffeurs, facturation — est encore géré au papier, au téléphone et sur Excel.
 
 AMT Express est la plateforme web full-stack que j'ai conçue, développée et mise en pré-production pour cette entreprise. Elle centralise la gestion des courses autour de trois espaces cloisonnés par rôle : l'espace administrateur (création, gestion et assignation des courses, tableaux de bord), l'espace chauffeur (courses disponibles, demandes d'assignation, plannings, réalisation) et l'espace client professionnel (réservation, historique, notation).
 
@@ -53,7 +53,7 @@ J'ai mené ce projet seul, de l'analyse des besoins au déploiement en productio
 
 ### 1.2. Présentation en anglais
 
-I, Alexis Santos, chose to address a real need: that of AMT CGS GROUPE, a french private-hire transportation company with approximately 1,150 independent drivers, whose entire operational cycle—from entering ride requests to dispatching drivers and invoicing—is still managed using paper, phone calls, and Excel, right up to the invoicing software.
+I chose to address a real need: that of AMT CGS GROUPE, a french private-hire transportation company with approximately 1,150 independent drivers, whose entire operational cycle—from entering ride requests to dispatching drivers and invoicing—is still managed using paper, phone calls, and Excel, right up to the invoicing software.
 
 AMT Express is the full-stack web platform that I designed, developed, and deployed in pre-production for this company. It centralizes ride management across three role-based areas: the administrator area (ride creation, management, and assignment; dashboards), the driver area (available rides, assignment requests, schedules, and ride completion), and the business customer area (bookings, history, and ratings).
 
@@ -65,7 +65,7 @@ I managed this project single-handedly, from requirements analysis to production
 
 Le projet AMT Express illustre les compétences du titre professionnel **Concepteur Développeur d'Applications** (RNCP 37873, niveau 6). Le tableau officiel des compétences est reproduit ci-dessous depuis le référentiel France Compétences (source de vérité), avec pour chacune la section du dossier où elle est illustrée.
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
+<div style="padding: 10px 14px; margin: 12px 0;">
 
 | Activité type                                                                    | Compétence professionnelle                                       | Section du dossier                                              |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
@@ -85,6 +85,7 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 </div>
 
+<div style="page-break-after: always;">
 ---
 
 ## 3. Cahier des charges
