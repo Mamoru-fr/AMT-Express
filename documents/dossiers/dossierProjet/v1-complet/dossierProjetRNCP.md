@@ -128,20 +128,20 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 
 ### 3.3. User Stories
 
-**Comment les besoins ont été pilotés.** Sur ce projet, chaque tâche de développement a été gérée comme une **issue GitHub** : le dépôt en compte 41, dont 16 fermées (livrées dans le MVP) et 25 ouvertes (backlog post-MVP). Au moment du lancement du projet, je ne pratiquais pas encore le formalisme des user stories ; les issues ont donc d'abord été rédigées comme des tâches techniques. Pour ce dossier, je les relis a posteriori sous forme d'user stories, car c'est le langage attendu pour exprimer le besoin : qui, quoi, pourquoi.
+**Comment les besoins ont été pilotés.** Sur ce projet, chaque tâche de développement a été gérée comme une **issue GitHub** : le dépôt en compte 41, dont 16 fermées (livrées dans le MVP) et 25 ouvertes (backlog post-MVP). Au moment du lancement du projet, je ne pratiquais pas encore le formalisme des user stories ; les issues ont donc d'abord été rédigées comme des tâches techniques. Pour ce dossier, je les ai formalisées a posteriori sous forme de user stories — c'est le langage attendu pour exprimer le besoin : qui, quoi, pourquoi — et elles vivent désormais dans le dépôt comme **issues dédiées (#89 à #96)**, labellisées `user-story` / `mvp`, chacune reliée aux issues de travail d'origine.
 
 **User stories livrées dans le MVP** (issue GitHub d'origine entre parenthèses) :
 
-| #   | User story                                                                                                                                                           | Issue    |
+| #   | User story                                                                                                                                                           | Issue US (travail d'origine) |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #1, #5   |
-| US2 | En tant que chauffeur, je veux créer un compte, afin de pouvoir ensuite demander des courses une fois activé par un administrateur                                   | #1, #7   |
-| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #10      |
-| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #13      |
-| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #13      |
-| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                              | #14      |
-| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #17, #19 |
-| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #2, #4   |
+| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #89 (#1, #5) |
+| US2 | En tant que chauffeur, je veux créer un compte, afin de pouvoir ensuite demander des courses une fois activé par un administrateur                                   | #90 (#1, #7) |
+| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #91 (#10) |
+| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #92 (#13) |
+| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #93 (#13) |
+| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                              | #94 (#14) |
+| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #95 (#17, #19) |
+| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #96 (#2, #4) |
 
 **User stories du backlog post-MVP** (extrait ; la liste complète vit dans les issues GitHub ouvertes) : facturation (création, groupée, envoi, relances — issues #20 à #23), notifications temps réel (#24 à #26), géolocalisation (#27, #29), chat interne (#28), OCR d'import de courses (#11), notation des chauffeurs (#16), mots de passe oubliés (#6).
 
@@ -416,6 +416,8 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 - **Wireframes** : Maquettes fonctionnelles des écrans clés (dashboard admin, formulaire de course, vue chauffeur)
 - **Maquettes haute-fidélité** : Captures d'écran disponibles dans `public/screenshots/`
 
+> *Note de traçabilité : pendant la phase de conception, le projet a porté le nom temporaire **« AMT Horizon »**, encore visible dans certains documents internes (cahier des charges, spécifications) et sur les premières maquettes. Le nom final **« AMT Express »** a été arrêté au démarrage du développement — c'est pourquoi certaines maquettes de l'annexe #3 diffèrent de l'identité visuelle de l'application livrée, le design ayant été retravaillé après le changement de nom.*
+
 
 **Organisation des espaces par rôle** (UX)
 
@@ -470,7 +472,7 @@ flowchart TB
     C --> D["Role Middleware<br/>verifyRole — admin ≥ driver ≥ customer"]
     D --> E["Services — logique métier pure"]
     E --> F["Drizzle ORM (type-safe)"]
-    F --> G[("PostgreSQL 16 — Neon")]
+    F --> G[("PostgreSQL 18 — Neon")]
     style A fill:#176B87,color:#fff
     style D fill:#F4A259,color:#000
     style G fill:#060605,color:#fff
@@ -486,7 +488,7 @@ flowchart TB
 | **Middleware**        | `roleMiddleware.ts`                                   | Vérification des droits d'accès, contrôle d'autorisation           |
 | **Services**          | Fichiers `*Service.ts`                                | Logique métier pure, indépendante de la technologie de persistence |
 | **Accès aux données** | Drizzle ORM                                           | Requêtes type-safe vers la base de données                         |
-| **Base de données**   | PostgreSQL 16 (Neon)                                  | Stockage des données, garantie de l'intégrité                      |
+| **Base de données**   | PostgreSQL 18 (Neon)                                  | Stockage des données, garantie de l'intégrité                      |
 
 **Couches transverses** :
 - **Authentification** : Better Auth (gestion des sessions, rôles, bannissements)
@@ -510,23 +512,23 @@ flowchart TB
 - Collecte limitée aux données strictement nécessaires au service (identité, coordonnées, courses) ; pas de données sensibles
 - Journal d'audit (`activity_logs`) pour la traçabilité, conservé **6 mois**
 - Comptes désactivés archivés (et non supprimés immédiatement) pour préserver l'intégrité référentielle des courses passées ; suppression effective sur demande de l'utilisateur (droit à l'effacement)
-- Registre des traitements complet en annexe #11
+- Registre des traitements complet en annexe #16
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
 > **⚠️ À CONFIRMER** : les durées de conservation ci-dessus (6 mois pour les logs, archivage des comptes) doivent être alignées sur le registre des traitements de l'annexe #11 avant impression.
 </div>
 
-> *Voir le registre des traitements complet en annexe #11.*
+> *Voir le registre des traitements complet en annexe #16.*
 
 ### 5.3. Justification des choix technologiques
 
-**PostgreSQL 16 (Neon)** :
+**PostgreSQL (Neon)** :
 Les données du projet sont **fortement relationnelles** : les utilisateurs sont liés aux chauffeurs, qui sont liés aux courses, elles-mêmes liées aux clients, aux options, aux demandes d'assignation, etc. Un modèle NoSQL serait inadapté pour représenter ces relations complexes.
 
-PostgreSQL 16 est la version proposée par Neon au moment du choix initial ; elle est maintenue par la communauté jusqu'en novembre 2028. La version stable courante est la 18 : une migration est envisagée en perspective (voir §12.2) mais n'a pas été engagée en cours de projet, car elle n'apportait rien au MVP et le passage en production prime sur la nouveauté.
+Le projet a démarré sur **PostgreSQL 16**, la version proposée par Neon au moment du choix initial. L'instance s'exécute aujourd'hui sur **PostgreSQL 18**, la version stable courante : évolution opérée par l'hébergeur, sans migration de notre part — la version 16 restant maintenue jusqu'en novembre 2028 si un retour arrière était nécessaire. Aucune ressource n'a donc été consacrée à une migration en cours de projet : la mise en production du MVP primait.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **⚠️ À VÉRIFIER AVANT IMPRESSION** : relire chaque version citée dans le dossier (Next.js 16, React 19, PostgreSQL 16, Node.js 20, Zod 4.6.6) contre le `package.json` et la console Neon, et corriger si l'une a évolué depuis la rédaction.
+> **Versions vérifiées** le 18/11/2026 contre `amt-express/package.json` et `.nvmrc` (branche `development`) : Node.js **24.7.0**, Next.js **16.1.1**, React **19.2.3**, TypeScript **^5**, PostgreSQL **18** (instance Neon), Drizzle ORM **^0.45.1**, Better Auth **^1.4.10**, Zod **^4.6.7**, Vitest **^4.0.16**, pnpm **9**. L'image Docker cible `node:20.12.2-alpine` pour des builds reproductibles.
 </div>
 
 Le choix de Neon (PostgreSQL serverless) permet de bénéficier de :
@@ -642,7 +644,7 @@ flowchart LR
 **Résultats** :
 - **240 tests automatisés** au total
   - 9 fichiers de test : 7 unitaires, 2 d'intégration
-  - Exécution : `pnpm test` (16/10/2026 : 240 passed / 0 failed)
+  - Exécution : `pnpm test` (dernière mesure le 18/11/2026 : 240 passed / 0 failed, 11,6 s)
   - Couverture : Mesurable via `pnpm test:coverage` (lib/ et utils/)
 - **Aucune PR mergée avec des tests en échec**
 
@@ -963,7 +965,7 @@ describe('DriverDashboardService.requestRideAssignment', () => {
 
 **Bonnes pratiques** : noms de tests descriptifs, setup/cleanup automatique, assertions sur les messages exacts, couverture des cas limites (validations, erreurs, règles métier).
 
-**Résultats** : **240 tests** exécutés à chaque PR via GitHub Actions (~30 secondes, couverture via pnpm test:coverage) ; **aucune PR ne peut être mergée si les tests échouent** (voir §9.2).
+**Résultats** : **240 tests** (9 fichiers : 7 unitaires, 2 d'intégration) en **~12 secondes** (mesure du 18/11/2026 : 240 tests en 11,6 s), rejoués à chaque PR via GitHub Actions (couverture via pnpm test:coverage) ; **aucune PR ne peut être mergée si les tests échouent** (voir §9.2).
 
 ---
 
@@ -1082,7 +1084,7 @@ Scripts npm associés : pnpm db:backup, pnpm db:restore, pnpm db:import-csv data
 | **Architecture**         | docs/ARCHITECTURE.md | Description détaillée de l'architecture            |
 | **Base de données**      | docs/DATABASE.md     | Schéma, relations, index                           |
 
-Le README détaille prérequis (Node.js 20+, pnpm 8+, PostgreSQL 16+), installation et lancement local — la procédure complète figure dans le dépôt. La documentation utilisateur (guide admin / chauffeur / client) est rédigée dans le dépôt sous forme de fichiers Markdown, puis **remise au client au format PDF** pour consultation hors ligne — c'est ce PDF qui constitue le livrable utilisateur de la documentation.
+Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16+ — instance Neon en 18), installation et lancement local — la procédure complète figure dans le dépôt. La documentation utilisateur (guide admin / chauffeur / client) est rédigée dans le dépôt sous forme de fichiers Markdown, puis **remise au client au format PDF** pour consultation hors ligne — c'est ce PDF qui constitue le livrable utilisateur de la documentation.
 
 ---
 
@@ -1150,7 +1152,7 @@ Le README détaille prérequis (Node.js 20+, pnpm 8+, PostgreSQL 16+), installat
    - Validation que le problème est résolu (pas de crash mémoire)
    - Déploiement en production via `workflow_dispatch`
 5. **Vérification** : 
-   - `pnpm ls zod` → `zod@4.6.6` (version corrigée)
+   - `pnpm ls zod` → `zod@4.6.7` (contrainte actuelle du `package.json` : `^4.6.7`)
    - `pnpm audit` : **0 vulnérabilités critiques**
    - Test de charge avec import CSV massif : **stable** (pas de DoS)
 6. **Documentation** :
@@ -1368,8 +1370,11 @@ static async getRidesWithDetails(limit: number = 50) {
 | 11    | Registre des vulnérabilités         | `annexes/registre-vulnerabilites.md` | Markdown | Produit ✅   |
 | 12    | Extraits de code commentés          | `annexes/extraits-code-commentes.md` | Markdown | Produit ✅   |
 | 13    | Veille sur les vulnérabilités (CVE) | `annexes/veille-vulnerabilites.md`   | Markdown | Produit ✅   |
+| 14    | Processus manuel vs AMT Express    | `annexes/avant-apres.md`             | Markdown | Produit ✅   |
+| 15    | MCD complet (format A4)            | `annexes/mcd-complet.md`             | Markdown | Produit ✅   |
+| 16    | Registre des traitements RGPD      | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
 
-> **📌 Statut** : **11/13 annexes produites** (85% complet). Les 2 annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> **📌 Statut** : **14/16 annexes produites**. Les 2 annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
