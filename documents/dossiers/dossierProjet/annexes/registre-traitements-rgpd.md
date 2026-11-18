@@ -1,12 +1,8 @@
-# Annexe #16 — Registre des traitements RGPD
+# Annexe #16 — Registre des traitements RGPD (version A4, 1 page)
 
-> Registre établi conformément à l'article 30 du RGPD. Les rubriques marquées « à confirmer » dépendent de décisions du responsable de traitement et seront complétées avant le dépôt du dossier.
+> Registre de l'article 30 RGPD. Version complète (droits des personnes, points de droit, transferts) dans le dépôt.
 
-## Version courte (à reprendre dans le § 6.2 du dossier)
-
-> AMT Express traite les données de ses utilisateurs (administrateurs, chauffeurs, clients) pour la gestion des comptes et des rôles (T1), la gestion des courses (T2), la gestion des chauffeurs et de leur position (T3), la facturation (T4 — module non livré à ce jour), les notifications applicatives (T5), le journal d'audit technique (T6) et les sessions (T7). L'application est hébergée par Vercel et la base de données par Neon (PostgreSQL sur infrastructure AWS) ; l'hébergement se situe hors Union européenne et le transfert correspondant relève du chapitre V du RGPD (voir § 6.2). Le registre complet figure en annexe #16.
-
-## 1. Identification
+## Identification
 
 | Rubrique | Contenu |
 | --- | --- |
@@ -16,7 +12,7 @@
 | Hébergement | Base de données : Neon (PostgreSQL sur infrastructure AWS), région fixée à la création du projet. Application : Vercel, fonctions exécutées par défaut à Washington (iad1). Neon et Vercel ne proposent pas de résidence UE persistante : les données sont hébergées hors UE (voir § 6.2) |
 | Région Neon du projet | À relever dans la chaîne de connexion (`xxx.aws.neon.tech`) — à confirmer |
 
-## 2. Traitements
+## Traitements
 
 | # | Finalité | Données | Base légale | Durée de conservation | Destinataires |
 | --- | --- | --- | --- | --- | --- |
@@ -28,26 +24,6 @@
 | T6 | Journal d'audit (`activity_logs`) | utilisateur, action, détails, horodatage | intérêt légitime (sécurité) | 6 mois | aucun tiers |
 | T7 | Sessions et sécurité | token, expiration, adresse IP, user-agent | intérêt légitime (sécurité) | durée de la session | aucun tiers |
 
-## 3. Droits des personnes et mesures
+**À confirmer avant dépôt** : désignation (ou non) d'un DPO selon les consignes de l'école ; région exacte du projet Neon (chaîne `xxx.aws.neon.tech`).
 
-- **Droits** (accès, rectification, effacement, opposition, portabilité) : traités via l'interface d'administration (consultation, modification, bannissement) ; une procédure écrite d'une demi-page sera jointe au dossier.
-- **Sécurité** (§ 6.2 du dossier) : cookies HTTP-only, mots de passe hachés, HTTPS en production, contrôle de rôle (`verifyRole`) sur chaque action serveur, validation Zod des entrées, journal d'audit.
-- **Minimisation** : aucune donnée de santé, aucun paiement par carte dans la plateforme ; l'import CSV crée les comptes avec des emails temporaires (`@customers-temp.com`, `@drivers-temp.com`, `@managers-temp.com`), sans collecter d'adresse réelle à l'import.
-- **Comptes désactivés** : procédure d'archivage définie dans les spécifications ; modalités précises à confirmer (export puis suppression, ou anonymisation).
-
-## 4. Points de droit applicables
-
-1. **Conservation comptable** : les documents comptables et leurs pièces justificatives se conservent dix ans — article L123-22 du code de commerce.
-2. **Hébergement hors UE** : Neon déploie sur des régions AWS fixées à la création du projet ; Vercel exécute par défaut à Washington (iad1) et ne propose pas de résidence UE persistante. Les données personnelles du MVP sont donc hébergées hors UE : un transfert au sens du chapitre V du RGPD, à encadrer.
-
-## 5. Localisation et transferts hors UE
-
-Les données personnelles sont hébergées hors de l'Union européenne (Neon / infrastructure AWS pour la base de données ; Vercel / États-Unis pour l'application). Ce transfert relève du chapitre V du RGPD et doit être encadré par un mécanisme reconnu — clauses contractuelles types ou Data Privacy Framework UE–États-Unis. La participation effective de Neon et de Vercel au Data Privacy Framework sera vérifiée sur la liste officielle du Data Protection Portal européen avant le dépôt du dossier.
-
-## 6. Points restant à confirmer avant dépôt
-
-- Région Neon du projet (chaîne de connexion) ;
-- Désignation ou non d'un DPO (consignes de l'école) ;
-- Modalités d'archivage des comptes désactivés ;
-- Destinataire comptable du traitement T4 ;
-- Participation de Neon et de Vercel au Data Privacy Framework (§ 6.2).
+*Transferts hors UE : Vercel (iad1) et Neon (AWS) → chapitre V du RGPD, garanties Data Privacy Framework ; voir § 6.2 du dossier.*
