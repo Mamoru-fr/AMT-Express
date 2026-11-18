@@ -26,9 +26,9 @@
 | 1   | Présentation du projet        | Contexte, problème, solution et chiffres clés                                               |
 | 2   | Compétences du référentiel    | Tableau officiel France Compétences et localisation dans le dossier                         |
 | 3   | Cahier des charges            | Analyse des besoins, rôles utilisateurs, user stories, MVP, risques                         |
-| 4   | Spécifications fonctionnelles | UML, MCD/MLD/MPD, maquettes, organisation des espaces                                       |
-| 5   | Spécifications techniques     | Architecture en couches, sécurité OWASP, choix de la stack                                  |
-| 6   | Gestion de projet             | Méthodologie, planning, suivi qualité, workflows CI/CD                                      |
+| 4   | Gestion de projet             | Méthodologie, planning, suivi qualité, workflows CI/CD                                      |
+| 5   | Spécifications fonctionnelles | UML, MCD/MLD/MPD, maquettes, organisation des espaces                                       |
+| 6   | Spécifications techniques     | Architecture en couches, sécurité OWASP, choix de la stack                                  |
 | 7   | Réalisation                   | Deux réalisations personnelles (front-end, back-end), extraits commentés au gabarit attendu |
 | 8   | Tests                         | Jeu d'essai représentatif, tests automatisés (240 au total)                                 |
 | 9   | Préparation au déploiement    | Environnements, CI/CD, rollback, documentation                                              |
@@ -49,7 +49,7 @@ Moi, Alexis Santos, j'ai choisi de répondre à un besoin réel : celui d'AMT CG
 
 AMT Express est la plateforme web full-stack que j'ai conçue, développée et mise en pré-production pour cette entreprise. Elle centralise la gestion des courses autour de trois espaces cloisonnés par rôle : l'espace administrateur (création, gestion et assignation des courses, tableaux de bord), l'espace chauffeur (courses disponibles, demandes d'assignation, plannings, réalisation) et l'espace client professionnel (réservation, historique, notation).
 
-J'ai mené ce projet seul, de l'analyse des besoins au déploiement en production, sur un budget de 0 € en m'appuyant sur les offres gratuites des plateformes d'hébergement. Le MVP est aujourd'hui déployé, avec une suite de tests automatisés exécutée à chaque livraison. Les choix techniques sont présentés et justifiés en section 5 ; l'analyse du besoin est détaillée en section 3.
+J'ai mené ce projet seul, de l'analyse des besoins au déploiement en production, sur un budget de 0 € en m'appuyant sur les offres gratuites des plateformes d'hébergement. Le MVP est aujourd'hui déployé, avec une suite de tests automatisés exécutée à chaque livraison. Les choix techniques sont présentés et justifiés en section 6 ; l'analyse du besoin est détaillée en section 3.
 
 ### 1.2. Présentation en anglais
 
@@ -57,7 +57,7 @@ I, Alexis Santos, chose to address a real need: that of AMT CGS GROUPE, a french
 
 AMT Express is the full-stack web platform that I designed, developed, and deployed in pre-production for this company. It centralizes ride management across three role-based areas: the administrator area (ride creation, management, and assignment; dashboards), the driver area (available rides, assignment requests, schedules, and ride completion), and the business customer area (bookings, history, and ratings).
 
-I managed this project single-handedly, from requirements analysis to production deployment, on a budget of €0 by leveraging free hosting platform offerings. The MVP is now deployed, with a suite of automated tests run after each release. The technical choices are presented and justified in Section 5; the requirements analysis is detailed in Section 3.
+I managed this project single-handedly, from requirements analysis to production deployment, on a budget of €0 by leveraging free hosting platform offerings. The MVP is now deployed, with a suite of automated tests run after each release. The technical choices are presented and justified in Section 6; the requirements analysis is detailed in Section 3.
 
 ---
 
@@ -69,13 +69,13 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 | Activité type                                                                    | Compétence professionnelle                                       | Section du dossier                                              |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
-| **AT1 — Développer une application sécurisée**                                   | Installer et configurer son environnement de travail             | §5.3 (stack, pnpm, Docker) · §6.1                               |
+| **AT1 — Développer une application sécurisée**                                   | Installer et configurer son environnement de travail             | §6.3 (stack, pnpm, Docker) · §4.1                               |
 |                                                                                  | Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, parallel routes, responsive, a11y)                 |
 |                                                                                  | Développer des composants métier réutilisables                   | §7.3 (Server Actions, controllers, services)                    |
-|                                                                                  | Contribuer à la gestion d'un projet informatique                 | §6 (Scrum, Git Flow, planning, qualité)                         |
-| **AT2 — Concevoir et développer une application sécurisée organisée en couches** | Analyser les besoins et maquetter une application                | §3 (cahier des charges) · §4.3 (maquettes, espaces par rôle)    |
-|                                                                                  | Définir l'architecture logicielle d'une application              | §5.1 (architecture en couches) · §7.1                           |
-|                                                                                  | Concevoir et mettre en place une base de données relationnelle   | §4.2 (MCD / MLD / MPD)                                          |
+|                                                                                  | Contribuer à la gestion d'un projet informatique                 | §4 (Scrum, Git Flow, planning, qualité)                         |
+| **AT2 — Concevoir et développer une application sécurisée organisée en couches** | Analyser les besoins et maquetter une application                | §3 (cahier des charges) · §5.3 (maquettes, espaces par rôle)    |
+|                                                                                  | Définir l'architecture logicielle d'une application              | §6.1 (architecture en couches) · §7.1                           |
+|                                                                                  | Concevoir et mettre en place une base de données relationnelle   | §5.2 (MCD / MLD / MPD)                                          |
 |                                                                                  | Développer des composants d'accès aux données SQL et NoSQL       | §7.3 (chaîne complète, transactions) · §11.1 (optimisation N+1) |
 | **AT3 — Préparer le déploiement d'une application sécurisée**                    | Préparer et exécuter les plans de tests d'une application        | §8 (jeu d'essai, 240 tests automatisés, CI)                     |
 |                                                                                  | Préparer et documenter le déploiement d'une application          | §9 (environnements, CI/CD, backup, documentation)               |
@@ -124,7 +124,7 @@ L'analyse des besoins, menée avec le client, a produit **cinq personas**. Ils s
 | **Chauffeur** | Djamel | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts |
 | **Client** | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations |
 
-Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, notifications en temps réel de Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§4.1) et trois espaces cloisonnés dans l'application (§4.3).
+Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, notifications en temps réel de Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3).
 
 ### 3.3. User Stories
 
@@ -174,7 +174,7 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 - Chat interne entre utilisateurs
 - Notifications push
 - Synchronisation avec les calendriers
-- **Module complet de facturation** : création individuelle/groupée, gestion des remises, rappels automatiques, export PDF — les tables correspondantes existent dans le schéma de données (voir §4.2), mais la logique métier n'a pas été livrée dans le MVP
+- **Module complet de facturation** : création individuelle/groupée, gestion des remises, rappels automatiques, export PDF — les tables correspondantes existent dans le schéma de données (voir §5.2), mais la logique métier n'a pas été livrée dans le MVP
 
 ### 3.5. Analyse des risques
 
@@ -189,9 +189,91 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 
 ---
 
-## 4. Spécifications fonctionnelles
+## 4. Gestion de projet
 
-### 4.1. Modélisation UML
+### 4.1. Contexte humain et technique
+
+**Équipe projet** :
+- **Développeur/Tech Lead** : Alexis SANTOS (architecture, développement backend/frontend, DevOps, documentation)
+- **Relecture externe** : Instructrice Ada Tech School (retours intégrés le 16/10/2026)
+- **Client final** : AMT CGS GROUPE (société de transport VTC avec ~1 150 chauffeurs)
+
+**Environnement technique** :
+- **Éditeur** : VS Code
+- **Gestion de code** : Git/GitHub (issues, Projects, Pull Requests)
+- **CI/CD** : GitHub Actions
+- **Gestion des dépendances** : pnpm
+- **Linting** : ESLint
+- **Conteneurisation** : Docker
+- **Hébergement** : Vercel (frontend), Neon (base de données)
+
+### 4.2. Méthodologie et suivi
+
+**Processus de développement** :
+Le projet a été développé selon une démarche inspirée du framework **Scrum** (product backlog, sprints courts, revues), adaptée aux contraintes réelles d'un développement solo en temps partiel. Le workflow Git Flow suivant a été strictement respecté :
+
+```mermaid
+flowchart LR
+    F["feature/* · hotfix/*"] -- "PR + CI verte" --> DEV["development<br/>(intégration)"]
+    DEV -- "PR + workflow_dispatch + confirmation manuelle" --> UAT["Vercel UAT<br/>(pré-production)"]
+    UAT -- "validation humaine" --> MAIN["main — production<br/>(Vercel PROD)"]
+    MAIN -.->|"rollback : re-déploiement du tag précédent"| MAIN
+```
+
+**Détail du workflow** :
+1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
+2. **Intégration** : La branche `development` sert de branche d'intégration
+3. **Validation CI** : Toute PR doit passer la CI (build + tests) avant d'être mergée
+4. **Déploiement UAT** : Déploiement manuel sur Vercel UAT via `workflow_dispatch`
+5. **Validation manuelle** : Tests de recette avant passage en production
+6. **Production** : Merge sur `main` déclenche le déploiement en production
+
+**Suivi du projet** :
+- **~245 commits** et **39 Pull Requests mergées**, chacun relié à une issue et passé par la CI avant merge
+- **Jalons principaux** :
+  - Juillet 2026 : Authentification + rôles
+  - Août 2026 : Interfaces chauffeur/client, consolidation de la documentation
+  - 11/09/2026 : CI/CD Vercel + **17 corrections de déploiement consécutives** (voir §11.2)
+  - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
+
+<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
+> **📸 À PRODUIRE POUR LE JURY**
+>
+> Cette section nécessite les **captures d'écran** suivantes pour illustrer concrètement la gestion de projet :
+>
+> 1. **Board GitHub Projects** : Montrer l'organisation Kanban des tâches (Backlog, In Progress, Done)
+> 2. **Graphe des contributions** : Visualiser l'activité sur le dépôt via GitHub Insights
+> 3. **Pipeline CI vert** : Capturer la sortie complète d'une exécution réussie
+>
+> *Ces éléments seront ajoutés avant la soumission finale. Voir aussi la capture du pipeline en §9.2.*
+</div>
+
+### 4.3. Assurance qualité
+
+**Processus qualité mis en place** :
+
+| Pratique                   | Outil/Technologie                              | Impact                                             |
+| -------------------------- | ---------------------------------------------- | -------------------------------------------------- |
+| **Conventions de nommage** | PascalCase (composants), camelCase (fonctions) | Code cohérent et lisible                           |
+| **Linting automatique**    | ESLint                                         | Détection des erreurs de style avant commit        |
+| **Validation CI**          | `pnpm ci` (build + tous les tests)             | Aucune PR mergée si la CI est rouge                |
+| **Validation des entrées** | Zod                                            | Prévention des injections et des données invalides |
+| **Typage strict**          | TypeScript                                     | Réduction des erreurs à la compilation             |
+| **Revue de code**          | Revue externe (instructrice)                   | Amélioration de la qualité du code                 |
+
+**Résultats** :
+- **240 tests automatisés** au total
+  - 9 fichiers de test : 7 unitaires, 2 d'intégration
+  - Exécution : `pnpm test` (dernière mesure le 18/11/2026 : 240 passed / 0 failed, 11,6 s)
+  - Couverture : Mesurable via `pnpm test:coverage` (lib/ et utils/)
+- **Aucune PR mergée avec des tests en échec**
+
+---
+
+
+## 5. Spécifications fonctionnelles
+
+### 5.1. Modélisation UML
 
 **Objectif** : La modélisation UML permet de représenter visuellement les fonctionnalités et les interactions du système. Les diagrammes suivants décrivent les cas d'usage, les activités et les classes qui composent l'application.
 
@@ -245,7 +327,7 @@ flowchart TD
 
 **Diagramme de classes** — Modèle conceptuel des données
 
-> *Ce diagramme présente les entités métier principales et leurs relations. Il a servi de base à la conception du schéma de base de données (voir §4.2).*
+> *Ce diagramme présente les entités métier principales et leurs relations. Il a servi de base à la conception du schéma de base de données (voir §5.2).*
 
 ```mermaid
 classDiagram
@@ -321,7 +403,7 @@ classDiagram
     Driver "1" --> "0..n" ShiftPlanning
 ```
 
-### 4.2. Conception de la base de données
+### 5.2. Conception de la base de données
 
 **Contexte** : La base de données est le cœur du système. Elle doit supporter des relations complexes entre les entités tout en garantissant l'intégrité et la performance.
 
@@ -407,7 +489,7 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 > **Fichier source de vérité** : `lib/db/schema.ts` — le DDL et le diagramme ci-dessus en sont la transcription fidèle ; en cas de divergence, c'est ce fichier qui fait foi. Avantage en soutenance : le MPD est **engendré à partir du code**, non dessiné à la main ; il ne peut donc pas dériver de l'implémentation.
 
-### 4.3. Maquettes de l'interface utilisateur
+### 5.3. Maquettes de l'interface utilisateur
 
 **Objectif** : Concevoir une interface intuitive, responsive et accessible pour les trois types d'utilisateurs.
 
@@ -431,7 +513,7 @@ flowchart TD
     R -- client --> CU["Espace client :<br/>réservation,<br/>historique, notation"]
 ```
 
-> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §5.1 et §7.1.*
+> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1.*
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -457,9 +539,9 @@ flowchart TD
 
 ---
 
-## 5. Spécifications techniques
+## 6. Spécifications techniques
 
-### 5.1. Architecture logicielle en couches
+### 6.1. Architecture logicielle en couches
 
 **Objectif** : Structurer l'application selon une architecture claire et maintenable, qui sépare les responsabilités et facilite l'évolution du code.
 
@@ -495,7 +577,7 @@ flowchart TB
 - **Journalisation** : `activity_logs` pour la traçabilité des actions
 - **Internationalisation** : i18next (FR/EN)
 
-### 5.2. Sécurité selon OWASP
+### 6.2. Sécurité selon OWASP
 
 **Contexte** : La sécurité a été une priorité dès la conception du projet. Chaque risque OWASP a été identifié et traité avec des solutions adaptées au contexte technique.
 
@@ -515,12 +597,12 @@ flowchart TB
 - Registre des traitements complet en annexe #16
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **⚠️ À CONFIRMER** : les durées de conservation ci-dessus (6 mois pour les logs, archivage des comptes) doivent être alignées sur le registre des traitements de l'annexe #11 avant impression.
+> **⚠️ À CONFIRMER** : les durées de conservation ci-dessus (6 mois pour les logs, archivage des comptes) doivent être alignées sur le registre des traitements de l'annexe #16 avant impression.
 </div>
 
 > *Voir le registre des traitements complet en annexe #16.*
 
-### 5.3. Justification des choix technologiques
+### 6.3. Justification des choix technologiques
 
 **PostgreSQL (Neon)** :
 Les données du projet sont **fortement relationnelles** : les utilisateurs sont liés aux chauffeurs, qui sont liés aux courses, elles-mêmes liées aux clients, aux options, aux demandes d'assignation, etc. Un modèle NoSQL serait inadapté pour représenter ces relations complexes.
@@ -568,88 +650,6 @@ Le choix de Neon (PostgreSQL serverless) permet de bénéficier de :
 - **Déploiements pilotés** : Via `workflow_dispatch` avec confirmation manuelle
 
 ---
-
-## 6. Gestion de projet
-
-### 6.1. Contexte humain et technique
-
-**Équipe projet** :
-- **Développeur/Tech Lead** : Alexis SANTOS (architecture, développement backend/frontend, DevOps, documentation)
-- **Relecture externe** : Instructrice Ada Tech School (retours intégrés le 16/10/2026)
-- **Client final** : AMT CGS GROUPE (société de transport VTC avec ~1 150 chauffeurs)
-
-**Environnement technique** :
-- **Éditeur** : VS Code
-- **Gestion de code** : Git/GitHub (issues, Projects, Pull Requests)
-- **CI/CD** : GitHub Actions
-- **Gestion des dépendances** : pnpm
-- **Linting** : ESLint
-- **Conteneurisation** : Docker
-- **Hébergement** : Vercel (frontend), Neon (base de données)
-
-### 6.2. Méthodologie et suivi
-
-**Processus de développement** :
-Le projet a été développé selon une démarche inspirée du framework **Scrum** (product backlog, sprints courts, revues), adaptée aux contraintes réelles d'un développement solo en temps partiel. Le workflow Git Flow suivant a été strictement respecté :
-
-```mermaid
-flowchart LR
-    F["feature/* · hotfix/*"] -- "PR + CI verte" --> DEV["development<br/>(intégration)"]
-    DEV -- "PR + workflow_dispatch + confirmation manuelle" --> UAT["Vercel UAT<br/>(pré-production)"]
-    UAT -- "validation humaine" --> MAIN["main — production<br/>(Vercel PROD)"]
-    MAIN -.->|"rollback : re-déploiement du tag précédent"| MAIN
-```
-
-**Détail du workflow** :
-1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
-2. **Intégration** : La branche `development` sert de branche d'intégration
-3. **Validation CI** : Toute PR doit passer la CI (build + tests) avant d'être mergée
-4. **Déploiement UAT** : Déploiement manuel sur Vercel UAT via `workflow_dispatch`
-5. **Validation manuelle** : Tests de recette avant passage en production
-6. **Production** : Merge sur `main` déclenche le déploiement en production
-
-**Suivi du projet** :
-- **~245 commits** et **39 Pull Requests mergées**, chacun relié à une issue et passé par la CI avant merge
-- **Jalons principaux** :
-  - Juillet 2026 : Authentification + rôles
-  - Août 2026 : Interfaces chauffeur/client, consolidation de la documentation
-  - 11/09/2026 : CI/CD Vercel + **17 corrections de déploiement consécutives** (voir §11.2)
-  - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
-
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **📸 À PRODUIRE POUR LE JURY**
->
-> Cette section nécessite les **captures d'écran** suivantes pour illustrer concrètement la gestion de projet :
->
-> 1. **Board GitHub Projects** : Montrer l'organisation Kanban des tâches (Backlog, In Progress, Done)
-> 2. **Graphe des contributions** : Visualiser l'activité sur le dépôt via GitHub Insights
-> 3. **Pipeline CI vert** : Capturer la sortie complète d'une exécution réussie
->
-> *Ces éléments seront ajoutés avant la soumission finale. Voir aussi la capture du pipeline en §9.2.*
-</div>
-
-### 6.3. Assurance qualité
-
-**Processus qualité mis en place** :
-
-| Pratique                   | Outil/Technologie                              | Impact                                             |
-| -------------------------- | ---------------------------------------------- | -------------------------------------------------- |
-| **Conventions de nommage** | PascalCase (composants), camelCase (fonctions) | Code cohérent et lisible                           |
-| **Linting automatique**    | ESLint                                         | Détection des erreurs de style avant commit        |
-| **Validation CI**          | `pnpm ci` (build + tous les tests)             | Aucune PR mergée si la CI est rouge                |
-| **Validation des entrées** | Zod                                            | Prévention des injections et des données invalides |
-| **Typage strict**          | TypeScript                                     | Réduction des erreurs à la compilation             |
-| **Revue de code**          | Revue externe (instructrice)                   | Amélioration de la qualité du code                 |
-
-**Résultats** :
-- **240 tests automatisés** au total
-  - 9 fichiers de test : 7 unitaires, 2 d'intégration
-  - Exécution : `pnpm test` (dernière mesure le 18/11/2026 : 240 passed / 0 failed, 11,6 s)
-  - Couverture : Mesurable via `pnpm test:coverage` (lib/ et utils/)
-- **Aucune PR mergée avec des tests en échec**
-
----
-
 
 ## 7. Réalisation
 
@@ -759,7 +759,7 @@ export async function verifyRole(
 }
 ```
 
-**Explication** : sécurité en profondeur — deux niveaux de vérification (authentification puis autorisation), avec des codes d'erreur précis : UNAUTHENTICATED (401) pour une session manquante, FORBIDDEN (403) pour un rôle insuffisant. Ce middleware est réutilisé par toutes les Server Actions via requireRole() ; il constitue la mise en œuvre d'OWASP A01 (voir §5.2).
+**Explication** : sécurité en profondeur — deux niveaux de vérification (authentification puis autorisation), avec des codes d'erreur précis : UNAUTHENTICATED (401) pour une session manquante, FORBIDDEN (403) pour un rôle insuffisant. Ce middleware est réutilisé par toutes les Server Actions via requireRole() ; il constitue la mise en œuvre d'OWASP A01 (voir §6.2).
 
 **Étape 3 — Server Action : point d'entrée du backend**
 
@@ -1383,4 +1383,3 @@ static async getRidesWithDetails(limit: number = 50) {
 <p style="font-size: 12pt; color: #555; margin-top: 20px;">AMT Express — Concepteur Développeur d'Applications — RNCP 37873</p>
 <p style="font-size: 12pt; color: #555;">Alexis SANTOS — Promo Janvier 2026 — Ada Tech School</p>
 </div>
-
