@@ -1,6 +1,6 @@
 # Annexe #13 — Veille sur les vulnérabilités : trois alertes réelles sur les dépendances du projet
 
-> **Ce que ce document est** : la matière première factuelle du § 10 du dossier (l'exemple concret de CVE traitée, resté 🔴). La veille a été menée le **30/10/2026** par la maison, sur les **versions déclarées dans `amt-express/package.json` @ `main`** (`bce57b7`). Chaque entrée : identifiant, sévérité, mécanisme, exposition réelle d'AMT Express, version corrective, sources. **Ce que ce document n'est pas** : le récit de la décision — celui-ci n'appartient qu'au maître (quand il a vu l'alerte, ce qu'il a décidé, pourquoi). La trame de ce récit est en fin de document.
+> **Ce que ce document est** : la matière première factuelle du § 10 du dossier (l'exemple concret de CVE traitée, resté ). La veille a été menée le **30/10/2026** par la maison, sur les **versions déclarées dans `amt-express/package.json` @ `main`** (`bce57b7`). Chaque entrée : identifiant, sévérité, mécanisme, exposition réelle d'AMT Express, version corrective, sources. **Ce que ce document n'est pas** : le récit de la décision — celui-ci n'appartient qu'au maître (quand il a vu l'alerte, ce qu'il a décidé, pourquoi). La trame de ce récit est en fin de document.
 >
 > ⚠️ **Honnêteté méthodologique** : les plages d'affectation sont portées par les *plages déclarées* (ex. `^4.3.5`) ; la version **réellement installée** vit dans le lockfile. Premier geste de vérification, avant toute décision : `pnpm ls zod better-auth next` — une seule commande rend le trio certain. AMT Express n'utilise pas `config.i18n` de Next (i18n via i18next), ce qui est une donnée d'exposition déterminée plus bas.
 
@@ -30,7 +30,7 @@
 - **Divulgué** : release de sécurité Vercel du **21 juillet 2026**.
 - **Versions affectées** : `next >= 16.0.0 et < 16.2.11` — le projet épingle `next@16.1.1` → **dans la plage**.
 - **Mécanisme** : App Router **construit avec Turbopack** + **un seul locale** dans `config.i18n.locales` → certains chemins contournent la chaîne middleware/proxy, non authentifiés.
-- **Exposition d'AMT Express** : l'i18n du projet passe par **i18next**, pas par `config.i18n` de Next — la condition de configuration **n'est pas remplie** ; et l'autorisation ne vit pas dans le middleware mais dans `verifyRole()` au cœur de chaque Server Action (cf. § 5.2 du dossier). Non exploitable en l'état ; mise à jour à prendre au prochain train de versions.
+- **Exposition d'AMT Express** : l'i18n du projet passe par **i18next**, pas par `config.i18n` de Next — la condition de configuration **n'est pas remplie** ; et l'autorisation ne vit pas dans le middleware mais dans `verifyRole()` au cœur de chaque Server Action (cf. § 6.2 du dossier). Non exploitable en l'état ; mise à jour à prendre au prochain train de versions.
 - **Version corrective** : `next@16.2.11`.
 - **Sources** : [release de sécurité Vercel, 21/07/2026](https://nextjs.org/blog/july-2026-security-release) · [analyse CVE-2026-64642](https://www.ionix.io/threat-center/cve-2026-64642/).
 
@@ -38,7 +38,7 @@
 
 Le jury attend : l'alerte (d'où vient-elle, quand), la lecture (comprendre le mécanisme), la décision (mettre à jour ou non, et pourquoi), la vérification (le test qui prouve que c'est derrière nous), et la leçon (ce que la méthode change). Le dossier sous-vend rarement : montrer qu'une CVE a été *lue* et *triée* (la ③ non déclenchable vaut autant de points que la ① corrigée) est exactement la posture « DevOps » du CCP 3.
 
-> **Gestes suggérés** (le maître tranche) : `pnpm ls zod better-auth next` (état réel du lockfile) ; puis mise à jour ciblée `pnpm add zod@^4.6.6` + `pnpm ci` ; la capture `pnpm audit` (avant/après) est la pièce 🔴 qui va avec ce § 10.
+> **Gestes suggérés** (le maître tranche) : `pnpm ls zod better-auth next` (état réel du lockfile) ; puis mise à jour ciblée `pnpm add zod@^4.6.6` + `pnpm ci` ; la capture `pnpm audit` (avant/après) est la pièce  qui va avec ce § 10.
 
 ---
 *Veille menée par la maison le 30/10/2026, sur les versions déclarées du `package.json` à `bce57b7` — chaque plage d'affectation vérifiée contre l'advisory cité ; aucune version « supposée » : le lockfile reste à interroger par le geste ci-dessus.*

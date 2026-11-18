@@ -147,7 +147,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 
 Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (capture ci-dessous) : chaque issue y passe par les colonnes Backlog → In Progress → Done, ce qui a servi de plan de sprint hebdomadaire pendant tout le développement.
 
-Vous trouverez en annexe #?? la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
+Vous trouverez en annexe #7 la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
 ### 3.4. Périmètre du MVP
 
@@ -217,6 +217,8 @@ flowchart LR
     UAT -- "validation humaine" --> MAIN["main — production<br/>(Vercel PROD)"]
     MAIN -.->|"rollback : re-déploiement du tag précédent"| MAIN
 ```
+
+> *Vous pouvez retrouver le schéma complet du cycle de déploiement (UAT, validation humaine, rollback) dans l'annexe #6.*
 
 **Détail du workflow** :
 1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
@@ -323,72 +325,24 @@ flowchart TD
     style T fill:#2e7d32,color:#fff
 ```
 
+> *Vous pouvez retrouver le schéma complet de ce parcours — diagramme d'activité au rendu UML canonique — dans l'annexe #1.*
+
 **Diagramme de classes** — Modèle conceptuel des données
 
 > *Ce diagramme présente les entités métier principales et leurs relations. Il a servi de base à la conception du schéma de base de données (voir §5.2).*
 
 ```mermaid
 classDiagram
-    class User {
-        +String id
-        +user_role role
-        +String email
-        +boolean banned
-        +getRole() user_role
-        +getId() String
-    }
-    class Driver {
-        +String id
-        +String user_id
-        +boolean active
-        +getId() String
-    }
-    class Production {
-        +String id
-        +String name
-        +getId() String
-    }
-    class Project {
-        +String id
-        +String production_id
-        +String name
-        +getId() String
-    }
-    class Ride {
-        +String id
-        +String project_id
-        +String driver_id
-        +ride_status status
-        +numeric price
-        +getId() String
-        +getStatus() ride_status
-    }
-    class RideCustomer {
-        +String ride_id
-        +String customer_id
-        +int rating
-        +String comment
-    }
-    class RideOption {
-        +String id
-        +String label
-        +numeric price
-    }
-    class RideSelectedOption {
-        +String ride_id
-        +String option_id
-        +numeric price
-    }
-    class AssignmentRequest {
-        +String ride_id
-        +String driver_id
-        +request_status status
-        +getStatus() request_status
-    }
-    class ShiftPlanning {
-        +String driver_id
-        +shift_status status
-    }
+    class User { +String id · +user_role role · +boolean banned }
+    class Driver { +String id · FK user_id · +boolean active }
+    class Production { +String id · +String name }
+    class Project { +String id · FK production_id · +String name }
+    class Ride { +String id · FK project_id · FK driver_id · +ride_status status · +numeric price }
+    class RideCustomer { FK ride_id · FK customer_id · +int rating · +String comment }
+    class RideOption { +String id · +String label · +numeric price }
+    class RideSelectedOption { FK ride_id · FK option_id · +numeric price }
+    class AssignmentRequest { FK ride_id · FK driver_id · +request_status status }
+    class ShiftPlanning { FK driver_id · +shift_status status }
     User "1" --> "0..1" Driver
     Production "1" *-- "0..n" Project
     Project "1" --> "0..n" Ride
@@ -401,11 +355,13 @@ classDiagram
     Driver "1" --> "0..n" ShiftPlanning
 ```
 
+> *Diagramme volontairement resserré pour tenir dans la page : seuls clés et statuts sont portés. Vous pouvez retrouver le schéma complet — classes compartimentées avec attributs et méthodes en annexe #1, ERD exhaustif des 19 tables en annexe #2.*
+
 ### 5.2. Conception de la base de données
 
 **Contexte** : La base de données est le cœur du système. Elle doit supporter des relations complexes entre les entités tout en garantissant l'intégrité et la performance.
 
-La base de données comprend **19 tables** (16 tables métier + 3 tables d'authentification Better Auth), détaillées dans le dictionnaire de données et le diagramme entités-relations de l'annexe #2. Les types énumérés ci-dessous contraignent les statuts directement côté PostgreSQL.
+La base de données comprend **19 tables** (16 tables métier + 3 tables d'authentification Better Auth), détaillées dans le dictionnaire de données (**annexe #2 bis**) et le diagramme entités-relations (**annexe #2**). Les types énumérés ci-dessous contraignent les statuts directement côté PostgreSQL.
 
 **Types énumérés (pgEnum)** :
 - `user_role` : admin, driver, customer
@@ -427,6 +383,8 @@ flowchart LR
     RIDE -- "(1,n) transporte (0,n)" --> USER
     RIDE -- "(0,n) embarque (0,n)" --> ROPT[RIDE_OPTION]
 ```
+
+> *Vous pouvez retrouver le schéma complet — toutes les entités et associations, cardinalités Merise, format A4 — dans l'annexe #15.*
 
 **Modèle Logique de Données (MLD)** — Règles de passage
 
@@ -511,7 +469,7 @@ flowchart TD
     R -- client --> CU["Espace client :<br/>réservation,<br/>historique, notation"]
 ```
 
-> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1.*
+> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'annexe #3.*
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -557,6 +515,8 @@ flowchart TB
     style D fill:#F4A259,color:#000
     style G fill:#060605,color:#fff
 ```
+
+> *Vous pouvez retrouver le schéma d'infrastructure complet — déploiement, environnements, hébergement Vercel et Neon — dans l'annexe #6.*
 
 **Détail des couches** :
 
@@ -1032,6 +992,8 @@ flowchart TD
     style F fill:#FFC107,color:#000
     style G fill:#2E7D32,color:#fff
 ```
+
+> *La capture du pipeline réel — dernier run vert complet, « all checks passed » — sera fournie dans l'annexe #8.*
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 

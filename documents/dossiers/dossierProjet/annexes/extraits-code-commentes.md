@@ -123,7 +123,7 @@ export async function createRide(data: {
 }
 ```
 
-**Pourquoi ça tient debout** : l'action ne fait que **vérifier puis déléguer** — c'est la chaîne en couches du § 5.1 rendue visible sur une fonction : rôle → Zod → contrôleur → audit. Le type de retour `ActionResponse<string>` garantit que le front ne reçoit jamais une erreur non prévue.
+**Pourquoi ça tient debout** : l'action ne fait que **vérifier puis déléguer** — c'est la chaîne en couches du § 6.1 rendue visible sur une fonction : rôle → Zod → contrôleur → audit. Le type de retour `ActionResponse<string>` garantit que le front ne reçoit jamais une erreur non prévue.
 
 ## Extrait 4 — Accès aux données : optimisation N+1 et requête agrégée (§ 7.4)
 
