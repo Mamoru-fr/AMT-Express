@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16.1.1-black?logo=next.js" alt="Next.js" />
   <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/licence-MIT-green" alt="MIT Licence" />
 </p>
 
@@ -118,11 +118,8 @@
 
 ### Facturation
 
-- Génération de factures à partir de courses sélectionnées
-- Facturation groupée par client ou par période
-- Statuts : `unpaid`, `paid`, `cancelled`
-- Rappels automatiques (J+7, J+14, J+30)
-- Remises exceptionnelles avec justification
+> 🚧 **Hors périmètre du MVP** : les tables `invoices` / `invoice_items` existent dans le schéma, mais la logique métier n'est pas encore implémentée. Cible du backlog post-MVP (issues #20 à #23) :
+> génération de factures individuelles ou groupées à partir de courses sélectionnées, statuts (`unpaid`, `paid`, `cancelled`), rappels automatiques et remises avec justification.
 
 ---
 
@@ -135,10 +132,10 @@
 | Framework | Next.js App Router | 16.1.1 |
 | Langage | TypeScript | ^5 |
 | UI | React | 19.2.3 |
-| Base de données | PostgreSQL (Neon) | 16 |
+| Base de données | PostgreSQL (Neon) | 18 (démarré en 16) |
 | ORM | Drizzle ORM | ^0.45.1 |
 | Auth | Better Auth | ^1.4.10 |
-| Validation | Zod | ^4.3.5 |
+| Validation | Zod | ^4.6.7 |
 | Tests | Vitest + Testing Library | ^4.0.16 |
 | i18n | i18next + react-i18next | ^25.7.4 |
 | Graphiques | Recharts | ^3.6.0 |
@@ -236,9 +233,9 @@ Schema : [amt-express/lib/db/schema.ts](amt-express/lib/db/schema.ts)
 
 | Outil | Version | Notes |
 |-------|---------|-------|
-| Node.js | 20.x | Version du Dockerfile |
+| Node.js | 24 (dev local, suit le `.nvmrc`) / 20 (image Docker) | Le Dockerfile cible `node:20.12.2-alpine` pour des builds reproductibles |
 | pnpm | 9.x | `npm install -g pnpm` |
-| PostgreSQL | 16+ | Neon (cloud) ou Docker (local) |
+| PostgreSQL | 16+ | Neon (cloud — instance actuelle en 18) ou Docker (local) |
 
 ### Developpement local
 
