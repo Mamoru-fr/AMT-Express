@@ -85,8 +85,7 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 </div>
 
-<div style="page-break-after: always;">
----
+<div style="page-break-after: always;"></div>
 
 ## 3. Cahier des charges
 
@@ -148,9 +147,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 
 Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (capture ci-dessous) : chaque issue y passe par les colonnes Backlog → In Progress → Done, ce qui a servi de plan de sprint hebdomadaire pendant tout le développement.
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** CAPTURE À INSÉRER** : vue du board GitHub Projects montrant le backlog (issues ouvertes / fermées), à insérer ici en pleine page.
-</div>
+Vous trouverez en annexe #?? la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
 ### 3.4. Périmètre du MVP
 
