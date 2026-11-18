@@ -27,21 +27,21 @@
 
 ## Sommaire
 
-| # | Section | Contenu clé |
-|---|---------|-------------|
-| 1 | Présentation du projet | Contexte, problème, solution et chiffres clés |
-| 2 | Compétences du référentiel | Mapping CCP 1-3 vers les sections du dossier |
-| 3 | Cahier des charges | Analyse des besoins, personas, user stories, MVP, risques |
-| 4 | Spécifications fonctionnelles | UML, MCD/MLD/MPD, maquettes, schéma de navigation |
-| 5 | Spécifications techniques | Architecture en couches, sécurité OWASP, choix de la stack |
-| 6 | Gestion de projet | Méthodologie, planning, suivi qualité, workflows CI/CD |
-| 7 | Réalisation | Architecture du code, extraits commentés, parcours métier complet |
-| 8 | Tests | Jeu d'essai représentatif, tests automatisés (240 au total) |
-| 9 | Préparation au déploiement (CCP 3) | Environnements, CI/CD, rollback, documentation |
-| 10 | Veille sur les vulnérabilités | Processus de veille, sources, exemple concret |
-| 11 | Défis et recherche | Résolution d'un verrou technique majeur |
-| 12 | Conclusion | Bilan du projet, axes d'amélioration, perspectives |
-| — | Annexes | Inventaire des pièces jointes |
+| #   | Section                            | Contenu clé                                                       |
+| --- | ---------------------------------- | ----------------------------------------------------------------- |
+| 1   | Présentation du projet             | Contexte, problème, solution et chiffres clés                     |
+| 2   | Compétences du référentiel         | Mapping CCP 1-3 vers les sections du dossier                      |
+| 3   | Cahier des charges                 | Analyse des besoins, personas, user stories, MVP, risques         |
+| 4   | Spécifications fonctionnelles      | UML, MCD/MLD/MPD, maquettes, schéma de navigation                 |
+| 5   | Spécifications techniques          | Architecture en couches, sécurité OWASP, choix de la stack        |
+| 6   | Gestion de projet                  | Méthodologie, planning, suivi qualité, workflows CI/CD            |
+| 7   | Réalisation                        | Architecture du code, extraits commentés, parcours métier complet |
+| 8   | Tests                              | Jeu d'essai représentatif, tests automatisés (240 au total)       |
+| 9   | Préparation au déploiement (CCP 3) | Environnements, CI/CD, rollback, documentation                    |
+| 10  | Veille sur les vulnérabilités      | Processus de veille, sources, exemple concret                     |
+| 11  | Défis et recherche                 | Résolution d'un verrou technique majeur                           |
+| 12  | Conclusion                         | Bilan du projet, axes d'amélioration, perspectives                |
+| —   | Annexes                            | Inventaire des pièces jointes                                     |
 
 *Les numéros de section correspondent à ceux attendus par le jury.*
 
@@ -115,19 +115,19 @@
 
 Le projet **AMT Express** permet de valider l'intégralité des compétences du titre professionnel **Concepteur Développeur d'Applications** (RNCP 37873, niveau 6 - équivalent Bac+3/4).
 
-| Bloc | Compétence (RNCP 37873) | Section de traitement | Annexe associée |
-|------|----------------------------|----------------------|-----------------|
-| **CCP 1** | C1.1 : Installer et configurer son environnement de travail | §5.3 (stack, pnpm, Docker) · §6.1 | #7 - Capture du board GitHub Projects |
-| **CCP 1** | C1.2 : Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, parallel routes, responsive, a11y) | #3 - Maquettes · #10 - Captures d'écrans |
-| **CCP 1** | C1.3 : Développer des composants métier réutilisables | §7.3 (Server Actions, controllers, services) | #12 - Extraits 1, 3, 6 |
-| **CCP 1** | C1.4 : Contribuer à la gestion d'un projet informatique en méthodologie Agile | §6 (Git Flow, planning, qualité) | #7 - Board · #8 - Pipeline CI |
-| **CCP 2** | C2.1 : Analyser les besoins et maquetter une application | §3 (cahier des charges) · §4.3 (maquettes) | #3 - Maquettes |
-| **CCP 2** | C2.2 : Définir l'architecture logicielle en couches | §5.1 (couches) · §7.1 | #1 - Diagrammes UML canoniques |
-| **CCP 2** | C2.3 : Concevoir une base de données relationnelle (19 tables) | §4.2 (MCD/MLD/MPD, 19 tables) | #2 - ERD · #2 bis - Dictionnaire |
-| **CCP 2** | C2.4 : Développer des composants d'accès aux données (Drizzle ORM) | §7.4 (Drizzle, jointures, optimisation SQL) | #12 - Extraits 4, 5 |
-| **CCP 3** | C3.1 : Préparer et exécuter les plans de tests (240 tests) | §8 (jeu d'essai, Vitest, CI) | #9 - Sortie des tests |
-| **CCP 3** | C3.2 : Préparer et documenter le déploiement en environnement multi-tiers | §9 (environnements, CI/CD, Docker) | #8 - Pipeline · #6 - Schéma infra |
-| **CCP 3** | C3.3 : Contribuer à la mise en production et au DevOps | §9.2-9.5 (Vercel UAT/PROD, rollback) | #8 - Pipeline · #6 - Infrastructure |
+| Bloc      | Compétence (RNCP 37873)                                                       | Section de traitement                           | Annexe associée                          |
+| --------- | ----------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| **CCP 1** | C1.1 : Installer et configurer son environnement de travail                   | §5.3 (stack, pnpm, Docker) · §6.1               | #7 - Capture du board GitHub Projects    |
+| **CCP 1** | C1.2 : Développer des interfaces utilisateur dynamiques et ergonomiques       | §7.2 (React, parallel routes, responsive, a11y) | #3 - Maquettes · #10 - Captures d'écrans |
+| **CCP 1** | C1.3 : Développer des composants métier réutilisables                         | §7.3 (Server Actions, controllers, services)    | #12 - Extraits 1, 3, 6                   |
+| **CCP 1** | C1.4 : Contribuer à la gestion d'un projet informatique en méthodologie Agile | §6 (Git Flow, planning, qualité)                | #7 - Board · #8 - Pipeline CI            |
+| **CCP 2** | C2.1 : Analyser les besoins et maquetter une application                      | §3 (cahier des charges) · §4.3 (maquettes)      | #3 - Maquettes                           |
+| **CCP 2** | C2.2 : Définir l'architecture logicielle en couches                           | §5.1 (couches) · §7.1                           | #1 - Diagrammes UML canoniques           |
+| **CCP 2** | C2.3 : Concevoir une base de données relationnelle (19 tables)                | §4.2 (MCD/MLD/MPD, 19 tables)                   | #2 - ERD · #2 bis - Dictionnaire         |
+| **CCP 2** | C2.4 : Développer des composants d'accès aux données (Drizzle ORM)            | §7.4 (Drizzle, jointures, optimisation SQL)     | #12 - Extraits 4, 5                      |
+| **CCP 3** | C3.1 : Préparer et exécuter les plans de tests (240 tests)                    | §8 (jeu d'essai, Vitest, CI)                    | #9 - Sortie des tests                    |
+| **CCP 3** | C3.2 : Préparer et documenter le déploiement en environnement multi-tiers     | §9 (environnements, CI/CD, Docker)              | #8 - Pipeline · #6 - Schéma infra        |
+| **CCP 3** | C3.3 : Contribuer à la mise en production et au DevOps                        | §9.2-9.5 (Vercel UAT/PROD, rollback)            | #8 - Pipeline · #6 - Infrastructure      |
 
 > *Les annexes sont disponibles dans le dossier `documents/dossiers/dossierProjet/annexes/` de ce dépôt. Chaque pièce est référencée par son numéro dans l'inventaire en fin de document.*
 
@@ -141,12 +141,12 @@ Le projet **AMT Express** permet de valider l'intégralité des compétences du 
 
 **Problématique identifiée** : Avant la mise en place d'AMT Express, l'ensemble du cycle opérationnel de l'entreprise était géré manuellement, entraînant les difficultés suivantes :
 
-| Problème identifié | Processus existant | Impact mesuré |
-|---------------------|-------------------|---------------|
+| Problème identifié          | Processus existant                       | Impact mesuré                                                        |
+| --------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
 | Saisie manuelle des courses | Tickets papier retranscrits manuellement | Erreurs fréquentes, délais de traitement, ~10 heures/semaine perdues |
-| Assignations inefficaces | Dispatch téléphonique | Jusqu'à 20 % de temps d'inactivité pour les chauffeurs |
-| Manque de visibilité | Clients appellent pour connaître l'état | Insatisfaction client, perte de courses |
-| Facturation manuelle | Factures Excel générées manuellement | Retards de paiement, erreurs de facturation |
+| Assignations inefficaces    | Dispatch téléphonique                    | Jusqu'à 20 % de temps d'inactivité pour les chauffeurs               |
+| Manque de visibilité        | Clients appellent pour connaître l'état  | Insatisfaction client, perte de courses                              |
+| Facturation manuelle        | Factures Excel générées manuellement     | Retards de paiement, erreurs de facturation                          |
 
 **Solution proposée** : AMT Express est une **application web full-stack responsive** (compatible desktop, mobile et PWA) qui remplace ces processus manuels par un système automatisé et centralisé.
 
@@ -209,17 +209,17 @@ Le projet répond aux besoins fonctionnels suivants :
 
 Le **Minimum Viable Product** déployé en production comprend les fonctionnalités suivantes :
 
-| # | Fonctionnalité | Statut | Détails |
-|---|---------------|--------|---------|
-| 1 | **Authentification multi-rôles** | Livré | 3 rôles (admin/driver/customer), activation manuelle des chauffeurs, système de bannissement |
-| 2 | **CRUD courses complet** | Livré | Création, lecture, mise à jour, suppression avec cycle de statuts (pending → assigned → completed/cancelled) |
-| 3 | **Gestion des assignations** | Livré | Demandes d'assignation par les chauffeurs, validation par l'admin |
-| 4 | **Tableaux de bord KPI** | Livré | Visualisation des courses, revenus, taux d'assignation avec Recharts |
-| 5 | **Import CSV massif** | Livré | Import des anciennes données avec sauvegarde automatique préalable |
-| 6 | **Système de notation** | Livré | Notation des courses (1-5 étoiles) avec commentaires |
-| 7 | **Internationalisation** | Livré | Support FR/EN complet, PWA (Service Worker) |
-| 8 | **Export CSV** | Livré | Export des données jusqu'à 10 000 lignes |
-| 9 | **Journal d'audit** | Livré | Traçabilité complète des actions via `activity_logs` |
+| #   | Fonctionnalité                   | Statut | Détails                                                                                                      |
+| --- | -------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| 1   | **Authentification multi-rôles** | Livré  | 3 rôles (admin/driver/customer), activation manuelle des chauffeurs, système de bannissement                 |
+| 2   | **CRUD courses complet**         | Livré  | Création, lecture, mise à jour, suppression avec cycle de statuts (pending → assigned → completed/cancelled) |
+| 3   | **Gestion des assignations**     | Livré  | Demandes d'assignation par les chauffeurs, validation par l'admin                                            |
+| 4   | **Tableaux de bord KPI**         | Livré  | Visualisation des courses, revenus, taux d'assignation avec Recharts                                         |
+| 5   | **Import CSV massif**            | Livré  | Import des anciennes données avec sauvegarde automatique préalable                                           |
+| 6   | **Système de notation**          | Livré  | Notation des courses (1-5 étoiles) avec commentaires                                                         |
+| 7   | **Internationalisation**         | Livré  | Support FR/EN complet, PWA (Service Worker)                                                                  |
+| 8   | **Export CSV**                   | Livré  | Export des données jusqu'à 10 000 lignes                                                                     |
+| 9   | **Journal d'audit**              | Livré  | Traçabilité complète des actions via `activity_logs`                                                         |
 
 **Fonctionnalités hors périmètre MVP** (reportées) :
 - GPS temps réel des véhicules
@@ -232,14 +232,14 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 
 ### 3.5. Analyse des risques
 
-| Risque identifié | Probabilité | Impact | Mesures de mitigation |
-|-------------------|-------------|--------|----------------------|
-| **OCR insuffisant sur tickets manuscrits** | Haute | Moyen | Solution alternative : import CSV avec backup automatique + correction manuelle. OCR planifié pour une version post-MVP |
-| **Taux d'adoption des chauffeurs < 80 %** | Moyenne | Fort | Interface chauffeur simplifiée (courses, shifts, stats). Activation progressive par l'administrateur |
-| **Limites des free tiers** (Neon 0,5 Go, bande passante Vercel) | Moyenne | Fort | Monitoring de l'usage, scripts de backup (`pnpm db:backup`), archivage possible. Scalabilité documentée (25-50 €/mois pour 1 000+ utilisateurs) |
-| **Développement solo en temps partiel** | Certaine | Moyen | Méthodologie Git Flow stricte, PR numérotées et revues, CI bloquante sur les tests rouges |
-| **Exposition des secrets** | Faible | Fort | `.gitignore` vérifié et maintenu, README avec avertissements, procédure de révocation documentée |
-| **Risque de dérive technique** | Moyenne | Moyen | Conventions de nommage strictes, ESLint configuré, `pnpm ci` obligatoire avant chaque PR, revues de code externes |
+| Risque identifié                                                | Probabilité | Impact | Mesures de mitigation                                                                                                                           |
+| --------------------------------------------------------------- | ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **OCR insuffisant sur tickets manuscrits**                      | Haute       | Moyen  | Solution alternative : import CSV avec backup automatique + correction manuelle. OCR planifié pour une version post-MVP                         |
+| **Taux d'adoption des chauffeurs < 80 %**                       | Moyenne     | Fort   | Interface chauffeur simplifiée (courses, shifts, stats). Activation progressive par l'administrateur                                            |
+| **Limites des free tiers** (Neon 0,5 Go, bande passante Vercel) | Moyenne     | Fort   | Monitoring de l'usage, scripts de backup (`pnpm db:backup`), archivage possible. Scalabilité documentée (25-50 €/mois pour 1 000+ utilisateurs) |
+| **Développement solo en temps partiel**                         | Certaine    | Moyen  | Méthodologie Git Flow stricte, PR numérotées et revues, CI bloquante sur les tests rouges                                                       |
+| **Exposition des secrets**                                      | Faible      | Fort   | `.gitignore` vérifié et maintenu, README avec avertissements, procédure de révocation documentée                                                |
+| **Risque de dérive technique**                                  | Moyenne     | Moyen  | Conventions de nommage strictes, ESLint configuré, `pnpm ci` obligatoire avant chaque PR, revues de code externes                               |
 
 ---
 
@@ -527,15 +527,15 @@ flowchart TB
 
 **Détail des couches** :
 
-| Couche | Technologie | Responsabilité |
-|--------|-------------|----------------|
-| **Présentation** | Next.js App Router, React 19, CSS Modules, Tailwind 4 | Interface utilisateur, gestion des états locaux, responsive design |
-| **Actions Serveur** | Server Actions (Next.js) | Points d'entrée du backend, validation des données avec Zod |
-| **Contrôleurs** | Fichiers `*Controller.ts` | Orchestration entre actions et services, délégation des tâches |
-| **Middleware** | `roleMiddleware.ts` | Vérification des droits d'accès, contrôle d'autorisation |
-| **Services** | Fichiers `*Service.ts` | Logique métier pure, indépendante de la technologie de persistence |
-| **Accès aux données** | Drizzle ORM | Requêtes type-safe vers la base de données |
-| **Base de données** | PostgreSQL 16 (Neon) | Stockage des données, garantie de l'intégrité |
+| Couche                | Technologie                                           | Responsabilité                                                     |
+| --------------------- | ----------------------------------------------------- | ------------------------------------------------------------------ |
+| **Présentation**      | Next.js App Router, React 19, CSS Modules, Tailwind 4 | Interface utilisateur, gestion des états locaux, responsive design |
+| **Actions Serveur**   | Server Actions (Next.js)                              | Points d'entrée du backend, validation des données avec Zod        |
+| **Contrôleurs**       | Fichiers `*Controller.ts`                             | Orchestration entre actions et services, délégation des tâches     |
+| **Middleware**        | `roleMiddleware.ts`                                   | Vérification des droits d'accès, contrôle d'autorisation           |
+| **Services**          | Fichiers `*Service.ts`                                | Logique métier pure, indépendante de la technologie de persistence |
+| **Accès aux données** | Drizzle ORM                                           | Requêtes type-safe vers la base de données                         |
+| **Base de données**   | PostgreSQL 16 (Neon)                                  | Stockage des données, garantie de l'intégrité                      |
 
 **Couches transverses** :
 - **Authentification** : Better Auth (gestion des sessions, rôles, bannissements)
@@ -546,14 +546,14 @@ flowchart TB
 
 **Contexte** : La sécurité a été une priorité dès la conception du projet. Chaque risque OWASP a été identifié et traité avec des solutions adaptées au contexte technique.
 
-| Risque OWASP | Catégorie | Solution mise en œuvre dans AMT Express |
-|-------------|-----------|------------------------------------------|
-| **A01 — Contrôle d'accès défaillant** | Broken Access Control | Vérification systématique des rôles via `verifyRole()` dans chaque Server Action. Hiérarchie de rôles stricte (admin > driver > customer). Activation manuelle des chauffeurs. Système de bannissement intégré. |
-| **A02 — Cryptographie défaillante** | Cryptographic Failures | Cookies HTTP-only (via `nextCookies()`), secrets stockés dans des variables d'environnement, HTTPS imposé en production. |
-| **A03 — Injection** | Injection | Requêtes SQL paramétrées via Drizzle ORM, validation et sanitization systématique avec Zod côté serveur sur toutes les entrées utilisateur. |
-| **A05 — Mauvaise configuration** | Security Misconfiguration | Fichier `.env` exclu du dépôt (`.gitignore`), gestion des environnements (`NODE_ENV`), messages d'erreur génériques côté client via `ActionResponse`. |
-| **A06 — Dépendances vulnérables** | Vulnerable and Outdated Components | Exécution régulière de `pnpm audit`. Intégration prévue dans la CI (voir §10). |
-| **A07 — Authentification défaillante** | Identification and Authentication Failures | Better Auth pour le hachage sécurisé, sessions expirantes, secret d'au moins 32 caractères, rôle par défaut minimal (`customer`). |
+| Risque OWASP                           | Catégorie                                  | Solution mise en œuvre dans AMT Express                                                                                                                                                                         |
+| -------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A01 — Contrôle d'accès défaillant**  | Broken Access Control                      | Vérification systématique des rôles via `verifyRole()` dans chaque Server Action. Hiérarchie de rôles stricte (admin > driver > customer). Activation manuelle des chauffeurs. Système de bannissement intégré. |
+| **A02 — Cryptographie défaillante**    | Cryptographic Failures                     | Cookies HTTP-only (via `nextCookies()`), secrets stockés dans des variables d'environnement, HTTPS imposé en production.                                                                                        |
+| **A03 — Injection**                    | Injection                                  | Requêtes SQL paramétrées via Drizzle ORM, validation et sanitization systématique avec Zod côté serveur sur toutes les entrées utilisateur.                                                                     |
+| **A05 — Mauvaise configuration**       | Security Misconfiguration                  | Fichier `.env` exclu du dépôt (`.gitignore`), gestion des environnements (`NODE_ENV`), messages d'erreur génériques côté client via `ActionResponse`.                                                           |
+| **A06 — Dépendances vulnérables**      | Vulnerable and Outdated Components         | Exécution régulière de `pnpm audit`. Intégration prévue dans la CI (voir §10).                                                                                                                                  |
+| **A07 — Authentification défaillante** | Identification and Authentication Failures | Better Auth pour le hachage sécurisé, sessions expirantes, secret d'au moins 32 caractères, rôle par défaut minimal (`customer`).                                                                               |
 
 **Conformité RGPD** :
 - Collecte limitée aux données strictement nécessaires
@@ -678,14 +678,14 @@ flowchart LR
 
 **Processus qualité mis en place** :
 
-| Pratique | Outil/Technologie | Impact |
-|----------|-------------------|--------|
-| **Conventions de nommage** | PascalCase (composants), camelCase (fonctions) | Code cohérent et lisible |
-| **Linting automatique** | ESLint | Détection des erreurs de style avant commit |
-| **Validation CI** | `pnpm ci` (build + tous les tests) | Aucune PR mergée si la CI est rouge |
-| **Validation des entrées** | Zod | Prévention des injections et des données invalides |
-| **Typage strict** | TypeScript | Réduction des erreurs à la compilation |
-| **Revue de code** | Revue externe (instructrice) | Amélioration de la qualité du code |
+| Pratique                   | Outil/Technologie                              | Impact                                             |
+| -------------------------- | ---------------------------------------------- | -------------------------------------------------- |
+| **Conventions de nommage** | PascalCase (composants), camelCase (fonctions) | Code cohérent et lisible                           |
+| **Linting automatique**    | ESLint                                         | Détection des erreurs de style avant commit        |
+| **Validation CI**          | `pnpm ci` (build + tous les tests)             | Aucune PR mergée si la CI est rouge                |
+| **Validation des entrées** | Zod                                            | Prévention des injections et des données invalides |
+| **Typage strict**          | TypeScript                                     | Réduction des erreurs à la compilation             |
+| **Revue de code**          | Revue externe (instructrice)                   | Amélioration de la qualité du code                 |
 
 **Résultats** :
 - **240 tests automatisés** au total
@@ -701,14 +701,14 @@ flowchart LR
 > **📌 Résumé de la section** : Cette section présente l'**architecture technique** du projet et son **implémentation concrète**. Elle comprend : l'organisation du code, des extraits commentés illustrant les bonnes pratiques, et un parcours métier complet de la demande d'assignation d'une course. *Objectif* : Montrer comment la théorie (§4-5) est mise en pratique dans le code.
 
 ### Sommaire de la section 7
-| Sous-section | Contenu | Pages |
-|-------------|---------|-------|
-| 7.1 | Architecture du code et structure du projet | - |
-| 7.2 | Front-end : Composant React avec gestion d'état | - |
-| 7.3 | Back-end : Chaîne Action → Controller → Service | - |
-| 7.4 | Accès aux données : Optimisation SQL et transactions | - |
-| 7.5 | Sécurité : Middleware de vérification des rôles | - |
-| 7.6 | Parcours métier complet : Demande d'assignation | - |
+| Sous-section | Contenu                                              | Pages |
+| ------------ | ---------------------------------------------------- | ----- |
+| 7.1          | Architecture du code et structure du projet          | -     |
+| 7.2          | Front-end : Composant React avec gestion d'état      | -     |
+| 7.3          | Back-end : Chaîne Action → Controller → Service      | -     |
+| 7.4          | Accès aux données : Optimisation SQL et transactions | -     |
+| 7.5          | Sécurité : Middleware de vérification des rôles      | -     |
+| 7.6          | Parcours métier complet : Demande d'assignation      | -     |
 
 ### 7.1. Architecture du code
 
@@ -1000,12 +1000,12 @@ static async getRidesWithDetails(limit: number = 50) {
 
 **Analyse détaillée** :
 
-| Aspect | Implémentation | Bonne pratique | Impact |
-|--------|----------------|----------------|--------|
-| **Requête unique** | Jointures `LEFT JOIN` sur `rideSelectedOptions` et `users` | Éviter les requêtes séquentielles | **99% de réduction** du nombre de requêtes |
-| **Transformation** | `Map<string, RideWithDetails>` pour regrouper les résultats | Complexité O(n) vs O(n²) | Temps de traitement constant |
-| **Typage** | Type `RideWithDetails` généré automatiquement | TypeScript garantit la cohérence | Réduction des erreurs de typage |
-| **Null safety** | Vérification `if (row.options)` avant push | Prévention des erreurs null | Code robuste |
+| Aspect             | Implémentation                                              | Bonne pratique                    | Impact                                     |
+| ------------------ | ----------------------------------------------------------- | --------------------------------- | ------------------------------------------ |
+| **Requête unique** | Jointures `LEFT JOIN` sur `rideSelectedOptions` et `users`  | Éviter les requêtes séquentielles | **99% de réduction** du nombre de requêtes |
+| **Transformation** | `Map<string, RideWithDetails>` pour regrouper les résultats | Complexité O(n) vs O(n²)          | Temps de traitement constant               |
+| **Typage**         | Type `RideWithDetails` généré automatiquement               | TypeScript garantit la cohérence  | Réduction des erreurs de typage            |
+| **Null safety**    | Vérification `if (row.options)` avant push                  | Prévention des erreurs null       | Code robuste                               |
 
 **Pourquoi cette optimisation est cruciale** :
 Sans cette optimisation, l'affichage de 50 courses nécessiterait **101 requêtes SQL** (1 pour les courses + 50 pour les options + 50 pour les clients). Avec la jointure, une seule requête suffit, réduisant le temps de chargement de **~10 secondes à ~150 ms**. *Impact utilisateur* : Expérience fluide et réactive.
@@ -1062,12 +1062,12 @@ export async function importProductionWithProjects(csvData: CsvProduction) {
 
 **Analyse détaillée** :
 
-| Propriété ACID | Implémentation | Garantie | Exemple |
-|---------------|----------------|----------|---------|
-| **Atomicité** | `db.transaction(async (tx) => {...})` | Tout ou rien | Si l'insertion d'une course échoue, la production et son projet sont annulés |
-| **Cohérence** | `returning()` pour récupérer l'ID généré | Données valides | `production.id` est utilisé pour les courses associées |
-| **Isolation** | Drizzle utilise l'isolation par défaut de PostgreSQL | Pas d'interférence | Les autres utilisateurs ne voient pas les données partielles |
-| **Durabilité** | PostgreSQL (Neon) avec persistence | Données persistantes | Même en cas de crash, la transaction est validée ou annulée |
+| Propriété ACID | Implémentation                                       | Garantie             | Exemple                                                                      |
+| -------------- | ---------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------- |
+| **Atomicité**  | `db.transaction(async (tx) => {...})`                | Tout ou rien         | Si l'insertion d'une course échoue, la production et son projet sont annulés |
+| **Cohérence**  | `returning()` pour récupérer l'ID généré             | Données valides      | `production.id` est utilisé pour les courses associées                       |
+| **Isolation**  | Drizzle utilise l'isolation par défaut de PostgreSQL | Pas d'interférence   | Les autres utilisateurs ne voient pas les données partielles                 |
+| **Durabilité** | PostgreSQL (Neon) avec persistence                   | Données persistantes | Même en cas de crash, la transaction est validée ou annulée                  |
 
 **Scénarios couverts par cette transaction** :
 1. **Succès** : La production, son projet et toutes ses courses sont créés ensemble
@@ -1337,12 +1337,12 @@ static async rejectAssignmentRequest(requestId: string, reason?: string): Promis
 
 **Analyse du parcours complet** :
 
-| Étape | Couche | Responsabilité | Points clés |
-|-------|--------|----------------|-------------|
-| 1 | Action | Point d'entrée | Vérification rôle + validation données |
-| 2 | Controller | Orchestration | Gestion des erreurs, appel au service |
-| 3 | Service | Logique métier | Règles métier (limite 5 demandes, pas de doublon) |
-| 4 | Service | Persistance | Transaction ACID avec rejet automatique des demandes concurrentes |
+| Étape | Couche     | Responsabilité | Points clés                                                       |
+| ----- | ---------- | -------------- | ----------------------------------------------------------------- |
+| 1     | Action     | Point d'entrée | Vérification rôle + validation données                            |
+| 2     | Controller | Orchestration  | Gestion des erreurs, appel au service                             |
+| 3     | Service    | Logique métier | Règles métier (limite 5 demandes, pas de doublon)                 |
+| 4     | Service    | Persistance    | Transaction ACID avec rejet automatique des demandes concurrentes |
 
 **Pourquoi ce parcours est exemplaire** :
 1. **Séparation claire des responsabilités** : Chaque couche a un rôle précis
@@ -1470,11 +1470,11 @@ describe('Parcours : Création et assignation d\'une course', () => {
 
 **Stratégie de test** :
 
-| Type de test | Nombre | Outil | Objectif |
-|--------------|--------|-------|----------|
-| Tests unitaires | 180 | Vitest | Validation des fonctions individuelles |
-| Tests d'intégration | 60 | Vitest | Validation des interactions entre composants |
-| **Total** | **240** | | Couverture complète des fonctionnalités |
+| Type de test        | Nombre  | Outil  | Objectif                                     |
+| ------------------- | ------- | ------ | -------------------------------------------- |
+| Tests unitaires     | 180     | Vitest | Validation des fonctions individuelles       |
+| Tests d'intégration | 60      | Vitest | Validation des interactions entre composants |
+| **Total**           | **240** |        | Couverture complète des fonctionnalités      |
 
 **Exemple de test unitaire** (Service) :
 
@@ -1590,11 +1590,11 @@ describe('CreateRideSchema', () => {
 
 **Stratégie de déploiement** : AMT Express utilise une approche de déploiement progressif avec **trois environnements** distincts :
 
-| Environnement | URL | Utilisation | Branche associée |
-|---------------|-----|-------------|------------------|
-| Développement | `localhost:3000` | Développement local | `feature/*`, `development` |
-| UAT (pré-production) | `amt-express-uat.vercel.app` | Tests de recette | `development` (déploiement manuel) |
-| Production | `amt-express.vercel.app` | Application en production | `main` (déploiement automatique) |
+| Environnement        | URL                          | Utilisation               | Branche associée                   |
+| -------------------- | ---------------------------- | ------------------------- | ---------------------------------- |
+| Développement        | `localhost:3000`             | Développement local       | `feature/*`, `development`         |
+| UAT (pré-production) | `amt-express-uat.vercel.app` | Tests de recette          | `development` (déploiement manuel) |
+| Production           | `amt-express.vercel.app`     | Application en production | `main` (déploiement automatique)   |
 
 **Fichier de configuration des environnements** :
 
@@ -1837,14 +1837,14 @@ pnpm db:restore backups/backup-2026-10-15.sql
 
 **Documentation disponible** :
 
-| Type | Fichier | Contenu |
-|------|---------|---------|
-| **README** | `README.md` | Guide de démarrage, prérequis, installation |
-| **Documentation API** | `docs/API.md` | Description des Server Actions et leurs paramètres |
-| **Guide utilisateur** | `docs/USER_GUIDE.md` | Manuel pour administrateurs, chauffeurs et clients |
-| **Guide de déploiement** | `docs/DEPLOYMENT.md` | Procédure complète de déploiement |
-| **Architecture** | `docs/ARCHITECTURE.md` | Description détaillée de l'architecture |
-| **Base de données** | `docs/DATABASE.md` | Schéma, relations, index |
+| Type                     | Fichier                | Contenu                                            |
+| ------------------------ | ---------------------- | -------------------------------------------------- |
+| **README**               | `README.md`            | Guide de démarrage, prérequis, installation        |
+| **Documentation API**    | `docs/API.md`          | Description des Server Actions et leurs paramètres |
+| **Guide utilisateur**    | `docs/USER_GUIDE.md`   | Manuel pour administrateurs, chauffeurs et clients |
+| **Guide de déploiement** | `docs/DEPLOYMENT.md`   | Procédure complète de déploiement                  |
+| **Architecture**         | `docs/ARCHITECTURE.md` | Description détaillée de l'architecture            |
+| **Base de données**      | `docs/DATABASE.md`     | Schéma, relations, index                           |
 
 **Exemple d'extrait du README** :
 
@@ -1893,13 +1893,13 @@ pnpm db:restore backups/backup-2026-10-15.sql
 
 **Sources de veille** :
 
-| Source | Fréquence | Objectif |
-|--------|-----------|----------|
-| **GitHub Dependabot** | Automatique (quotidien) | Détection des dépendances vulnérables |
-| **Node.js Security WG** | Hebdomadaire | Alertes sur les vulnérabilités Node.js |
-| **OWASP Top 10** | Trimestrielle | Mise à jour des bonnes pratiques sécurité |
-| **Newsletters** (Dev.to, Medium) | Hebdomadaire | Veille technologique générale |
-| **Communautés** (Discord, Reddit) | Continue | Échanges avec la communauté |
+| Source                            | Fréquence               | Objectif                                  |
+| --------------------------------- | ----------------------- | ----------------------------------------- |
+| **GitHub Dependabot**             | Automatique (quotidien) | Détection des dépendances vulnérables     |
+| **Node.js Security WG**           | Hebdomadaire            | Alertes sur les vulnérabilités Node.js    |
+| **OWASP Top 10**                  | Trimestrielle           | Mise à jour des bonnes pratiques sécurité |
+| **Newsletters** (Dev.to, Medium)  | Hebdomadaire            | Veille technologique générale             |
+| **Communautés** (Discord, Reddit) | Continue                | Échanges avec la communauté               |
 
 **Outils de veille** :
 - **Dependabot** : Intégré à GitHub, crée automatiquement des PR pour les mises à jour de sécurité
@@ -2087,16 +2087,16 @@ Les performances ont été mesurées en **local (Node.js 20, PostgreSQL Neon)** 
 
 **Objectifs atteints** :
 
-| Objectif | Statut | Détails |
-|----------|--------|---------|
-| **Fonctionnalités MVP** | ✅ Complètes | 9/9 fonctionnalités livrées et déployées |
-| **Qualité du code** | ✅ Excellente | 240 tests au vert, 0 vulnérabilité critique |
-| **Sécurité** | ✅ Robuste | Vérification des rôles à 100 %, conformité OWASP |
-| **Performance** | ✅ Optimisée | Temps de chargement < 200 ms pour les pages principales |
-| **Accessibilité** | ✅ Conforme | RGAA respecté, navigation clavier complète |
-| **Documentation** | ✅ Complète | README, API docs, user guide, architecture docs |
-| **Déploiement** | ✅ Opérationnel | CI/CD automatique, rollback possible |
-| **Adoption** | ✅ En cours | MVP déployé, premier client réel (AMT CGS GROUPE) |
+| Objectif                | Statut         | Détails                                                 |
+| ----------------------- | -------------- | ------------------------------------------------------- |
+| **Fonctionnalités MVP** | ✅ Complètes    | 9/9 fonctionnalités livrées et déployées                |
+| **Qualité du code**     | ✅ Excellente   | 240 tests au vert, 0 vulnérabilité critique             |
+| **Sécurité**            | ✅ Robuste      | Vérification des rôles à 100 %, conformité OWASP        |
+| **Performance**         | ✅ Optimisée    | Temps de chargement < 200 ms pour les pages principales |
+| **Accessibilité**       | ✅ Conforme     | RGAA respecté, navigation clavier complète              |
+| **Documentation**       | ✅ Complète     | README, API docs, user guide, architecture docs         |
+| **Déploiement**         | ✅ Opérationnel | CI/CD automatique, rollback possible                    |
+| **Adoption**            | ✅ En cours     | MVP déployé, premier client réel (AMT CGS GROUPE)       |
 
 **Chiffres clés finaux** :
 - **Lignes de code** : ~15 000 (TypeScript)
@@ -2110,23 +2110,23 @@ Les performances ont été mesurées en **local (Node.js 20, PostgreSQL Neon)** 
 
 **Améliorations techniques** :
 
-| Priorité | Amélioration | Impact attendu |
-|----------|--------------|----------------|
-| Haute | Ajouter des index composites | Meilleure performance des requêtes complexes |
-| Haute | Implémenter le cache Redis | Réduction de la charge sur la base de données |
-| Moyenne | Migrer vers Next.js 17 | Accès aux nouvelles fonctionnalités |
-| Moyenne | Ajouter des contraintes CHECK | Meilleure intégrité des données |
-| Basse | Implémenter WebSockets | Notifications en temps réel |
+| Priorité | Amélioration                  | Impact attendu                                |
+| -------- | ----------------------------- | --------------------------------------------- |
+| Haute    | Ajouter des index composites  | Meilleure performance des requêtes complexes  |
+| Haute    | Implémenter le cache Redis    | Réduction de la charge sur la base de données |
+| Moyenne  | Migrer vers Next.js 17        | Accès aux nouvelles fonctionnalités           |
+| Moyenne  | Ajouter des contraintes CHECK | Meilleure intégrité des données               |
+| Basse    | Implémenter WebSockets        | Notifications en temps réel                   |
 
 **Améliorations fonctionnelles** :
 
-| Priorité | Fonctionnalité | Impact utilisateur |
-|----------|----------------|---------------------|
-| Haute | Module de facturation | Compléter le cycle opérationnel |
-| Moyenne | Notifications push | Meilleure expérience utilisateur |
-| Moyenne | Chat interne | Communication entre utilisateurs |
-| Basse | GPS temps réel | Suivi des véhicules en direct |
-| Basse | OCR des tickets | Migration facilitée des données papier |
+| Priorité | Fonctionnalité        | Impact utilisateur                     |
+| -------- | --------------------- | -------------------------------------- |
+| Haute    | Module de facturation | Compléter le cycle opérationnel        |
+| Moyenne  | Notifications push    | Meilleure expérience utilisateur       |
+| Moyenne  | Chat interne          | Communication entre utilisateurs       |
+| Basse    | GPS temps réel        | Suivi des véhicules en direct          |
+| Basse    | OCR des tickets       | Migration facilitée des données papier |
 
 ### 12.3. Perspectives
 
@@ -2164,22 +2164,22 @@ Les performances ont été mesurées en **local (Node.js 20, PostgreSQL Neon)** 
 
 ## Inventaire des annexes
 
-| # | Titre | Fichier | Format | Statut |
-|---|-------|---------|--------|--------|
-| 1 | Diagrammes UML canoniques | `annexes/UML-canonique.md` | Markdown | Produit ✅ |
-| 2 | ERD 19 tables | `annexes/ERD-19-tables.md` | Markdown | Produit ✅ |
-| 2 bis | Dictionnaire de données | `annexes/dictionnaire-donnees.md` | Markdown | Produit ✅ |
-| 3 | Maquettes haute-fidélité | `annexes/maquettes.html` | HTML | Produit ✅ |
-| 4 | Diagramme de Gantt | `annexes/gantt.md` | Markdown | Produit ✅ |
-| 5 | Diagramme de séquence | `annexes/sequence.md` | Markdown | Produit ✅ |
-| 6 | Schéma d'infrastructure | `annexes/infrastructure.md` | Markdown | Produit ✅ |
-| 7 | Capture du board GitHub Projects | `annexes/board-github.png` | PNG | ⚠️ À fournir |
-| 8 | Capture du pipeline CI | `annexes/pipeline-ci.png` | PNG | ⚠️ À fournir |
-| 9 | Sortie des tests | `annexes/tests-output.txt` | TXT | ⚠️ À fournir |
-| 10 | Captures d'écrans | `annexes/screenshots/` | PNG | ⚠️ À fournir |
-| 11 | Registre des vulnérabilités | `annexes/registre-vulnerabilites.md` | Markdown | Produit ✅ |
-| 12 | Extraits de code commentés | `annexes/extraits-code-commentes.md` | Markdown | Produit ✅ |
-| 13 | Veille sur les vulnérabilités (CVE) | `annexes/veille-vulnerabilites.md` | Markdown | Produit ✅ |
+| #     | Titre                               | Fichier                              | Format   | Statut      |
+| ----- | ----------------------------------- | ------------------------------------ | -------- | ----------- |
+| 1     | Diagrammes UML canoniques           | `annexes/UML-canonique.md`           | Markdown | Produit ✅   |
+| 2     | ERD 19 tables                       | `annexes/ERD-19-tables.md`           | Markdown | Produit ✅   |
+| 2 bis | Dictionnaire de données             | `annexes/dictionnaire-donnees.md`    | Markdown | Produit ✅   |
+| 3     | Maquettes haute-fidélité            | `annexes/maquettes.html`             | HTML     | Produit ✅   |
+| 4     | Diagramme de Gantt                  | `annexes/gantt.md`                   | Markdown | Produit ✅   |
+| 5     | Diagramme de séquence               | `annexes/sequence.md`                | Markdown | Produit ✅   |
+| 6     | Schéma d'infrastructure             | `annexes/infrastructure.md`          | Markdown | Produit ✅   |
+| 7     | Capture du board GitHub Projects    | `annexes/board-github.png`           | PNG      | ⚠️ À fournir |
+| 8     | Capture du pipeline CI              | `annexes/pipeline-ci.png`            | PNG      | ⚠️ À fournir |
+| 9     | Sortie des tests                    | `annexes/tests-output.txt`           | TXT      | ⚠️ À fournir |
+| 10    | Captures d'écrans                   | `annexes/screenshots/`               | PNG      | ⚠️ À fournir |
+| 11    | Registre des vulnérabilités         | `annexes/registre-vulnerabilites.md` | Markdown | Produit ✅   |
+| 12    | Extraits de code commentés          | `annexes/extraits-code-commentes.md` | Markdown | Produit ✅   |
+| 13    | Veille sur les vulnérabilités (CVE) | `annexes/veille-vulnerabilites.md`   | Markdown | Produit ✅   |
 
 > **📌 Statut** : **11/13 annexes produites** (85% complet). Les 2 annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
