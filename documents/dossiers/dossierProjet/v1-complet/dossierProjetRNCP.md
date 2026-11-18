@@ -104,17 +104,27 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 **Solution proposée** : AMT Express est une **application web full-stack responsive** (compatible desktop, mobile et PWA) qui remplace ces processus manuels par un système automatisé et centralisé. Le schéma comparatif « processus manuel / avec AMT Express » est reproduit en format A4 en annexe pour être lisible par le jury.
 
-### 3.2. Public cible et rôles utilisateurs
+### 3.2. Personas et rôles utilisateurs
 
-L'application distingue **trois rôles**, identifiés lors de l'analyse des besoins avec le client. Chaque rôle correspond à un espace applicatif cloisonné (voir §4.3) et à un ensemble de droits vérifié côté serveur (voir §7.3).
+L'analyse des besoins, menée avec le client, a produit **cinq personas**. Ils sont décrits en détail (objectifs, besoins, frustrations, impact sur les fonctionnalités) dans le **document de spécifications fonctionnelles** du projet ; le dossier se contente ici de les rappeler et de montrer comment l'application les prend en compte.
 
-| Rôle                     | Qui ?                                                                                                        | Besoin principal                                                                           | Ce que le rôle peut faire                                                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Administrateur**       | Le dirigeant ou l'assistante administrative d'AMT CGS GROUPE (saisie des courses, facturation)               | Zéro erreur de planification, vision temps réel de l'activité                              | Créer et assigner des courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
-| **Chauffeur**            | Chauffeur indépendant sous-traitant (~1 150 au sein du client)                                               | Maximiser ses revenus en choisissant ses courses en connaissance de cause                  | Voir les courses disponibles avec prix et distance, demander une assignation, gérer ses plannings de shifts                                       |
-| **Client professionnel** | Régisseur de production cinéma, responsable logistique événementiel, assistant(e) de direction en entreprise | Organiser des transports pour des équipes avec un prix connu à l'avance et un suivi fiable | Réserver une course, consulter son historique, noter les prestations                                                                              |
+| Persona | Profil et objectifs | Frustrations actuelles | Rôle applicatif |
+|---------|--------------------|------------------------|------------------|
+| **Marc, 55 ans** — Manager de flotte (Île-de-France) | Zéro erreur de planification, couverture des pics de demande, réduction du travail manuel | 3 à 4 heures de planification manuelle par jour, chauffeurs injoignables | **Administrateur** |
+| **Nathalie, 47 ans** — Secrétaire administrative (PME de transport) | Envoyer les factures à temps sans erreurs, suivre les impayés sans y passer ses journées | Tickets égarés, factures incomplètes, ~20 % de retards de paiement | **Administrateur** |
+| **Djamel, 39 ans** — Chauffeur indépendant | Maximiser ses revenus en choisissant ses courses (prix et distance connus à l'avance) | Courses mal payées, absence de transparence sur les tarifs, appels permanents au dispatch | **Chauffeur** |
+| **Jean-Michel, 62 ans** — Client classique, usager régulier | Trouver une course vite et sans complication, avec un prix connu d'avance et un chauffeur ponctuel | Attentes aux heures de pointe, frais surprises, itinéraires mal connus | **Client** |
+| **Claire, 41 ans** — Assistante de direction (corporate) | Organiser les déplacements d'équipes entières, suivre les courses en temps réel, justifier les dépenses | Manque de visibilité sur le statut des courses, factures en retard ou erronées | **Client** |
 
-Cette lecture par rôle est cohérente avec les user stories (§3.3), le diagramme de cas d'utilisation (§4.1) et le cloisonnement des espaces (§4.3) : trois rôles partout, ni plus ni moins.
+**Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **trois rôles** : admin, driver, customer. Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
+
+| Rôle applicatif | Personas couverts | Besoin commun que le rôle résout |
+|-----------------|-------------------|----------------------------------|
+| **Administrateur** | Marc (pilotage), Nathalie (saisie et facturation) | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
+| **Chauffeur** | Djamel | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts |
+| **Client** | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations |
+
+Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, notifications en temps réel de Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§4.1) et trois espaces cloisonnés dans l'application (§4.3).
 
 ### 3.3. User Stories
 
