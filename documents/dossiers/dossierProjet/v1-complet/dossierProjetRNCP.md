@@ -108,21 +108,21 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 
 L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq personas**. Ils sont rappelés ici en synthèse ; leurs portraits complets — contexte de vie, citations, usage numérique, impact produit — sont réunis dans l'**annexe #17**.
 
-| Persona | Ce qu'il vit aujourd'hui | Ce qui lui manque | Rôle applicatif |
-|---------|--------------------------|-------------------|-----------------|
-| **Marc, 55 ans**<br>manager de flotte | Tout au papier : agenda imprimé de cinq kilos, courses notées à la main, coordination par téléphone. | Une seule source de vérité : savoir en continu qui roule pour qui, sans recopier ni rappeler. | **Administrateur** |
-| **Nathalie, 47 ans**<br>secrétaire administrative | Recopie chaque matin l'agenda papier dans Excel, relance les chauffeurs au téléphone et les clients pour les impayés. | Une seule saisie, et des relances qui ne reposent plus sur elle. | **Administrateur** |
-| **Djamel, 39 ans**<br>chauffeur indépendant | Vit dans sa voiture ; toutes les informations passent par le dispatch. | Ne manquer aucune course, et communiquer directement avec le client. | **Chauffeur** |
-| **Jean-Michel, 62 ans**<br>client régulier | Réserve par téléphone ; le prix est clair (tarification préfectorale), mais une fois la course demandée, plus rien. | Savoir que sa course est enregistrée, assignée, et où en est son chauffeur. | **Client** |
-| **Claire, 41 ans**<br>assistante de direction | Pilote les déplacements des cadres par e-mails en série (environ dix-huit messages par course). | Un écran unique : statut des courses en direct, facture plus rapide. | **Client** |
+| Persona                                           | Ce qu'il vit aujourd'hui                                                                                              | Ce qui lui manque                                                                             | Rôle applicatif    |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------ |
+| **Marc, 55 ans**<br>manager de flotte             | Tout au papier : agenda imprimé de cinq kilos, courses notées à la main, coordination par téléphone.                  | Une seule source de vérité : savoir en continu qui roule pour qui, sans recopier ni rappeler. | **Administrateur** |
+| **Nathalie, 47 ans**<br>secrétaire administrative | Recopie chaque matin l'agenda papier dans Excel, relance les chauffeurs au téléphone et les clients pour les impayés. | Une seule saisie, et des relances qui ne reposent plus sur elle.                              | **Administrateur** |
+| **Djamel, 39 ans**<br>chauffeur indépendant       | Vit dans sa voiture ; toutes les informations passent par le dispatch.                                                | Ne manquer aucune course, et communiquer directement avec le client.                          | **Chauffeur**      |
+| **Jean-Michel, 62 ans**<br>client régulier        | Réserve par téléphone ; le prix est clair (tarification préfectorale), mais une fois la course demandée, plus rien.   | Savoir que sa course est enregistrée, assignée, et où en est son chauffeur.                   | **Client**         |
+| **Claire, 41 ans**<br>assistante de direction     | Pilote les déplacements des cadres par e-mails en série (environ dix-huit messages par course).                       | Un écran unique : statut des courses en direct, facture plus rapide.                          | **Client**         |
 
 **Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **trois rôles** : admin, driver, customer. Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
 
-| Rôle applicatif | Personas couverts | Besoin commun que le rôle résout |
-|-----------------|-------------------|----------------------------------|
-| **Administrateur** | Marc (pilotage), Nathalie (saisie et relances) | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
-| **Chauffeur** | Djamel | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts |
-| **Client** | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations |
+| Rôle applicatif    | Personas couverts                                        | Besoin commun que le rôle résout                                                                                                                  |
+| ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Administrateur** | Marc (pilotage), Nathalie (saisie et relances)           | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
+| **Chauffeur**      | Djamel                                                   | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts               |
+| **Client**         | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations                                                              |
 
 Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, suivi GPS et notifications en temps réel de Jean-Michel et Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3).
 
@@ -133,15 +133,15 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 **User stories livrées dans le MVP** (issue GitHub d'origine entre parenthèses) :
 
 | #   | User story                                                                                                                                                           | Issue US (travail d'origine) |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #89 (#1, #5) |
-| US2 | En tant que chauffeur, je veux créer un compte, afin de pouvoir ensuite demander des courses une fois activé par un administrateur                                   | #90 (#1, #7) |
-| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #91 (#10) |
-| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #92 (#13) |
-| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #93 (#13) |
-| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                              | #94 (#14) |
-| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #95 (#17, #19) |
-| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #96 (#2, #4) |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #89 (#1, #5)                 |
+| US2 | En tant que chauffeur, je veux créer un compte, afin de pouvoir ensuite demander des courses une fois activé par un administrateur                                   | #90 (#1, #7)                 |
+| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #91 (#10)                    |
+| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #92 (#13)                    |
+| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #93 (#13)                    |
+| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                              | #94 (#14)                    |
+| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #95 (#17, #19)               |
+| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #96 (#2, #4)                 |
 
 **User stories du backlog post-MVP** (extrait ; la liste complète vit dans les issues GitHub ouvertes) : facturation (création, groupée, envoi, relances — issues #20 à #23), notifications temps réel (#24 à #26), géolocalisation (#27, #29), chat interne (#28), OCR d'import de courses (#11), notation des chauffeurs (#16), mots de passe oubliés (#6).
 
@@ -1297,26 +1297,26 @@ static async getRidesWithDetails(limit: number = 50) {
 
 ## Inventaire des annexes
 
-| #     | Titre                               | Fichier                              | Format   | Statut      |
-| ----- | ----------------------------------- | ------------------------------------ | -------- | ----------- |
-| 1     | Diagrammes UML canoniques           | `annexes/UML-canonique.md`           | Markdown | Produit ✅   |
-| 2     | ERD 19 tables                       | `annexes/ERD-19-tables.md`           | Markdown | Produit ✅   |
-| 2 bis | Dictionnaire de données             | `annexes/dictionnaire-donnees.md`    | Markdown | Produit ✅   |
-| 3     | Maquettes haute-fidélité            | `annexes/maquettes.html`             | HTML     | Produit ✅   |
-| 4     | Diagramme de Gantt                  | `annexes/gantt.md`                   | Markdown | Produit ✅   |
-| 5     | Diagramme de séquence               | `annexes/sequence.md`                | Markdown | Produit ✅   |
-| 6     | Schéma d'infrastructure             | `annexes/infrastructure.md`          | Markdown | Produit ✅   |
-| 7     | Capture du board GitHub Projects    | `annexes/board-github.png`           | PNG      | ⚠️ À fournir |
-| 8     | Capture du pipeline CI              | `annexes/pipeline-ci.png`            | PNG      | ⚠️ À fournir |
-| 9     | Sortie des tests                    | `annexes/tests-output.txt`           | TXT      | ⚠️ À fournir |
-| 10    | Captures d'écrans                   | `annexes/screenshots/`               | PNG      | ⚠️ À fournir |
-| 11    | Registre des vulnérabilités         | `annexes/registre-vulnerabilites.md` | Markdown | Produit ✅   |
-| 12    | Extraits de code commentés          | `annexes/extraits-code-commentes.md` | Markdown | Produit ✅   |
-| 13    | Veille sur les vulnérabilités (CVE) | `annexes/veille-vulnerabilites.md`   | Markdown | Produit ✅   |
-| 14    | Processus manuel vs AMT Express    | `annexes/avant-apres.md`             | Markdown | Produit ✅   |
-| 15    | MCD complet (format A4)            | `annexes/mcd-complet.md`             | Markdown | Produit ✅   |
-| 16    | Registre des traitements RGPD      | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
-| 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`      | Markdown | Produit ✅   |
+| #     | Titre                                  | Fichier                                | Format   | Statut      |
+| ----- | -------------------------------------- | -------------------------------------- | -------- | ----------- |
+| 1     | Diagrammes UML canoniques              | `annexes/UML-canonique.md`             | Markdown | Produit ✅   |
+| 2     | ERD 19 tables                          | `annexes/ERD-19-tables.md`             | Markdown | Produit ✅   |
+| 2 bis | Dictionnaire de données                | `annexes/dictionnaire-donnees.md`      | Markdown | Produit ✅   |
+| 3     | Maquettes haute-fidélité               | `annexes/maquettes.html`               | HTML     | Produit ✅   |
+| 4     | Diagramme de Gantt                     | `annexes/gantt.md`                     | Markdown | Produit ✅   |
+| 5     | Diagramme de séquence                  | `annexes/sequence.md`                  | Markdown | Produit ✅   |
+| 6     | Schéma d'infrastructure                | `annexes/infrastructure.md`            | Markdown | Produit ✅   |
+| 7     | Capture du board GitHub Projects       | `annexes/board-github.png`             | PNG      | ⚠️ À fournir |
+| 8     | Capture du pipeline CI                 | `annexes/pipeline-ci.png`              | PNG      | ⚠️ À fournir |
+| 9     | Sortie des tests                       | `annexes/tests-output.txt`             | TXT      | ⚠️ À fournir |
+| 10    | Captures d'écrans                      | `annexes/screenshots/`                 | PNG      | ⚠️ À fournir |
+| 11    | Registre des vulnérabilités            | `annexes/registre-vulnerabilites.md`   | Markdown | Produit ✅   |
+| 12    | Extraits de code commentés             | `annexes/extraits-code-commentes.md`   | Markdown | Produit ✅   |
+| 13    | Veille sur les vulnérabilités (CVE)    | `annexes/veille-vulnerabilites.md`     | Markdown | Produit ✅   |
+| 14    | Processus manuel vs AMT Express        | `annexes/avant-apres.md`               | Markdown | Produit ✅   |
+| 15    | MCD complet (format A4)                | `annexes/mcd-complet.md`               | Markdown | Produit ✅   |
+| 16    | Registre des traitements RGPD          | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
+| 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
 
 > ** Statut** : **15/17 annexes produites**. Les annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 

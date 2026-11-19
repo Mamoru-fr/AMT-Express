@@ -1,6 +1,4 @@
-# Annexe 17 — Personas détaillés (cartes d'empathie, version A4, 2 pages)
-
-> **Méthode.** Chaque persona a été construit avec le client **AMT CGS GROUPE** sur le principe de la **carte d'empathie** : ce que la personne dit, pense, fait et ressent dans son quotidien de travail. Le portrait type retenu comprend cinq éléments : un contexte de vie, une citation qui donne la voix, des objectifs, des frustrations, un usage numérique — puis l'impact concret sur le produit (ce que le MVP change, ce qui part au backlog). Le corps du dossier (§3.2) n'en conserve que la synthèse ; cette annexe en est le niveau de détail.
+# Annexe 17 — Personas détaillés (cartes d'empathie, version A4, 2 pages)****
 
 <table style="border-top:3px solid #176B87; border-collapse:collapse; width:100%; font-family:'Segoe UI',Arial,sans-serif; margin:14px 0 0;">
 <tr>
@@ -13,7 +11,7 @@
 </td>
 <td style="vertical-align:top; padding:9px 0 2px 18px;">
 <p style="margin:0 0 12px; font-family:Georgia,serif; font-size:15px; font-style:italic;">« Mon agenda fait cinq kilos. C'est ma mémoire, mais je ne peux pas la chercher. »</p>
-<p style="margin:0 0 14px; font-size:11.5px; color:#3c4048; line-height:1.4;">Trente ans de transport de personnes. Il dirige sa flotte depuis la voiture : les courses du lendemain sont notées à la main dans un agenda papier qu'il trimballe partout, les chauffeurs sont coordonnés au téléphone. Le moindre mail utile finit imprimé et glissé quelque part dans ces cinq kilos — où il ne le retrouvera pas.</p>
+<p style="margin:0 0 14px; font-size:11.5px; color:#3c4048; line-height:1.4;">Trente cinq ans de transport de personnes. Il dirige sa flotte depuis la voiture : les courses du lendemain sont notées à la main dans un agenda papier qu'il trimballe partout, les chauffeurs sont coordonnés au téléphone. Le moindre mail utile finit imprimé et glissé quelque part dans ces cinq kilos — où il ne le retrouvera pas.</p>
 <p style="margin:0 0 10px; font-size:11.5px;"><span style="display:inline-block; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:#9aa0a8; min-width:110px;">Objectifs</span></p>
 <ul style="margin:0 0 12px; padding-left:124px; list-style:none; font-size:11.5px; color:#3c4048;">
 <li style="margin:2px 0; position:relative;">— Savoir en continu qui roule pour qui, sans ressaisie</li>
