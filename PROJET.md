@@ -462,17 +462,19 @@ Client / Chauffeur / Admin
 ## 📋 Backlog
 
 ### Audit du 2026-11-19 — écarts interface vs implémentation
-| ID | Constat | Priorité |
-|----|---------|----------|
-| A-001 | Bouton « Mot de passe oublié ? » affiché (connections) mais écran informatif "coming soon" — aucun flux réel. Combiné à la suppression anonymisante, un mot de passe perdu = compte perdu définitivement | 🔴 |
-| A-002 | KPI « Factures en attente » (dashboard admin) compte la table `invoices` qu'aucun code n'alimente — figé à 0 | 🔴 |
-| A-003 | Clé i18n cassée `common.signingOut` (ProfilePopup) — affiche la clé brute pendant la déconnexion | 🟡 |
-| A-004 | `AddRideModal` sans `role="dialog"` — seule modale non conforme RGAA de l'app | 🟡 |
-| A-005 | 97 clés i18n absentes du dico, comblées par texte dur : pages légales (FR figé aussi en EN), DriverRidesView (EN figé aussi en FR), error/notFound, Authentication, messages ridesManagement | 🟡 |
-| A-006 | `proxy.ts` appelle `getSessionWithRole()` 2× de suite (commentaire obsolète bloc 3→2) | 🟢 |
-| A-007 | Tables `notifications`/`notification_preferences` en DB sans aucune UI ni écriture | 🟢 |
-| A-008 | Badge « Navigation GPS — bientôt disponible » (LivingRide) — voulu, pointer F-001 en démo | ℹ️ |
-| A-009 | Dropdowns admin (AddRideModal) listent les comptes anonymisés comme sélectionnables | 🟢 |
+| ID | Constat | Priorité | Statut |
+|----|---------|----------|--------|
+| A-001 | Bouton « Mot de passe oublié ? » affiché (connections) mais écran informatif "coming soon" — aucun flux réel | 🔴 | ✅ Corrigé (`c30a2d6`) : flux complet forgot/reset via Better Auth |
+| A-002 | KPI « Factures en attente » (dashboard admin) compte la table `invoices` qu'aucun code n'alimente — figé à 0 | 🔴 | ⏳ Reporté (décision : rien pour le moment) |
+| A-003 | Clé i18n cassée `common.signingOut` (ProfilePopup) | 🟡 | ✅ Corrigé (`b5f62f4`) |
+| A-004 | `AddRideModal` sans `role="dialog"` | 🟡 | ✅ Faux positif d'audit (aria conditionnel existant) ; `aria-labelledby` en mode page corrigé (`b5f62f4`) |
+| A-005 | 97 clés i18n absentes du dico, comblées par texte dur | 🟡 | ✅ Corrigé (`b5f62f4`) : dictionnaires FR/EN complets |
+| A-006 | `proxy.ts` appelle `getSessionWithRole()` 2× de suite | 🟢 | ⏳ Backlog |
+| A-007 | Tables `notifications` en DB sans aucune UI ni écriture | 🟢 | ⏳ Backlog |
+| A-008 | Badge « Navigation GPS — bientôt disponible » (LivingRide) | ℹ️ | Voulu (F-001) |
+| A-009 | Dropdowns admin listent les comptes anonymisés | 🟢 | ⏳ Backlog |
+
+**Note utile (découverte au passage)** : le reset de mot de passe passe par `{BETTER_AUTH_URL}/reset-password/{token}` — en production, vérifier `BETTER_AUTH_URL` dans l'environnement (actuellement `http://localhost:3000` dans `.env`).
 
 ### Features à Implémenter
 | ID | Titre | Description | Priorité | Statut |
