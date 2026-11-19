@@ -1,8 +1,8 @@
 # Annexe #2 bis — Dictionnaire de données (MPD, tables cœur)
 
-> Chaque ligne vérifiée dans `lib/db/schema.ts` @ `main` (SHA `bce57b7`, 30/10/2026). Le dictionnaire couvre les tables que le jury interroge en premier ; l'ERD (annexe #2) donne la vue d'ensemble.
+> Dictionnaire du cœur métier, chaque ligne vérifiée dans `lib/db/schema.ts` @ `main` (SHA `bce57b7`, 30/10/2026). L'ERD (annexe #2) donne la vue d'ensemble ; les tables techniques (session, account, activity_logs, notifications) sont dans le dépôt.
 >
-> **Note (†)** : dans le schéma actuel, plusieurs colonnes NOT NULL portent un `ON DELETE SET NULL` — le SET NULL échouerait à l'exécution si la ligne référencée venait à être supprimée. C'est une dette connue, documentée comme telle dans l'ERD (annexe #2, améliorations planifiées) ; la contrainte applicable aujourd'hui est donc « NOT NULL, FK ».
+> **Note (†)** : dette connue et documentée : plusieurs colonnes NOT NULL portent un `ON DELETE SET NULL` (échouerait à l'exécution) ; la contrainte applicable aujourd'hui est « NOT NULL, FK ».
 
 ## `rides` — la course
 
