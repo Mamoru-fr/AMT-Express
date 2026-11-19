@@ -1,5 +1,6 @@
 'use client';
 
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, User, Clock, DollarSign, Car } from 'lucide-react';
@@ -121,7 +122,7 @@ export function RideCard({ ride, onBook, showBookButton = true, isBooking = fals
                         <div>
                             <span className={styles.detailLabel}>{t('rides.driver')}</span>
                             <span className={styles.detailValue}>
-                                {ride.driver?.name || t('rides.notAssigned')}
+                                {ride.driver ? getUserDisplayName(ride.driver, t) : t('rides.notAssigned')}
                             </span>
                         </div>
                     </div>

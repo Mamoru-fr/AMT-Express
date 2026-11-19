@@ -339,6 +339,17 @@
     "save": "Save",
     "cancel": "Cancel"
   },
+  "account": {
+    "deletedUser": "Deleted user",
+    "delete": {
+      "button": "Delete my account",
+      "title": "Delete account?",
+      "message": "Are you sure you want to delete your account? You will no longer be able to access the application. For organizational reasons, your rides and invoices are kept, but all your personal information will be anonymized in accordance with GDPR.",
+      "confirm": "Yes, delete permanently",
+      "cancel": "Cancel",
+      "error": "Account deletion failed. Please try again."
+    }
+  },
   "customerNavigation": {
     "dashboard": "Dashboard",
     "dashboardDescription": "Your customer dashboard",

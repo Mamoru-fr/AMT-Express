@@ -1,5 +1,6 @@
 'use client'
 
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import {useState} from "react";
 import {RideWithRelations} from "@/content/database_types/ride";
 import {X} from "lucide-react";
@@ -78,7 +79,7 @@ export function AssignDriverModal({ride, drivers, onClose, onAssign}: AssignDriv
                             <option value="">{t('rideModals.assignDriver.chooseDriver')}</option>
                             {drivers.map(driver => (
                                 <option key={driver.id} value={driver.id}>
-                                    {driver.name} ({driver.email})
+                                    {getUserDisplayName(driver, t)} ({driver.email})
                                 </option>
                             ))}
                         </select>

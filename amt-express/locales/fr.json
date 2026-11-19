@@ -339,6 +339,17 @@
     "save": "Sauvegarder",
     "cancel": "Annuler"
   },
+  "account": {
+    "deletedUser": "Utilisateur supprimé",
+    "delete": {
+      "button": "Supprimer mon compte",
+      "title": "Supprimer le compte ?",
+      "message": "Êtes-vous sûr de vouloir supprimer votre compte ? Vous ne pourrez plus accéder à l'application. Pour des raisons d'organisation, vos courses et factures sont conservées, mais toutes vos informations personnelles seront anonymisées conformément au RGPD.",
+      "confirm": "Oui, supprimer définitivement",
+      "cancel": "Annuler",
+      "error": "La suppression du compte a échoué. Veuillez réessayer."
+    }
+  },
   "customerNavigation": {
     "dashboard": "Tableau de bord",
     "dashboardDescription": "Votre espace client",

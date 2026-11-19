@@ -1,6 +1,7 @@
 'use client'
 
 // React and Hooks
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -294,7 +295,7 @@ export default function DriverDashboard() {
                       <div>
                         <div className={styles.metaHeading}>Clients</div>
                         <div className={styles.metaValue}>
-                          {ride.customers.map(c => c.name).join(', ')}
+                          {ride.customers.map(c => getUserDisplayName(c, t)).join(', ')}
                         </div>
                       </div>
                     </div>
@@ -368,7 +369,7 @@ export default function DriverDashboard() {
                       <div className={styles.suggestedMetaRow}>
                         <Users className={styles.suggestedMetaIcon} />
                         <span className={styles.suggestedCustomerText}>
-                          {ride.customers.map(c => c.name).join(', ')}
+                          {ride.customers.map(c => getUserDisplayName(c, t)).join(', ')}
                         </span>
                       </div>
                     )}
