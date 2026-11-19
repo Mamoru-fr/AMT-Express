@@ -30,7 +30,6 @@
     "ResetPasswordTitle": "New password",
     "ResetPasswordDescription": "Choose a new password for your account.",
     "NewPasswordPlaceholder": "New password",
-    "ConfirmPasswordPlaceholder": "Confirm password",
     "ResetPasswordSubmit": "Reset password",
     "ResetPasswordSuccess": "Password reset. You can now sign in.",
     "ResetPasswordFailed": "Reset failed. The link may have expired.",
@@ -38,6 +37,11 @@
     "PasswordTooShort": "Password must be at least 8 characters long."
   },
   "errors": {
+    "emailRequired": "Email address is required",
+    "invalidEmail": "Invalid email address",
+    "resetFailed": "Reset failed. The link may have expired.",
+    "resetTokenMissing": "Invalid or incomplete reset link.",
+    "passwordRequirements": "Password must contain at least 8 characters, one uppercase, one lowercase and one digit.",
     "emailPasswordRequired": "Email and password are required",
     "allFieldsRequired": "All fields are required",
     "passwordMismatch": "Passwords do not match",

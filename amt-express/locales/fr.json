@@ -30,7 +30,6 @@
     "ResetPasswordTitle": "Nouveau mot de passe",
     "ResetPasswordDescription": "Choisissez un nouveau mot de passe pour votre compte.",
     "NewPasswordPlaceholder": "Nouveau mot de passe",
-    "ConfirmPasswordPlaceholder": "Confirmer le mot de passe",
     "ResetPasswordSubmit": "Réinitialiser",
     "ResetPasswordSuccess": "Mot de passe réinitialisé. Vous pouvez vous connecter.",
     "ResetPasswordFailed": "Échec de la réinitialisation. Le lien est peut-être expiré.",
@@ -38,6 +37,11 @@
     "PasswordTooShort": "Le mot de passe doit contenir au moins 8 caractères."
   },
   "errors": {
+    "emailRequired": "L'adresse email est requise",
+    "invalidEmail": "Adresse email invalide",
+    "resetFailed": "Échec de la réinitialisation. Le lien est peut-être expiré.",
+    "resetTokenMissing": "Lien de réinitialisation invalide ou incomplet.",
+    "passwordRequirements": "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.",
     "emailPasswordRequired": "Email et mot de passe requis",
     "allFieldsRequired": "Tous les champs sont requis",
     "passwordMismatch": "Les mots de passe ne correspondent pas",

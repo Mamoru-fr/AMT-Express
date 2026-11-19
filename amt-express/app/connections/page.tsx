@@ -7,14 +7,14 @@ import { useTranslation } from "react-i18next";
 import { Input } from "@/components/classicComponents/Input";
 import { Button } from "@/components/classicComponents/Button";
 import { StatusBanner } from "@/components/classicComponents/StatusBanner";
-import { signin, signup } from "@/lib/actions/signActions";
+import { signin, signup, forgotPassword, resetPassword } from "@/lib/actions/signActions";
 import { useSessionWithRole } from "@/context/SessionContext";
 import { AlertTriangle, Car } from "lucide-react";
 
-type View = 'signin' | 'signup';
+type View = 'signin' | 'signup' | 'forgot' | 'reset';
 
 function isView(value: string | null): value is View {
-    return value === 'signin' || value === 'signup';
+    return value === 'signin' || value === 'signup' || value === 'forgot' || value === 'reset';
 }
 
 function normalizeView(value: string | null): View {
@@ -80,10 +80,21 @@ export default function ConnectionsPage() {
         } else {
             setErrorMessage(null);
         }
-    }, [searchParams, view]);
+
+        // Bannières d'information (réinitialisation : email envoyé / succès reset)
+        const info = searchParams ? searchParams.get('info') : null;
+        const nextViewForInfo = searchParams ? normalizeView(searchParams.get('view')) : 'signin';
+        if (info === 'resetSuccess' && nextViewForInfo === 'signin') {
+            setInfoMessage(t('Authentication.ResetPasswordSuccess'));
+        } else if (nextViewForInfo === 'forgot' && searchParams?.get('sent') === '1') {
+            setInfoMessage(t('Authentication.ForgotPasswordSent'));
+        } else {
+            setInfoMessage(null);
+        }
+    }, [searchParams]);
 
     const handleForgotPassword = () => {
-        setInfoMessage(t('Authentication.PasswordReset', { defaultValue: 'Password reset coming soon' }));
+        setView('forgot');
     };
 
     return (
@@ -184,9 +195,70 @@ export default function ConnectionsPage() {
                         />
                         <SubmitButton content={t('Authentication.Register.RegisterButton')} />
                     </form>
+
+                    {/* === Mot de passe oublié === */}
+                    <form
+                        action={forgotPassword}
+                        className={`connections-form ${view === 'forgot' ? '' : 'hidden'}`}
+                    >
+                        <p className="connections-subtitle">{t('Authentication.ForgotPasswordDescription')}</p>
+                        <Input
+                            placeholder={t('Authentication.EmailPlaceholder')}
+                            type='email'
+                            name='email'
+                            required
+                            ariaLabel={t('Authentication.EmailPlaceholder')}
+                        />
+                        <SubmitButton content={t('Authentication.ForgotPasswordSubmit')} />
+                        <div className="connections-forgot-password-container">
+                            <button
+                                type="button"
+                                className="connections-forgot-password-link"
+                                onClick={() => setView('signin')}
+                            >
+                                {t('Authentication.BackToLogin')}
+                            </button>
+                        </div>
+                    </form>
+
+                    {/* === Nouveau mot de passe (depuis le lien email) === */}
+                    <form
+                        action={resetPassword}
+                        className={`connections-form ${view === 'reset' ? '' : 'hidden'}`}
+                    >
+                        <p className="connections-subtitle">{t('Authentication.ResetPasswordDescription')}</p>
+                        <input type="hidden" name="token" value={searchParams?.get('token') ?? ''} />
+                        <Input
+                            placeholder={t('Authentication.NewPasswordPlaceholder')}
+                            type='password'
+                            name='password'
+                            minLength={8}
+                            required
+                            ariaLabel={t('Authentication.NewPasswordPlaceholder')}
+                        />
+                        <Input
+                            placeholder={t('Authentication.ConfirmPasswordPlaceholder')}
+                            type='password'
+                            name='confirmPassword'
+                            minLength={8}
+                            required
+                            ariaLabel={t('Authentication.ConfirmPasswordPlaceholder')}
+                        />
+                        <SubmitButton content={t('Authentication.ResetPasswordSubmit')} />
+                        <div className="connections-forgot-password-container">
+                            <button
+                                type="button"
+                                className="connections-forgot-password-link"
+                                onClick={() => setView('signin')}
+                            >
+                                {t('Authentication.BackToLogin')}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
+            {(view === 'signin' || view === 'signup') && (
             <div className="connections-toggle-container">
                 <p className="connections-toggle-text">
                     {view === 'signin'
@@ -205,6 +277,7 @@ export default function ConnectionsPage() {
                     }
                 </button>
             </div>
+            )}
         </div>
     );
 }

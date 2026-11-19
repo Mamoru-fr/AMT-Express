@@ -66,4 +66,51 @@ export class AuthService {
 
         return response;
     }
+
+    /**
+     * Demande de réinitialisation de mot de passe (mot de passe oublié).
+     * Better Auth (endpoint requestPasswordReset) envoie le lien via le
+     * sendResetPassword configuré dans auth.ts, avec mitigation du timing attack
+     * et réponse générique anti-énumération côté lib.
+     * Flux du lien email : {BETTER_AUTH_URL}/reset-password/{token}?callbackURL=/connections?view=reset
+     * → après validation du token, Better Auth redirige vers /connections?view=reset&token=...
+     */
+    static async requestPasswordReset(email: string): Promise<void> {
+        const response = await auth.api.requestPasswordReset({
+            body: {
+                email,
+                // Vue de finalisation : Better Auth y ajoutera ?token=VALID_TOKEN
+                redirectTo: '/connections?view=reset',
+            },
+            asResponse: true,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            console.error('Password reset request failed:', errorData);
+            // Anti-énumération : pas d'erreur remontée au client — la UI affiche
+            // un message générique quelque soit le résultat.
+        }
+    }
+
+    /**
+     * Réinitialisation effective du mot de passe via le token reçu par email.
+     */
+    static async resetPassword(newPassword: string, token: string): Promise<void> {
+        const response = await auth.api.resetPassword({
+            body: {
+                newPassword,
+                token,
+            },
+            asResponse: true,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            console.error('Password reset failed:', errorData);
+            const errorMessage = errorData?.message || errorData?.error || 'errors.resetFailed';
+            const errorCode = errorData?.code || '';
+            throw new Error(`${errorCode}: ${errorMessage}`);
+        }
+    }
 }
