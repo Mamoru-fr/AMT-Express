@@ -47,8 +47,15 @@ export async function signup(formData: FormData): Promise<void> {
 /**
  * Mot de passe oublié : envoie le lien de réinitialisation.
  * Toujours redirigé vers la vue forgot avec sent=1 (message générique anti-énumération).
+ * PAUSE : verrouillé tant qu'aucun provider email n'est branché dans lib/utils/email.ts.
  */
 export async function forgotPassword(formData: FormData): Promise<void> {
+    // PAUSE : verrou serveur tant qu'aucun provider email n'est branché
+    // (le bouton UI est déjà masqué par le même flag — défense en profondeur)
+    if (process.env.NEXT_PUBLIC_EMAIL_DELIVERY_ENABLED !== 'true') {
+        redirect("/connections?view=signin");
+    }
+
     const email = formData.get("email") as string;
 
     if (!email) {

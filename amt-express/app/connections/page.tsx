@@ -13,6 +13,14 @@ import { AlertTriangle, Car } from "lucide-react";
 
 type View = 'signin' | 'signup' | 'forgot' | 'reset';
 
+/**
+ * Pause RGPD/UX : le flux "mot de passe oublié" est complet côté code, mais
+ * l'envoi d'email est encore un stub console (lib/utils/email.ts).
+ * Le bouton est masqué tant qu'aucun provider n'est branché.
+ * Passer NEXT_PUBLIC_EMAIL_DELIVERY_ENABLED=true (.env) pour le réactiver.
+ */
+const EMAIL_DELIVERY_ENABLED = process.env.NEXT_PUBLIC_EMAIL_DELIVERY_ENABLED === 'true';
+
 function isView(value: string | null): value is View {
     return value === 'signin' || value === 'signup' || value === 'forgot' || value === 'reset';
 }
@@ -96,7 +104,6 @@ export default function ConnectionsPage() {
     const handleForgotPassword = () => {
         setView('forgot');
     };
-
     return (
         <div className="connections-container">
             <div className="connections-header">
@@ -145,15 +152,17 @@ export default function ConnectionsPage() {
                             name='password'
                             required
                         />
+                        {EMAIL_DELIVERY_ENABLED && (
                         <div className="connections-forgot-password-container">
                             <button
                                 type="button"
                                 className="connections-forgot-password-link"
                                 onClick={handleForgotPassword}
                             >
-                                {t('Authentication.ForgotPassword', { defaultValue: 'Mot de passe oublié ?' })}
+                                {t('Authentication.ForgotPassword')}
                             </button>
                         </div>
+                        )}
                         <SubmitButton content={t('Authentication.Login.LoginButton')} />
                     </form>
 

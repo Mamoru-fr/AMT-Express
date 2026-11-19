@@ -464,7 +464,7 @@ Client / Chauffeur / Admin
 ### Audit du 2026-11-19 — écarts interface vs implémentation
 | ID | Constat | Priorité | Statut |
 |----|---------|----------|--------|
-| A-001 | Bouton « Mot de passe oublié ? » affiché (connections) mais écran informatif "coming soon" — aucun flux réel | 🔴 | ✅ Corrigé (`c30a2d6`) : flux complet forgot/reset via Better Auth |
+| A-001 | Bouton « Mot de passe oublié ? » affiché (connections) mais écran informatif "coming soon" — aucun flux réel | 🔴 | ⏸️ **En pause** (`c30a2d6` + flag) : flux complet codé et testé, mais **l'envoi d'email est un stub console** (`lib/utils/email.ts`). Bouton masqué + action verrouillée via `NEXT_PUBLIC_EMAIL_DELIVERY_ENABLED` (default false). Réveil : brancher un provider (Resend/Nodemailer, placeholders prêts dans `.env.example`), passer le flag à `true`, rebuild |
 | A-002 | KPI « Factures en attente » (dashboard admin) compte la table `invoices` qu'aucun code n'alimente — figé à 0 | 🔴 | ⏳ Reporté (décision : rien pour le moment) |
 | A-003 | Clé i18n cassée `common.signingOut` (ProfilePopup) | 🟡 | ✅ Corrigé (`b5f62f4`) |
 | A-004 | `AddRideModal` sans `role="dialog"` | 🟡 | ✅ Faux positif d'audit (aria conditionnel existant) ; `aria-labelledby` en mode page corrigé (`b5f62f4`) |
