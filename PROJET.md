@@ -442,6 +442,21 @@ Client / Chauffeur / Admin
   `proxy.ts` appelle `getSessionWithRole()` 2× de suite (commentaire obsolète « manquant actuellement ») ; commentaires obsolètes mentionnant les Parallel Routes dans `proxy.ts`
 - **Validation utilisateur restante** : parcours authentifié par rôle (admin/chauffeur/client × chaque URL) avec vraie session
 
+### Session 3 - 2026-11-19 (RGPD : suppression de compte par anonymisation)
+- **Objectif** : droit à l'effacement RGPD présentable en soutenance (commit `c6f9160`)
+- **Actions réalisées** (TDD : 4 tests unit ProfileController écrits avant l'implémentation) :
+  - [x] `ProfileService.anonymizeAccount` : PII effacées sur la ligne `users` (name='', email=`deleted-{id}@anonymized.invalid`, password null, image/coords null), **ligne conservée** donc FK courses/factures intactes
+  - [x] Double verrou reconnexion : `banned=true` + `banReason='account_deleted'` + password effacé + sessions supprimées
+  - [x] UI : zone danger en bas du profil (rouge tamisé → hover rouge vif), modale de confirmation RGAA, `signout()` gère le redirect
+  - [x] Helper `getUserDisplayName` (i18n « Utilisateur supprimé »/« Deleted user ») appliqué aux 10 sites de rendu de noms — les filtres/tri restent sur données brutes (normal)
+  - [x] i18n FR/EN (namespace `account`)
+- **Gates** : lint 0 erreur · 244/244 tests (+4 RGPD) · build vert
+- **Points à connaître pour la soutenance** :
+  - Anonymisation ≠ suppression : obligation de conservation des données de facturation/organisation, effacement des PII (démonstration parlante)
+  - `userId` vient toujours de la session serveur, jamais du client (durée de vie d'un token impossible à souvenir)
+  - Le driver neon-http ne supporte pas les transactions : les 3 statements sont ordonnés, verrou le plus fort en premier (bannissement)
+- **Découvertes annexes (backlog)** : les dropdowns admin (AddRideModal) listent les users anonymisés comme sélectionnables — à filtrer sur `banReason != 'account_deleted'` si besoin
+
 ---
 
 ## 📋 Backlog
