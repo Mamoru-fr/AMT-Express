@@ -1,6 +1,7 @@
 'use client';
 
 /* eslint-disable react-hooks/purity */
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useEffect, useTransition, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
@@ -171,7 +172,7 @@ export function RideDetailView() {
                                 <div>
                                     <p className={styles.infoItemLabel}>{t('rides.driver')}</p>
                                     <p className={styles.infoItemValue}>
-                                        {ride.driver?.name || t('rides.notAssigned')}
+                                        {ride.driver ? getUserDisplayName(ride.driver, t) : t('rides.notAssigned')}
                                     </p>
                                 </div>
                             </div>

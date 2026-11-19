@@ -34,7 +34,7 @@
 
 3. **Un seul `useEffect` par responsabilité**
    - ❌ Deux `useEffect` pour le redirect admin → ✅ Garder un seul
-   - Vérifier avec : `git grep "Security: Redirect" app/@admin/ride-management/page.tsx | wc -l`
+   - Vérifier avec : `git grep "Security: Redirect" "app/(admin)/ride-management/page.tsx" | wc -l`
 
 ---
 
@@ -66,8 +66,8 @@
    ```
 
 2. **Doublons identifiés à corriger** :
-   - ✅ `RidesManagementBoard.tsx` vs `app/@admin/ride-management/page.tsx` → Garder `page.tsx`
-   - ✅ `app/@admin/ride-management/new/page.tsx` vs `AddRideModal.tsx` → Garder `AddRideModal`
+   - ✅ `RidesManagementBoard.tsx` vs `app/(admin)/ride-management/page.tsx` → Garder `page.tsx`
+   - ✅ `app/(admin)/ride-management/new/page.tsx` vs `AddRideModal.tsx` → Garder `AddRideModal` (la page `new/` est un wrapper mince)
 
 3. **Ne JAMAIS créer de nouveau doublon**
    - Avant de créer un nouveau composant/page, vérifier :

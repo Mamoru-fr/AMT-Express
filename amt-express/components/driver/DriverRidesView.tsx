@@ -1,5 +1,6 @@
 'use client'
 
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {RideWithRelations} from "@/content/database_types/ride";
@@ -221,7 +222,7 @@ export default function DriverRidesView() {
                                             <div className={styles.customersCell}>
                                                 <Users className={styles.customersIcon} />
                                                 {ride.customers && ride.customers.length > 0
-                                                    ? ride.customers.map(c => c.name).join(', ')
+                                                    ? ride.customers.map(c => getUserDisplayName(c, t)).join(', ')
                                                     : <em>{t('driverRides.table.noCustomers', 'None')}</em>}
                                             </div>
                                         </td>

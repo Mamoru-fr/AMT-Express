@@ -22,3 +22,7 @@ export async function changePassword(formData: FormData): Promise<ActionResponse
 export async function resendVerificationEmail(email: string): Promise<ActionResponse<void>> {
     return ProfileController.resendVerificationEmail(email);
 }
+
+export async function deleteAccount(): Promise<ActionResponse<void>> {
+    return ProfileController.deleteAccount();
+}

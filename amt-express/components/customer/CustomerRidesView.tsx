@@ -1,5 +1,6 @@
 'use client'
 
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
@@ -218,7 +219,7 @@ export default function CustomerRidesView({ hideHeader = false }: Props) {
                                             {ride.driver ? (
                                                 <div className={styles.driverCell}>
                                                     <User className={styles.driverIcon} />
-                                                    <span className={styles.driverName}>{ride.driver.name}</span>
+                                                    <span className={styles.driverName}>{getUserDisplayName(ride.driver, t)}</span>
                                                 </div>
                                             ) : (
                                                 <span className={styles.driverNotAssigned}>{t('customerRides.table.notAssigned')}</span>

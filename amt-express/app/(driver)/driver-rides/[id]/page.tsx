@@ -1,6 +1,7 @@
 'use client';
 
 /* eslint-disable react-hooks/purity */
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useEffect, useTransition, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useRouter } from 'next/navigation';
@@ -221,7 +222,7 @@ export default function DriverRideDetailPage() {
                                         </p>
                                         <ul style={{ margin: '0.375rem 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                             {ride.customers.map(c => (
-                                                <li key={c.id} className={styles.notesValue}>{c.name}</li>
+                                                <li key={c.id} className={styles.notesValue}>{getUserDisplayName(c, t)}</li>
                                             ))}
                                         </ul>
                                     </div>
