@@ -106,11 +106,12 @@
 ```
 amt-express/
 ├── app/                          # Routes Next.js (App Router)
-│   ├── @admin/                    # Parallel Routes Admin
-│   ├── @driver/                   # Parallel Routes Chauffeur
-│   ├── @customer/                 # Parallel Routes Client
+│   ├── (admin)/                   # Groupe admin (garde isAdmin) : /ride-management, /ride-management/new
+│   ├── (driver)/                  # Groupe chauffeur (garde isDriver) : /driver-rides, /driver-rides/[id]
+│   ├── (connected)/               # Pages communes authentifiées : /settings, /profile
 │   ├── connections/               # Authentification
-│   └── layout.tsx                 # Root Layout (gère les slots par rôle)
+│   ├── page.tsx                   # Dispatcher : lit le rôle en session et rend le dashboard adéquat
+│   └── layout.tsx                 # Root Layout (providers, i18n, PWA)
 │
 ├── components/                   # Composants React
 │   ├── admin/                     # Composants Admin
@@ -169,13 +170,10 @@ Client / Chauffeur / Admin
    PostgreSQL (Neon)
 ```
 
-### 3. Parallel Routes (Gestion des Rôles)
-- Next.js utilise des **slots parallèles** (`@admin`, `@driver`, `@customer`)
-- `app/layout.tsx` détermine le slot actif via `getSessionWithRole()` :
-  ```typescript
-  const activeSlot = isAdmin ? admin : isDriver ? driver : isCustomer ? customer : null;
-  return <SlotRenderer slot={activeSlot} />;
-  ```
+### 3. Route Groups + Dispatcher (Gestion des Rôles)
+- **Plus de Parallel Routes** (décision 2 annulée, voir audit) : une seule page par URL
+- `app/page.tsx` est un **dispatcher serveur** qui lit le rôle via `getSessionWithRole()` et rend le composant dashboard correspondant (`components/dashboard/{Admin,Driver,Customer}Dashboard.tsx`)
+- Chaque groupe de rôle porte sa **garde** dans son `layout.tsx` : `(admin)/layout.tsx` vérifie `isAdmin`, `(driver)/layout.tsx` vérifie `isDriver`, `(connected)/layout.tsx` vérifie la session — la vérification précède **toujours** le rendu
 - **Hiérarchie des rôles** : `admin > driver > customer`
 
 ### 4. Authentification
@@ -327,7 +325,7 @@ Client / Chauffeur / Admin
 ### 🔥 Critiques (À faire avant toute nouvelle feature)
 | ID | Tâche | Description | Priorité | Statut |
 |----|-------|-------------|----------|--------|
-| T-001 | **Fix Hooks conditionnels** | Corriger `useState`/`useEffect` dans `app/@admin/ride-management/` | ⭐⭐⭐ | ⏳ |
+| T-001 | **Fix Hooks conditionnels** | Corriger `useState`/`useEffect` dans `app/(admin)/ride-management/` | ⭐⭐⭐ | ⏳ |
 | T-002 | **Unifier schémas Zod** | Supprimer les doublons entre `AuthController` et `validations/auth.ts` | ⭐⭐⭐ | ⏳ |
 | T-003 | **Améliorer roleMiddleware en test** | Remplacer `NODE_ENV=test` par des mocks contrôlés | ⭐⭐ | ⏳ |
 
@@ -358,14 +356,13 @@ Client / Chauffeur / Admin
   - Maintenance simplifiée (on sait où chercher pour un bug)
 - **Date** : 2026-07-XX (avant le début du projet)
 
-### Décision 2 : Parallel Routes pour les Rôles
+### Décision 2 : ~~Parallel Routes pour les Rôles~~ (ANNULÉE — remplacée par Route Groups + dispatcher)
 - **Contexte** : Gérer 3 types d'utilisateurs avec des UI très différentes
-- **Décision** : Utiliser les **Parallel Routes** de Next.js (`@admin`, `@driver`, `@customer`)
-- **Justification** :
-  - Permet d'avoir des layouts **complètement séparés** par rôle
-  - Performance optimale (seul le slot actif est chargé)
-  - Code plus simple que des conditions dans un seul layout
-- **Date** : 2026-07-XX
+- **Décision initiale** : Parallel Routes (`@admin`, `@driver`, `@customer`)
+- **Pourquoi ça a échoué** : les slots se rendent *en plus* de la route primaire à la même URL et ne créent pas d'URL propres → pages déplacées en slot = URLs mortes (404 sur `/ride-management`, `/settings`, `/profile`, `/driver-rides`), double rendu (page en haut + dashboard en bas), hacks en cascade (page `null`, `SlotRenderer`, `default.tsx`)
+- **Décision actuelle** : `app/page.tsx` = dispatcher serveur par rôle ; groupes `(admin)`/`(driver)`/`(connected)` avec garde par layout. Vérifié : chaque URL a exactement une page, zéro hack
+- **Piège documenté pour settings/profile** : c'est le SEUL cas où un slot parallèle aurait du sens (panneaux spécifiques par rôle rendus *côte à côte* avec une page commune) — à rebrancher uniquement le jour où des sections exclusives par rôle existeront réellement
+- **Date** : 2026-07-XX (initiale) — annulée le 2026-11-19
 
 ### Décision 3 : Better-Auth pour l'Authentification
 - **Contexte** : Besoin d'une solution d'authentification **sécurisée** et **simple**
@@ -426,6 +423,24 @@ Client / Chauffeur / Admin
   - Corriger les erreurs Lint (T-001)
   - Unifier les schémas Zod (T-002)
   - Créer un plan pour T-001 et T-002
+
+### Session 2 - 2026-11-19 (Fix Parallel Routes → Route Groups)
+- **Objectif** : Corriger le gros problème de rendu des Parallel Routes (double rendu, URLs 404)
+- **Diagnostic** :
+  - Les slots se rendent *en plus* de la route primaire : les pages déplacées en slot ont perdu leur URL
+  - `app/page.tsx` (`return null`), `SlotRenderer` et les `default.tsx` null étaient des compensations du mauvais pattern
+  - 404 : `/ride-management`, `/ride-management/new`, `/driver-rides`, `/settings`, `/profile` — mortes depuis la migration `a570287`
+- **Actions réalisées** (branch `feature/parallel-routes`, commits `2c86a2e` + `0bea2e1`) :
+  - [x] Dispatcher serveur `app/page.tsx` (admin > driver > customer, redirect `/connections`)
+  - [x] Dashboards extraits en composants (`AdminDashboard`/`DriverDashboard` code mort recyclé, `CustomerDashboard` nouveau + fix `useEffect [t]`)
+  - [x] Suppression : slots `@*`, `SlotRenderer`, hi-jacks du layout racine (−1451 lignes nettes)
+  - [x] Groupes garde : `(admin)` isAdmin, `(driver)` isDriver, `(connected)` session — vérification AVANT tout rendu
+  - [x] `(admin)/ride-management/new` : wrapper mince `AddRideModal mode="page"` (anti-doublon)
+  - [x] `(driver)/driver-rides/[id]` déplacé dans le groupe → garde couvre le détail
+- **Gates** : lint 0 erreur · 240/240 tests verts · build OK · curl non-auth : toutes les URLs → `/connections?returnTo=…`, plus aucune page blanche
+- **Découvertes annexes (à traiter)** :
+  `proxy.ts` appelle `getSessionWithRole()` 2× de suite (commentaire obsolète « manquant actuellement ») ; commentaires obsolètes mentionnant les Parallel Routes dans `proxy.ts`
+- **Validation utilisateur restante** : parcours authentifié par rôle (admin/chauffeur/client × chaque URL) avec vraie session
 
 ---
 

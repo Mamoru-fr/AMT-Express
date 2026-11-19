@@ -18,9 +18,9 @@ import { getCustomerDashboardData, type CustomerDashboardData } from '@/lib/acti
 
 // Styles
 import styles from '@/components/dashboard/CustomerDashboard.module.css';
-import errorStyles from '../page.module.css';
+import errorStyles from '@/app/page.module.css';
 
-export default function CustomerDashboardPage() {
+export default function CustomerDashboard() {
   const { t } = useTranslation();
   
   // State for data and loading
@@ -50,7 +50,7 @@ export default function CustomerDashboardPage() {
       }
     }
     fetchData();
-  }, [t]);
+  }, []);
 
   // Loading state
   if (isLoading) {
