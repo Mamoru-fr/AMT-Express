@@ -17,9 +17,31 @@
     },
     "Register": {
       "RegisterButton": "Sign Up \u2192"
-    }
+    },
+    "ErrorTitle": "Authentication failed",
+    "InfoTitle": "Information",
+    "ForgotPassword": "Forgot your password?",
+    "PasswordReset": "Password reset",
+    "ForgotPasswordTitle": "Forgot password",
+    "ForgotPasswordDescription": "Enter your email address; a reset link will be sent to you.",
+    "ForgotPasswordSubmit": "Send reset link",
+    "ForgotPasswordSent": "If an account exists for this address, a password reset email has just been sent.",
+    "BackToLogin": "Back to sign in",
+    "ResetPasswordTitle": "New password",
+    "ResetPasswordDescription": "Choose a new password for your account.",
+    "NewPasswordPlaceholder": "New password",
+    "ResetPasswordSubmit": "Reset password",
+    "ResetPasswordSuccess": "Password reset. You can now sign in.",
+    "ResetPasswordFailed": "Reset failed. The link may have expired.",
+    "PasswordsDoNotMatch": "Passwords do not match.",
+    "PasswordTooShort": "Password must be at least 8 characters long."
   },
   "errors": {
+    "emailRequired": "Email address is required",
+    "invalidEmail": "Invalid email address",
+    "resetFailed": "Reset failed. The link may have expired.",
+    "resetTokenMissing": "Invalid or incomplete reset link.",
+    "passwordRequirements": "Password must contain at least 8 characters, one uppercase, one lowercase and one digit.",
     "emailPasswordRequired": "Email and password are required",
     "allFieldsRequired": "All fields are required",
     "passwordMismatch": "Passwords do not match",
@@ -118,7 +140,10 @@
     "requestRideTitle": "Request Ride Assignment",
     "requestMessage": "Add an optional message for the admin:",
     "messagePlaceholder": "I am available and ready for this ride...",
-    "confirmRequest": "Send Request"
+    "confirmRequest": "Send Request",
+    "requestRideSuccess": "Ride requested successfully!",
+    "requestRideFailed": "Failed to request ride",
+    "updateAvailabilityFailed": "Failed to update availability"
   },
   "common": {
     "cancel": "Cancel",
@@ -134,7 +159,13 @@
     "optional": "Optional",
     "moveUp": "Move Up",
     "moveDown": "Move Down",
-    "sort": "Sort"
+    "sort": "Sort",
+    "creating": "Creating...",
+    "saving": "Saving...",
+    "sending": "Sending...",
+    "signingOut": "Signing out...",
+    "status": "Status",
+    "error": "Error"
   },
   "adminNavigation": {
     "dashboard": "Dashboard",
@@ -224,7 +255,15 @@
     "pricePlaceholder": "0.00",
     "notesPlaceholder": "Add any special instructions...",
     "noProductionSelected": "No production selected",
-    "selected": "selected"
+    "selected": "selected",
+    "assignSuccess": "Driver assigned successfully",
+    "assignFailed": "Failed to assign driver",
+    "deleteSuccess": "Ride deleted successfully",
+    "deleteFailed": "Failed to delete ride",
+    "updateSuccess": "Ride updated successfully",
+    "updateFailed": "Failed to update ride",
+    "exportSuccess": "CSV exported successfully",
+    "exportFailed": "Failed to export CSV"
   },
   "rideModals": {
     "assignDriver": {
@@ -350,6 +389,121 @@
       "error": "Account deletion failed. Please try again."
     }
   },
+  "driverRides": {
+    "loading": "Loading...",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "backToRides": "Back to my rides",
+    "requestRideTitle": "Request this ride",
+    "requestSuccess": "Request sent successfully!",
+    "requestFailed": "Request failed.",
+    "tabs": {
+      "assigned": "Assigned",
+      "available": "Available",
+      "completed": "Completed"
+    },
+    "empty": {
+      "assigned": "No assigned rides at the moment.",
+      "available": "No available rides right now.",
+      "completed": "No completed rides yet."
+    },
+    "table": {
+      "rideId": "Ride ID",
+      "route": "Route",
+      "customers": "Customers",
+      "departure": "Departure",
+      "price": "Price",
+      "status": "Status",
+      "action": "Action",
+      "view": "View",
+      "viewDetail": "View detail",
+      "noCustomers": "None"
+    }
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred.",
+    "tryAgain": "Try again",
+    "goHome": "Go home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "goHome": "Go back home"
+  },
+  "legal": {
+    "lastUpdated": "Last updated:",
+    "cgv": {
+      "title": "Terms and Conditions of Sale",
+      "article1": {
+        "title": "Article 1 - Purpose",
+        "description": "These terms and conditions of sale define the rights and obligations of the parties in the context of booking and performing the transport services offered by AMT Express."
+      },
+      "article2": {
+        "title": "Article 2 - Booking",
+        "description": "All bookings are made by the customer via the online platform or by phone. The booking is confirmed by sending an email or SMS confirmation containing the trip details."
+      },
+      "article3": {
+        "title": "Article 3 - Prices",
+        "description": "Prices shown on the platform are all taxes included. They may vary depending on trip duration, distance travelled and any selected options."
+      },
+      "article4": {
+        "title": "Article 4 - Payment",
+        "description": "Payment is made according to the terms indicated at booking. Several payment methods are accepted: credit card, cash, etc."
+      },
+      "article5": {
+        "title": "Article 5 - Cancellation",
+        "description": "Any cancellation must be reported at least 24 hours before the scheduled departure time. After this deadline, cancellation fees may apply."
+      },
+      "article6": {
+        "title": "Article 6 - Liability",
+        "description": "AMT Express declines all liability in the event of delay or cancellation due to causes beyond its control (weather conditions, traffic, etc.).",
+        "limitation": "In case of dispute, the competent courts shall be those of the company's head office."
+      }
+    },
+    "mentionsLegales": {
+      "title": "Legal Notice",
+      "editeur": {
+        "title": "Website publisher",
+        "name": "Name:",
+        "address": "Address:",
+        "phone": "Phone:",
+        "email": "Email:"
+      },
+      "hebergement": {
+        "title": "Hosting",
+        "provider": "Host:",
+        "address": "Address:"
+      },
+      "donneesPersonnelles": {
+        "title": "Personal data",
+        "description": "In accordance with French law no. 78-17 of January 6, 1978 on data processing, files and freedoms, users of the website have the right to access, rectify and delete personal data concerning them."
+      },
+      "droitAuteurs": {
+        "title": "Copyright",
+        "description": "All content of the AMT Express website (texts, images, logos, etc.) is protected by French and international laws on copyright and intellectual property.",
+        "reserved": "Any total or partial reproduction of this website is strictly prohibited without express authorization."
+      }
+    }
+  },
+  "livingRide": {
+    "title": "Living Ride",
+    "start": "Start the Living Ride",
+    "gpsComingSoon": "GPS navigation — coming soon",
+    "waitingMinutes": "Duration (minutes)",
+    "waitingError": "Invalid value.",
+    "minimize": "Minimize",
+    "notes": "Notes & unforeseen options",
+    "notesPlaceholder": "E.g.: extra luggage, unplanned stop...",
+    "completeRide": "Finish",
+    "completeTitle": "Finish the ride",
+    "completeDescription": "Enter the amount shown on the meter. This field is mandatory.",
+    "amountLabel": "Meter amount",
+    "amountRequired": "Enter a valid amount.",
+    "confirmComplete": "Confirm and finish",
+    "completing": "Finishing...",
+    "completeFailed": "Failed to finish."
+  },
   "customerNavigation": {
     "dashboard": "Dashboard",
     "dashboardDescription": "Your customer dashboard",
@@ -379,6 +533,7 @@
     "unknownUser": "Unknown User"
   },
   "rides": {
+    "searching": "Searching...",
     "departure": "Departure",
     "destination": "Destination",
     "date": "Date",
@@ -464,7 +619,8 @@
     "confirmCancel": "Yes, cancel",
     "alreadyCancelled": "This ride has already been cancelled.",
     "fetchError": "Failed to load ride details.",
-    "cancelError": "Failed to cancel the ride."
+    "cancelError": "Failed to cancel the ride.",
+    "driverPrice": "Driver price"
   },
   "customerRides": {
     "title": "My Bookings",

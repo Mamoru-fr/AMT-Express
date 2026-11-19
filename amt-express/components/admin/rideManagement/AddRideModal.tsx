@@ -222,7 +222,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
 
     return (
         <div className={isPageMode ? styles.pageShell : styles.modalOverlay}>
-            <div className={isPageMode ? styles.pageContainer : styles.modalContainer} role={!isPageMode ? "dialog" : undefined} aria-modal={!isPageMode ? "true" : undefined} aria-labelledby="add-ride-title">
+            <div className={isPageMode ? styles.pageContainer : styles.modalContainer} role={!isPageMode ? "dialog" : undefined} aria-modal={!isPageMode ? "true" : undefined} aria-labelledby={!isPageMode ? "add-ride-title" : undefined}>
                 {isPageMode ? (
                     <div className={styles.pageHeader}>
                         <div className={styles.pageHeaderText}>
