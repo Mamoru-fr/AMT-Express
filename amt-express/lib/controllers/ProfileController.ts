@@ -89,4 +89,26 @@ export class ProfileController {
             };
         }
     }
+
+    /**
+     * RGPD — suppression du compte = anonymisation du profil de l'utilisateur connecté.
+     * Le userId ne vient JAMAIS du client : toujours de la session serveur.
+     */
+    static async deleteAccount(): Promise<ActionResponse<void>> {
+        const { isAuthenticated, user } = await getSessionWithRole();
+        if (!isAuthenticated || !user?.id) {
+            return { success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED };
+        }
+
+        try {
+            await ProfileService.anonymizeAccount({ userId: user.id });
+            return { success: true, data: undefined };
+        } catch (error) {
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Failed to delete account',
+                code: ErrorCodes.INTERNAL_ERROR,
+            };
+        }
+    }
 }
