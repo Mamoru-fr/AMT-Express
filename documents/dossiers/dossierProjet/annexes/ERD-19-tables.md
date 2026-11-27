@@ -11,7 +11,7 @@ classDiagram
     class users { +id PK }
     class drivers { +id PK, +user_id FK }
     class ride_customers { +ride_id FK, +customer_id FK }
-    class ride_managers { +ride_id FK, +user_id FK }
+    class ride_managers { +ride_id FK, +manager_id FK, +created_at }
     class notifications { +id PK }
     class notification_preferences { +id PK }
     class activity_logs { +id PK }
@@ -86,7 +86,7 @@ classDiagram
     class ride_options { +id PK }
     class ride_selected_options { +id PK, +ride_id FK, +option_id FK, +price }
     class ride_customers { +id PK, +ride_id FK, +customer_id FK, +rating, +comment }
-    class ride_managers { +ride_id FK, +user_id FK }
+    class ride_managers { +ride_id FK, +manager_id FK, +created_at }
     class assignment_requests { +id PK, +ride_id FK, +shift_id FK, +driver_id FK, +status, +requested_at }
     
     productions "1" --> "0..n" projects
