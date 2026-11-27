@@ -88,6 +88,7 @@ classDiagram
         +assignTo(driverId) void
     }
     class RideCustomer { +ride_id FK, +customer_id FK, +rating 1..5, +comment }
+    class RideManager { +ride_id FK, +manager_id FK, +created_at }
     class RideOption { +id uuid, +additional_price }
     class RideSelectedOption { +ride_id FK, +option_id FK, +price }
     class AssignmentRequest {
@@ -102,13 +103,15 @@ classDiagram
     Project "1" --> "0..n" Ride
     Driver "0..1" --> "0..n" Ride
     Ride "1" --> "1..n" RideCustomer
+    Ride "1" --> "0..n" RideManager : est créée par
+    User "1" --> "0..n" RideManager : est responsable de
     Ride "1" --> "0..n" RideSelectedOption
     RideSelectedOption "0..n" --> "1" RideOption
     Ride "1" --> "0..n" AssignmentRequest
     AssignmentRequest "0..n" --> "1" Driver
     ShiftPlanning "1" --> "0..n" AssignmentRequest
     Driver "1" --> "0..n" ShiftPlanning
-    User "1" <-- "0..n" RideCustomer
+    User "1" --> "0..n" RideCustomer : est client
     
     %% Style
     style User fill:#FFFDF8,stroke:#F4A259
