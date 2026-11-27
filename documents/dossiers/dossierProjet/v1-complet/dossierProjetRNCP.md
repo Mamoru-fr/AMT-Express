@@ -294,17 +294,13 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
-<div align="center" style="max-height: 140mm; overflow: hidden;">
-
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
-    Admin([Administrateur]) --> UC1[Créer/éditer une course] & UC2[Affecter · valider une demande] & UC3[KPI · import/export CSV]
-    Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Demander une assignation · plafond 5] & UC6[Shifts : demander une mise à disposition]
-    Customer([Client]) --> UC7[Réserver une course] & UC8[Historique · notation]
+    Admin([Administrateur]) --> UC1[Créer · éditer une course] & UC2[Affecter · valider] & UC3[KPI · import / export CSV]
+    Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Assignation · plafond 5] & UC6[Shifts : mise à disposition]
+    Customer([Client]) --> UC7[Réserver] & UC8[Historique · notation]
 ```
-
-</div>
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
 
@@ -480,18 +476,14 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
-<div align="center" style="max-height: 80mm; overflow: hidden;">
-
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
-    C([Connexion]) --> R{"Rôle — vérifié à chaque requête par proxy.ts"}
-    R -- admin --> A["Espace admin : courses, assignations, KPI, CSV"]
-    R -- chauffeur --> Dr["Espace chauffeur : courses dispo, demandes, shifts"]
-    R -- client --> Cu["Espace client : réservation, historique, notation"]
+    C([Connexion]) --> R{"Rôle — vérifié par proxy.ts"}
+    R -- admin --> A["Admin : courses, assignations, KPI, CSV"]
+    R -- chauffeur --> Dr["Chauffeur : courses dispo, shifts"]
+    R -- client --> Cu["Client : réservation, historique, notation"]
 ```
-
-</div>
 
 
 
@@ -501,10 +493,7 @@ flowchart LR
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
-</div>
+
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
@@ -512,6 +501,11 @@ flowchart LR
 <img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 </div>
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client côte à côte : en français (à gauche) et en anglais (à droite) — l'internationalisation (i18next) couvre toute l'interface.</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
 </div>
 
 
@@ -1055,7 +1049,7 @@ flowchart LR
 
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u><strong>annexe #8</strong></u>).</p>
 </div>
 
@@ -1064,12 +1058,12 @@ flowchart LR
 
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/DeployementVercel.png" alt="Interface de déploiement Vercel — environnements UAT et production" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/DeployementVercel.png" alt="Interface de déploiement Vercel — environnements UAT et production" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'interface de déploiement Vercel : chaque environnement (UAT, production) est isolé et déclenché par le pipeline.</p>
 </div>
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/InterfaceNeon.png" alt="Console Neon — base de données PostgreSQL serverless" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceNeon.png" alt="Console Neon — base de données PostgreSQL serverless" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console Neon : la base PostgreSQL serverless, ses sauvegardes et son suivi.</p>
 </div>
 
@@ -1077,7 +1071,7 @@ flowchart LR
 
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 45%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console d'import CSV réelle : backup de la base, avertissements, puis le résumé — courses importées, ignorées, erreurs.</p>
 </div>
 
@@ -1399,7 +1393,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
 | 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
 
-> ** Statut** : **18/18 annexes produites**. Toutes les captures du corps du dossier sont intégrées : board, graphe Git, interfaces, pipeline, tests, déploiement, import CSV, issue US4 et arborescence (annexe #10 pour la version large). Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+.
 
 ---
 
