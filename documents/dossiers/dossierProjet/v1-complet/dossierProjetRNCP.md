@@ -1403,8 +1403,6 @@ static async getRidesWithDetails(limit: number = 50) {
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown |
 | 18    | Agenda / planning (scan)               | `annexes/Scan 1.pdf`                   | PDF      |
 
-.
-
 ---
 
 <div align="center" style="padding: 40px; text-align: center;">
