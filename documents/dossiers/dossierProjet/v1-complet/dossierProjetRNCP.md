@@ -1,3 +1,6 @@
+<style>
+  body { font-size: 14px; }
+</style>
 
 <div align="center" style="page-break-after: always; text-align: center; padding-top: 120px; font-family: 'Segoe UI', Arial, sans-serif;">
 
@@ -65,7 +68,7 @@ I managed this project single-handedly, from requirements analysis to production
 
 Le projet AMT Express illustre les compétences du titre professionnel **Concepteur Développeur d'Applications** (RNCP 37873, niveau 6). Le tableau officiel des compétences est reproduit ci-dessous depuis le référentiel France Compétences (source de vérité), avec pour chacune la section du dossier où elle est illustrée.
 
-<div style="padding: 10px 14px; margin: 12px 0;">
+<div style="padding: 10px 14px; margin: 12px 0; font-size: 12px;">
 
 | Activité type                                                                    | Compétence professionnelle                                       | Section du dossier                                              |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
@@ -151,7 +154,7 @@ Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (c
 
 Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/IssuesUS4.png" alt="Issue GitHub #92 — user story US4" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La user story US4 telle qu'elle vit dans le dépôt : issue #92, labels <code>user-story</code> / <code>mvp</code>, reliée à l'issue de travail d'origine #13.</p>
 </div>
@@ -246,13 +249,13 @@ flowchart LR
   - 11/09/2026 : CI/CD Vercel + **17 corrections de déploiement consécutives** (voir §11.2)
   - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/BoardGithub.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le board GitHub Projects, plan de sprint hebdomadaire du projet (version large en <u>**annexe #7**</u>).</p>
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/BoardGithub.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le board GitHub Projects, plan de sprint hebdomadaire du projet (version large en <u><strong>annexe #7</strong></u>).</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/Github Flow Graph.png" alt="Graphe Git du dépôt — branches Git Flow et PR numérotées" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/Github Flow Graph.png" alt="Graphe Git du dépôt — branches Git Flow et PR numérotées" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le graphe Git du dépôt : une branche par fonctionnalité, PR numérotées et revues, merge vers main uniquement.</p>
 </div>
 
@@ -291,21 +294,12 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
-<div align="center" style="zoom: 0.5;">
-
 ```mermaid
 flowchart LR
-    Admin([Administrateur]) --> UC1[Créer/éditer une course]
-    Admin --> UC2[Affecter · valider une demande]
-    Admin --> UC3[KPI · import/export CSV]
-    Driver([Chauffeur]) --> UC4[Courses disponibles]
-    Driver --> UC5[Demander une assignation · plafond 5]
-    Driver --> UC6[Shifts : demander une mise à disposition]
-    Customer([Client]) --> UC7[Réserver une course]
-    Customer --> UC8[Historique · notation]
+    Admin([Administrateur]) --> UC1[Créer/éditer une course] & UC2[Affecter · valider une demande] & UC3[KPI · import/export CSV]
+    Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Demander une assignation · plafond 5] & UC6[Shifts : demander une mise à disposition]
+    Customer([Client]) --> UC7[Réserver une course] & UC8[Historique · notation]
 ```
-
-</div>
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
 
@@ -481,27 +475,26 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
-<div align="center" style="zoom: 0.5;">
-
 ```mermaid
-flowchart LR
-    C[Connexion] --> R{Rôle}
+flowchart TB
+    C([Connexion]) --> R{"Rôle — vérifié à chaque requête par proxy.ts"}
     R -- admin --> A["Espace admin : courses, assignations, KPI, CSV"]
     R -- chauffeur --> Dr["Espace chauffeur : courses dispo, demandes, shifts"]
     R -- client --> Cu["Espace client : réservation, historique, notation"]
 ```
 
-</div>
-
 
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 40%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+</div>
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur (courses disponibles, demandes d'assignation) et les états vide / erreur : l'interface reste explicite dans tous les cas (versions larges en <u><strong>annexe #10</strong></u>).</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
 <img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
@@ -509,10 +502,7 @@ flowchart LR
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client côte à côte : en français (à gauche) et en anglais (à droite) — l'internationalisation (i18next) couvre toute l'interface.</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
-</div>
+
 
 
 **Accessibilité** :
@@ -532,7 +522,7 @@ flowchart LR
 
 **Architecture adoptée** : une **clean architecture hexagonale** (architecture en ports et adaptateurs) servie par les **Server Actions** de Next.js — le domaine métier (Services) au cœur de l'hexagone, entouré de ses adaptateurs (Server Actions, Proxy, Controllers, Drizzle). Chaque couche a un rôle unique et la dépendance est unidirectionnelle : le front déclenche, le serveur décide.
 
-<div align="center" style="zoom: 0.6;">
+<div align="center">
 
 ```mermaid
 flowchart LR
@@ -667,10 +657,7 @@ Le choix de Neon (PostgreSQL serverless) permet de bénéficier de :
 
 L'application est organisée selon une **architecture modulaire claire**, qui facilite la maintenance, l'évolution et le test du code :
 
-<div style="display: flex; gap: 16px; align-items: flex-start; margin: 10px 0;">
-
-<div style="flex: 1.15; min-width: 0;">
-<pre style="font-size: 8pt; line-height: 1.4; background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; margin: 0;">amt-express/
+<pre style="font-size: 8.5pt; line-height: 1.4; background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; margin: 10px 0; page-break-inside: avoid;">amt-express/
 ├── app/                    # Routes Next.js (App Router)
 │   ├── (admin)/            # Espace administrateur (route group)
 │   ├── (driver)/           # Espace chauffeur (route group)
@@ -691,15 +678,8 @@ L'application est organisée selon une **architecture modulaire claire**, qui fa
 ├── locales/                # Internationalisation (FR/EN, i18next)
 ├── test/                   # Tests automatisés (unit/, integration/)
 └── public/                # Assets statiques</pre>
-</div>
-
-<div style="flex: 1; min-width: 0; font-size: 9.5pt;">
 
 **Lecture de l'arborescence** : les **route groups** ((admin)/, (driver)/, (connected)/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
-
-</div>
-
-</div>
 
 ### 7.2. Réalisation personnelle front-end : composant React avec gestion d'état
 
@@ -725,12 +705,12 @@ useEffect(() => {
 
 **Explication** : les interfaces SortRule et RideFilters garantissent la cohérence des données à la compilation ; les états sont initialisés avec des valeurs par défaut claires ; la vérification du rôle admin redirige automatiquement vers l'accueil si l'utilisateur n'a pas les droits. Ce contrôle côté client **complète** le contrôle serveur (voir 7.3) : il ne le remplace jamais, mais évite d'afficher une interface sensible à un utilisateur non autorisé. *Bonnes pratiques* : typage strict, fail-safe, séparation des responsabilités, responsive via Tailwind CSS.
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/ÉcranAdminListeCourses.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur dont cet extrait est le cœur : filtres, tri et colonnes de courses (retour serveur <code>ActionResponse</code>).</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/Dashboard - KPI.png" alt="Tableau de bord administrateur — indicateurs clés (KPI)" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur : les indicateurs clés du pilotage (courses, chauffeurs, activité du jour).</p>
 </div>
@@ -908,7 +888,7 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 | 5     | Service                  | Règles métier pures (plafond, disponibilité, unicité)    |
 | 6     | Service (transaction)    | Atomicité : assignation + rejet des concurrentes + audit |
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/CréerUnTrajet-Erreur Date.png" alt="Ajout manuel de course (AddRideModal) — état d'erreur, date invalide" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le formulaire d'ajout manuel de course (AddRideModal) : la validation s'affiche en ligne — ici une date invalide — sans quitter la modale.</p>
 </div>
@@ -961,8 +941,8 @@ describe('Parcours : Création et assignation d\'une course', () => {
 
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/PnpmTest.png" alt="Sortie pnpm test — 244 tests passés, 0 échec" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/PnpmTest.png" alt="Sortie pnpm test — 244 tests passés, 0 échec" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La sortie réelle de <code>pnpm test</code> : 244 tests passés, 0 échec.</p>
 </div>
 
@@ -1062,21 +1042,21 @@ flowchart LR
 
 
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u>**annexe #8**</u>).</p>
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u><strong>annexe #8</strong></u>).</p>
 </div>
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
 
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/DeployementVercel.png" alt="Interface de déploiement Vercel — environnements UAT et production" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'interface de déploiement Vercel : chaque environnement (UAT, production) est isolé et déclenché par le pipeline.</p>
 </div>
 
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/InterfaceNeon.png" alt="Console Neon — base de données PostgreSQL serverless" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console Neon : la base PostgreSQL serverless, ses sauvegardes et son suivi.</p>
 </div>
@@ -1084,8 +1064,8 @@ flowchart LR
 ### 9.3. Scripts de backup et restauration
 
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 55%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 45%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console d'import CSV réelle : backup de la base, avertissements, puis le résumé — courses importées, ignorées, erreurs.</p>
 </div>
 
