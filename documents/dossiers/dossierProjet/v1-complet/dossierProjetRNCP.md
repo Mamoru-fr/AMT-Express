@@ -135,7 +135,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 | #   | User story                                                                                                                                                           | Issue US (travail d'origine) |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #89 (#1, #5)                 |
-| US2 | En tant que chauffeur, je veux créer un compte, afin de pouvoir ensuite demander des courses une fois activé par un administrateur                                   | #90 (#1, #7)                 |
+| US2 | En tant qu'utilisateur, je veux créer mon compte en autonomie (rôle client, sans validation préalable), afin de réserver directement ; l'élévation au rôle chauffeur se fait sur demande auprès d'un administrateur | #90 (#1, #7)                 |
 | US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #91 (#10)                    |
 | US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #92 (#13)                    |
 | US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #93 (#13)                    |
@@ -143,7 +143,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 | US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #95 (#17, #19)               |
 | US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #96 (#2, #4)                 |
 
-**User stories du backlog post-MVP** (extrait ; la liste complète vit dans les issues GitHub ouvertes) : facturation (création, groupée, envoi, relances — issues #20 à #23), notifications temps réel (#24 à #26), géolocalisation (#27, #29), chat interne (#28), OCR d'import de courses (#11), notation des chauffeurs (#16), mots de passe oubliés (#6).
+**User stories du backlog post-MVP** (extrait ; la liste complète vit dans les issues GitHub ouvertes) : facturation (création, groupée, envoi, relances — issues #20 à #23), notifications temps réel (#24 à #26), géolocalisation (#27, #29), chat interne (#28), OCR d'import de courses (#11), notation des chauffeurs (#16), mots de passe oubliés (#6), **administration des rôles** : un client demande son élévation au rôle chauffeur auprès d'un administrateur (mail ou autre canal), qui la valide via une interface dédiée à venir ; l'élévation au rôle administrateur exigera une double validation (modalités en cours de définition). La hiérarchie de rôles et sa vérification sont déjà en place côté code : seul l'écran d'administration manque.
 
 Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (capture ci-dessous) : chaque issue y passe par les colonnes Backlog → In Progress → Done, ce qui a servi de plan de sprint hebdomadaire pendant tout le développement.
 
@@ -155,7 +155,7 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 
 | #   | Fonctionnalité                   | Statut | Détails                                                                                                      |
 | --- | -------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
-| 1   | **Authentification multi-rôles** | Livré  | 3 rôles (admin/driver/customer), activation manuelle des chauffeurs, système de bannissement                 |
+| 1   | **Authentification multi-rôles** | Livré  | 3 rôles (admin/driver/customer) vérifiés à chaque action serveur. Inscription libre côté client ; bannissement porté par la couche d'authentification Better Auth |
 | 2   | **CRUD courses complet**         | Livré  | Création, lecture, mise à jour, suppression avec cycle de statuts (pending → assigned → completed/cancelled) |
 | 3   | **Gestion des assignations**     | Livré  | Demandes d'assignation par les chauffeurs, validation par l'admin                                            |
 | 4   | **Tableaux de bord KPI**         | Livré  | Visualisation des courses, revenus, taux d'assignation avec Recharts                                         |
@@ -179,7 +179,7 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 | Risque identifié                                                | Probabilité | Impact | Mesures de mitigation                                                                                                                           |
 | --------------------------------------------------------------- | ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OCR insuffisant sur tickets manuscrits**                      | Haute       | Moyen  | Solution alternative : import CSV avec backup automatique + correction manuelle. OCR planifié pour une version post-MVP                         |
-| **Taux d'adoption des chauffeurs < 80 %**                       | Moyenne     | Fort   | Interface chauffeur simplifiée (courses, shifts, stats). Activation progressive par l'administrateur                                            |
+| **Taux d'adoption des chauffeurs < 80 %**                       | Moyenne     | Fort   | Interface chauffeur simplifiée (courses, shifts, stats). Intégration progressive via l'import CSV des données existantes                                            |
 | **Limites des free tiers** (Neon 0,5 Go, bande passante Vercel) | Moyenne     | Fort   | Monitoring de l'usage, scripts de backup (`pnpm db:backup`), archivage possible. Scalabilité documentée (25-50 €/mois pour 1 000+ utilisateurs) |
 | **Développement solo en temps partiel**                         | Certaine    | Moyen  | Méthodologie Git Flow stricte, PR numérotées et revues, CI bloquante sur les tests rouges                                                       |
 | **Exposition des secrets**                                      | Faible      | Fort   | `.gitignore` vérifié et maintenu, README avec avertissements, procédure de révocation documentée                                                |
