@@ -295,6 +295,7 @@ flowchart LR
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
 ```mermaid
+%%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
     Admin([Administrateur]) --> UC1[Créer/éditer une course] & UC2[Affecter · valider une demande] & UC3[KPI · import/export CSV]
     Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Demander une assignation · plafond 5] & UC6[Shifts : demander une mise à disposition]
@@ -476,6 +477,7 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
 ```mermaid
+%%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart TB
     C([Connexion]) --> R{"Rôle — vérifié à chaque requête par proxy.ts"}
     R -- admin --> A["Espace admin : courses, assignations, KPI, CSV"]
@@ -487,11 +489,13 @@ flowchart TB
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
-<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
 </div>
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur (courses disponibles, demandes d'assignation) et les états vide / erreur : l'interface reste explicite dans tous les cas (versions larges en <u><strong>annexe #10</strong></u>).</p>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
 </div>
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
