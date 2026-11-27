@@ -206,6 +206,7 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 - **Linting** : ESLint
 - **Conteneurisation** : Docker
 - **Hébergement** : Vercel (frontend), Neon (base de données)
+- **Stack applicative** : Next.js · React 19 · TypeScript · Drizzle ORM · Better Auth · Zod · PostgreSQL (détail et justifications en §6.3)
 
 ### 4.2. Méthodologie et suivi
 
@@ -522,26 +523,29 @@ flowchart LR
 
 **Objectif** : Structurer l'application selon une architecture claire et maintenable, qui sépare les responsabilités et facilite l'évolution du code.
 
-**Architecture adoptée** : Une architecture en **7 couches** (incluant les couches transverses) qui respecte les principes de séparation des responsabilités (SoC) et de dépendance unidirectionnelle.
+**Architecture adoptée** : une **clean architecture hexagonale** (architecture en ports et adaptateurs) servie par les **Server Actions** de Next.js — le domaine métier (Services) au cœur de l'hexagone, entouré de ses adaptateurs (Server Actions, Proxy, Controllers, Drizzle). Chaque couche a un rôle unique et la dépendance est unidirectionnelle : le front déclenche, le serveur décide.
 
 <div align="center">
 
 ```mermaid
-flowchart TB
-    A["UI — Next.js · React 19 · parallel routes"] --> B["Server Actions — Zod"]
-    B --> C["Controllers"]
-    C --> D["verifyRole — admin ≥ driver ≥ customer"]
-    D --> E["Services — logique métier"]
-    E --> F["Drizzle ORM"]
-    F --> G[("PostgreSQL 18 — Neon")]
-    style A fill:#176B87,color:#fff
-    style D fill:#F4A259,color:#000
-    style G fill:#060605,color:#fff
+flowchart LR
+    FE["Frontend — Next.js · React 19"] --> SA["Server Actions — points d'entrée"]
+    SA --> PX["Proxy — session + rôle"]
+    PX --> CT["Controllers — Zod + règles"]
+    CT --> SV{{"Services — logique métier"}}
+    SV --> DR["Drizzle ORM"]
+    DR --> DB[("PostgreSQL — Neon")]
+    SV -. "chemin retour : Service → Controller → Actions → Frontend" .-> FE
+    style FE fill:#176B87,color:#fff
+    style SV fill:#F4A259,color:#000
+    style DB fill:#060605,color:#fff
 ```
 
 </div>
 
 > *Vous retrouvez la version A4 (infrastructure complète : couches, environnements, hébergement) dans l'<u>**annexe #6**</u>.*
+
+**Trois garde-fous traversent toutes les couches** : **AUTORISER** — Better Auth + `requireRole` vérifient identité et permissions (`admin ≥ driver ≥ customer`) · **VALIDER** — Zod contrôle le format à chaque frontière, avant toute opération sensible · **TRACER** — `AuditLogger` conserve la preuve de chaque action critique dans `activity_logs`.
 
 **Détail des couches** :
 
