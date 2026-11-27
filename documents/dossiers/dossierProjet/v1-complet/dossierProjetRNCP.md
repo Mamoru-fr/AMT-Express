@@ -294,6 +294,8 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
+<div align="center" style="max-height: 140mm; overflow: hidden;">
+
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
@@ -301,6 +303,8 @@ flowchart LR
     Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Demander une assignation · plafond 5] & UC6[Shifts : demander une mise à disposition]
     Customer([Client]) --> UC7[Réserver une course] & UC8[Historique · notation]
 ```
+
+</div>
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
 
@@ -476,14 +480,18 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
+<div align="center" style="max-height: 80mm; overflow: hidden;">
+
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
-flowchart TB
+flowchart LR
     C([Connexion]) --> R{"Rôle — vérifié à chaque requête par proxy.ts"}
     R -- admin --> A["Espace admin : courses, assignations, KPI, CSV"]
     R -- chauffeur --> Dr["Espace chauffeur : courses dispo, demandes, shifts"]
     R -- client --> Cu["Espace client : réservation, historique, notation"]
 ```
+
+</div>
 
 
 
