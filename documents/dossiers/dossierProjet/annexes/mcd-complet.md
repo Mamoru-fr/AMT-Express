@@ -11,6 +11,7 @@ flowchart LR
     DRV -- "(0,n) émet (1,1)" --> AR[ASSIGNMENT_REQUEST]
     RIDE -- "(0,n) reçoit (1,1)" --> AR
     RIDE -- "(1,n) transporte (0,n)<br/>porteuse : ride_customers" --> USER
+    RIDE -- "(0,n) est-créée-par (0,n)<br/>porteuse : ride_managers" --> USER
     RIDE -- "(0,n) embarque (0,n)<br/>porteuse : ride_selected_options" --> ROPT[RIDE_OPTION]
     DRV -- "(0,n) planifie (1,1)" --> SHP[SHIFT_PLANNING]
     USER -- "(0,n) reçoit (1,1)" --> NT[NOTIFICATION]
