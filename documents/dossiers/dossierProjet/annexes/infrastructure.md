@@ -80,7 +80,7 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    A["UI — Next.js App Router · React 19<br/>parallel routes @admin/@driver/@customer<br/>+ page connections (authentification)"] --> B["Server Actions<br/>validation Zod"]
+    A["UI — Next.js App Router · React 19<br/>route groups (admin)/(driver)/(connected)<br/>+ page connections (authentification)"] --> B["Server Actions<br/>validation Zod"]
     B --> C["Controllers"]
     C --> D["Role Middleware<br/>verifyRole — admin ≥ driver ≥ customer"]
     D --> E["Services — logique métier pure"]
