@@ -25,3 +25,19 @@
 - **Résolution** : PNG, écran complet, pas de recadrage aggressif — le dossier est imprimé A4, une capture floue décrédibilise tout.
 - **FR d'abord**, EN pour une seule vue de comparaison (i18n prouvé une fois suffit).
 - Légende chaque capture dans le dossier (ce qu'on regarde, pourquoi c'est une preuve).
+
+
+---
+
+## Emplacements préparés dans le dossier (passe du 27/11/2026, Armand)
+
+Le dossier contient désormais des encarts HTML prêts à l'emploi (image bornée à 62 % de largeur, légende, masquée tant que le fichier manque). Il ne reste qu'à déposer chaque fichier au bon endroit :
+
+| Section du dossier | Fichier attendu | Emplacement de dépôt |
+| --- | --- | --- |
+| §3.3 User Stories | user-story-issue-92.png | annexes/screenshots/ |
+| §4.2 Gestion de projet | board-github.png (= annexe #7) | annexes/ |
+| §7.1 Architecture du code | vscode-arborescence.png | annexes/screenshots/ |
+| §7.2 Réalisation front | admin-ride-management.png | annexes/screenshots/ |
+| §7.3 Réalisation back | assignment-requests-modal.png | annexes/screenshots/ |
+| §9.2 CI/CD | pipeline-ci.png (= annexe #8) | annexes/ |
