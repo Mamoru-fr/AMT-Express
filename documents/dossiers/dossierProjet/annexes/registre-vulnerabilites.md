@@ -12,4 +12,4 @@
 | 05/10 | AUDIT-006 | Sessions non invalidées après logout | Better Auth | Élevé | ✅ Corrigé |
 | 15/10 | AUDIT-007 | Protection CSRF manquante sur certains formulaires | Formulaires | Moyen | ✅ Corrigé |
 
-**Bilan** : 7 vulnérabilités internes corrigées, toutes validées par tests automatisés (240 tests), corrections revues par une instructrice Ada Tech School (16/10/2026), aucune exploitée en production. Veille externe : 3 alertes dépendances (annexe #13), dont la CVE `zod` restée , traitée en § 10 du dossier. Corrections datées détail ; workflow de gestion et outils de détection dans le dépôt.
+**Bilan** : 7 vulnérabilités internes corrigées, toutes validées par tests automatisés (244 tests), corrections revues par une instructrice Ada Tech School (16/10/2026), aucune exploitée en production. Veille externe : 3 alertes dépendances (annexe #13), dont la CVE `zod` restée , traitée en § 10 du dossier. Corrections datées détail ; workflow de gestion et outils de détection dans le dépôt.
