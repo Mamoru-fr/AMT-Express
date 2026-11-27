@@ -1086,16 +1086,18 @@ Scripts npm associés : pnpm db:backup, pnpm db:restore, pnpm db:import-csv data
 
 ### 9.5. Documentation utilisateur et technique
 
-| Type                     | Fichier              | Contenu                                            |
-| ------------------------ | -------------------- | -------------------------------------------------- |
-| **README**               | README.md            | Guide de démarrage, prérequis, installation        |
-| **Documentation API**    | docs/API.md          | Server Actions et leurs paramètres                 |
-| **Guide utilisateur**    | docs/USER_GUIDE.md   | Manuel pour administrateurs, chauffeurs et clients |
-| **Guide de déploiement** | docs/DEPLOYMENT.md   | Procédure complète de déploiement                  |
-| **Architecture**         | docs/ARCHITECTURE.md | Description détaillée de l'architecture            |
-| **Base de données**      | docs/DATABASE.md     | Schéma, relations, index                           |
+| Type | Fichier | Contenu |
+| --- | --- | --- |
+| **README** | `README.md` | Guide de démarrage, prérequis, installation, scripts, dépannage |
+| **Architecture technique** | `documentation/TECHNICAL_ARCHITECTURE.md` | Stack justifiée, patterns, décisions de conception |
+| **Sessions et rôles** | `documentation/SESSION_USAGE_GUIDE.md` | Accès à la session et au rôle par contexte |
+| **Import CSV** | `documentation/CSV_Import/CSV_IMPORT_README.md` | Procédure d'import et tests |
+| **Docker** | `documentation/Docker/DOCKER_COMMANDS.md` | Commandes Docker |
+| **Git Flow** | `documentation/GitFlow.md` | Branches et contribution |
+| **Design responsive** | `documentation/RESPONSIVE_DESIGN.md` | Principes responsive |
+| **Rapport de tests** | `amt-express/TESTS_REPORT.md` | Sortie des tests versionnée dans le dépôt |
 
-Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16+ — instance Neon en 18), installation et lancement local — la procédure complète figure dans le dépôt. La documentation utilisateur (guide admin / chauffeur / client) est rédigée dans le dépôt sous forme de fichiers Markdown, puis **remise au client au format PDF** pour consultation hors ligne — c'est ce PDF qui constitue le livrable utilisateur de la documentation.
+Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16+ — instance Neon en 18), installation et lancement local — la procédure complète figure dans le dépôt. Ces guides sont rédigés en Markdown dans le dépôt, prêts à être remis au client au format PDF pour consultation hors ligne.
 
 ---
 
@@ -1182,19 +1184,19 @@ Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16
 - Dernière veille manuelle : 30/10/2026 (<u>**annexe #13**</u>)
 - Prochaine veille programmée : 15/11/2026
 
-### 10.3. Intégration de la veille dans la CI
+### 10.3. Vers l'intégration de la veille dans la CI (roadmap)
 
-**Pipeline CI amélioré** :
+**Ce qui existe aujourd'hui** : la veille est **manuelle et documentée** — `pnpm audit` exécuté à la main, versions épinglées, veille du 30/10/2026 dont les corrections sont tracées dans le registre (<u>**annexe #11**</u>) — mais **aucun workflow d'audit ne tourne encore dans la CI**.
+
+**Ce qui est prévu** : l'audit de dépendances directement dans la CI, par un workflow `security-audit.yml` planifié chaque nuit et déclenchable manuellement :
 
 ```yaml
-# .github/workflows/security-audit.yml
+# .github/workflows/security-audit.yml — workflow proposé (non encore déployé)
 name: Security Audit
-
 on:
   schedule:
     - cron: '0 0 * * *'  # Tous les jours à minuit
   workflow_dispatch:
-
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -1206,13 +1208,9 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm audit --audit-level=critical
-      - run: pnpm exec snyk test
 ```
 
-**Résultats** :
-- **0 vulnérabilités critiques** dans la version actuelle
-- **Temps moyen de correction** : < 24 heures pour les vulnérabilités critiques
-- Les vulnérabilités connues sont couvertes par la combinaison Dependabot + `pnpm audit` + veille manuelle
+J'expérimente déjà ce mécanisme (audit planifié + Dependabot) sur d'autres projets ; son arrivée sur AMT Express est planifiée. En attendant, chaque alerte reste couverte par la veille manuelle et le registre des vulnérabilités (<u>**annexe #11**</u>).
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
 > ** À PRODUIRE POUR LE JURY**
@@ -1275,7 +1273,7 @@ static async getRidesWithDetails(limit: number = 50) {
 
 **Problématique** : le 11 septembre 2026, la mise en place du pipeline de déploiement Vercel (UAT puis production) s'est traduite par **17 corrections consécutives** sur les déploiements : variables d'environnement manquantes en production, différences de comportement entre build local et build CI, configuration Better Auth dépendante de l'environnement.
 
-**Démarche** : chaque échec a été traité individuellement — lecture des logs de déploiement, correction ciblée, nouvelle tentative — jusqu'à obtention d'un pipeline vert et stable. Ce jour a révélé l'écart entre « ça marche sur ma machine » et « ça marche en production », écart qui a ensuite été réduit structurellement : scripts de vérification d'environnement et documentation DEPLOYMENT.md (voir §9.5).
+**Démarche** : chaque échec a été traité individuellement — lecture des logs de déploiement, correction ciblée, nouvelle tentative — jusqu'à obtention d'un pipeline vert et stable. Ce jour a révélé l'écart entre « ça marche sur ma machine » et « ça marche en production », écart qui a ensuite été réduit structurellement : scripts de vérification d'environnement et documentation de déploiement (README et GitFlow, voir §9.5).
 
 **Leçons apprises** : documenter les prérequis d'environnement avant le premier déploiement ; considérer le déploiement comme une fonctionnalité à part entière, testée comme les autres ; s'appuyer sur la CI comme garde-fou plutôt que sur le build local.
 
