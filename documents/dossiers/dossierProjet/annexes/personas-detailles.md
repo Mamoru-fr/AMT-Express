@@ -1,4 +1,4 @@
-# Annexe 17 — Personas détaillés (cartes d'empathie, version A4, 2 pages)****
+# Annexe 17 — Personas détaillés (cartes d'empathie, version A4, 2 pages)
 
 <table style="border-top:3px solid #176B87; border-collapse:collapse; width:100%; font-family:'Segoe UI',Arial,sans-serif; margin:14px 0 0;">
 <tr>
