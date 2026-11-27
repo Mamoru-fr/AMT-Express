@@ -34,6 +34,15 @@
 | `rating` | integer | | **Note 1–5 émise par le client pour cette course** (la notation vit ici, pas dans `rides`) |
 | `comment` | text | | Commentaire de notation |
 
+## `ride_managers` — responsables de la course
+
+| Colonne | Type | Contraintes | Signification |
+| --- | --- | --- | --- |
+| `id` | text (uuid) | PK | Identifiant de la ligne |
+| `ride_id` | text | NOT NULL, FK `rides`, CASCADE | Course concernée |
+| `manager_id` | text | NOT NULL, FK `users`, CASCADE | Utilisateur qui crée / est responsable de la course |
+| `created_at` | timestamp | def now | Horodatage de la prise de responsabilité |
+
 ## `assignment_requests` — demandes d'assignation
 
 | Colonne | Type | Contraintes | Signification |
