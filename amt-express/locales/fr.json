@@ -17,9 +17,31 @@
     },
     "Register": {
       "RegisterButton": "S'inscrire →"
-    }
+    },
+    "ErrorTitle": "Échec de l'authentification",
+    "InfoTitle": "Information",
+    "ForgotPassword": "Mot de passe oublié ?",
+    "PasswordReset": "Réinitialisation du mot de passe",
+    "ForgotPasswordTitle": "Mot de passe oublié",
+    "ForgotPasswordDescription": "Saisissez votre adresse email ; un lien de réinitialisation vous sera envoyé.",
+    "ForgotPasswordSubmit": "Envoyer le lien",
+    "ForgotPasswordSent": "Si un compte existe pour cette adresse, un email de réinitialisation vient d'être envoyé.",
+    "BackToLogin": "Retour à la connexion",
+    "ResetPasswordTitle": "Nouveau mot de passe",
+    "ResetPasswordDescription": "Choisissez un nouveau mot de passe pour votre compte.",
+    "NewPasswordPlaceholder": "Nouveau mot de passe",
+    "ResetPasswordSubmit": "Réinitialiser",
+    "ResetPasswordSuccess": "Mot de passe réinitialisé. Vous pouvez vous connecter.",
+    "ResetPasswordFailed": "Échec de la réinitialisation. Le lien est peut-être expiré.",
+    "PasswordsDoNotMatch": "Les mots de passe ne correspondent pas.",
+    "PasswordTooShort": "Le mot de passe doit contenir au moins 8 caractères."
   },
   "errors": {
+    "emailRequired": "L'adresse email est requise",
+    "invalidEmail": "Adresse email invalide",
+    "resetFailed": "Échec de la réinitialisation. Le lien est peut-être expiré.",
+    "resetTokenMissing": "Lien de réinitialisation invalide ou incomplet.",
+    "passwordRequirements": "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.",
     "emailPasswordRequired": "Email et mot de passe requis",
     "allFieldsRequired": "Tous les champs sont requis",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
@@ -133,7 +155,15 @@
     "pricePlaceholder": "0,00",
     "notesPlaceholder": "Ajoutez des instructions spéciales...",
     "noProductionSelected": "Aucune production sélectionnée",
-    "selected": "sélectionné(s)"
+    "selected": "sélectionné(s)",
+    "assignSuccess": "Chauffeur assigné avec succès",
+    "assignFailed": "Échec de l'assignation du chauffeur",
+    "deleteSuccess": "Course supprimée avec succès",
+    "deleteFailed": "Échec de la suppression de la course",
+    "updateSuccess": "Course mise à jour avec succès",
+    "updateFailed": "Échec de la mise à jour de la course",
+    "exportSuccess": "CSV exporté avec succès",
+    "exportFailed": "Échec de l'export CSV"
   },
   "driverNavigation": {
     "dashboard": "Tableau de bord",
@@ -178,7 +208,10 @@
     "requestRideTitle": "Demander l'Assignation de la Course",
     "requestMessage": "Ajoutez un message optionnel pour l'administrateur :",
     "messagePlaceholder": "Je suis disponible et prêt pour cette course...",
-    "confirmRequest": "Envoyer la Demande"
+    "confirmRequest": "Envoyer la Demande",
+    "requestRideSuccess": "Demande envoyée avec succès !",
+    "requestRideFailed": "Échec de l'envoi de la demande",
+    "updateAvailabilityFailed": "Échec de la mise à jour de la disponibilité"
   },
   "common": {
     "cancel": "Annuler",
@@ -194,7 +227,13 @@
     "no": "Non",
     "required": "Requis",
     "optional": "Optionnel",
-    "sort": "Trier"
+    "sort": "Trier",
+    "creating": "Création...",
+    "saving": "Enregistrement...",
+    "sending": "Envoi...",
+    "signingOut": "Déconnexion...",
+    "status": "Statut",
+    "error": "Erreur"
   },
   "adminNavigation": {
     "dashboard": "Tableau de bord",
@@ -339,6 +378,132 @@
     "save": "Sauvegarder",
     "cancel": "Annuler"
   },
+  "account": {
+    "deletedUser": "Utilisateur supprimé",
+    "delete": {
+      "button": "Supprimer mon compte",
+      "title": "Supprimer le compte ?",
+      "message": "Êtes-vous sûr de vouloir supprimer votre compte ? Vous ne pourrez plus accéder à l'application. Pour des raisons d'organisation, vos courses et factures sont conservées, mais toutes vos informations personnelles seront anonymisées conformément au RGPD.",
+      "confirm": "Oui, supprimer définitivement",
+      "cancel": "Annuler",
+      "error": "La suppression du compte a échoué. Veuillez réessayer."
+    }
+  },
+  "driverRides": {
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "refresh": "Rafraîchir",
+    "backToRides": "Retour à mes courses",
+    "requestRideTitle": "Demander cette course",
+    "requestSuccess": "Demande envoyée avec succès !",
+    "requestFailed": "Échec de la demande.",
+    "tabs": {
+      "assigned": "Assignées",
+      "available": "Disponibles",
+      "completed": "Terminées"
+    },
+    "empty": {
+      "assigned": "Aucune course assignée pour le moment.",
+      "available": "Aucune course disponible pour l'instant.",
+      "completed": "Aucune course terminée pour le moment."
+    },
+    "table": {
+      "rideId": "N° de course",
+      "route": "Itinéraire",
+      "customers": "Clients",
+      "departure": "Départ",
+      "price": "Prix",
+      "status": "Statut",
+      "action": "Action",
+      "view": "Voir",
+      "viewDetail": "Voir le détail",
+      "noCustomers": "Aucun"
+    }
+  },
+  "error": {
+    "title": "Une erreur est survenue",
+    "description": "Une erreur inattendue s'est produite.",
+    "tryAgain": "Réessayer",
+    "goHome": "Retour à l'accueil"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "goHome": "Retour à l'accueil"
+  },
+  "legal": {
+    "lastUpdated": "Dernière mise à jour :",
+    "cgv": {
+      "title": "Conditions Générales de Vente",
+      "article1": {
+        "title": "Article 1 - Objet",
+        "description": "Les présentes conditions générales de vente ont pour objet de définir les droits et obligations des parties dans le cadre de la réservation et de l'exécution des services de transport proposés par AMT Express."
+      },
+      "article2": {
+        "title": "Article 2 - Réservation",
+        "description": "Toute réservation est effectuée par le client via la plateforme en ligne ou par téléphone. La réservation est confirmée par l'envoi d'un email ou d'un SMS de confirmation contenant les détails du trajet."
+      },
+      "article3": {
+        "title": "Article 3 - Tarifs",
+        "description": "Les tarifs sont indiqués sur la plateforme et s'entendent toutes taxes comprises. Ils peuvent varier en fonction de la durée du trajet, de la distance parcourue et des éventuelles options choisies."
+      },
+      "article4": {
+        "title": "Article 4 - Paiement",
+        "description": "Le paiement s'effectue conformément aux modalités indiquées lors de la réservation. Plusieurs moyens de paiement sont acceptés : carte bancaire, espèces, etc."
+      },
+      "article5": {
+        "title": "Article 5 - Annulation",
+        "description": "Toute annulation doit être signalée au minimum 24 heures avant l'heure prévue de départ. Passé ce délai, des frais d'annulation pourront être appliqués."
+      },
+      "article6": {
+        "title": "Article 6 - Responsabilités",
+        "description": "AMT Express décline toute responsabilité en cas de retard ou d'annulation imputable à des raisons indépendantes de sa volonté (conditions météorologiques, circulation, etc.).",
+        "limitation": "En cas de litige, les tribunaux compétents seront ceux du siège social de l'entreprise."
+      }
+    },
+    "mentionsLegales": {
+      "title": "Mentions Légales",
+      "editeur": {
+        "title": "Éditeur du site",
+        "name": "Nom :",
+        "address": "Adresse :",
+        "phone": "Téléphone :",
+        "email": "Email :"
+      },
+      "hebergement": {
+        "title": "Hébergement",
+        "provider": "Hébergeur :",
+        "address": "Adresse :"
+      },
+      "donneesPersonnelles": {
+        "title": "Données personnelles",
+        "description": "Conformément à la loi n° 78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés, les utilisateurs du site disposent d'un droit d'accès, de rectification et de suppression des données personnelles les concernant."
+      },
+      "droitAuteurs": {
+        "title": "Droits d'auteur",
+        "description": "L'ensemble du contenu du site AMT Express (textes, images, logos, etc.) est protégé par les lois françaises et internationales sur le droit d'auteur et la propriété intellectuelle.",
+        "reserved": "Toute reproduction totale ou partielle de ce site est strictement interdite sans autorisation expresse."
+      }
+    }
+  },
+  "livingRide": {
+    "title": "Living Ride",
+    "start": "Démarrer le Living Ride",
+    "gpsComingSoon": "Navigation GPS — bientôt disponible",
+    "waitingMinutes": "Durée (minutes)",
+    "waitingError": "Valeur invalide.",
+    "minimize": "Réduire",
+    "notes": "Notes & options imprévues",
+    "notesPlaceholder": "Ex : bagage supplémentaire, arrêt imprévu...",
+    "completeRide": "Terminer",
+    "completeTitle": "Terminer le trajet",
+    "completeDescription": "Saisissez le montant affiché sur le compteur. Ce champ est obligatoire.",
+    "amountLabel": "Montant du compteur",
+    "amountRequired": "Saisissez un montant valide.",
+    "confirmComplete": "Confirmer et terminer",
+    "completing": "Finalisation...",
+    "completeFailed": "Échec de la finalisation."
+  },
   "customerNavigation": {
     "dashboard": "Tableau de bord",
     "dashboardDescription": "Votre espace client",
@@ -368,6 +533,7 @@
     "unknownUser": "Utilisateur inconnu"
   },
   "rides": {
+    "searching": "Recherche...",
     "departure": "Départ",
     "destination": "Destination",
     "date": "Date",
@@ -492,7 +658,8 @@
     "confirmCancel": "Oui, annuler",
     "alreadyCancelled": "Ce trajet a déjà été annulé.",
     "fetchError": "Impossible de charger les détails du trajet.",
-    "cancelError": "Impossible d'annuler le trajet."
+    "cancelError": "Impossible d'annuler le trajet.",
+    "driverPrice": "Prix chauffeur"
   },
   "rideRequest": {
     "departure": "Départ",

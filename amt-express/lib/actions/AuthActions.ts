@@ -65,3 +65,33 @@ export async function signUp(
 export async function signOut(): Promise<ActionResponse<void>> {
     return AuthController.signOut();
 }
+
+/**
+ * Request a password reset email (forgot password flow)
+ * @param email - User email
+ */
+export async function requestPasswordReset(email: string): Promise<ActionResponse<void>> {
+  if (!email?.trim()) {
+    return {
+      success: false,
+      error: 'errors.emailRequired',
+      code: ErrorCodes.VALIDATION_ERROR,
+    };
+  }
+
+  return AuthController.forgotPassword(email.trim());
+}
+
+/**
+ * Reset the password using the token received by email
+ * @param token - Reset token from the email link
+ * @param newPassword - New password
+ * @param confirmPassword - New password confirmation
+ */
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+  confirmPassword: string
+): Promise<ActionResponse<void>> {
+  return AuthController.resetPassword(token, newPassword, confirmPassword);
+}

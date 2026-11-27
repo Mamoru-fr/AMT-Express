@@ -86,7 +86,7 @@ export async function proxy(request: NextRequest) {
 
   // =============================================
   // 6. Rediriger vers le bon tableau de bord après connexion
-  //    (Les Parallel Routes gèrent l'affichage, mais on redirige vers /)
+  //    (le dispatcher de app/page.tsx gère l'affichage par rôle)
   // =============================================
   if (pathname === '/connections' && isAuthenticated) {
     const returnTo = request.nextUrl.searchParams.get('returnTo');
@@ -98,7 +98,7 @@ export async function proxy(request: NextRequest) {
       }
       return NextResponse.redirect(new URL(decodedReturnTo, request.url));
     } else {
-      // Rediriger vers / (les Parallel Routes gèrent l'affichage)
+      // Rediriger vers / (le dispatcher app/page.tsx rend le dashboard du rôle)
       return NextResponse.redirect(new URL('/', request.url));
     }
   }

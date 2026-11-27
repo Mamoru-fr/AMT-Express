@@ -144,4 +144,84 @@ export class AuthController {
             };
         }
     }
+
+    /**
+     * Mot de passe oublié : demande d'envoi du lien de réinitialisation.
+     * Anti-énumération : renvoie SUCCESS même si l'email est inconnu
+     * (le Service logge l'échec, la UI affiche un message générique).
+     */
+    static async forgotPassword(email: string): Promise<ActionResponse<void>> {
+        try {
+            const validationResult = signInSchema.pick({email: true}).safeParse({email});
+            if (!validationResult.success) {
+                return {
+                    success: false,
+                    error: 'errors.invalidEmail',
+                    code: ErrorCodes.VALIDATION_ERROR
+                };
+            }
+
+            await AuthService.requestPasswordReset(validationResult.data.email);
+
+            return {
+                success: true,
+                data: undefined
+            };
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : 'Internal server error';
+            // Même en cas d'erreur serveur : réponse neutre côté client (anti-énumération)
+            console.error('forgotPassword failed:', errorMsg);
+            return {
+                success: true,
+                data: undefined
+            };
+        }
+    }
+
+    /**
+     * Réinitialisation du mot de passe via le token reçu par email.
+     */
+    static async resetPassword(
+        token: string,
+        newPassword: string,
+        confirmPassword: string
+    ): Promise<ActionResponse<void>> {
+        try {
+            if (!token?.trim()) {
+                return {
+                    success: false,
+                    error: 'errors.resetTokenMissing',
+                    code: ErrorCodes.VALIDATION_ERROR
+                };
+            }
+
+            const validationResult = signUpSchema
+                .pick({password: true, confirmPassword: true})
+                .safeParse({password: newPassword, confirmPassword});
+
+            if (!validationResult.success) {
+                return {
+                    success: false,
+                    error: 'errors.passwordRequirements',
+                    code: ErrorCodes.VALIDATION_ERROR,
+                    details: validationResult.error.flatten()
+                };
+            }
+
+            await AuthService.resetPassword(newPassword, token);
+
+            return {
+                success: true,
+                data: undefined
+            };
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : 'Internal server error';
+            const errorKey = errorMsg.includes('errors.') ? errorMsg : `errors.${errorMsg}`;
+            return {
+                success: false,
+                error: errorKey,
+                code: ErrorCodes.INTERNAL_ERROR
+            };
+        }
+    }
 }

@@ -13,6 +13,8 @@ type Props = {
     pendingText?: string;
     onClick?: () => void;
     type?: 'button' | 'submit' | 'reset';
+    /** Associates the button with a form by id, allowing submit buttons outside the <form> */
+    form?: string;
     disabled?: boolean;
     'aria-label'?: string;
 };
@@ -28,6 +30,7 @@ export function Button({
     pendingText,
     onClick,
     type = 'button',
+    form,
     disabled = false,
     'aria-label': ariaLabel,
 }: Props) {
@@ -39,6 +42,7 @@ export function Button({
     return (
         <button
             type={type}
+            form={form}
             disabled={disabled || isPending}
             className={[styles.button, variantClass, full && styles.buttonFull, className].filter(Boolean).join(' ')}
             onClick={onClick}

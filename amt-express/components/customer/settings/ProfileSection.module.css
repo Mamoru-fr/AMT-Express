@@ -423,3 +423,55 @@
   font-weight: 500;
 }
 
+/* ============================================================ */
+/* RGPD — Danger zone : suppression de compte (anonymisation)    */
+/* ============================================================ */
+.dangerZone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--app-border-color, #e5e7eb);
+}
+
+.deleteAccountButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--app-danger-bg);
+  background: var(--app-danger-bg);
+  color: var(--app-danger-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.deleteAccountButton:hover,
+.deleteAccountButton:focus-visible {
+  background: var(--app-danger);
+  border-color: var(--app-danger);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+}
+
+.deleteAccountButton:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.deleteAccountButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteAccountIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+

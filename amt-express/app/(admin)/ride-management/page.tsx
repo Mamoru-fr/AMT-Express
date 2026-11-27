@@ -1,6 +1,7 @@
 'use client'
 
 // Import des dépendances nécessaires
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -677,12 +678,12 @@ export default function RideManagementPage() {
                                                 {new Date(ride.departureTime).toLocaleString('fr-FR')}
                                             </td>
                                             <td className={styles.tableCell}>
-                                                {ride.customers.map(c => c.name).join(', ') || t('common.optional')}
+                                                {ride.customers.map(c => getUserDisplayName(c, t)).join(', ') || t('common.optional')}
                                             </td>
                                             <td className={styles.tableCell}>{ride.departure}</td>
                                             <td className={styles.tableCell}>{ride.destination}</td>
                                             <td className={`${styles.tableCell} ${!ride.driver ? styles.tableCellMuted : ''}`}>
-                                                {ride.driver?.name || (
+                                                {ride.driver ? getUserDisplayName(ride.driver, t) : (
                                                     <span>{t('ridesManagement.unassigned')}</span>
                                                 )}
                                             </td>

@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
-import { User, Mail, Edit2, Check, X, ShieldCheck, ShieldAlert, Calendar, Tag, RefreshCw } from 'lucide-react';
+import { User, Mail, Edit2, Check, X, ShieldCheck, ShieldAlert, Calendar, Tag, RefreshCw, Trash2 } from 'lucide-react';
 
 import { useSessionWithRole } from '@/context/SessionContext';
-import { updateName, changeEmail, resendVerificationEmail } from '@/lib/actions/customerProfileActions';
+import { updateName, changeEmail, resendVerificationEmail, deleteAccount } from '@/lib/actions/customerProfileActions';
+import { signout } from '@/lib/actions/signActions';
+import { DeleteAccountModal } from './DeleteAccountModal';
 import styles from './ProfileSection.module.css';
 
 interface Props {
@@ -35,9 +37,33 @@ export function ProfileSection({ showTitle = true }: Props) {
     const [resendPending, startResendTransition] = useTransition();
     const [resendFeedback, setResendFeedback] = useState<FeedbackState>(null);
 
+    // RGPD — account deletion (anonymization)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [deletePending, setDeletePending] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+
     useEffect(() => {
         if (user) setNameValue(user.name || '');
     }, [user]);
+
+    // RGPD — anonymize the account, then sign out (server redirect to /connections).
+    async function handleDeleteAccount() {
+        setDeletePending(true);
+        setDeleteError(null);
+        try {
+            const result = await deleteAccount();
+            if (result.success) {
+                // signout() performs redirect("/connections") server side
+                await signout();
+                return;
+            }
+            setDeleteError(result.error || t('account.delete.error'));
+        } catch {
+            setDeleteError(t('account.delete.error'));
+        } finally {
+            setDeletePending(false);
+        }
+    }
 
     function formatDate(date: Date | string) {
         return new Date(date).toLocaleDateString(undefined, {
@@ -94,6 +120,7 @@ export function ProfileSection({ showTitle = true }: Props) {
     }
 
     return (
+        <>
         <div className={styles.profileSection}>
             {showTitle && (
                 <div className={styles.sectionHeader}>
@@ -244,7 +271,32 @@ export function ProfileSection({ showTitle = true }: Props) {
                         </div>
                     </div>
                 </div>
+
+                {/* RGPD — danger zone (tout en bas du profil, discret) */}
+                <div className={styles.dangerZone}>
+                    <button
+                        type="button"
+                        className={styles.deleteAccountButton}
+                        onClick={() => { setDeleteConfirmOpen(true); setDeleteError(null); }}
+                    >
+                        <Trash2 className={styles.deleteAccountIcon} aria-hidden="true" />
+                        {t('account.delete.button')}
+                    </button>
+                    {deleteError && (
+                        <p className={styles.feedbackError} role="alert">
+                            {deleteError}
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
+        {deleteConfirmOpen && (
+        <DeleteAccountModal
+            onClose={() => setDeleteConfirmOpen(false)}
+            onConfirm={handleDeleteAccount}
+            isDeleting={deletePending}
+        />
+        )}
+        </>
     );
 }

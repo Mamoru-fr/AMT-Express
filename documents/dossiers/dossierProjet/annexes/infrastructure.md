@@ -1,7 +1,8 @@
-# Annexe #6 — Schéma d'infrastructure
+# Annexe #6 — Schéma d'infrastructure (version A4, 3 pages)
 
-> **Source** : Architecture de déploiement réelle (Vercel + Neon PostgreSQL)
-> **Format** : Diagrammes en Mermaid pour visualisation Markdown. Pour rendu professionnel, exporter via [Mermaid Live Editor](https://mermaid.live) en PNG 300dpi.
+> Architecture de déploiement réelle (Vercel + Neon PostgreSQL). Pages 1-2 : architecture globale, couches logicielles et environnements ; page 3 : hébergement de la base et capacités. La sécurité (§ 6.2 du dossier), le rollback/backup (§ 9.4) et la configuration détaillée restent dans le dépôt.
+
+## Page 1 — Architecture globale
 
 ## Architecture globale
 
@@ -72,6 +73,25 @@ flowchart TB
     style Développement fill:#fff3e0,stroke:#ff9800
     style Surveillance fill:#fce4ec,stroke:#e91e63
 ```
+
+## Page 2 — Couches logicielles et environnements
+
+## Architecture logicielle en couches (§ 6.1 du dossier)
+
+```mermaid
+flowchart TB
+    A["UI — Next.js App Router · React 19<br/>route groups (admin)/(driver)/(connected)<br/>+ page connections (authentification)"] --> B["Server Actions<br/>validation Zod"]
+    B --> C["Controllers"]
+    C --> D["Role Middleware<br/>verifyRole — admin ≥ driver ≥ customer"]
+    D --> E["Services — logique métier pure"]
+    E --> F["Drizzle ORM (type-safe)"]
+    F --> G[("PostgreSQL 18 — Neon")]
+    style A fill:#176B87,color:#fff
+    style D fill:#F4A259,color:#000
+    style G fill:#060605,color:#fff
+```
+
+*Couches transverses : Better Auth (sessions, rôles, bannissements), `activity_logs` (journalisation), i18next (FR/EN). Le détail des responsabilités par couche figure en § 6.1 du dossier.*
 
 ## Environnements de déploiement
 
@@ -145,6 +165,8 @@ flowchart TD
     style I fill:#ffebee,stroke:#e91e63
 ```
 
+## Page 3 — Hébergement PostgreSQL (Neon) et capacités
+
 ## Infrastructure PostgreSQL (Neon)
 
 ### Schéma d'hébergement de la base de données
@@ -214,219 +236,4 @@ flowchart TB
 
 **Temps moyen de réponse** : ~50 ms (Neon Serverless)
 
-## Infrastructure Vercel
-
-### Architecture de l'application
-
-```mermaid
-flowchart TB
-    subgraph Vercel Platform
-        direction TB
-        subgraph Edge Network
-            CDN[CDN Vercel]
-            EdgeFunctions[Edge Functions]
-        end
-        
-        subgraph Regions
-            Region1[us-east-1]
-            Region2[eu-west-1]
-            Region3[ap-southeast-1]
-        end
-        
-        subgraph Features
-            SSG[Static Site Generation]
-            SSR[Server-Side Rendering]
-            ISR[Incremental Static Regeneration]
-            Streaming[Streaming]
-        end
-    end
-    
-    subgraph Request Flow
-        R1[Request
-        Entrante]
-        R2[Routing]
-        R3[Rendering]
-        R4[Response]
-    end
-    
-    R1 --> R2
-    R2 -->|Static| CDN
-    CDN --> R4
-    R2 -->|Dynamic| Region1
-    R2 -->|Dynamic| Region2
-    R2 -->|Dynamic| Region3
-    
-    Region1 --> ISR
-    Region2 --> SSG
-    Region3 --> SSR
-    
-    ISR --> R3
-    SSG --> R3
-    SSR --> R3
-    R3 --> R4
-    
-    style Vercel Platform fill:#f3e5f5,stroke:#9c27b0
-    style Request Flow fill:#e3f2fd,stroke:#2196f3
-```
-
-### Configuration spécifique AMT Express
-
-```yaml
-# vercel.json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "installCommand": "pnpm install",
-        "zeroConfig": true
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/",
-      "headers": {
-        "X-Frame-Options": "DENY",
-        "X-Content-Type-Options": "nosniff",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
-      }
-    }
-  ],
-  "env": [
-    {
-      "name": "DATABASE_URL",
-      "type": "encrypted",
-      "target": ["production", "preview"]
-    },
-    {
-      "name": "NEXTAUTH_SECRET",
-      "type": "encrypted",
-      "target": ["production", "preview"]
-    }
-  ]
-}
-```
-
-## Sécurité de l'infrastructure
-
-### Mesures de sécurité implémentées
-
-```mermaid
-flowchart TB
-    subgraph Protection
-        A1[Chiffrement HTTPS<br/>(TLS 1.3)]
-        A2[Secrets chiffrés<br/>(Vercel Encrypted Env)]
-        A3[Protection DDoS<br/>(Vercel)]
-        A4[WAF<br/>(Vercel)]
-        A5[Authentification forte<br/>(Better Auth)]
-    end
-    
-    subgraph Surveillance
-        B1[Logs centralisés]
-        B2[Alertes en temps réel]
-        B3[Audit des accès]
-        B4[Scan de vulnérabilités]
-    end
-    
-    subgraph Backup
-        C1[Backups DB automatiques<br/>(Neon)]
-        C2[Backups manuels<br/>(pnpm db:backup)]
-        C3[Point-in-time recovery]
-    end
-    
-    Request[Requête HTTP] --> A1
-    A1 --> A2
-    A2 --> A3
-    A3 --> A4
-    A4 --> Application
-    
-    Application --> B1
-    Application --> B2
-    Application --> B3
-    
-    DB --> C1
-    DB --> C2
-    DB --> C3
-    
-    style Protection fill:#e8f5e9,stroke:#4caf50
-    style Surveillance fill:#fff3e0,stroke:#ff9800
-    style Backup fill:#f3e5f5,stroke:#9c27b0
-```
-
-## Coûts et scalabilité
-
-### Estimation des coûts (Free Tier)
-
-| Service | Coût mensuel estimé | Statut |
-|---------|---------------------|--------|
-| **Vercel** | 0 € | Free Tier suffisant |
-| **Neon PostgreSQL** | 0 € | Free Tier suffisant |
-| **GitHub** | 0 € | Free Tier (public repo) |
-| **Total** | **0 €** | ✅ Budget respecté |
-
-### Scalabilité
-
-| Trafic mensuel | Vercel | Neon | Coût estimé |
-|---------------|--------|------|--------------|
-| 10 000 utilisateurs | Free Tier | Free Tier | 0 € |
-| 50 000 utilisateurs | Pro (20 €) | Pro (25 €) | ~45 € |
-| 100 000 utilisateurs | Pro (20 €) | Pro (50 €) | ~70 € |
-| 500 000 utilisateurs | Enterprise | Enterprise | ~250 € |
-
-**Scalabilité verticale** : Neon permet de passer à des instances dédiées en cas de besoin.
-**Scalabilité horizontale** : Vercel scale automatiquement avec le trafic.
-
-## Procédures d'urgence
-
-### Rollback
-
-```mermaid
-flowchart TD
-    A[Problème détecté] --> B[Identifier la cause]
-    B --> C{Type de problème?}
-    C -->|Code| D[Re-déployer le dernier tag stable]
-    C -->|Base de données| E[Restaurer depuis backup]
-    C -->|Les deux| F[Rollback code + restore DB]
-    
-    D --> G[Vérifier les fonctionnalités]
-    E --> G
-    F --> G
-    G --> H{Problème résolu?}
-    H -->|Oui| I[Communiquer aux utilisateurs]
-    H -->|Non| B
-    
-    style A fill:#ffebee,stroke:#e91e63
-    style B fill:#fff3e0,stroke:#ff9800
-    style D fill:#e8f5e9,stroke:#4caf50
-    style E fill:#e8f5e9,stroke:#4caf50
-    style F fill:#e8f5e9,stroke:#4caf50
-    style G fill:#e3f2fd,stroke:#2196f3
-    style I fill:#e8f5e9,stroke:#4caf50
-```
-
-**Temps moyen de rollback** : < 15 minutes (code + base de données)
-
-### Sauvegarde et restauration
-
-```bash
-# Sauvegarde manuelle
-pnpm db:backup
-
-# Restauration
-pnpm db:restore backups/backup-2026-11-06.sql
-
-# Sauvegarde automatique avant import
-pnpm db:import-csv data.csv  # Backup automatique inclus
-```
-
-## Conseils pour l'impression
-
-1. Exporter chaque diagramme via [Mermaid Live Editor](https://mermaid.live) en PNG 300dpi
-2. Imprimer en format paysage pour les diagrammes larges
-3. Garder les légendes et explications à côté des diagrammes
-4. Utiliser du papier A3 pour les diagrammes complexes
-5. Numéroter les pages pour référence facile
+**Coûts** : Vercel, Neon et GitHub en Free Tier suffisent aujourd'hui (0 €/mois) ; au-delà du quota, bascule estimée à ~45 €/mois vers 50 000 utilisateurs.

@@ -1,5 +1,6 @@
 'use client';
 
+import { getUserDisplayName } from '@/lib/utils/userDisplayName';
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -298,7 +299,7 @@ function LivingRideFullscreen({ ride, onClose, onUpdate }: {
                         {localRide.customers.map(c => (
                             <span key={c.id} className={styles.passengerChip}>
                                 <User className={styles.passengerChipIcon} />
-                                {c.name}
+                                {getUserDisplayName(c, t)}
                             </span>
                         ))}
                     </div>

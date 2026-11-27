@@ -222,7 +222,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
 
     return (
         <div className={isPageMode ? styles.pageShell : styles.modalOverlay}>
-            <div className={isPageMode ? styles.pageContainer : styles.modalContainer} role={!isPageMode ? "dialog" : undefined} aria-modal={!isPageMode ? "true" : undefined} aria-labelledby="add-ride-title">
+            <div className={isPageMode ? styles.pageContainer : styles.modalContainer} role={!isPageMode ? "dialog" : undefined} aria-modal={!isPageMode ? "true" : undefined} aria-labelledby={!isPageMode ? "add-ride-title" : undefined}>
                 {isPageMode ? (
                     <div className={styles.pageHeader}>
                         <div className={styles.pageHeaderText}>
@@ -263,7 +263,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className={isPageMode ? styles.pageContent : styles.modalContent}>
+                <form id="add-ride-form" onSubmit={handleSubmit} className={isPageMode ? styles.pageContent : styles.modalContent}>
                     {error && (
                         <div className={styles.errorMessage}>
                             <AlertTriangle className={styles.alertIcon} />
@@ -525,6 +525,7 @@ export function AddRideModal({isOpen, onClose = () => {}, onSuccess, mode = 'mod
                     </Button>
                     <Button
                         type="submit"
+                        form="add-ride-form"
                         disabled={loading || loadingData}
                         isPending={loading}
                         pendingText={t('common.creating', 'Creating...')}
