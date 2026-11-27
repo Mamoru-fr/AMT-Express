@@ -285,7 +285,7 @@ flowchart LR
 flowchart LR
     Admin([Administrateur]) --> UC1[Créer/éditer une course]
     Admin --> UC2[Affecter · valider une demande]
-    Admin --> UC3[KPI · import/export CSV · bannissement]
+    Admin --> UC3[KPI · import/export CSV]
     Driver([Chauffeur]) --> UC4[Courses disponibles]
     Driver --> UC5[Demander une assignation · plafond 5]
     Driver --> UC6[Gérer ses shifts]
@@ -562,7 +562,7 @@ flowchart TB
 
 | Risque OWASP                           | Catégorie                                  | Solution mise en œuvre dans AMT Express                                                                                                                                                                         |
 | -------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A01 — Contrôle d'accès défaillant**  | Broken Access Control                      | Vérification systématique des rôles via `verifyRole()` dans chaque Server Action. Hiérarchie de rôles stricte (admin > driver > customer). Activation manuelle des chauffeurs. Système de bannissement intégré. |
+| **A01 — Contrôle d'accès défaillant**  | Broken Access Control                      | Vérification systématique des rôles via `verifyRole()` dans chaque Server Action. Hiérarchie de rôles stricte (admin > driver > customer). Bannissement porté par la couche d'authentification Better Auth. |
 | **A02 — Cryptographie défaillante**    | Cryptographic Failures                     | Cookies HTTP-only (via `nextCookies()`), secrets stockés dans des variables d'environnement, HTTPS imposé en production.                                                                                        |
 | **A03 — Injection**                    | Injection                                  | Requêtes SQL paramétrées via Drizzle ORM, validation et sanitization systématique avec Zod côté serveur sur toutes les entrées utilisateur.                                                                     |
 | **A05 — Mauvaise configuration**       | Security Misconfiguration                  | Fichier `.env` exclu du dépôt (`.gitignore`), gestion des environnements (`NODE_ENV`), messages d'erreur génériques côté client via `ActionResponse`.                                                           |
