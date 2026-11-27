@@ -70,7 +70,7 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 | Activité type                                                                    | Compétence professionnelle                                       | Section du dossier                                              |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
 | **AT1 — Développer une application sécurisée**                                   | Installer et configurer son environnement de travail             | §6.3 (stack, pnpm, Docker) · §4.1                               |
-|                                                                                  | Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, parallel routes, responsive, a11y)                 |
+|                                                                                  | Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, route groups, responsive, a11y)                 |
 |                                                                                  | Développer des composants métier réutilisables                   | §7.3 (Server Actions, controllers, services)                    |
 |                                                                                  | Contribuer à la gestion d'un projet informatique                 | §4 (Scrum, Git Flow, planning, qualité)                         |
 | **AT2 — Concevoir et développer une application sécurisée organisée en couches** | Analyser les besoins et maquetter une application                | §3 (cahier des charges) · §5.3 (maquettes, espaces par rôle)    |
@@ -494,7 +494,7 @@ flowchart LR
 
 
 
-> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
+> *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -531,18 +531,30 @@ flowchart LR
 <div align="center">
 
 ```mermaid
-flowchart LR
-    FE["Frontend — Next.js · React 19"] --> SA["Server Actions — points d'entrée"]
-    SA --> PX["Proxy — session + rôle"]
-    PX --> CT["Controllers — Zod + règles"]
-    CT --> SV{{"Services — logique métier"}}
-    SV --> DR["Drizzle ORM"]
-    DR --> DB[("PostgreSQL — Neon")]
+flowchart TB
+    subgraph IN["Adaptateurs d'entrée — déclenchés par le front"]
+        direction LR
+        FE["Frontend — Next.js · React 19"]
+        SA{{"Server Actions — points d'entrée"}}
+        PX{{"Proxy — session + rôle"}}
+        CT{{"Controllers — Zod + règles"}}
+    end
+    subgraph CORE["Cœur de l'hexagone — domaine métier"]
+        SV{{"Services — logique métier<br/>AUTORISER · VALIDER · TRACER"}}
+    end
+    subgraph OUT["Adaptateurs de sortie — ports de persistance"]
+        direction LR
+        DR{{"Drizzle ORM — port de sortie"}}
+        DB[("PostgreSQL — Neon")]
+    end
+    FE --> SA --> PX --> CT
+    CT --> SV
+    SV --> DR
+    DR --> DB
     SV -. "chemin retour : Service → Controller → Actions → Frontend" .-> FE
     style FE fill:#176B87,color:#fff
     style SV fill:#F4A259,color:#000
-    style DB fill:#060605,color:#fff
-```
+    style DB fill:#060605,color:#fff```
 
 </div>
 
@@ -653,20 +665,23 @@ L'application est organisée selon une **architecture modulaire claire**, qui fa
 ```text
 amt-express/
 ├── app/                    # Routes Next.js (App Router)
-│   ├── @admin/             # Espace administrateur (parallel route)
-│   ├── @driver/           # Espace chauffeur (parallel route)
-│   ├── @customer/         # Espace client (parallel route)
-│   ├── connections/       # Authentification
-│   └── rides/             # Pages publiques (détails des courses)
-├── components/             # Composants React réutilisables (admin/, customer/, driver/, dashboard/, shared/)
-├── lib/                    # Logique métier
+│   ├── (admin)/            # Espace administrateur (route group)
+│   ├── (driver)/           # Espace chauffeur (route group)
+│   ├── (connected)/       # Pages réservées aux utilisateurs connectés (route group)
+│   ├── connections/       # Authentification (connexion, inscription)
+│   └── error.tsx          # Page d'erreur globale
+├── components/             # Composants React réutilisables
+├── lib/                    # Cœur applicatif
 │   ├── actions/           # Server Actions (points d'entrée backend)
 │   ├── controllers/       # Contrôleurs (orchestration)
 │   ├── services/          # Services (logique métier pure)
-│   ├── middleware/        # Middleware (vérification des rôles)
+│   ├── middleware/        # Vérification des rôles
 │   ├── auth/              # Authentification (Better Auth)
 │   ├── db/                # Base de données (client Drizzle, schema)
-│   └── validations/       # Schémas Zod
+│   ├── validations/       # Schémas Zod
+│   └── cache/ · types/ · utils/
+├── proxy.ts                # Session + rôle, exécuté à chaque requête
+├── locales/                # Internationalisation (FR/EN, i18next)
 ├── test/                   # Tests automatisés (unit/, integration/)
 └── public/                # Assets statiques
 ```
@@ -681,7 +696,7 @@ amt-express/
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'arborescence réelle du projet dans VS Code : les dossiers <code>app/</code>, <code>components/</code> et <code>lib/</code> (actions, controllers, services) visibles.</p>
 </div>
 
-**Lecture de l'arborescence** : les **parallel routes** (@admin/, @driver/, @customer/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
+**Lecture de l'arborescence** : les **route groups** ((admin)/, (driver)/, (connected)/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
 
 ### 7.2. Réalisation personnelle front-end : composant React avec gestion d'état
 
