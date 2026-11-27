@@ -294,7 +294,7 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
-<div align="center" style="width: 60%; margin: 0 auto;">
+<div align="center" style="width: 42%; margin: 0 auto;">
 
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
@@ -499,7 +499,7 @@ flowchart LR
 <div style="page-break-inside: avoid;">
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 42%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
 </div>
 
@@ -507,8 +507,8 @@ flowchart LR
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
-<img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="width: 36%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="width: 36%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 </div>
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client côte à côte : en français (à gauche) et en anglais (à droite) — l'internationalisation (i18next) couvre toute l'interface.</p>
 </div>
@@ -517,7 +517,7 @@ flowchart LR
 
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 42%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
 </div>
 
