@@ -554,7 +554,8 @@ flowchart TB
     SV -. "chemin retour : Service → Controller → Actions → Frontend" .-> FE
     style FE fill:#176B87,color:#fff
     style SV fill:#F4A259,color:#000
-    style DB fill:#060605,color:#fff```
+    style DB fill:#060605,color:#fff
+```
 
 </div>
 
