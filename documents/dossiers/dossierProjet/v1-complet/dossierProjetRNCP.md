@@ -294,6 +294,8 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
+<div align="center" style="width: 60%; margin: 0 auto;">
+
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
@@ -301,6 +303,8 @@ flowchart LR
     Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Assignation · plafond 5] & UC6[Shifts : mise à disposition]
     Customer([Client]) --> UC7[Réserver] & UC8[Historique · notation]
 ```
+
+</div>
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
 
@@ -476,6 +480,8 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
+<div align="center" style="width: 55%; margin: 0 auto;">
+
 ```mermaid
 %%{init: {"flowchart": {"fontSize": "11px"}}}%%
 flowchart LR
@@ -485,9 +491,13 @@ flowchart LR
     R -- client --> Cu["Client : réservation, historique, notation"]
 ```
 
+</div>
+
 
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
+<div style="page-break-inside: avoid;">
+
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
@@ -502,6 +512,9 @@ flowchart LR
 </div>
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client côte à côte : en français (à gauche) et en anglais (à droite) — l'internationalisation (i18next) couvre toute l'interface.</p>
 </div>
+
+</div>
+
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
 <img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 72%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
@@ -712,12 +725,12 @@ useEffect(() => {
 **Explication** : les interfaces SortRule et RideFilters garantissent la cohérence des données à la compilation ; les états sont initialisés avec des valeurs par défaut claires ; la vérification du rôle admin redirige automatiquement vers l'accueil si l'utilisateur n'a pas les droits. Ce contrôle côté client **complète** le contrôle serveur (voir 7.3) : il ne le remplace jamais, mais évite d'afficher une interface sensible à un utilisateur non autorisé. *Bonnes pratiques* : typage strict, fail-safe, séparation des responsabilités, responsive via Tailwind CSS.
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/ÉcranAdminListeCourses.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ÉcranAdminListeCourses.png" alt="Tableau de bord admin — gestion des courses" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur dont cet extrait est le cœur : filtres, tri et colonnes de courses (retour serveur <code>ActionResponse</code>).</p>
 </div>
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/Dashboard - KPI.png" alt="Tableau de bord administrateur — indicateurs clés (KPI)" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/Dashboard - KPI.png" alt="Tableau de bord administrateur — indicateurs clés (KPI)" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur : les indicateurs clés du pilotage (courses, chauffeurs, activité du jour).</p>
 </div>
 
@@ -895,7 +908,7 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 | 6     | Service (transaction)    | Atomicité : assignation + rejet des concurrentes + audit |
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/CréerUnTrajet-Erreur Date.png" alt="Ajout manuel de course (AddRideModal) — état d'erreur, date invalide" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/CréerUnTrajet-Erreur Date.png" alt="Ajout manuel de course (AddRideModal) — état d'erreur, date invalide" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le formulaire d'ajout manuel de course (AddRideModal) : la validation s'affiche en ligne — ici une date invalide — sans quitter la modale.</p>
 </div>
 
@@ -1071,7 +1084,7 @@ flowchart LR
 
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 45%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console d'import CSV réelle : backup de la base, avertissements, puis le résumé — courses importées, ignorées, erreurs.</p>
 </div>
 
