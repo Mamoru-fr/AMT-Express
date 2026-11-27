@@ -213,9 +213,11 @@ Le projet a été développé selon une démarche inspirée du framework **Scrum
 ```mermaid
 flowchart LR
     F["feature · hotfix"] -- "PR + CI verte" --> DEV["development"]
-    DEV -- "workflow_dispatch + confirmation" --> UAT["Vercel UAT"]
-    UAT -- "validation humaine" --> MAIN["main → PROD"]
-    MAIN -.->|"rollback : tag précédent"| MAIN
+    DEV -- "PR + CI verte" --> MAIN["main (push direct bloqué)"]
+    MAIN -- "push sur main → automatique" --> UAT["Vercel UAT"]
+    DEV -. "workflow_dispatch (manuel, branche au choix)" .-> UAT
+    MAIN -- "workflow_dispatch + confirmation (manuel)" --> PROD["Vercel PROD"]
+    PROD -.->|"rollback : tag précédent"| MAIN
 ```
 
 > *Vous retrouvez la version A4 (cycle de déploiement complet) dans l'<u>**annexe #6**</u>.*
@@ -224,9 +226,9 @@ flowchart LR
 1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
 2. **Intégration** : La branche `development` sert de branche d'intégration
 3. **Validation CI** : Toute PR doit passer la CI (build + tests) avant d'être mergée
-4. **Déploiement UAT** : Déploiement manuel sur Vercel UAT via `workflow_dispatch`
-5. **Validation manuelle** : Tests de recette avant passage en production
-6. **Production** : Merge sur `main` déclenche le déploiement en production
+4. **Déploiement UAT** : mise à jour **automatique à chaque push sur `main`** — donc à chaque PR mergée, le push direct sur `main` étant bloqué par les règles de protection ; un déploiement **manuel** reste possible depuis n'importe quelle branche via `workflow_dispatch`
+5. **Validation manuelle** : tests de recette sur l'UAT avant passage en production
+6. **Production** : déploiement **toujours manuel** (`workflow_dispatch` avec confirmation « yes »), **uniquement depuis `main`**
 
 **Suivi du projet** :
 - **~245 commits** et **39 Pull Requests mergées**, chacun relié à une issue et passé par la CI avant merge
@@ -961,8 +963,8 @@ AMT Express utilise un déploiement progressif avec **trois environnements** dis
 | Environnement        | URL                        | Utilisation               | Branche associée                 |
 | -------------------- | -------------------------- | ------------------------- | -------------------------------- |
 | Développement        | localhost:3000             | Développement local       | feature/*, development           |
-| UAT (pré-production) | amt-express-uat.vercel.app | Tests de recette          | development (déploiement manuel) |
-| Production           | amt-express.vercel.app     | Application en production | main (déploiement automatique)   |
+| UAT (pré-production) | amt-express-uat.vercel.app | Tests de recette          | main (auto sur push) ; manuel depuis toute branche |
+| Production           | amt-express.vercel.app     | Application en production | main (déploiement manuel uniquement) |
 
 Chaque environnement a sa **base de données Neon, ses secrets Better Auth et son niveau de journalisation** propres (debug → info → warn), chargés via les variables d'environnement :
 
@@ -980,33 +982,31 @@ export function getConfig(): Config {
 
 ### 9.2. CI/CD avec GitHub Actions
 
-Le pipeline (.github/workflows/ci-cd.yml) garantit que **rien ne part en production sans que les 244 tests passent** :
+Les workflows GitHub Actions du dépôt (`.github/workflows/`) garantissent que **rien ne part en production sans que les 244 tests passent** :
 
 ```yaml
-name: CI/CD Pipeline
+# deploy-to-vercel-uat.yml — mise à jour automatique de l'UAT
 on:
-  push: { branches: [ development, main ] }
-  pull_request: { branches: [ development, main ] }
-  workflow_dispatch:      # déploiement manuel, au choix UAT ou PROD
-jobs:
-  test:                   # lint + build + tests sur chaque PR et push
-    runs-on: ubuntu-latest
-    steps: [ checkout, setup-node, pnpm install, pnpm lint, pnpm build, pnpm test ]
-  deploy-uat:             # automatique sur development, ou manuel
-    needs: test
-    if: github.ref == 'refs/heads/development' || github.event_name == 'workflow_dispatch'
-  deploy-prod:            # automatique sur main, ou manuel avec confirmation
-    needs: test
-    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'PROD')
+  push: { branches: [main] }      # chaque push sur main (via PR) met à jour l'UAT
+  workflow_dispatch: {}           # ou déclenchement manuel, branche au choix
+
+# deploy-to-vercel-prod.yml — production manuelle uniquement
+on:
+  workflow_dispatch:
+    inputs:
+      confirm: { required: true }  # confirmation « yes » obligatoire
+
+# CI sur chaque PR et push : tests-unit.yml, tests-rides.yml,
+# tests-auth.yml, auth-unit.yml, build.yml (lint + build + tests)
 ```
 
 ```mermaid
 flowchart LR
-    A[Push dev/main] --> B["Job: test"]
-    B -->|Succès| C[Build]
-    C --> D{Environnement ?}
-    D -- development --> U[Déploiement UAT auto]
-    D -- main --> P[Déploiement PROD auto]
+    A["PR / push"] --> B["CI : lint + build + tests"]
+    B -->|"push sur main"| U["UAT (automatique)"]
+    B -->|"workflow_dispatch"| M{"Déclenchement manuel"}
+    M -->|"branche au choix"| U
+    M -->|"main + confirmation « yes »"| P["PROD (manuel uniquement)"]
 ```
 
 
