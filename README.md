@@ -32,8 +32,8 @@
 > **A lire avant tout clone ou fork**
 
 - Le fichier `amt-express/.env` contient des **secrets réels** (URL Neon, clé Better Auth). Il ne doit **jamais** être poussé sur un dépôt public. Vérifiez qu'il est dans `.gitignore` et **révoquez immédiatement** les credentials s'ils ont été exposés.
-- Il n'existe **pas** de fichier `.env.example`. Créez-en un manuellement à partir du template de la section [Variables d'environnement](#️-variables-denvironnement).
-- Le `docker-compose.yml` référence `.env.example` comme `env_file` — il ne fonctionnera pas sans ce fichier.
+- Le fichier `.env.example` du dépôt sert de template : copiez-le et remplissez vos propres credentials.
+- Le `docker-compose.yml` référence `.env.example` comme `env_file` — copiez ce template avant de lancer Docker.
 - Le Dockerfile cible **Node.js 20** (`node:20.12.2-alpine`). Utilisez cette version pour des builds reproductibles.
 - Le projet est en **développement actif**. Plusieurs fonctionnalités (GPS, OCR, paiements, chat) sont partiellement ou non implémentées.
 
@@ -89,7 +89,7 @@
 
 - Inscription / Connexion par email + mot de passe (Better Auth)
 - Trois rôles : `admin`, `driver`, `customer` — défaut : `customer`
-- Activation manuelle des comptes chauffeurs par un admin
+- Inscription libre en rôle `customer` ; élévation de rôle sur demande (interface d'administration prévue en roadmap)
 - Bannissement temporaire ou permanent avec motif
 - Journal d'activité tracé en base (`activity_logs`)
 
@@ -146,11 +146,10 @@
 ```
 amt-express/
 ├── app/
-│   ├── @admin/             # Espace administrateur (parallel route)
-│   ├── @auth/              # Pages connexion / inscription
-│   ├── @customer/          # Espace client (history, profile, rides)
-│   ├── @driver/            # Espace chauffeur
-│   └── connections/        # Layout connexion
+│   ├── (admin)/            # Espace administrateur (route group)
+│   ├── (driver)/           # Espace chauffeur (route group)
+│   ├── (connected)/        # Espace connecté : profile, rides, settings
+│   └── connections/        # Connexion / inscription
 ├── components/             # Composants React (admin, customer, driver, dashboard…)
 ├── lib/
 │   ├── actions/            # Server Actions (auth, rides, dashboard…)
@@ -213,7 +212,7 @@ Schema : [amt-express/lib/db/schema.ts](amt-express/lib/db/schema.ts)
 | `ride_options` | Suppléments tarifaires configurables |
 | `ride_selected_options` | Options choisies par course |
 | `ride_customers` | Association course ↔ client + note |
-| `ride_managers` | Association course ↔ admin |
+| `ride_managers` | Association course ↔ utilisateur responsable (manager) |
 | `shift_planning` | Planning des shifts par chauffeur |
 | `assignment_requests` | Demandes d'assignation chauffeur → course |
 | `invoices` | Factures (totaux, TVA, statut, rappels) |
@@ -245,9 +244,8 @@ cd AMT-Express/amt-express
 
 pnpm install
 
-# Créer le fichier d'env (voir section Variables d'environnement)
-# et remplir avec vos propres credentials
-cp .env .env.local
+# Copier le template et remplir avec vos propres credentials
+cp .env.example .env.local
 
 pnpm db:migrate
 pnpm dev
