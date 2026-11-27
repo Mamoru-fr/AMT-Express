@@ -153,7 +153,7 @@ Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Proje
 
 <!-- CAPTURE à produire : issue GitHub #92 (US4 — affecter une course / valider une demande d'assignation), vue complète : titre, labels user-story / mvp, lien vers l'issue de travail #13. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom user-story-issue-92.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/screenshots/user-story-issue-92.png" alt="Issue GitHub #92 — user story US4" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/IssuesUS4.png" alt="Issue GitHub #92 — user story US4" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La user story US4 telle qu'elle vit dans le dépôt : issue #92, labels <code>user-story</code> / <code>mvp</code>, reliée à l'issue de travail d'origine #13.</p>
 </div>
 
@@ -718,7 +718,7 @@ amt-express/
 
 <!-- CAPTURE à produire : VS Code ouvert sur amt-express/, explorateur de fichiers visible (app/, components/, lib/), un fichier de service ouvert. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom vscode-arborescence.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/screenshots/vscode-arborescence.png" alt="VS Code — explorateur du projet amt-express" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ArboressenceProjet.png" alt="VS Code — explorateur du projet amt-express" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'arborescence réelle du projet dans VS Code : les dossiers <code>app/</code>, <code>components/</code> et <code>lib/</code> (actions, controllers, services) visibles.</p>
 </div>
 
@@ -1115,6 +1115,10 @@ flowchart LR
 ### 9.3. Scripts de backup et restauration
 
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console d'import CSV réelle : backup de la base, avertissements, puis le résumé — courses importées, ignorées, erreurs.</p>
+</div>
 
 ```ts
 // lib/db/import-csv.ts — backup automatique avant toute opération d'import
@@ -1445,7 +1449,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
 | 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
 
-> ** Statut** : **18/18 annexes produites**. Deux encarts du corps du dossier attendent encore leur capture : l'issue US4 (§3.3) et l'arborescence VS Code (§7.1). Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> ** Statut** : **18/18 annexes produites**. Toutes les captures du corps du dossier sont intégrées : board, graphe Git, interfaces, pipeline, tests, déploiement, import CSV, issue US4 et arborescence. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
