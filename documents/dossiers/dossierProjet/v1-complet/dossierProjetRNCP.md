@@ -73,7 +73,7 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 | Activité type                                                                    | Compétence professionnelle                                       | Section du dossier                                              |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
 | **AT1 — Développer une application sécurisée**                                   | Installer et configurer son environnement de travail             | §6.3 (stack, pnpm, Docker) · §4.1                               |
-|                                                                                  | Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, route groups, responsive, a11y)                 |
+|                                                                                  | Développer des interfaces utilisateur dynamiques et ergonomiques | §7.2 (React, route groups, responsive, a11y)                    |
 |                                                                                  | Développer des composants métier réutilisables                   | §7.3 (Server Actions, controllers, services)                    |
 |                                                                                  | Contribuer à la gestion d'un projet informatique                 | §4 (Scrum, Git Flow, planning, qualité)                         |
 | **AT2 — Concevoir et développer une application sécurisée organisée en couches** | Analyser les besoins et maquetter une application                | §3 (cahier des charges) · §5.3 (maquettes, espaces par rôle)    |
@@ -121,11 +121,11 @@ L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq 
 
 **Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **un rôle de base et deux extensions** : `customer` (le client, socle de tous les comptes), étendu par `driver` (le chauffeur), lui-même étendu par `admin` (l'administrateur). Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
 
-| Rôle applicatif    | Personas couverts                                        | Besoin commun que le rôle résout                                                                                                                  |
-| ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rôle applicatif    | Personas couverts                                        | Besoin commun que le rôle résout                                                                                                                                                                                |
+| ------------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Administrateur** | Marc (pilotage), Nathalie (saisie et relances)           | Créer et assigner les courses et les mises à disposition (shifts), valider les demandes des chauffeurs, importer les données CSV, consulter les KPI, exporter en CSV — **et toutes les actions du rôle client** |
-| **Chauffeur**      | Djamel                                                   | Voir les courses et mises à disposition (shifts) disponibles, demander une assignation (plafond de 5 demandes), réaliser les prestations — **et toutes les actions du rôle client** |
-| **Client**         | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course, consulter l'historique, noter les prestations (rôle de base, commun à tous les comptes) |
+| **Chauffeur**      | Djamel                                                   | Voir les courses et mises à disposition (shifts) disponibles, demander une assignation (plafond de 5 demandes), réaliser les prestations — **et toutes les actions du rôle client**                             |
+| **Client**         | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course, consulter l'historique, noter les prestations (rôle de base, commun à tous les comptes)                                                                                                    |
 
 **Tarification** : dans la quasi-totalité des cas, la course est facturée **au compteur**, sur la base du prix au kilomètre fixé par les préfectures. Certains tarifs spéciaux (ex. aéroport) sont à **prix verrouillé**, complétés par les options et le temps d'attente du chauffeur (`waiting_time`, facturé via `waiting_fee` — voir §5.2) ; les mises à disposition (shifts) sont facturées au **tarif horaire**.
 
@@ -137,16 +137,16 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 
 **User stories livrées dans le MVP** (issue GitHub d'origine entre parenthèses) :
 
-| #   | User story                                                                                                                                                           | Issue US (travail d'origine) |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                          | #89 (#1, #5)                 |
+| #   | User story                                                                                                                                                                                                          | Issue US (travail d'origine) |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| US1 | En tant qu'administrateur, je veux créer un compte et me connecter, afin de gérer la plateforme en sécurité                                                                                                         | #89 (#1, #5)                 |
 | US2 | En tant qu'utilisateur, je veux créer mon compte en autonomie (rôle client, sans validation préalable), afin de réserver directement ; l'élévation au rôle chauffeur se fait sur demande auprès d'un administrateur | #90 (#1, #7)                 |
-| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise    | #91 (#10)                    |
-| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable | #92 (#13)                    |
-| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                    | #93 (#13)                    |
-| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                              | #94 (#14)                    |
-| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                         | #95 (#17, #19)               |
-| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                    | #96 (#2, #4)                 |
+| US3 | En tant qu'administrateur, je veux créer une course avec ses détails (départ, destination, horaire, prix, options), afin de cataloguer l'activité de l'entreprise                                                   | #91 (#10)                    |
+| US4 | En tant qu'administrateur, je veux affecter une course à un chauffeur ou valider sa demande d'assignation, afin de distribuer l'effort de manière fiable et traçable                                                | #92 (#13)                    |
+| US5 | En tant que chauffeur, je veux voir les courses disponibles et demander une assignation, afin de maximiser mes revenus en choisissant mes courses                                                                   | #93 (#13)                    |
+| US6 | En tant que client, je veux réserver une course et consulter mon historique, afin de commander sans friction et suivre mes déplacements                                                                             | #94 (#14)                    |
+| US7 | En tant qu'administrateur, je veux consulter les statistiques des courses sur un tableau de bord, afin de piloter l'activité                                                                                        | #95 (#17, #19)               |
+| US8 | En tant qu'administrateur, je veux importer les anciennes données par CSV avec sauvegarde automatique, afin de migrer sans perte ni double saisie                                                                   | #96 (#2, #4)                 |
 
 **User stories du backlog post-MVP** (extrait ; la liste complète vit dans les issues GitHub ouvertes) : facturation (création, groupée, envoi, relances — issues #20 à #23), notifications temps réel (#24 à #26), géolocalisation (#27, #29), chat interne (#28), OCR d'import de courses (#11), notation des chauffeurs (#16), mots de passe oubliés (#6), **administration des rôles** : un client demande son élévation au rôle chauffeur auprès d'un administrateur (mail ou autre canal), qui la valide via une interface dédiée à venir ; l'élévation au rôle administrateur exigera une double validation (modalités en cours de définition). La hiérarchie de rôles et sa vérification sont déjà en place côté code : seul l'écran d'administration manque.
 
@@ -163,17 +163,17 @@ Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Proje
 
 Le **Minimum Viable Product** déployé en production comprend les fonctionnalités suivantes :
 
-| #   | Fonctionnalité                   | Statut | Détails                                                                                                      |
-| --- | -------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| #   | Fonctionnalité                   | Statut | Détails                                                                                                                                                           |
+| --- | -------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Authentification multi-rôles** | Livré  | 3 rôles (admin/driver/customer) vérifiés à chaque action serveur. Inscription libre côté client ; bannissement porté par la couche d'authentification Better Auth |
-| 2   | **CRUD courses complet**         | Livré  | Création, lecture, mise à jour, suppression avec cycle de statuts (pending → assigned → completed/cancelled) |
-| 3   | **Gestion des assignations**     | Livré  | Demandes d'assignation par les chauffeurs, validation par l'admin                                            |
-| 4   | **Tableaux de bord KPI**         | Livré  | Visualisation des courses, revenus, taux d'assignation avec Recharts                                         |
-| 5   | **Import CSV massif**            | Livré  | Import des anciennes données avec sauvegarde automatique préalable                                           |
-| 6   | **Système de notation**          | Livré  | Notation des courses (1-5 étoiles) avec commentaires                                                         |
-| 7   | **Internationalisation**         | Livré  | Support FR/EN complet, PWA (Service Worker)                                                                  |
-| 8   | **Export CSV**                   | Livré  | Export des données jusqu'à 10 000 lignes                                                                     |
-| 9   | **Journal d'audit**              | Livré  | Traçabilité complète des actions via `activity_logs`                                                         |
+| 2   | **CRUD courses complet**         | Livré  | Création, lecture, mise à jour, suppression avec cycle de statuts (pending → assigned → completed/cancelled)                                                      |
+| 3   | **Gestion des assignations**     | Livré  | Demandes d'assignation par les chauffeurs, validation par l'admin                                                                                                 |
+| 4   | **Tableaux de bord KPI**         | Livré  | Visualisation des courses, revenus, taux d'assignation avec Recharts                                                                                              |
+| 5   | **Import CSV massif**            | Livré  | Import des anciennes données avec sauvegarde automatique préalable                                                                                                |
+| 6   | **Système de notation**          | Livré  | Notation des courses (1-5 étoiles) avec commentaires                                                                                                              |
+| 7   | **Internationalisation**         | Livré  | Support FR/EN complet, PWA (Service Worker)                                                                                                                       |
+| 8   | **Export CSV**                   | Livré  | Export des données jusqu'à 10 000 lignes                                                                                                                          |
+| 9   | **Journal d'audit**              | Livré  | Traçabilité complète des actions via `activity_logs`                                                                                                              |
 
 **Fonctionnalités hors périmètre MVP** (reportées) :
 - GPS temps réel des véhicules
@@ -189,7 +189,7 @@ Le **Minimum Viable Product** déployé en production comprend les fonctionnalit
 | Risque identifié                                                | Probabilité | Impact | Mesures de mitigation                                                                                                                           |
 | --------------------------------------------------------------- | ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OCR insuffisant sur tickets manuscrits**                      | Haute       | Moyen  | Solution alternative : import CSV avec backup automatique + correction manuelle. OCR planifié pour une version post-MVP                         |
-| **Taux d'adoption des chauffeurs < 80 %**                       | Moyenne     | Fort   | Interface chauffeur simplifiée (courses, shifts, stats). Intégration progressive via l'import CSV des données existantes                                            |
+| **Taux d'adoption des chauffeurs < 80 %**                       | Moyenne     | Fort   | Interface chauffeur simplifiée (courses, shifts, stats). Intégration progressive via l'import CSV des données existantes                        |
 | **Limites des free tiers** (Neon 0,5 Go, bande passante Vercel) | Moyenne     | Fort   | Monitoring de l'usage, scripts de backup (`pnpm db:backup`), archivage possible. Scalabilité documentée (25-50 €/mois pour 1 000+ utilisateurs) |
 | **Développement solo en temps partiel**                         | Certaine    | Moyen  | Méthodologie Git Flow stricte, PR numérotées et revues, CI bloquante sur les tests rouges                                                       |
 | **Exposition des secrets**                                      | Faible      | Fort   | `.gitignore` vérifié et maintenu, README avec avertissements, procédure de révocation documentée                                                |
@@ -294,10 +294,10 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
-<div align="center" style="width: 42%; margin: 0 auto;">
+<div align="center" style="width: 33%; margin: 0 auto;">
 
 ```mermaid
-%%{init: {"flowchart": {"fontSize": "11px"}}}%%
+%%{init: {"flowchart": {"fontSize": "10px"}}}%%
 flowchart LR
     Admin([Administrateur]) --> UC1[Créer · éditer une course] & UC2[Affecter · valider] & UC3[KPI · import / export CSV]
     Driver([Chauffeur]) --> UC4[Courses disponibles] & UC5[Assignation · plafond 5] & UC6[Shifts : mise à disposition]
@@ -496,10 +496,16 @@ flowchart LR
 
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 42%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
+</div>
+
 <div style="page-break-inside: avoid;">
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 42%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 36%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
 </div>
 
@@ -514,15 +520,6 @@ flowchart LR
 </div>
 
 </div>
-
-
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa; page-break-inside: avoid;">
-<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 42%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
-</div>
-
-
-
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -597,23 +594,23 @@ flowchart LR
 
 **Contexte** : La sécurité a été une priorité dès la conception du projet. Chaque risque OWASP a été identifié et traité avec des solutions adaptées au contexte technique.
 
-| Risque OWASP                           | Catégorie                                  | Solution mise en œuvre dans AMT Express                                                                                                                                                                         |
-| -------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Risque OWASP                           | Catégorie                                  | Solution mise en œuvre dans AMT Express                                                                                                                                                                     |
+| -------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **A01 — Contrôle d'accès défaillant**  | Broken Access Control                      | Vérification systématique des rôles via `verifyRole()` dans chaque Server Action. Hiérarchie de rôles stricte (admin > driver > customer). Bannissement porté par la couche d'authentification Better Auth. |
-| **A02 — Cryptographie défaillante**    | Cryptographic Failures                     | Cookies HTTP-only (via `nextCookies()`), secrets stockés dans des variables d'environnement, HTTPS imposé en production.                                                                                        |
-| **A03 — Injection**                    | Injection                                  | Requêtes SQL paramétrées via Drizzle ORM, validation et sanitization systématique avec Zod côté serveur sur toutes les entrées utilisateur.                                                                     |
-| **A05 — Mauvaise configuration**       | Security Misconfiguration                  | Fichier `.env` exclu du dépôt (`.gitignore`), gestion des environnements (`NODE_ENV`), messages d'erreur génériques côté client via `ActionResponse`.                                                           |
-| **A06 — Dépendances vulnérables**      | Vulnerable and Outdated Components         | Exécution régulière de `pnpm audit`. Intégration prévue dans la CI (voir §10).                                                                                                                                  |
-| **A07 — Authentification défaillante** | Identification and Authentication Failures | Better Auth pour le hachage sécurisé, sessions expirantes, secret d'au moins 32 caractères, rôle par défaut minimal (`customer`).                                                                               |
+| **A02 — Cryptographie défaillante**    | Cryptographic Failures                     | Cookies HTTP-only (via `nextCookies()`), secrets stockés dans des variables d'environnement, HTTPS imposé en production.                                                                                    |
+| **A03 — Injection**                    | Injection                                  | Requêtes SQL paramétrées via Drizzle ORM, validation et sanitization systématique avec Zod côté serveur sur toutes les entrées utilisateur.                                                                 |
+| **A05 — Mauvaise configuration**       | Security Misconfiguration                  | Fichier `.env` exclu du dépôt (`.gitignore`), gestion des environnements (`NODE_ENV`), messages d'erreur génériques côté client via `ActionResponse`.                                                       |
+| **A06 — Dépendances vulnérables**      | Vulnerable and Outdated Components         | Exécution régulière de `pnpm audit`. Intégration prévue dans la CI (voir §10).                                                                                                                              |
+| **A07 — Authentification défaillante** | Identification and Authentication Failures | Better Auth pour le hachage sécurisé, sessions expirantes, secret d'au moins 32 caractères, rôle par défaut minimal (`customer`).                                                                           |
 
 **Conformité RGPD — ce qui est collecté, où, et pourquoi** :
 
-| Donnée conservée | Table | Base légale / justification |
-| --- | --- | --- |
-| Nom, e-mail, mot de passe haché (Better Auth), rôle | `users` | Exécution du contrat — authentification et gestion des rôles |
-| Véhicule (plaque, modèle), disponibilité | `drivers` | Exécution du contrat — mise en relation course / chauffeur |
-| Token de session, expiration, adresse IP, user-agent | `session` | Intérêt légitime (sécurité) — durée de la session |
-| Journal des actions (utilisateur, action, horodatage) | `activity_logs` | Intérêt légitime (sécurité) — conservé **6 mois** |
+| Donnée conservée                                      | Table           | Base légale / justification                                  |
+| ----------------------------------------------------- | --------------- | ------------------------------------------------------------ |
+| Nom, e-mail, mot de passe haché (Better Auth), rôle   | `users`         | Exécution du contrat — authentification et gestion des rôles |
+| Véhicule (plaque, modèle), disponibilité              | `drivers`       | Exécution du contrat — mise en relation course / chauffeur   |
+| Token de session, expiration, adresse IP, user-agent  | `session`       | Intérêt légitime (sécurité) — durée de la session            |
+| Journal des actions (utilisateur, action, horodatage) | `activity_logs` | Intérêt légitime (sécurité) — conservé **6 mois**            |
 
 - Aucune donnée sensible n'est collectée : les champs du schéma (`lib/db/schema.ts`), source de vérité, en font foi
 - Comptes désactivés : archivage 6 mois ; **suppression à la demande** : PII effacée, courses conservées anonymisées (« utilisateur supprimé ») pour préserver l'intégrité référentielle, factures maintenues avec les noms (obligation comptable, 10 ans — art. L123-22)
@@ -1009,11 +1006,11 @@ describe('DriverDashboardService.requestRideAssignment', () => {
 
 AMT Express utilise un déploiement progressif avec **trois environnements** distincts :
 
-| Environnement        | URL                        | Utilisation               | Branche associée                 |
-| -------------------- | -------------------------- | ------------------------- | -------------------------------- |
-| Développement        | localhost:3000             | Développement local       | feature/*, development           |
+| Environnement        | URL                        | Utilisation               | Branche associée                                   |
+| -------------------- | -------------------------- | ------------------------- | -------------------------------------------------- |
+| Développement        | localhost:3000             | Développement local       | feature/*, development                             |
 | UAT (pré-production) | amt-express-uat.vercel.app | Tests de recette          | main (auto sur push) ; manuel depuis toute branche |
-| Production           | amt-express.vercel.app     | Application en production | main (déploiement manuel uniquement) |
+| Production           | amt-express.vercel.app     | Application en production | main (déploiement manuel uniquement)               |
 
 Chaque environnement a sa **base de données Neon, ses secrets Better Auth et son niveau de journalisation** propres (debug → info → warn), chargés via les variables d'environnement :
 
@@ -1118,16 +1115,16 @@ Scripts npm associés : pnpm db:backup, pnpm db:restore, pnpm db:import-csv data
 
 ### 9.5. Documentation utilisateur et technique
 
-| Type | Fichier | Contenu |
-| --- | --- | --- |
-| **README** | `README.md` | Guide de démarrage, prérequis, installation, scripts, dépannage |
-| **Architecture technique** | `documentation/TECHNICAL_ARCHITECTURE.md` | Stack justifiée, patterns, décisions de conception |
-| **Sessions et rôles** | `documentation/SESSION_USAGE_GUIDE.md` | Accès à la session et au rôle par contexte |
-| **Import CSV** | `documentation/CSV_Import/CSV_IMPORT_README.md` | Procédure d'import et tests |
-| **Docker** | `documentation/Docker/DOCKER_COMMANDS.md` | Commandes Docker |
-| **Git Flow** | `documentation/GitFlow.md` | Branches et contribution |
-| **Design responsive** | `documentation/RESPONSIVE_DESIGN.md` | Principes responsive |
-| **Rapport de tests** | `amt-express/TESTS_REPORT.md` | Sortie des tests versionnée dans le dépôt |
+| Type                       | Fichier                                         | Contenu                                                         |
+| -------------------------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| **README**                 | `README.md`                                     | Guide de démarrage, prérequis, installation, scripts, dépannage |
+| **Architecture technique** | `documentation/TECHNICAL_ARCHITECTURE.md`       | Stack justifiée, patterns, décisions de conception              |
+| **Sessions et rôles**      | `documentation/SESSION_USAGE_GUIDE.md`          | Accès à la session et au rôle par contexte                      |
+| **Import CSV**             | `documentation/CSV_Import/CSV_IMPORT_README.md` | Procédure d'import et tests                                     |
+| **Docker**                 | `documentation/Docker/DOCKER_COMMANDS.md`       | Commandes Docker                                                |
+| **Git Flow**               | `documentation/GitFlow.md`                      | Branches et contribution                                        |
+| **Design responsive**      | `documentation/RESPONSIVE_DESIGN.md`            | Principes responsive                                            |
+| **Rapport de tests**       | `amt-express/TESTS_REPORT.md`                   | Sortie des tests versionnée dans le dépôt                       |
 
 Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16+ — instance Neon en 18), installation et lancement local — la procédure complète figure dans le dépôt. Ces guides sont rédigés en Markdown dans le dépôt, prêts à être remis au client au format PDF pour consultation hors ligne.
 
@@ -1317,16 +1314,16 @@ static async getRidesWithDetails(limit: number = 50) {
 
 **Objectifs atteints** :
 
-| Objectif                | Statut         | Détails                                                                      |
-| ----------------------- | -------------- | ---------------------------------------------------------------------------- |
-| **Fonctionnalités MVP** | ✅ Complètes    | 9/9 fonctionnalités livrées et déployées                                     |
-| **Qualité du code**     | ✅ Atteinte     | 244 tests automatisés au vert, 0 vulnérabilité critique                      |
-| **Sécurité**            | ✅ Robuste      | Vérification des rôles à 100 %, conformité OWASP                             |
-| **Performance**         | ✅ Optimisée    | Temps de chargement < 200 ms pour les pages principales                      |
-| **Accessibilité**       | ✅ Conforme     | RGAA respecté, navigation clavier complète                                   |
-| **Documentation**       | ✅ Complète     | README, architecture, sessions et rôles, import CSV, Git Flow, Docker, responsive, rapport de tests                              |
-| **Déploiement**         | ✅ Opérationnel | CI/CD automatique, rollback possible                                         |
-| **Adoption**            | ⚠️ En cours     | MVP déployé en production ; montée en charge des utilisateurs encore à venir |
+| Objectif                | Statut          | Détails                                                                                             |
+| ----------------------- | --------------- | --------------------------------------------------------------------------------------------------- |
+| **Fonctionnalités MVP** | ✅ Complètes    | 9/9 fonctionnalités livrées et déployées                                                            |
+| **Qualité du code**     | ✅ Atteinte     | 244 tests automatisés au vert, 0 vulnérabilité critique                                             |
+| **Sécurité**            | ✅ Robuste      | Vérification des rôles à 100 %, conformité OWASP                                                    |
+| **Performance**         | ✅ Optimisée    | Temps de chargement < 200 ms pour les pages principales                                             |
+| **Accessibilité**       | ✅ Conforme     | RGAA respecté, navigation clavier complète                                                          |
+| **Documentation**       | ✅ Complète     | README, architecture, sessions et rôles, import CSV, Git Flow, Docker, responsive, rapport de tests |
+| **Déploiement**         | ✅ Opérationnel | CI/CD automatique, rollback possible                                                                |
+| **Adoption**            | ⚠️ En cours     | MVP déployé en production ; montée en charge des utilisateurs encore à venir                        |
 
 ### 12.2. Axes d'amélioration
 
@@ -1384,27 +1381,27 @@ static async getRidesWithDetails(limit: number = 50) {
 
 ## Inventaire des annexes
 
-| #     | Titre                                  | Fichier                                | Format   | Statut      |
-| ----- | -------------------------------------- | -------------------------------------- | -------- | ----------- |
-| 1     | Diagrammes UML canoniques              | `annexes/UML-canonique.md`             | Markdown | Produit ✅   |
-| 2     | ERD 19 tables                          | `annexes/ERD-19-tables.md`             | Markdown | Produit ✅   |
-| 2 bis | Dictionnaire de données                | `annexes/dictionnaire-donnees.md`      | Markdown | Produit ✅   |
-| 3     | Maquettes haute-fidélité               | `annexes/maquettes.html`               | HTML     | Produit ✅   |
-| 4     | Diagramme de Gantt                     | `annexes/gantt.md`                     | Markdown | Produit ✅   |
-| 5     | Diagramme de séquence                  | `annexes/sequence.md`                  | Markdown | Produit ✅   |
-| 6     | Schéma d'infrastructure                | `annexes/infrastructure.md`            | Markdown | Produit ✅   |
-| 7     | Capture du board GitHub Projects       | `captures/BoardGithub.png`             | PNG      | Produit ✅   |
-| 8     | Capture du pipeline CI                 | `captures/Pipeline CI Verte.png`       | PNG      | Produit ✅   |
-| 9     | Sortie des tests (pnpm test)           | `captures/PnpmTest.png`               | PNG      | Produit ✅   |
-| 10    | Captures d'écrans                      | `captures/`                           | PNG      | Produit ✅   |
-| 11    | Registre des vulnérabilités            | `annexes/registre-vulnerabilites.md`   | Markdown | Produit ✅   |
-| 12    | Extraits de code commentés             | `annexes/extraits-code-commentes.md`   | Markdown | Produit ✅   |
-| 13    | Veille sur les vulnérabilités (CVE)    | `annexes/veille-vulnerabilites.md`     | Markdown | Produit ✅   |
-| 14    | Processus manuel vs AMT Express        | `annexes/avant-apres.md`               | Markdown | Produit ✅   |
-| 15    | MCD complet (format A4)                | `annexes/mcd-complet.md`               | Markdown | Produit ✅   |
-| 16    | Registre des traitements RGPD          | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
-| 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
-| 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
+| #     | Titre                                  | Fichier                                | Format   |
+| ----- | -------------------------------------- | -------------------------------------- | -------- |
+| 1     | Diagrammes UML canoniques              | `annexes/UML-canonique.md`             | Markdown |
+| 2     | ERD 19 tables                          | `annexes/ERD-19-tables.md`             | Markdown |
+| 2 bis | Dictionnaire de données                | `annexes/dictionnaire-donnees.md`      | Markdown |
+| 3     | Maquettes haute-fidélité               | `annexes/maquettes.html`               | HTML     |
+| 4     | Diagramme de Gantt                     | `annexes/gantt.md`                     | Markdown |
+| 5     | Diagramme de séquence                  | `annexes/sequence.md`                  | Markdown |
+| 6     | Schéma d'infrastructure                | `annexes/infrastructure.md`            | Markdown |
+| 7     | Capture du board GitHub Projects       | `captures/BoardGithub.png`             | PNG      |
+| 8     | Capture du pipeline CI                 | `captures/Pipeline CI Verte.png`       | PNG      |
+| 9     | Sortie des tests (pnpm test)           | `captures/PnpmTest.png`                | PNG      |
+| 10    | Captures d'écrans                      | `captures/`                            | PNG      |
+| 11    | Registre des vulnérabilités            | `annexes/registre-vulnerabilites.md`   | Markdown |
+| 12    | Extraits de code commentés             | `annexes/extraits-code-commentes.md`   | Markdown |
+| 13    | Veille sur les vulnérabilités (CVE)    | `annexes/veille-vulnerabilites.md`     | Markdown |
+| 14    | Processus manuel vs AMT Express        | `annexes/avant-apres.md`               | Markdown |
+| 15    | MCD complet (format A4)                | `annexes/mcd-complet.md`               | Markdown |
+| 16    | Registre des traitements RGPD          | `annexes/registre-traitements-rgpd.md` | Markdown |
+| 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown |
+| 18    | Agenda / planning (scan)               | `annexes/Scan 1.pdf`                   | PDF      |
 
 .
 
