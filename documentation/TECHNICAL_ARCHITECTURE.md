@@ -24,7 +24,7 @@
 **Pourquoi :**
 - Server Components par défaut — bundles client plus légers, meilleure performance
 - Server Actions — opérations serveur sans couche API REST supplémentaire
-- Parallel Routes (`@admin`, `@driver`, `@customer`) — affichage conditionnel par rôle sans redirect
+- Route groups Next.js (`(admin)`, `(driver)`, `(connected)`) — un espace cloisonné par rôle, chacun avec son `layout.tsx` ; le rôle est vérifié à chaque requête par `proxy.ts` (middleware), redirection vers la page de connexion sinon
 
 **Compromis :**
 - La distinction Server / Client Component a une courbe d'apprentissage
