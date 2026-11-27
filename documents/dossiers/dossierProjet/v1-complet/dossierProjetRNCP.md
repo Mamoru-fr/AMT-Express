@@ -333,44 +333,31 @@ flowchart LR
 
 ```mermaid
 classDiagram
-    class User {
-        +String id · +user_role role · +boolean banned
-        +getRole() UserRole
-        +isBanned() boolean
-    }
-    class Driver {
-        +String id · FK user_id · +boolean active
-        +isAvailable() boolean
-    }
+    class User { +String id · +user_role role · +boolean banned }
+    class Driver { +String id · FK user_id · +boolean available }
     class Production { +String id · +String name }
     class Project { +String id · FK production_id · +String name }
-    class Ride {
-        +String id · FK project_id · FK driver_id · +ride_status status · +numeric price
-        +isAssignable() boolean
-        +assignTo(driverId) void
-    }
-    class RideCustomer { FK ride_id · FK customer_id · +int rating · +String comment }
-    class RideOption { +String id · +String label · +numeric price }
+    class Ride { +String id · FK project_id · FK driver_id · +ride_status status · +numeric price }
+    class RideCustomer { FK ride_id · FK customer_id · +int rating }
+    class RideManager { FK ride_id · FK manager_id }
     class RideSelectedOption { FK ride_id · FK option_id · +numeric price }
-    class AssignmentRequest {
-        FK ride_id · FK driver_id · +request_status status
-        +approve() void
-        +reject() void
-    }
+    class AssignmentRequest { FK ride_id · FK driver_id · +request_status status }
     class ShiftPlanning { FK driver_id · +shift_status status }
     User "1" --> "0..1" Driver
     Production "1" *-- "0..n" Project
     Project "1" --> "0..n" Ride
-    Driver "0..1" --> "0..n" Ride : assignee-a
-    Ride "1" --> "1..n" RideCustomer
-    Ride "1" --> "0..n" RideSelectedOption
-    RideSelectedOption "0..n" --> "1" RideOption
-    Ride "1" --> "0..n" AssignmentRequest
-    AssignmentRequest "0..n" --> "1" Driver
-    Driver "1" --> "0..n" ShiftPlanning
+    Driver "0..1" --> "0..n" Ride : assignée à
+    Ride "1" --> "1..n" RideCustomer : transporte
+    User "1" --> "0..n" RideCustomer : est client
+    Ride "1" --> "0..n" RideManager : créée par
+    User "1" --> "0..n" RideManager : crée · est responsable
+    Ride "1" --> "0..n" RideSelectedOption : embarque
+    Ride "1" --> "0..n" AssignmentRequest : suscite
+    AssignmentRequest "0..n" --> "1" Driver : émise par
+    Driver "1" --> "0..n" ShiftPlanning : planifie
 ```
 
-> *Diagramme volontairement resserré pour tenir dans la page : clés, statuts et méthodes métier principales (celles implémentées dans les services, voir §7.3) sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'<u>**annexe #1**</u> et l'ERD des 19 tables dans l'<u>**annexe #2**</u>.*
+> *Diagramme volontairement compacté (demi-page) : seuls les clés et statuts sont portés. Les méthodes métier (`isAssignable()`, `assignTo()`, `approve()`… implémentées dans les services, voir §7.3) et les classes compartimentées complètes vivent dans l'<u>**annexe #1**</u> ; l'ERD des 19 tables dans l'<u>**annexe #2**</u>.*
 
 ### 5.2. Conception de la base de données
 
@@ -396,6 +383,7 @@ flowchart LR
     USER -- "(0,1) est-aussi (1,1)" --> DRV[DRIVER]
     DRV -- "(0,n) est-assignée-à (0,1)" --> RIDE
     RIDE -- "(1,n) transporte (0,n)" --> USER
+    USER -. "(0,n) crée · est responsable de (0,n)" .-> RIDE
     RIDE -- "(0,n) embarque (0,n)" --> ROPT[RIDE_OPTION]
 ```
 
@@ -405,7 +393,8 @@ flowchart LR
 
 - `rides (id, project_id*, driver_id*, status, price, …)` — Clé étrangère vers `projects` (NOT NULL), clé étrangère vers `drivers` (NULLABLE pour les courses non encore assignées)
 - `ride_customers (ride_id*, customer_id*)` — Table associative : cardinalité (1,n) côté course, (0,n) côté client
-- `assignment_requests (ride_id*, driver_id*, status)` — Deux clés étrangères simples, statut contraint par l'enum `request_status`
+- `ride_managers (ride_id*, manager_id*)` — Table associative : l'utilisateur qui crée/est responsable de la course (relation plusieurs-à-plusieurs User ↔ Ride)
+- `assignment_requests (ride_id*, driver_id*, shift_id, status)` — Clés étrangères vers rides, drivers et shift_planning (nullable), statut contraint par l'enum `request_status`
 - `projects (id, production_id*, …)` — Clé étrangère vers `productions` ; une production contient 0..n projets
 
 **MLD — schéma relationnel du cœur métier** (transformation visuelle des règles ci-dessus) :
@@ -415,12 +404,14 @@ erDiagram
     PRODUCTIONS ||--o{ PROJECTS : "contient"
     PROJECTS ||--o{ RIDES : "concerne"
     USERS |o--o| DRIVERS : "est aussi"
-    DRIVERS |o--o{ RIDES : "est assignee a"
+    DRIVERS |o--o{ RIDES : "est assignée à"
     RIDES ||--o{ RIDE_CUSTOMERS : "transporte"
-    USERS ||--o{ RIDE_CUSTOMERS : "reserve"
+    USERS ||--o{ RIDE_CUSTOMERS : "est client de"
+    RIDES ||--o{ RIDE_MANAGERS : "est créée par"
+    USERS ||--o{ RIDE_MANAGERS : "crée · est responsable de"
     RIDES ||--o{ RIDE_SELECTED_OPTIONS : "embarque"
     RIDE_OPTIONS ||--o{ RIDE_SELECTED_OPTIONS : "est choisie dans"
-    RIDES ||--o{ ASSIGNMENT_REQUESTS : "fait l objet de"
+    RIDES ||--o{ ASSIGNMENT_REQUESTS : "fait l'objet de"
     DRIVERS ||--o{ ASSIGNMENT_REQUESTS : "emet"
     DRIVERS ||--o{ SHIFT_PLANNINGS : "planifie"
 ```
