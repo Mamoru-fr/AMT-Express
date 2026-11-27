@@ -696,7 +696,7 @@ amt-express/
 
 ### 7.2. Réalisation personnelle front-end : composant React avec gestion d'état
 
-> *Fichier source : app/@admin/ride-management/page.tsx (lignes 44-80). Ce composant est le cœur du tableau de bord administrateur : il montre la gestion des filtres et du tri avec une vérification de sécurité intégrée.*
+> *Fichier source : app/(admin)/ride-management/page.tsx (lignes 44-80). Ce composant est le cœur du tableau de bord administrateur : il montre la gestion des filtres et du tri avec une vérification de sécurité intégrée.*
 
 ```tsx
 // États TypeScript pour les filtres et le tri
@@ -1054,7 +1054,6 @@ flowchart LR
 
 
 
-> *La capture du pipeline réel (dernier run vert) sera fournie dans l'<u>**annexe #8**</u>.*
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
@@ -1319,7 +1318,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | **Sécurité**            | ✅ Robuste      | Vérification des rôles à 100 %, conformité OWASP                             |
 | **Performance**         | ✅ Optimisée    | Temps de chargement < 200 ms pour les pages principales                      |
 | **Accessibilité**       | ✅ Conforme     | RGAA respecté, navigation clavier complète                                   |
-| **Documentation**       | ✅ Complète     | README, API docs, user guide, architecture docs                              |
+| **Documentation**       | ✅ Complète     | README, architecture, sessions et rôles, import CSV, Git Flow, Docker, responsive, rapport de tests                              |
 | **Déploiement**         | ✅ Opérationnel | CI/CD automatique, rollback possible                                         |
 | **Adoption**            | ⚠️ En cours     | MVP déployé en production ; montée en charge des utilisateurs encore à venir |
 
