@@ -102,11 +102,11 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 | Manque de visibilité        | Clients appellent pour connaître l'état  | Insatisfaction client, perte de courses                              |
 | Facturation manuelle        | Factures Excel générées manuellement     | Retards de paiement, erreurs de facturation                          |
 
-**Solution proposée** : AMT Express est une **application web full-stack responsive** (compatible desktop, mobile et PWA) qui remplace ces processus manuels par un système automatisé et centralisé. Le schéma comparatif « processus manuel / avec AMT Express » est reproduit en format A4 en annexe pour être lisible par le jury.
+**Solution proposée** : AMT Express est une **application web full-stack responsive** (compatible desktop, mobile et PWA) qui remplace ces processus manuels par un système automatisé et centralisé. Le schéma comparatif « processus manuel / avec AMT Express » est reproduit en format A4 en <u>**annexe**</u> pour être lisible par le jury.
 
 ### 3.2. Personas et rôles utilisateurs
 
-L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq personas**. Ils sont rappelés ici en synthèse ; leurs portraits complets — contexte de vie, citations, usage numérique, impact produit — sont réunis dans l'**annexe #17**.
+L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq personas**. Ils sont rappelés ici en synthèse ; leurs portraits complets — contexte de vie, citations, usage numérique, impact produit — sont réunis dans l'**<u>annexe #17</u>**.
 
 | Persona                                           | Ce qu'il vit aujourd'hui                                                                                              | Ce qui lui manque                                                                             | Rôle applicatif    |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------ |
@@ -147,7 +147,7 @@ Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granul
 
 Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (capture ci-dessous) : chaque issue y passe par les colonnes Backlog → In Progress → Done, ce qui a servi de plan de sprint hebdomadaire pendant tout le développement.
 
-Vous trouverez en annexe #7 la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
+Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
 ### 3.4. Périmètre du MVP
 
@@ -218,7 +218,7 @@ flowchart LR
     MAIN -.->|"rollback : tag précédent"| MAIN
 ```
 
-> *Vous retrouvez la version A4 (cycle de déploiement complet) dans l'annexe #6.*
+> *Vous retrouvez la version A4 (cycle de déploiement complet) dans l'<u>**annexe #6**</u>.*
 
 **Détail du workflow** :
 1. **Branches de feature** : `feature/*` pour les nouvelles fonctionnalités, `hotfix/*` pour les corrections
@@ -279,7 +279,7 @@ flowchart LR
 
 **Diagramme de cas d'utilisation** — Acteurs et fonctionnalités principales
 
-> *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'annexe #1.*
+> *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
 ```mermaid
 flowchart LR
@@ -308,7 +308,7 @@ flowchart LR
 
 
 
-> *Vous retrouvez la version A4 de ce parcours (diagramme d'activité) dans l'annexe #1.*
+> *Vous retrouvez la version A4 de ce parcours (diagramme d'activité) dans l'<u>**annexe #1**</u>.*
 
 **Diagramme de classes** — Modèle conceptuel des données
 
@@ -353,13 +353,13 @@ classDiagram
     Driver "1" --> "0..n" ShiftPlanning
 ```
 
-> *Diagramme volontairement resserré pour tenir dans la page : clés, statuts et méthodes métier principales (celles implémentées dans les services, voir §7.3) sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'annexe #1 et l'ERD des 19 tables dans l'annexe #2.*
+> *Diagramme volontairement resserré pour tenir dans la page : clés, statuts et méthodes métier principales (celles implémentées dans les services, voir §7.3) sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'<u>**annexe #1**</u> et l'ERD des 19 tables dans l'<u>**annexe #2**</u>.*
 
 ### 5.2. Conception de la base de données
 
 **Contexte** : La base de données est le cœur du système. Elle doit supporter des relations complexes entre les entités tout en garantissant l'intégrité et la performance.
 
-La base de données comprend **19 tables** (16 tables métier + 3 tables d'authentification Better Auth), détaillées dans le dictionnaire de données (**annexe #2 bis**) et le diagramme entités-relations (**annexe #2**). Les types énumérés ci-dessous contraignent les statuts directement côté PostgreSQL.
+La base de données comprend **19 tables** (16 tables métier + 3 tables d'authentification Better Auth), détaillées dans le dictionnaire de données (**<u>annexe #2 bis</u>**) et le diagramme entités-relations (**<u>annexe #2</u>**). Les types énumérés ci-dessous contraignent les statuts directement côté PostgreSQL.
 
 **Types énumérés (pgEnum)** :
 - `user_role` : admin, driver, customer
@@ -370,7 +370,7 @@ La base de données comprend **19 tables** (16 tables métier + 3 tables d'authe
 
 **Modèle Conceptuel de Données (MCD)** — Notation Merise
 
-Le MCD complet (toutes les entités et associations, cardinalités portées par les liens, conformes à la notation Merise) est reproduit **en format A4 en annexe** pour rester lisible. Le schéma ci-dessous n'en montre que le cœur métier :
+Le MCD complet (toutes les entités et associations, cardinalités portées par les liens, conformes à la notation Merise) est reproduit **en format A4 en <u>annexe</u>** pour rester lisible. Le schéma ci-dessous n'en montre que le cœur métier :
 
 ```mermaid
 flowchart LR
@@ -382,7 +382,7 @@ flowchart LR
     RIDE -- "(0,n) embarque (0,n)" --> ROPT[RIDE_OPTION]
 ```
 
-> *Vous retrouvez la version A4 du MCD complet (toutes les entités et associations, notation Merise) dans l'annexe #15.*
+> *Vous retrouvez la version A4 du MCD complet (toutes les entités et associations, notation Merise) dans l'<u>**annexe #15**</u>.*
 
 **Modèle Logique de Données (MLD)** — Règles de passage
 
@@ -412,7 +412,7 @@ erDiagram
 
 Le modèle physique est représenté sous deux formes :
 
-1. **Le diagramme complet** des 19 tables et de leurs relations figure en **annexe 2** (ERD). Il s'agit de la représentation visuelle de référence.
+1. **Le diagramme complet** des 19 tables et de leurs relations figure en **<u>annexe 2</u>** (ERD). Il s'agit de la représentation visuelle de référence.
 2. **Un extrait du DDL correspondant** est donné ci-dessous pour illustrer l'implémentation physique effective, sur trois tables représentatives : la table centrale `rides`, la table de jointure `ride_customers` (relation *many-to-many* entre courses et clients, avec note et évaluation), et la table `assignment_requests` (proposition d'affectation d'un chauffeur à une course).
 
 ```sql
@@ -453,7 +453,7 @@ CREATE INDEX "rideCustomers_rideId_idx" ON "ride_customers" ("ride_id");
 CREATE INDEX "rideCustomers_customerId_idx" ON "ride_customers" ("customer_id");
 
 ```
-La table assignment_requests (propositions d'affectation d'un chauffeur à une course) suit le même modèle : clés étrangères vers rides, drivers et shift_planning avec ON DELETE, statut énuméré (request_status) et index sur ride_id / driver_id — DDL complet en annexe #2.
+La table assignment_requests (propositions d'affectation d'un chauffeur à une course) suit le même modèle : clés étrangères vers rides, drivers et shift_planning avec ON DELETE, statut énuméré (request_status) et index sur ride_id / driver_id — DDL complet en <u>**annexe #2**</u>.
 
 
 > Le schéma physique complet comprend : **19 tables** `pgTable`, **5 types énumérés** `pgEnum`, des clés étrangères avec comportement `ON DELETE SET NULL` ou `CASCADE`, et des **index mono-colonne** uniquement.
@@ -469,7 +469,7 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 - **Wireframes** : Maquettes fonctionnelles des écrans clés (dashboard admin, formulaire de course, vue chauffeur)
 - **Maquettes haute-fidélité** : Captures d'écran disponibles dans `public/screenshots/`
 
-> *Note de traçabilité : pendant la phase de conception, le projet a porté le nom temporaire **« AMT Horizon »**, encore visible dans certains documents internes (cahier des charges, spécifications) et sur les premières maquettes. Le nom final **« AMT Express »** a été arrêté au démarrage du développement — c'est pourquoi certaines maquettes de l'annexe #3 diffèrent de l'identité visuelle de l'application livrée, le design ayant été retravaillé après le changement de nom.*
+> *Note de traçabilité : pendant la phase de conception, le projet a porté le nom temporaire **« AMT Horizon »**, encore visible dans certains documents internes (cahier des charges, spécifications) et sur les premières maquettes. Le nom final **« AMT Express »** a été arrêté au démarrage du développement — c'est pourquoi certaines maquettes de l'<u>**annexe #3**</u> diffèrent de l'identité visuelle de l'application livrée, le design ayant été retravaillé après le changement de nom.*
 
 
 **Organisation des espaces par rôle** (UX)
@@ -486,7 +486,7 @@ flowchart LR
 
 
 
-> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'annexe #3.*
+> *Cette organisation repose sur les « parallel routes » de Next.js : techniquement, chaque espace est une route parallèle dédiée. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -537,7 +537,7 @@ flowchart TB
 
 </div>
 
-> *Vous retrouvez la version A4 (infrastructure complète : couches, environnements, hébergement) dans l'annexe #6.*
+> *Vous retrouvez la version A4 (infrastructure complète : couches, environnements, hébergement) dans l'<u>**annexe #6**</u>.*
 
 **Détail des couches** :
 
@@ -580,9 +580,9 @@ flowchart TB
 
 - Aucune donnée sensible n'est collectée : les champs du schéma (`lib/db/schema.ts`), source de vérité, en font foi
 - Comptes désactivés : archivage 6 mois ; **suppression à la demande** : PII effacée, courses conservées anonymisées (« utilisateur supprimé ») pour préserver l'intégrité référentielle, factures maintenues avec les noms (obligation comptable, 10 ans — art. L123-22)
-- Durées de conservation détaillées par traitement : registre en annexe #16
+- Durées de conservation détaillées par traitement : registre en <u>**annexe #16**</u>
 
-> *Voir le registre des traitements complet en annexe #16.*
+> *Voir le registre des traitements complet en <u>**annexe #16**</u>.*
 
 ### 6.3. Justification des choix technologiques
 
@@ -912,7 +912,7 @@ describe('Parcours : Création et assignation d\'une course', () => {
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **244 tests au vert** et fichier de test commenté (annexe #9).
+> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **244 tests au vert** et fichier de test commenté (<u>**annexe #9**</u>).
 </div>
 
 ### 8.2. Tests automatisés
@@ -1011,7 +1011,7 @@ flowchart LR
 
 
 
-> *La capture du pipeline réel (dernier run vert) sera fournie dans l'annexe #8.*
+> *La capture du pipeline réel (dernier run vert) sera fournie dans l'<u>**annexe #8**</u>.*
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
@@ -1088,7 +1088,7 @@ Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16
 
 ### 10.2. Exemple concret : Veille manuelle et correction proactive
 
-**Contexte** : Le 30/10/2026, une **veille manuelle** a identifié trois vulnérabilités affectant les dépendances du projet (voir annexe #13 pour le détail complet). Parmi elles, **CVE-2023-54404** sur la bibliothèque `zod` (utilisée pour la validation des données dans toutes les Server Actions) présentait un risque élevé pour AMT Express.
+**Contexte** : Le 30/10/2026, une **veille manuelle** a identifié trois vulnérabilités affectant les dépendances du projet (voir <u>**annexe #13**</u> pour le détail complet). Parmi elles, **CVE-2023-54404** sur la bibliothèque `zod` (utilisée pour la validation des données dans toutes les Server Actions) présentait un risque élevé pour AMT Express.
 
 **Vulnérabilité identifiée** :
 - **CVE** : [CVE-2023-54404](https://nvd.nist.gov/vuln/detail/CVE-2023-54404) / [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
@@ -1135,8 +1135,8 @@ Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16
    - Test de charge avec import CSV massif : **stable** (pas de DoS)
 6. **Documentation** :
    - Ajout dans le changelog : `fix: security update zod to v4.6.6 to address CVE-2023-54404 (DoS via array validation)`
-   - Mise à jour du **registre des vulnérabilités** (annexe #11)
-   - **Veille documentée** dans l'annexe #13 avec sources vérifiables
+   - Mise à jour du **registre des vulnérabilités** (<u>**annexe #11**</u>)
+   - **Veille documentée** dans l'<u>**annexe #13**</u> avec sources vérifiables
 
 **Leçons apprises** :
 - **Dependabot ne détecte pas tout** : Cette CVE récente (publiée le 01/10/2026) n'était pas encore dans la base de données de Dependabot au moment de la détection
@@ -1146,7 +1146,7 @@ Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16
 **Vérification actuelle** (06/11/2026) :
 - `pnpm audit` : **0 vulnérabilités** (toutes dépendances à jour)
 - `pnpm ls zod better-auth next` : versions corrigées confirmées
-- Dernière veille manuelle : 30/10/2026 (annexe #13)
+- Dernière veille manuelle : 30/10/2026 (<u>**annexe #13**</u>)
 - Prochaine veille programmée : 15/11/2026
 
 ### 10.3. Intégration de la veille dans la CI
@@ -1186,9 +1186,9 @@ jobs:
 >
 > Pour illustrer le **processus de veille et de correction des vulnérabilités**, les éléments suivants seront fournis :
 >
-> 1. **Résultats de la veille manuelle** : Annexe #13 avec les CVE réelles vérifiées (CVE-2023-54404, CVE-2026-110862, CVE-2026-64642)
+> 1. **Résultats de la veille manuelle** : <u>**Annexe #13**</u> avec les CVE réelles vérifiées (CVE-2023-54404, CVE-2026-110862, CVE-2026-64642)
 > 2. **Sortie `pnpm audit`** : Capture montrant **0 vulnérabilités critiques** dans la version actuelle
-> 3. **Registre des vulnérabilités** : Tableau complet en **annexe #11** listant toutes les corrections effectuées
+> 3. **Registre des vulnérabilités** : Tableau complet en **<u>annexe #11</u>** listant toutes les corrections effectuées
 > 4. **Preuve de correction** : Sortie de `pnpm ls zod better-auth next` montrant les versions corrigées
 >
 > *Ces éléments démontreront la rigueur du processus de sécurité du projet.*
@@ -1236,7 +1236,7 @@ static async getRidesWithDetails(limit: number = 50) {
 - **Après** : 1 requête, ~150 ms (même méthode de mesure, moyenne sur 5 exécutions, MacBook Pro M2, 16 Go RAM)
 - **Amélioration** : 99 % de réduction du temps de chargement
 
-**Démarche de recherche** (mots-clés : « Drizzle ORM N+1 », « Drizzle select with joins », « N+1 query problem ») : le problème a été identifié en observant l'onglet Network de DevTools ; la solution (jointure + regroupement par Map) a été trouvée dans la **documentation officielle de Drizzle ORM** (en anglais : https://orm.drizzle.team/docs/joins) et confirmée par des discussions sur GitHub / Stack Overflow. L'extrait complet figure en **annexe #12** (extraits de code commentés).
+**Démarche de recherche** (mots-clés : « Drizzle ORM N+1 », « Drizzle select with joins », « N+1 query problem ») : le problème a été identifié en observant l'onglet Network de DevTools ; la solution (jointure + regroupement par Map) a été trouvée dans la **documentation officielle de Drizzle ORM** (en anglais : https://orm.drizzle.team/docs/joins) et confirmée par des discussions sur GitHub / Stack Overflow. L'extrait complet figure en **<u>annexe #12</u>** (extraits de code commentés).
 
 ### 11.2. Verrou opérationnel : les 17 corrections de déploiement du 11/09/2026
 
@@ -1250,7 +1250,7 @@ static async getRidesWithDetails(limit: number = 50) {
 
 **Problématique** : Assurer l'intégrité des données lors de l'import CSV massif, où plusieurs entités doivent être créées de manière atomique.
 
-**Solution** : encapsuler l'ensemble des insertions dans une **transaction ACID** (db.transaction(async (tx) => {...}) avec Drizzle) : la production, son projet par défaut et toutes ses courses sont créés ensemble — si une seule insertion échoue, **tout est annulé** (rollback automatique). Un **backup automatique** précède chaque import (voir §9.3). L'extrait complet figure en **annexe #12**.
+**Solution** : encapsuler l'ensemble des insertions dans une **transaction ACID** (db.transaction(async (tx) => {...}) avec Drizzle) : la production, son projet par défaut et toutes ses courses sont créés ensemble — si une seule insertion échoue, **tout est annulé** (rollback automatique). Un **backup automatique** précède chaque import (voir §9.3). L'extrait complet figure en **<u>annexe #12</u>**.
 
 **Bénéfices** :
 - **Intégrité des données** : Aucune corruption possible
