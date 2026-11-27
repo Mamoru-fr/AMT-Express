@@ -49,7 +49,6 @@ flowchart LR
     %% Style
     style AMT fill:#FFFDF8,stroke:#F4A259
 ```
-```
 
 **Diagramme d'activité** — parcours « demande d'assignation d'une course » :
 
@@ -72,15 +71,30 @@ flowchart TD
 
 ```mermaid
 classDiagram
-    class User { +id uuid, +role user_role, +email, +banned }
-    class Driver { +id uuid, +user_id FK, +available bool, +vehicle_plate }
+    class User {
+        +id uuid, +role user_role, +email, +banned
+        +getRole() user_role
+        +isBanned() bool
+    }
+    class Driver {
+        +id uuid, +user_id FK, +available bool, +vehicle_plate
+        +isAvailable() bool
+    }
     class Production { +id uuid, +name }
     class Project { +id uuid, +production_id FK }
-    class Ride { +id uuid, +project_id FK, +driver_id FK?, +status ride_status, +price }
+    class Ride {
+        +id uuid, +project_id FK, +driver_id FK?, +status ride_status, +price
+        +isAssignable() bool
+        +assignTo(driverId) void
+    }
     class RideCustomer { +ride_id FK, +customer_id FK, +rating 1..5, +comment }
     class RideOption { +id uuid, +additional_price }
     class RideSelectedOption { +ride_id FK, +option_id FK, +price }
-    class AssignmentRequest { +ride_id FK, +shift_id FK?, +driver_id FK, +status request_status }
+    class AssignmentRequest {
+        +ride_id FK, +shift_id FK?, +driver_id FK, +status request_status
+        +approve() void
+        +reject() void
+    }
     class ShiftPlanning { +driver_id FK, +status shift_status }
     
     User "1" --> "0..1" Driver
@@ -102,5 +116,4 @@ classDiagram
     style Production fill:#FFFDF8,stroke:#F4A259
     style Project fill:#FFFDF8,stroke:#F4A259
     style Ride fill:#FFFDF8,stroke:#F4A259
-```
 ```
