@@ -30,7 +30,7 @@
 | 5   | Spécifications fonctionnelles | UML, MCD/MLD/MPD, maquettes, organisation des espaces                                       |
 | 6   | Spécifications techniques     | Architecture en couches, sécurité OWASP, choix de la stack                                  |
 | 7   | Réalisation                   | Deux réalisations personnelles (front-end, back-end), extraits commentés au gabarit attendu |
-| 8   | Tests                         | Jeu d'essai représentatif, tests automatisés (240 au total)                                 |
+| 8   | Tests                         | Jeu d'essai représentatif, tests automatisés (244 au total)                                 |
 | 9   | Préparation au déploiement    | Environnements, CI/CD, rollback, documentation                                              |
 | 10  | Veille sur les vulnérabilités | Processus de veille, sources, exemple concret                                               |
 | 11  | Défis et recherche            | Résolution d'un verrou technique majeur                                                     |
@@ -77,7 +77,7 @@ Le projet AMT Express illustre les compétences du titre professionnel **Concept
 |                                                                                  | Définir l'architecture logicielle d'une application              | §6.1 (architecture en couches) · §7.1                           |
 |                                                                                  | Concevoir et mettre en place une base de données relationnelle   | §5.2 (MCD / MLD / MPD)                                          |
 |                                                                                  | Développer des composants d'accès aux données SQL et NoSQL       | §7.3 (chaîne complète, transactions) · §11.1 (optimisation N+1) |
-| **AT3 — Préparer le déploiement d'une application sécurisée**                    | Préparer et exécuter les plans de tests d'une application        | §8 (jeu d'essai, 240 tests automatisés, CI)                     |
+| **AT3 — Préparer le déploiement d'une application sécurisée**                    | Préparer et exécuter les plans de tests d'une application        | §8 (jeu d'essai, 244 tests automatisés, CI)                     |
 |                                                                                  | Préparer et documenter le déploiement d'une application          | §9 (environnements, CI/CD, backup, documentation)               |
 |                                                                                  | Contribuer à la mise en production dans une démarche DevOps      | §9.2-9.4 (pipeline, déploiement, rollback)                      |
 
@@ -262,9 +262,9 @@ flowchart LR
 | **Revue de code**          | Revue externe (instructrice)                   | Amélioration de la qualité du code                 |
 
 **Résultats** :
-- **240 tests automatisés** au total
-  - 9 fichiers de test : 7 unitaires, 2 d'intégration
-  - Exécution : `pnpm test` (dernière mesure le 18/11/2026 : 240 passed / 0 failed, 11,6 s)
+- **244 tests automatisés** au total
+  - 10 fichiers de test : 8 unitaires, 2 d'intégration
+  - Exécution : `pnpm test` (dernière mesure le 27/11/2026 : 244 passed / 0 failed, 25,6 s)
   - Couverture : Mesurable via `pnpm test:coverage` (lib/ et utils/)
 - **Aucune PR mergée avec des tests en échec**
 
@@ -316,15 +316,30 @@ flowchart LR
 
 ```mermaid
 classDiagram
-    class User { +String id · +user_role role · +boolean banned }
-    class Driver { +String id · FK user_id · +boolean active }
+    class User {
+        +String id · +user_role role · +boolean banned
+        +getRole() UserRole
+        +isBanned() boolean
+    }
+    class Driver {
+        +String id · FK user_id · +boolean active
+        +isAvailable() boolean
+    }
     class Production { +String id · +String name }
     class Project { +String id · FK production_id · +String name }
-    class Ride { +String id · FK project_id · FK driver_id · +ride_status status · +numeric price }
+    class Ride {
+        +String id · FK project_id · FK driver_id · +ride_status status · +numeric price
+        +isAssignable() boolean
+        +assignTo(driverId) void
+    }
     class RideCustomer { FK ride_id · FK customer_id · +int rating · +String comment }
     class RideOption { +String id · +String label · +numeric price }
     class RideSelectedOption { FK ride_id · FK option_id · +numeric price }
-    class AssignmentRequest { FK ride_id · FK driver_id · +request_status status }
+    class AssignmentRequest {
+        FK ride_id · FK driver_id · +request_status status
+        +approve() void
+        +reject() void
+    }
     class ShiftPlanning { FK driver_id · +shift_status status }
     User "1" --> "0..1" Driver
     Production "1" *-- "0..n" Project
@@ -338,7 +353,7 @@ classDiagram
     Driver "1" --> "0..n" ShiftPlanning
 ```
 
-> *Diagramme volontairement resserré pour tenir dans la page : seuls clés et statuts sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'annexe #1 et l'ERD des 19 tables dans l'annexe #2.*
+> *Diagramme volontairement resserré pour tenir dans la page : clés, statuts et méthodes métier principales (celles implémentées dans les services, voir §7.3) sont portés. Vous retrouvez la version A4 (classes compartimentées complètes) dans l'annexe #1 et l'ERD des 19 tables dans l'annexe #2.*
 
 ### 5.2. Conception de la base de données
 
@@ -375,6 +390,23 @@ flowchart LR
 - `ride_customers (ride_id*, customer_id*)` — Table associative : cardinalité (1,n) côté course, (0,n) côté client
 - `assignment_requests (ride_id*, driver_id*, status)` — Deux clés étrangères simples, statut contraint par l'enum `request_status`
 - `projects (id, production_id*, …)` — Clé étrangère vers `productions` ; une production contient 0..n projets
+
+**MLD — schéma relationnel du cœur métier** (transformation visuelle des règles ci-dessus) :
+
+```mermaid
+erDiagram
+    PRODUCTIONS ||--o{ PROJECTS : "contient"
+    PROJECTS ||--o{ RIDES : "concerne"
+    USERS |o--o| DRIVERS : "est aussi"
+    DRIVERS |o--o{ RIDES : "est assignee a"
+    RIDES ||--o{ RIDE_CUSTOMERS : "transporte"
+    USERS ||--o{ RIDE_CUSTOMERS : "reserve"
+    RIDES ||--o{ RIDE_SELECTED_OPTIONS : "embarque"
+    RIDE_OPTIONS ||--o{ RIDE_SELECTED_OPTIONS : "est choisie dans"
+    RIDES ||--o{ ASSIGNMENT_REQUESTS : "fait l objet de"
+    DRIVERS ||--o{ ASSIGNMENT_REQUESTS : "emet"
+    DRIVERS ||--o{ SHIFT_PLANNINGS : "planifie"
+```
 
 **Modèle Physique de Données (MPD)** — Implémentation réelle
 
@@ -537,15 +569,18 @@ flowchart TB
 | **A06 — Dépendances vulnérables**      | Vulnerable and Outdated Components         | Exécution régulière de `pnpm audit`. Intégration prévue dans la CI (voir §10).                                                                                                                                  |
 | **A07 — Authentification défaillante** | Identification and Authentication Failures | Better Auth pour le hachage sécurisé, sessions expirantes, secret d'au moins 32 caractères, rôle par défaut minimal (`customer`).                                                                               |
 
-**Conformité RGPD** :
-- Collecte limitée aux données strictement nécessaires au service (identité, coordonnées, courses) ; pas de données sensibles
-- Journal d'audit (`activity_logs`) pour la traçabilité, conservé **6 mois**
-- Comptes désactivés archivés (et non supprimés immédiatement) pour préserver l'intégrité référentielle des courses passées ; suppression effective sur demande de l'utilisateur (droit à l'effacement)
-- Registre des traitements complet en annexe #16
+**Conformité RGPD — ce qui est collecté, où, et pourquoi** :
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> **⚠️ À CONFIRMER** : les durées de conservation ci-dessus (6 mois pour les logs, archivage des comptes) doivent être alignées sur le registre des traitements de l'annexe #16 avant impression.
-</div>
+| Donnée conservée | Table | Base légale / justification |
+| --- | --- | --- |
+| Nom, e-mail, mot de passe haché (Better Auth), rôle | `users` | Exécution du contrat — authentification et gestion des rôles |
+| Véhicule (plaque, modèle), disponibilité | `drivers` | Exécution du contrat — mise en relation course / chauffeur |
+| Token de session, expiration, adresse IP, user-agent | `session` | Intérêt légitime (sécurité) — durée de la session |
+| Journal des actions (utilisateur, action, horodatage) | `activity_logs` | Intérêt légitime (sécurité) — conservé **6 mois** |
+
+- Aucune donnée sensible n'est collectée : les champs du schéma (`lib/db/schema.ts`), source de vérité, en font foi
+- Comptes désactivés : archivage 6 mois ; **suppression à la demande** : PII effacée, courses conservées anonymisées (« utilisateur supprimé ») pour préserver l'intégrité référentielle, factures maintenues avec les noms (obligation comptable, 10 ans — art. L123-22)
+- Durées de conservation détaillées par traitement : registre en annexe #16
 
 > *Voir le registre des traitements complet en annexe #16.*
 
@@ -877,7 +912,7 @@ describe('Parcours : Création et assignation d\'une course', () => {
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **240 tests au vert** et fichier de test commenté (annexe #9).
+> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **244 tests au vert** et fichier de test commenté (annexe #9).
 </div>
 
 ### 8.2. Tests automatisés
@@ -886,9 +921,9 @@ describe('Parcours : Création et assignation d\'une course', () => {
 
 | Type de test        | Nombre  | Outil  | Objectif                                          |
 | ------------------- | ------- | ------ | ------------------------------------------------- |
-| Tests unitaires     | 180     | Vitest | Validation des fonctions individuelles            |
-| Tests d'intégration | 60      | Vitest | Validation des interactions entre composants      |
-| **Total**           | **240** |        | Couverture complète des fonctionnalités critiques |
+| Tests unitaires     | 226     | Vitest | Validation des fonctions individuelles            |
+| Tests d'intégration | 18      | Vitest | Validation des interactions entre composants      |
+| **Total**           | **244** |        | Couverture complète des fonctionnalités critiques |
 
 **Exemple de test unitaire** — règle métier du service (*fichier : test/unit/services/DriverDashboardService.test.ts*) :
 
@@ -912,7 +947,7 @@ describe('DriverDashboardService.requestRideAssignment', () => {
 
 **Bonnes pratiques** : noms de tests descriptifs, setup/cleanup automatique, assertions sur les messages exacts, couverture des cas limites (validations, erreurs, règles métier).
 
-**Résultats** : **240 tests** (9 fichiers : 7 unitaires, 2 d'intégration) en **~12 secondes** (mesure du 18/11/2026 : 240 tests en 11,6 s), rejoués à chaque PR via GitHub Actions (couverture via pnpm test:coverage) ; **aucune PR ne peut être mergée si les tests échouent** (voir §9.2).
+**Résultats** : **244 tests** (10 fichiers : 8 unitaires, 2 d'intégration) en **~26 secondes** (mesure du 27/11/2026 : 244 passed / 0 failed en 25,6 s), rejoués à chaque PR via GitHub Actions (couverture via pnpm test:coverage) ; **aucune PR ne peut être mergée si les tests échouent** (voir §9.2).
 
 ---
 
@@ -945,7 +980,7 @@ export function getConfig(): Config {
 
 ### 9.2. CI/CD avec GitHub Actions
 
-Le pipeline (.github/workflows/ci-cd.yml) garantit que **rien ne part en production sans que les 240 tests passent** :
+Le pipeline (.github/workflows/ci-cd.yml) garantit que **rien ne part en production sans que les 244 tests passent** :
 
 ```yaml
 name: CI/CD Pipeline
@@ -1080,7 +1115,7 @@ Le README détaille prérequis (Node.js 24 selon `.nvmrc`, pnpm 9, PostgreSQL 16
    # Mise à jour ciblée
    pnpm add zod@^4.6.6
    
-   # Vérification des tests (240 tests au vert)
+   # Vérification des tests (244 tests au vert)
    pnpm test
    
    # Vérification du build
@@ -1201,7 +1236,7 @@ static async getRidesWithDetails(limit: number = 50) {
 - **Après** : 1 requête, ~150 ms (même méthode de mesure, moyenne sur 5 exécutions, MacBook Pro M2, 16 Go RAM)
 - **Amélioration** : 99 % de réduction du temps de chargement
 
-**Démarche de recherche** *(à compléter par le maître avant soumission : mots-clés exacts et liens)* : le problème a été identifié en observant l'onglet Network de DevTools ; la solution (jointure + regroupement par Map) a été trouvée dans la **documentation officielle de Drizzle ORM** (en anglais : https://orm.drizzle.team/docs/joins) et confirmée par des discussions sur GitHub / Stack Overflow. L'extrait complet figure en **annexe #12** (extraits de code commentés).
+**Démarche de recherche** (mots-clés : « Drizzle ORM N+1 », « Drizzle select with joins », « N+1 query problem ») : le problème a été identifié en observant l'onglet Network de DevTools ; la solution (jointure + regroupement par Map) a été trouvée dans la **documentation officielle de Drizzle ORM** (en anglais : https://orm.drizzle.team/docs/joins) et confirmée par des discussions sur GitHub / Stack Overflow. L'extrait complet figure en **annexe #12** (extraits de code commentés).
 
 ### 11.2. Verrou opérationnel : les 17 corrections de déploiement du 11/09/2026
 
@@ -1233,7 +1268,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | Objectif                | Statut         | Détails                                                                      |
 | ----------------------- | -------------- | ---------------------------------------------------------------------------- |
 | **Fonctionnalités MVP** | ✅ Complètes    | 9/9 fonctionnalités livrées et déployées                                     |
-| **Qualité du code**     | ✅ Atteinte     | 240 tests automatisés au vert, 0 vulnérabilité critique                      |
+| **Qualité du code**     | ✅ Atteinte     | 244 tests automatisés au vert, 0 vulnérabilité critique                      |
 | **Sécurité**            | ✅ Robuste      | Vérification des rôles à 100 %, conformité OWASP                             |
 | **Performance**         | ✅ Optimisée    | Temps de chargement < 200 ms pour les pages principales                      |
 | **Accessibilité**       | ✅ Conforme     | RGAA respecté, navigation clavier complète                                   |
