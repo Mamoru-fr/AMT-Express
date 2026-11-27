@@ -151,7 +151,6 @@ Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (c
 
 Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
-<!-- CAPTURE à produire : issue GitHub #92 (US4 — affecter une course / valider une demande d'assignation), vue complète : titre, labels user-story / mvp, lien vers l'issue de travail #13. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom user-story-issue-92.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/IssuesUS4.png" alt="Issue GitHub #92 — user story US4" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La user story US4 telle qu'elle vit dans le dépôt : issue #92, labels <code>user-story</code> / <code>mvp</code>, reliée à l'issue de travail d'origine #13.</p>
@@ -247,22 +246,11 @@ flowchart LR
   - 11/09/2026 : CI/CD Vercel + **17 corrections de déploiement consécutives** (voir §11.2)
   - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
 
-<!-- CAPTURE à produire : board GitHub Projects du dépôt (colonnes Backlog / In Progress / Done), large. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom board-github.png (c'est aussi l'annexe #7) -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/BoardGithub.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le board GitHub Projects, plan de sprint hebdomadaire du projet (version large en <u>**annexe #7**</u>).</p>
 </div>
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY**
->
-> **Captures intégrées au dossier** :
->
-> 1. **Board GitHub Projects** (ci-dessus) : l'organisation Kanban des tâches
-> 2. **Graphe Git du dépôt** (ci-dessous) : branches et PR numérotées du Git Flow
-> 3. **Pipeline CI vert** : en §9.2, avec le détail des jobs
->
-> *Trois preuves visibles de la méthode : le board, le graphe, le pipeline.*
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/Github Flow Graph.png" alt="Graphe Git du dépôt — branches Git Flow et PR numérotées" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le graphe Git du dépôt : une branche par fonctionnalité, PR numérotées et revues, merge vers main uniquement.</p>
@@ -526,22 +514,7 @@ flowchart LR
 - Navigation clavier complète
 - Respect des contrastes (validé via audit RGAA)
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY**
->
-> Pour compléter cette section sur les **maquettes et l'accessibilité**, les éléments suivants sont nécessaires :
->
-> 1. **Logo de l'application** : Fichier `logo.svg` à placer dans `public/`
-> 2. **Captures d'écran des maquettes** :
->    - Dashboard admin (vue complète avec KPI)
->    - Formulaire de création de course (tous champs remplis)
->    - Vue des courses disponibles pour le chauffeur
->    - Interface de réservation côté client
->    - **États spécifiques** : chargement, erreur, vide
-> 3. **Preuves de conformité RGAA** : Documentation des tests de contraste
->
-> *Ces éléments illustreront concrètement l'interface utilisateur et l'accessibilité du projet.*
-</div>
+
 
 ---
 
@@ -712,11 +685,8 @@ amt-express/
 └── public/                # Assets statiques
 ```
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** CAPTURE À INSÉRER** : capture d'écran réelle de l'IDE (VS Code) ouverte sur le projet, explorateur de fichiers visible, à insérer à côté de l'arborescence ci-dessus.
-</div>
 
-<!-- CAPTURE à produire : VS Code ouvert sur amt-express/, explorateur de fichiers visible (app/, components/, lib/), un fichier de service ouvert. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom vscode-arborescence.png -->
+
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/ArboressenceProjet.png" alt="VS Code — explorateur du projet amt-express" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'arborescence réelle du projet dans VS Code : les dossiers <code>app/</code>, <code>components/</code> et <code>lib/</code> (actions, controllers, services) visibles.</p>
@@ -748,7 +718,6 @@ useEffect(() => {
 
 **Explication** : les interfaces SortRule et RideFilters garantissent la cohérence des données à la compilation ; les états sont initialisés avec des valeurs par défaut claires ; la vérification du rôle admin redirige automatiquement vers l'accueil si l'utilisateur n'a pas les droits. Ce contrôle côté client **complète** le contrôle serveur (voir 7.3) : il ne le remplace jamais, mais évite d'afficher une interface sensible à un utilisateur non autorisé. *Bonnes pratiques* : typage strict, fail-safe, séparation des responsabilités, responsive via Tailwind CSS.
 
-<!-- CAPTURE à produire : tableau de bord admin ride-management (filtres + tri + colonnes de courses), mode desktop. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom admin-ride-management.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/ÉcranAdminListeCourses.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur dont cet extrait est le cœur : filtres, tri et colonnes de courses (retour serveur <code>ActionResponse</code>).</p>
@@ -932,7 +901,6 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 | 5     | Service                  | Règles métier pures (plafond, disponibilité, unicité)    |
 | 6     | Service (transaction)    | Atomicité : assignation + rejet des concurrentes + audit |
 
-<!-- CAPTURE à produire : le modal AssignmentRequestsModal côté admin (file des demandes en attente) ou le modal AddRideModal. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom assignment-requests-modal.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/CréerUnTrajet-Erreur Date.png" alt="Ajout manuel de course (AddRideModal) — état d'erreur, date invalide" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le formulaire d'ajout manuel de course (AddRideModal) : la validation s'affiche en ligne — ici une date invalide — sans quitter la modale.</p>
@@ -986,8 +954,6 @@ describe('Parcours : Création et assignation d\'une course', () => {
 
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** ✅ CAPTURE INTÉGRÉE** : la sortie réelle de `pnpm test` — **244 tests au vert** — figure ci-dessous (version large en <u>**annexe #9**</u>).</div>
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/PnpmTest.png" alt="Sortie pnpm test — 244 tests passés, 0 échec" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La sortie réelle de <code>pnpm test</code> : 244 tests passés, 0 échec.</p>
@@ -1090,7 +1056,6 @@ flowchart LR
 
 > *La capture du pipeline réel (dernier run vert) sera fournie dans l'<u>**annexe #8**</u>.*
 
-<!-- CAPTURE à produire : page GitHub Actions du dernier run vert (deploy-to-vercel-uat et/ou deploy-to-vercel-prod), jobs verts visibles. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom pipeline-ci.png (c'est aussi l'annexe #8) -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u>**annexe #8**</u>).</p>
@@ -1098,9 +1063,7 @@ flowchart LR
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** ✅ CAPTURES INTÉGRÉES** : le pipeline CI vert ci-dessus (jobs au vert), l'interface de déploiement Vercel et la console Neon ci-dessous.
-</div>
+
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
 <img src="../captures/DeployementVercel.png" alt="Interface de déploiement Vercel — environnements UAT et production" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
@@ -1276,18 +1239,7 @@ jobs:
 
 J'expérimente déjà ce mécanisme (audit planifié + Dependabot) sur d'autres projets ; son arrivée sur AMT Express est planifiée. En attendant, chaque alerte reste couverte par la veille manuelle et le registre des vulnérabilités (<u>**annexe #11**</u>).
 
-<div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY**
->
-> Pour illustrer le **processus de veille et de correction des vulnérabilités**, les éléments suivants seront fournis :
->
-> 1. **Résultats de la veille manuelle** : <u>**Annexe #13**</u> avec les CVE réelles vérifiées (CVE-2023-54404, CVE-2026-110862, CVE-2026-64642)
-> 2. **Sortie `pnpm audit`** : Capture montrant **0 vulnérabilités critiques** dans la version actuelle
-> 3. **Registre des vulnérabilités** : Tableau complet en **<u>annexe #11</u>** listant toutes les corrections effectuées
-> 4. **Preuve de correction** : Sortie de `pnpm ls zod better-auth next` montrant les versions corrigées
->
-> *Ces éléments démontreront la rigueur du processus de sécurité du projet.*
-</div>
+
 
 ---
 
