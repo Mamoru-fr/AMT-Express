@@ -249,20 +249,25 @@ flowchart LR
 
 <!-- CAPTURE à produire : board GitHub Projects du dépôt (colonnes Backlog / In Progress / Done), large. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom board-github.png (c'est aussi l'annexe #7) -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/board-github.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/BoardGithub.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le board GitHub Projects, plan de sprint hebdomadaire du projet (version large en <u>**annexe #7**</u>).</p>
 </div>
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
 > ** À PRODUIRE POUR LE JURY**
 >
-> Cette section nécessite les **captures d'écran** suivantes pour illustrer concrètement la gestion de projet :
+> **Captures intégrées au dossier** :
 >
-> 1. **Board GitHub Projects** : Montrer l'organisation Kanban des tâches (Backlog, In Progress, Done)
-> 2. **Graphe des contributions** : Visualiser l'activité sur le dépôt via GitHub Insights
-> 3. **Pipeline CI vert** : Capturer la sortie complète d'une exécution réussie
+> 1. **Board GitHub Projects** (ci-dessus) : l'organisation Kanban des tâches
+> 2. **Graphe Git du dépôt** (ci-dessous) : branches et PR numérotées du Git Flow
+> 3. **Pipeline CI vert** : en §9.2, avec le détail des jobs
 >
-> *Ces éléments seront ajoutés avant la soumission finale. Voir aussi la capture du pipeline en §9.2.*
+> *Trois preuves visibles de la méthode : le board, le graphe, le pipeline.*
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/Github Flow Graph.png" alt="Graphe Git du dépôt — branches Git Flow et PR numérotées" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le graphe Git du dépôt : une branche par fonctionnalité, PR numérotées et revues, merge vers main uniquement.</p>
+</div>
+
 </div>
 
 ### 4.3. Assurance qualité
@@ -495,6 +500,26 @@ flowchart LR
 
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près.</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace client professionnel en français. La même page s'affiche en anglais ci-dessous : l'internationalisation (i18next) couvre toute l'interface.</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client en anglais : support FR/EN complet.</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/Pas de Courses-Interface Erreur.png" alt="États vide et d'erreur — aucune course disponible" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Les états vide et d'erreur : l'interface reste explicite quand aucune course n'est disponible.</p>
+</div>
+
 
 **Accessibilité** :
 - Ajout systématique de `aria-labels` sur toute l'application
@@ -725,8 +750,13 @@ useEffect(() => {
 
 <!-- CAPTURE à produire : tableau de bord admin ride-management (filtres + tri + colonnes de courses), mode desktop. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom admin-ride-management.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/screenshots/admin-ride-management.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ÉcranAdminListeCourses.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur dont cet extrait est le cœur : filtres, tri et colonnes de courses (retour serveur <code>ActionResponse</code>).</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/Dashboard - KPI.png" alt="Tableau de bord administrateur — indicateurs clés (KPI)" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur : les indicateurs clés du pilotage (courses, chauffeurs, activité du jour).</p>
 </div>
 
 ### 7.3. Réalisation personnelle back-end : la demande d'assignation, de bout en bout
@@ -904,8 +934,8 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 
 <!-- CAPTURE à produire : le modal AssignmentRequestsModal côté admin (file des demandes en attente) ou le modal AddRideModal. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom assignment-requests-modal.png -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/screenshots/assignment-requests-modal.png" alt="File des demandes d'assignation — espace admin" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La file des demandes d'assignation vue par l'administrateur : rien ne se perd, rien ne se double, approbation ou rejet tracés.</p>
+<img src="../captures/CréerUnTrajet-Erreur Date.png" alt="Ajout manuel de course (AddRideModal) — état d'erreur, date invalide" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le formulaire d'ajout manuel de course (AddRideModal) : la validation s'affiche en ligne — ici une date invalide — sans quitter la modale.</p>
 </div>
 
 
@@ -957,8 +987,12 @@ describe('Parcours : Création et assignation d\'une course', () => {
 **Explication** : chaque étape du parcours métier est validée par assertions ; beforeAll/afterAll créent puis nettoient les données de test (isolation des scénarios) ; le dernier test vérifie la règle de rejet automatique des demandes concurrentes.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY** : sortie complète de pnpm test montrant les **244 tests au vert** et fichier de test commenté (<u>**annexe #9**</u>).
+> ** ✅ CAPTURE INTÉGRÉE** : la sortie réelle de `pnpm test` — **244 tests au vert** — figure ci-dessous (version large en <u>**annexe #9**</u>).</div>
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/PnpmTest.png" alt="Sortie pnpm test — 244 tests passés, 0 échec" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La sortie réelle de <code>pnpm test</code> : 244 tests passés, 0 échec.</p>
 </div>
+
 
 ### 8.2. Tests automatisés
 
@@ -1058,14 +1092,24 @@ flowchart LR
 
 <!-- CAPTURE à produire : page GitHub Actions du dernier run vert (deploy-to-vercel-uat et/ou deploy-to-vercel-prod), jobs verts visibles. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom pipeline-ci.png (c'est aussi l'annexe #8) -->
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../annexes/pipeline-ci.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/Pipeline CI Verte.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u>**annexe #8**</u>).</p>
 </div>
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
-> ** À PRODUIRE POUR LE JURY** : capture du **pipeline CI vert** (jobs test, deploy-uat, deploy-prod) et de l'interface de déploiement manuel workflow_dispatch (choix UAT/PROD).
+> ** ✅ CAPTURES INTÉGRÉES** : le pipeline CI vert ci-dessus (jobs au vert), l'interface de déploiement Vercel et la console Neon ci-dessous.
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/DeployementVercel.png" alt="Interface de déploiement Vercel — environnements UAT et production" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'interface de déploiement Vercel : chaque environnement (UAT, production) est isolé et déclenché par le pipeline.</p>
+</div>
+
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../captures/InterfaceNeon.png" alt="Console Neon — base de données PostgreSQL serverless" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console Neon : la base PostgreSQL serverless, ses sauvegardes et son suivi.</p>
 </div>
 
 ### 9.3. Scripts de backup et restauration
@@ -1388,10 +1432,10 @@ static async getRidesWithDetails(limit: number = 50) {
 | 4     | Diagramme de Gantt                     | `annexes/gantt.md`                     | Markdown | Produit ✅   |
 | 5     | Diagramme de séquence                  | `annexes/sequence.md`                  | Markdown | Produit ✅   |
 | 6     | Schéma d'infrastructure                | `annexes/infrastructure.md`            | Markdown | Produit ✅   |
-| 7     | Capture du board GitHub Projects       | `annexes/board-github.png`             | PNG      | ⚠️ À fournir |
-| 8     | Capture du pipeline CI                 | `annexes/pipeline-ci.png`              | PNG      | ⚠️ À fournir |
-| 9     | Sortie des tests                       | `annexes/tests-output.txt`             | TXT      | ⚠️ À fournir |
-| 10    | Captures d'écrans                      | `annexes/screenshots/`                 | PNG      | ⚠️ À fournir |
+| 7     | Capture du board GitHub Projects       | `captures/BoardGithub.png`             | PNG      | Produit ✅   |
+| 8     | Capture du pipeline CI                 | `captures/Pipeline CI Verte.png`       | PNG      | Produit ✅   |
+| 9     | Sortie des tests (pnpm test)           | `captures/PnpmTest.png`               | PNG      | Produit ✅   |
+| 10    | Captures d'écrans                      | `captures/`                           | PNG      | Produit ✅   |
 | 11    | Registre des vulnérabilités            | `annexes/registre-vulnerabilites.md`   | Markdown | Produit ✅   |
 | 12    | Extraits de code commentés             | `annexes/extraits-code-commentes.md`   | Markdown | Produit ✅   |
 | 13    | Veille sur les vulnérabilités (CVE)    | `annexes/veille-vulnerabilites.md`     | Markdown | Produit ✅   |
@@ -1401,7 +1445,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
 | 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
 
-> ** Statut** : **16/18 annexes produites**. Les annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> ** Statut** : **18/18 annexes produites**. Deux encarts du corps du dossier attendent encore leur capture : l'issue US4 (§3.3) et l'arborescence VS Code (§7.1). Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
