@@ -7,7 +7,7 @@
 | 1 | Board GitHub Projects (colonnes + cartes) | Repo → onglet Projects | #7 · § 4.2 | cadrer sans emails/noms réels de clients |
 | 2 | Graphe des PR (network/insights) | Repo → Insights → Network | § 4.2 | préférer une fenêtre large, plein écran |
 | 3 | Pipeline CI vert (résumé + un job déroulé) | Actions → dernier run vert complet | #8 · § 9.2 | montrer le « all checks passed », pas juste un logo |
-| 4 | Sortie `pnpm test` (240 passed) | Terminal local | #9 · § 8.2 | terminal plein écran ; masquer tout chemin sensible |
+| 4 | Sortie `pnpm test` (244 passed) | Terminal local | #9 · § 8.2 | terminal plein écran ; masquer tout chemin sensible |
 | 5 | Écran admin : liste des courses (FR, desktop) | Application PROD ou UAT | #10 · § 4.3 | données fictives ou anonymisées |
 | 6 | Formulaire création de course + erreur Zod (départ trop court ou horaire passé) | Application | § 7.2 / § 8.1 | c'est la preuve du jeu d'essai — la capture d'erreur vaut de l'or |
 | 7 | Dashboard KPI admin (Recharts) | Application | § 1.1 | veiller à des chiffres cohérents avec le dossier |
