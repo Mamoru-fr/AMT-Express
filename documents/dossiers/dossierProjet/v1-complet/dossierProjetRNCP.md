@@ -151,6 +151,12 @@ Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (c
 
 Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
+<!-- CAPTURE à produire : issue GitHub #92 (US4 — affecter une course / valider une demande d'assignation), vue complète : titre, labels user-story / mvp, lien vers l'issue de travail #13. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom user-story-issue-92.png -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/screenshots/user-story-issue-92.png" alt="Issue GitHub #92 — user story US4" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La user story US4 telle qu'elle vit dans le dépôt : issue #92, labels <code>user-story</code> / <code>mvp</code>, reliée à l'issue de travail d'origine #13.</p>
+</div>
+
 ### 3.4. Périmètre du MVP
 
 Le **Minimum Viable Product** déployé en production comprend les fonctionnalités suivantes :
@@ -240,6 +246,12 @@ flowchart LR
   - Août 2026 : Interfaces chauffeur/client, consolidation de la documentation
   - 11/09/2026 : CI/CD Vercel + **17 corrections de déploiement consécutives** (voir §11.2)
   - 02/10/2026 et 16/10/2026 : Optimisations sécurité, accessibilité et performance
+
+<!-- CAPTURE à produire : board GitHub Projects du dépôt (colonnes Backlog / In Progress / Done), large. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom board-github.png (c'est aussi l'annexe #7) -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/board-github.png" alt="Board GitHub Projects — Backlog, In Progress, Done" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le board GitHub Projects, plan de sprint hebdomadaire du projet (version large en <u>**annexe #7**</u>).</p>
+</div>
 
 <div style="border: 1px solid #F4A259; border-left: 5px solid #F4A259; border-radius: 6px; padding: 10px 14px; margin: 12px 0; background: #FFFDF8;">
 > ** À PRODUIRE POUR LE JURY**
@@ -672,6 +684,12 @@ amt-express/
 > ** CAPTURE À INSÉRER** : capture d'écran réelle de l'IDE (VS Code) ouverte sur le projet, explorateur de fichiers visible, à insérer à côté de l'arborescence ci-dessus.
 </div>
 
+<!-- CAPTURE à produire : VS Code ouvert sur amt-express/, explorateur de fichiers visible (app/, components/, lib/), un fichier de service ouvert. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom vscode-arborescence.png -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/screenshots/vscode-arborescence.png" alt="VS Code — explorateur du projet amt-express" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'arborescence réelle du projet dans VS Code : les dossiers <code>app/</code>, <code>components/</code> et <code>lib/</code> (actions, controllers, services) visibles.</p>
+</div>
+
 **Lecture de l'arborescence** : les **parallel routes** (@admin/, @driver/, @customer/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
 
 ### 7.2. Réalisation personnelle front-end : composant React avec gestion d'état
@@ -697,6 +715,12 @@ useEffect(() => {
 ```
 
 **Explication** : les interfaces SortRule et RideFilters garantissent la cohérence des données à la compilation ; les états sont initialisés avec des valeurs par défaut claires ; la vérification du rôle admin redirige automatiquement vers l'accueil si l'utilisateur n'a pas les droits. Ce contrôle côté client **complète** le contrôle serveur (voir 7.3) : il ne le remplace jamais, mais évite d'afficher une interface sensible à un utilisateur non autorisé. *Bonnes pratiques* : typage strict, fail-safe, séparation des responsabilités, responsive via Tailwind CSS.
+
+<!-- CAPTURE à produire : tableau de bord admin ride-management (filtres + tri + colonnes de courses), mode desktop. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom admin-ride-management.png -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/screenshots/admin-ride-management.png" alt="Tableau de bord admin — gestion des courses" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le tableau de bord administrateur dont cet extrait est le cœur : filtres, tri et colonnes de courses (retour serveur <code>ActionResponse</code>).</p>
+</div>
 
 ### 7.3. Réalisation personnelle back-end : la demande d'assignation, de bout en bout
 
@@ -871,6 +895,12 @@ static async approveAssignmentRequest(requestId: string): Promise<void> {
 | 5     | Service                  | Règles métier pures (plafond, disponibilité, unicité)    |
 | 6     | Service (transaction)    | Atomicité : assignation + rejet des concurrentes + audit |
 
+<!-- CAPTURE à produire : le modal AssignmentRequestsModal côté admin (file des demandes en attente) ou le modal AddRideModal. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/screenshots/ sous le nom assignment-requests-modal.png -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/screenshots/assignment-requests-modal.png" alt="File des demandes d'assignation — espace admin" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La file des demandes d'assignation vue par l'administrateur : rien ne se perd, rien ne se double, approbation ou rejet tracés.</p>
+</div>
+
 
 ## 8. Tests
 
@@ -1018,6 +1048,12 @@ flowchart LR
 
 
 > *La capture du pipeline réel (dernier run vert) sera fournie dans l'<u>**annexe #8**</u>.*
+
+<!-- CAPTURE à produire : page GitHub Actions du dernier run vert (deploy-to-vercel-uat et/ou deploy-to-vercel-prod), jobs verts visibles. Déposer le fichier dans documents/dossiers/dossierProjet/annexes/ sous le nom pipeline-ci.png (c'est aussi l'annexe #8) -->
+<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
+<img src="../annexes/pipeline-ci.png" alt="Pipeline GitHub Actions — run vert" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — Le pipeline réel, dernier run au vert : build + tests puis déploiement contrôlé (version large en <u>**annexe #8**</u>).</p>
+</div>
 
 **Sécurité du pipeline** : secrets protégés dans GitHub Secrets (VERCEL_TOKEN, DATABASE_URL, BETTER_AUTH_SECRET) ; l'environnement Production exige une **confirmation manuelle** ; build + tests obligatoires avant tout déploiement ; **aucune PR mergée si les tests échouent**.
 
