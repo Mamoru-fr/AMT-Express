@@ -116,15 +116,17 @@ L'analyse du besoin, menée avec le client **AMT CGS GROUPE**, a produit **cinq 
 | **Jean-Michel, 62 ans**<br>client régulier        | Réserve par téléphone ; le prix est clair (tarification préfectorale), mais une fois la course demandée, plus rien.   | Savoir que sa course est enregistrée, assignée, et où en est son chauffeur.                   | **Client**         |
 | **Claire, 41 ans**<br>assistante de direction     | Pilote les déplacements des cadres par e-mails en série (environ dix-huit messages par course).                       | Un écran unique : statut des courses en direct, facture plus rapide.                          | **Client**         |
 
-**Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **trois rôles** : admin, driver, customer. Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
+**Des personas aux rôles applicatifs.** L'application, volontairement resserrée, ne gère pas cinq profils mais **un rôle de base et deux extensions** : `customer` (le client, socle de tous les comptes), étendu par `driver` (le chauffeur), lui-même étendu par `admin` (l'administrateur). Chaque persona est affilié à un rôle, et plusieurs personas peuvent partager le même rôle lorsque leurs droits sont identiques :
 
 | Rôle applicatif    | Personas couverts                                        | Besoin commun que le rôle résout                                                                                                                  |
 | ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Administrateur** | Marc (pilotage), Nathalie (saisie et relances)           | Créer et assigner les courses, valider les demandes des chauffeurs, importer les données CSV, consulter les tableaux de bord KPI, exporter en CSV |
-| **Chauffeur**      | Djamel                                                   | Voir les courses disponibles avec prix et distance, demander une assignation (plafond de 5 demandes), gérer ses plannings de shifts               |
-| **Client**         | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course à prix verrouillé, consulter l'historique, noter les prestations                                                              |
+| **Administrateur** | Marc (pilotage), Nathalie (saisie et relances)           | Créer et assigner les courses et les mises à disposition (shifts), valider les demandes des chauffeurs, importer les données CSV, consulter les KPI, exporter en CSV — **et toutes les actions du rôle client** |
+| **Chauffeur**      | Djamel                                                   | Voir les courses et mises à disposition (shifts) disponibles, demander une assignation (plafond de 5 demandes), réaliser les prestations — **et toutes les actions du rôle client** |
+| **Client**         | Jean-Michel (usage individuel), Claire (usage corporate) | Réserver une course, consulter l'historique, noter les prestations (rôle de base, commun à tous les comptes) |
 
-Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, suivi GPS et notifications en temps réel de Jean-Michel et Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3).
+**Tarification** : dans la quasi-totalité des cas, la course est facturée **au compteur**, sur la base du prix au kilomètre fixé par les préfectures. Certains tarifs spéciaux (ex. aéroport) sont à **prix verrouillé**, complétés par les options et le temps d'attente du chauffeur (`waiting_time`, facturé via `waiting_fee` — voir §5.2) ; les mises à disposition (shifts) sont facturées au **tarif horaire**.
+
+Ce regroupement est un choix d'architecture **assumé** : pour un MVP, la granularité à trois rôles couvre les objectifs de tous les personas — Marc et Nathalie partagent la même vue d'administration, Jean-Michel et Claire partagent la même vue de réservation. Les besoins non couverts par ce regroupement (facturation automatisée de Nathalie, suivi GPS et notifications en temps réel de Jean-Michel et Claire) sont inscrits au backlog post-MVP (voir §3.3). Cette lecture est cohérente partout : cinq personas dans l'analyse, trois rôles dans les user stories (§3.3), trois acteurs dans le diagramme de cas d'utilisation (§5.1) et trois espaces cloisonnés dans l'application (§5.3). Dans le code, cette lecture « en extension » se traduit par la hiérarchie `admin > driver > customer` (§6.2 et §7.3) : chaque rôle supérieur hérite des actions du rôle client.
 
 ### 3.3. User Stories
 
@@ -290,8 +292,8 @@ flowchart LR
     Admin --> UC3[KPI · import/export CSV]
     Driver([Chauffeur]) --> UC4[Courses disponibles]
     Driver --> UC5[Demander une assignation · plafond 5]
-    Driver --> UC6[Gérer ses shifts]
-    Customer([Client]) --> UC7[Réserver à prix verrouillé]
+    Driver --> UC6[Shifts : demander une mise à disposition]
+    Customer([Client]) --> UC7[Réserver une course]
     Customer --> UC8[Historique · notation]
 ```
 
