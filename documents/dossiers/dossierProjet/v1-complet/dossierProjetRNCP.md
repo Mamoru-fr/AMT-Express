@@ -152,7 +152,7 @@ Le suivi de ce backlog s'est fait sur le board **GitHub Projects** du dépôt (c
 Vous trouverez en <u>**annexe #7**</u> la capture d'écran du board GitHub Projects, avec les issues du MVP et celles du backlog post-MVP.
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/IssuesUS4.png" alt="Issue GitHub #92 — user story US4" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/IssuesUS4.png" alt="Issue GitHub #92 — user story US4" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La user story US4 telle qu'elle vit dans le dépôt : issue #92, labels <code>user-story</code> / <code>mvp</code>, reliée à l'issue de travail d'origine #13.</p>
 </div>
 
@@ -291,6 +291,8 @@ flowchart LR
 
 > *Note : Transcription en flowchart Mermaid pour ce dossier. Le rendu UML canonique (acteurs en bonhommes, ellipses) est disponible dans l'<u>**annexe #1**</u>.*
 
+<div align="center" style="zoom: 0.5;">
+
 ```mermaid
 flowchart LR
     Admin([Administrateur]) --> UC1[Créer/éditer une course]
@@ -302,6 +304,8 @@ flowchart LR
     Customer([Client]) --> UC7[Réserver une course]
     Customer --> UC8[Historique · notation]
 ```
+
+</div>
 
 **Diagramme d'activité** — Parcours « demande d'assignation d'une course » (vue métier)
 
@@ -477,6 +481,8 @@ La table assignment_requests (propositions d'affectation d'un chauffeur à une c
 
 L'interface cloisonne chaque rôle dans son espace dédié : après connexion, l'utilisateur arrive directement dans l'espace correspondant à son rôle, sans jamais voir les écrans des autres rôles. C'est une décision d'UX autant que de sécurité (le contrôle des droits reste effectué côté serveur, voir §7.3).
 
+<div align="center" style="zoom: 0.5;">
+
 ```mermaid
 flowchart LR
     C[Connexion] --> R{Rôle}
@@ -485,22 +491,22 @@ flowchart LR
     R -- client --> Cu["Espace client : réservation, historique, notation"]
 ```
 
+</div>
+
 
 
 > *Cette organisation repose sur les « route groups » de Next.js : techniquement, chaque espace est un groupe de routes dédié, et le rôle y est vérifié à chaque requête par proxy.ts. L'implémentation est décrite en §6.1 et §7.1. Vous pouvez retrouver les maquettes des trois espaces (admin, chauffeur, client, états vides et erreur) dans l'<u>**annexe #3**</u>.*
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près.</p>
+<img src="../captures/InterfaceDriver.png" alt="Espace chauffeur — courses disponibles et demandes d'assignation" style="max-width: 40%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace chauffeur : courses disponibles et demandes d'assignation, au rôle vérifié près (version large en <u><strong>annexe #10</strong></u>).</p>
 </div>
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'espace client professionnel en français. La même page s'affiche en anglais ci-dessous : l'internationalisation (i18next) couvre toute l'interface.</p>
+<div style="display: flex; gap: 10px; justify-content: center; align-items: flex-start;">
+<img src="../captures/InterfaceClientFR.png" alt="Espace client — historique et réservation, en français" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="width: 49%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 </div>
-
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/InterfaceClientEN.png" alt="Espace client — same page in English (i18n FR/EN)" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client en anglais : support FR/EN complet.</p>
+<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La même page client côte à côte : en français (à gauche) et en anglais (à droite) — l'internationalisation (i18next) couvre toute l'interface.</p>
 </div>
 
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
@@ -526,12 +532,12 @@ flowchart LR
 
 **Architecture adoptée** : une **clean architecture hexagonale** (architecture en ports et adaptateurs) servie par les **Server Actions** de Next.js — le domaine métier (Services) au cœur de l'hexagone, entouré de ses adaptateurs (Server Actions, Proxy, Controllers, Drizzle). Chaque couche a un rôle unique et la dépendance est unidirectionnelle : le front déclenche, le serveur décide.
 
-<div align="center">
+<div align="center" style="zoom: 0.6;">
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph IN["Adaptateurs d'entrée — déclenchés par le front"]
-        direction LR
+        direction TB
         FE["Frontend — Next.js · React 19"]
         SA{{"Server Actions — points d'entrée"}}
         PX{{"Proxy — session + rôle"}}
@@ -541,7 +547,7 @@ flowchart TB
         SV{{"Services — logique métier<br/>AUTORISER · VALIDER · TRACER"}}
     end
     subgraph OUT["Adaptateurs de sortie — ports de persistance"]
-        direction LR
+        direction TB
         DR{{"Drizzle ORM — port de sortie"}}
         DB[("PostgreSQL — Neon")]
     end
@@ -661,8 +667,10 @@ Le choix de Neon (PostgreSQL serverless) permet de bénéficier de :
 
 L'application est organisée selon une **architecture modulaire claire**, qui facilite la maintenance, l'évolution et le test du code :
 
-```text
-amt-express/
+<div style="display: flex; gap: 16px; align-items: flex-start; margin: 10px 0;">
+
+<div style="flex: 1.15; min-width: 0;">
+<pre style="font-size: 8pt; line-height: 1.4; background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; margin: 0;">amt-express/
 ├── app/                    # Routes Next.js (App Router)
 │   ├── (admin)/            # Espace administrateur (route group)
 │   ├── (driver)/           # Espace chauffeur (route group)
@@ -682,17 +690,16 @@ amt-express/
 ├── proxy.ts                # Session + rôle, exécuté à chaque requête
 ├── locales/                # Internationalisation (FR/EN, i18next)
 ├── test/                   # Tests automatisés (unit/, integration/)
-└── public/                # Assets statiques
-```
-
-
-
-<div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/ArboressenceProjet.png" alt="VS Code — explorateur du projet amt-express" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
-<p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — L'arborescence réelle du projet dans VS Code : les dossiers <code>app/</code>, <code>components/</code> et <code>lib/</code> (actions, controllers, services) visibles.</p>
+└── public/                # Assets statiques</pre>
 </div>
 
+<div style="flex: 1; min-width: 0; font-size: 9.5pt;">
+
 **Lecture de l'arborescence** : les **route groups** ((admin)/, (driver)/, (connected)/) cloisonnent chaque espace par rôle ; les **Server Actions** remplacent une couche API REST et servent de points d'entrée backend ; les **contrôleurs** orchestrent entre actions et services ; les **services** portent la logique métier pure, testables unitairement ; le **middleware** vérifie les droits d'accès avant toute opération sensible. *Avantage* : maintenance et évolutivité facilitées.
+
+</div>
+
+</div>
 
 ### 7.2. Réalisation personnelle front-end : composant React avec gestion d'état
 
@@ -1078,7 +1085,7 @@ flowchart LR
 
 Tout import CSV est précédé d'un **backup automatique** (pg_dump), restauration via pg_restore :
 <div align="center" style="border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin: 14px 0; background: #fafafa;">
-<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 62%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
+<img src="../captures/ImportCSV.png" alt="Console d'import CSV — backup, avertissements, résumé d'import" style="max-width: 55%; height: auto; border: 1px solid #ccc; border-radius: 4px;" onerror="this.style.display='none'" />
 <p style="font-size: 9pt; color: #555; margin: 6px 0 0;">Fig. — La console d'import CSV réelle : backup de la base, avertissements, puis le résumé — courses importées, ignorées, erreurs.</p>
 </div>
 
@@ -1400,7 +1407,7 @@ static async getRidesWithDetails(limit: number = 50) {
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
 | 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
 
-> ** Statut** : **18/18 annexes produites**. Toutes les captures du corps du dossier sont intégrées : board, graphe Git, interfaces, pipeline, tests, déploiement, import CSV, issue US4 et arborescence. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> ** Statut** : **18/18 annexes produites**. Toutes les captures du corps du dossier sont intégrées : board, graphe Git, interfaces, pipeline, tests, déploiement, import CSV, issue US4 et arborescence (annexe #10 pour la version large). Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
