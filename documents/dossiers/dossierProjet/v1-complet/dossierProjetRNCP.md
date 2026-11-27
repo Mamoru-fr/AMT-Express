@@ -1352,8 +1352,9 @@ static async getRidesWithDetails(limit: number = 50) {
 | 15    | MCD complet (format A4)                | `annexes/mcd-complet.md`               | Markdown | Produit ✅   |
 | 16    | Registre des traitements RGPD          | `annexes/registre-traitements-rgpd.md` | Markdown | Produit ✅   |
 | 17    | Personas détaillés (cartes d'empathie) | `annexes/personas-detailles.md`        | Markdown | Produit ✅   |
+| 18    | Agenda / planning (scan)              | `annexes/Scan 1.pdf`                   | PDF      | Produit ✅   |
 
-> ** Statut** : **15/17 annexes produites**. Les annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
+> ** Statut** : **16/18 annexes produites**. Les annexes restantes sont des **captures d'écran** à fournir avant la soumission finale au jury. Pour un rendu optimal, exporter les fichiers Markdown (UML, Gantt, Séquence, Infrastructure) en PDF via [Mermaid Live Editor](https://mermaid.live) ou [PlantUML](https://plantuml.com).
 
 ---
 
